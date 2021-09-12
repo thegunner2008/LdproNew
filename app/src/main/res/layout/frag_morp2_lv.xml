@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android" xmlns:app="http://schemas.android.com/apk/res-auto" xmlns:aapt="http://schemas.android.com/aapt" android:orientation="vertical" android:layout_width="match_parent" android:layout_height="match_parent" android:weightSum="1">
+    <LinearLayout android:orientation="horizontal" android:layout_width="match_parent" android:layout_height="wrap_content" android:weightSum="1">
+        <TextView android:textSize="18dp" android:textStyle="bold" android:textColor="@color/black" android:gravity="center" android:id="@+id/tv_ngay" android:layout_width="60dp" android:layout_height="match_parent" android:text="Ngay"/>
+        <LinearLayout android:orientation="horizontal" android:layout_width="match_parent" android:layout_height="wrap_content">
+            <LinearLayout android:orientation="vertical" android:layout_width="65dp" android:layout_height="wrap_content">
+                <TextView android:textColor="@color/black" android:gravity="start" android:layout_width="match_parent" android:layout_height="wrap_content" android:text="Đề"/>
+                <TextView android:textColor="@color/black" android:gravity="start" android:layout_width="match_parent" android:layout_height="wrap_content" android:text="Lô"/>
+                <TextView android:textColor="@color/black" android:gravity="start" android:layout_width="match_parent" android:layout_height="wrap_content" android:text="Xiên"/>
+                <TextView android:textColor="@color/black" android:gravity="start" android:layout_width="match_parent" android:layout_height="wrap_content" android:text="3 càng"/>
+                <TextView android:textColor="@color/black" android:gravity="start" android:layout_width="match_parent" android:layout_height="wrap_content" android:text="T.toán:"/>
+                <View android:background="@android:color/black" android:layout_width="match_parent" android:layout_height="1dp"/>
+                <TextView android:textStyle="bold" android:textColor="@color/black" android:gravity="start" android:layout_width="match_parent" android:layout_height="wrap_content" android:text="Tổng:"/>
+                <TextView android:textStyle="bold" android:textColor="@color/red" android:gravity="start" android:layout_width="match_parent" android:layout_height="wrap_content" android:text="Luỹ kế:"/>
+            </LinearLayout>
+            <LinearLayout android:orientation="vertical" android:layout_width="match_parent" android:layout_height="wrap_content" android:layout_weight="1">
+                <TextView android:textColor="@color/black" android:id="@+id/tv_diemDe" android:layout_width="match_parent" android:layout_height="match_parent" android:text="Diem Đề" android:textAlignment="textEnd"/>
+                <TextView android:textColor="@color/black" android:id="@+id/tv_diemLo" android:layout_width="match_parent" android:layout_height="match_parent" android:text="Diem Lô" android:textAlignment="textEnd"/>
+                <TextView android:textColor="@color/black" android:id="@+id/tv_diemXi" android:layout_width="match_parent" android:layout_height="wrap_content" android:text="Diem Xiên" android:textAlignment="textEnd"/>
+                <TextView android:textColor="@color/black" android:id="@+id/tv_diemBc" android:layout_width="match_parent" android:layout_height="wrap_content" android:text="Diem 3 cang" android:textAlignment="textEnd"/>
+                <TextView android:layout_width="match_parent" android:layout_height="wrap_content" android:textAlignment="textEnd"/>
+                <View android:background="@android:color/black" android:layout_width="match_parent" android:layout_height="1dp"/>
+            </LinearLayout>
+            <LinearLayout android:orientation="vertical" android:layout_width="100dp" android:layout_height="wrap_content">
+                <TextView android:textColor="@color/black" android:id="@+id/tv_AnDe" android:layout_width="match_parent" android:layout_height="match_parent" android:text="An Đề" android:textAlignment="textEnd"/>
+                <TextView android:textColor="@color/black" android:id="@+id/tv_AnLo" android:layout_width="match_parent" android:layout_height="match_parent" android:text="An Lô" android:textAlignment="textEnd"/>
+                <TextView android:textColor="@color/black" android:id="@+id/tv_AnXi" android:layout_width="match_parent" android:layout_height="match_parent" android:text="An Xiên" android:textAlignment="textEnd"/>
+                <TextView android:textColor="@color/black" android:id="@+id/tv_AnBc" android:layout_width="match_parent" android:layout_height="match_parent" android:text="An 3 cang" android:textAlignment="textEnd"/>
+                <TextView android:textColor="@color/black" android:id="@+id/tv_Ttoan" android:layout_width="match_parent" android:layout_height="match_parent" android:text="T toan" android:textAlignment="textEnd"/>
+                <View android:background="@android:color/black" android:layout_width="match_parent" android:layout_height="1dp"/>
+                <TextView android:textStyle="bold" android:textColor="@color/black" android:id="@+id/tv_TongTien" android:layout_width="match_parent" android:layout_height="match_parent" android:text="Tong tien:" android:textAlignment="textEnd"/>
+                <TextView android:textStyle="bold" android:textColor="@color/red" android:id="@+id/tv_LuyKe" android:layout_width="match_parent" android:layout_height="match_parent" android:text="Tong tien:" android:textAlignment="textEnd"/>
+            </LinearLayout>
+        </LinearLayout>
+    </LinearLayout>
+</LinearLayout>

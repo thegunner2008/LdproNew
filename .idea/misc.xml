@@ -1,0 +1,113 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="DesignSurface">
+    <option name="filePathToZoomLevelMap">
+      <map>
+        <entry key="..\:/Users/Quangxb/Desktop/lodpro/DemoLD/app/src/main/res/layout/activity_chatbox.xml" value="0.2421875" />
+        <entry key="..\:/Users/Quangxb/Desktop/lodpro/DemoLD/app/src/main/res/layout/frag_chat_manager.xml" value="0.23846153846153847" />
+        <entry key="..\:/Users/Quangxb/Desktop/lodpro/DemoLD/app/src/main/res/layout/message_list_item_in.xml" value="0.2421875" />
+        <entry key="..\:/Users/Quangxb/Desktop/lodpro/DemoLD/app/src/main/res/layout/message_list_item_out.xml" value="0.2421875" />
+        <entry key="app/src/main/res/drawable/abc_btn_borderless_material.xml" value="0.36875" />
+        <entry key="app/src/main/res/drawable/ic_launcher_background.xml" value="0.2125" />
+        <entry key="app/src/main/res/drawable/sprinter_background.xml" value="0.2125" />
+        <entry key="app/src/main/res/layout/abc_action_bar_title_item.xml" value="0.35260416666666666" />
+        <entry key="app/src/main/res/layout/abc_action_bar_up_container.xml" value="0.23177083333333334" />
+        <entry key="app/src/main/res/layout/abc_screen_simple_overlay_action_mode.xml" value="0.13072916666666667" />
+        <entry key="app/src/main/res/layout/abc_screen_toolbar.xml" value="0.20989583333333334" />
+        <entry key="app/src/main/res/layout/abc_tooltip.xml" value="0.23177083333333334" />
+        <entry key="app/src/main/res/layout/activity_acc_web.xml" value="0.23177083333333334" />
+        <entry key="app/src/main/res/layout/activity_add_kh.xml" value="0.23177083333333334" />
+        <entry key="app/src/main/res/layout/activity_add_kh2.xml" value="0.23177083333333334" />
+        <entry key="app/src/main/res/layout/activity_auth.xml" value="0.23177083333333334" />
+        <entry key="app/src/main/res/layout/activity_chatbox.xml" value="0.23177083333333334" />
+        <entry key="app/src/main/res/layout/activity_chuyenthang.xml" value="0.23177083333333334" />
+        <entry key="app/src/main/res/layout/activity_chuyenthang_lv.xml" value="0.23177083333333334" />
+        <entry key="app/src/main/res/layout/activity_congno.xml" value="0.23177083333333334" />
+        <entry key="app/src/main/res/layout/activity_congno_lv.xml" value="0.23177083333333334" />
+        <entry key="app/src/main/res/layout/activity_cttinnhan.xml" value="0.23177083333333334" />
+        <entry key="app/src/main/res/layout/activity_giu_so.xml" value="0.23177083333333334" />
+        <entry key="app/src/main/res/layout/activity_khach.xml" value="0.23177083333333334" />
+        <entry key="app/src/main/res/layout/activity_khach_lv.xml" value="0.23177083333333334" />
+        <entry key="app/src/main/res/layout/activity_livestream.xml" value="0.23177083333333334" />
+        <entry key="app/src/main/res/layout/activity_livestream_lv.xml" value="0.23177083333333334" />
+        <entry key="app/src/main/res/layout/activity_login.xml" value="0.23177083333333334" />
+        <entry key="app/src/main/res/layout/activity_main.xml" value="0.23177083333333334" />
+        <entry key="app/src/main/res/layout/activity_tele_login.xml" value="0.23177083333333334" />
+        <entry key="app/src/main/res/layout/activity_thaythe.xml" value="0.23177083333333334" />
+        <entry key="app/src/main/res/layout/activity_thaythe_lv.xml" value="0.23177083333333334" />
+        <entry key="app/src/main/res/layout/activity_tinnhan.xml" value="0.23177083333333334" />
+        <entry key="app/src/main/res/layout/activity_tinnhan_lv.xml" value="0.23177083333333334" />
+        <entry key="app/src/main/res/layout/customactionbar.xml" value="0.23177083333333334" />
+        <entry key="app/src/main/res/layout/design_bottom_navigation_item.xml" value="0.23177083333333334" />
+        <entry key="app/src/main/res/layout/design_bottom_sheet_dialog.xml" value="0.23177083333333334" />
+        <entry key="app/src/main/res/layout/design_layout_snackbar.xml" value="0.23177083333333334" />
+        <entry key="app/src/main/res/layout/design_navigation_item_header.xml" value="0.23177083333333334" />
+        <entry key="app/src/main/res/layout/design_navigation_menu_item.xml" value="0.23177083333333334" />
+        <entry key="app/src/main/res/layout/frag_canchuyen.xml" value="0.23177083333333334" />
+        <entry key="app/src/main/res/layout/frag_canchuyen1.xml" value="0.23177083333333334" />
+        <entry key="app/src/main/res/layout/frag_canchuyen_lv.xml" value="0.23177083333333334" />
+        <entry key="app/src/main/res/layout/frag_chat_manager.xml" value="0.23177083333333334" />
+        <entry key="app/src/main/res/layout/frag_chat_manager_lv.xml" value="0.23177083333333334" />
+        <entry key="app/src/main/res/layout/frag_chaytrang.xml" value="0.23177083333333334" />
+        <entry key="app/src/main/res/layout/frag_chaytrang_acc.xml" value="0.23177083333333334" />
+        <entry key="app/src/main/res/layout/frag_chaytrang_acc_lv.xml" value="0.23177083333333334" />
+        <entry key="app/src/main/res/layout/frag_chaytrang_diaglog.xml" value="0.23177083333333334" />
+        <entry key="app/src/main/res/layout/frag_chaytrang_tinchay.xml" value="0.23177083333333334" />
+        <entry key="app/src/main/res/layout/frag_chaytrang_tinchay_lv.xml" value="0.23177083333333334" />
+        <entry key="app/src/main/res/layout/frag_congno.xml" value="0.23177083333333334" />
+        <entry key="app/src/main/res/layout/frag_database.xml" value="0.23177083333333334" />
+        <entry key="app/src/main/res/layout/frag_home.xml" value="0.23177083333333334" />
+        <entry key="app/src/main/res/layout/frag_khongmax.xml" value="0.23177083333333334" />
+        <entry key="app/src/main/res/layout/frag_mo_report.xml" value="0.23177083333333334" />
+        <entry key="app/src/main/res/layout/frag_morp1.xml" value="0.23177083333333334" />
+        <entry key="app/src/main/res/layout/frag_morp1_1.xml" value="0.23177083333333334" />
+        <entry key="app/src/main/res/layout/frag_morp1_2.xml" value="0.23177083333333334" />
+        <entry key="app/src/main/res/layout/frag_morp1_lv.xml" value="0.23177083333333334" />
+        <entry key="app/src/main/res/layout/frag_no_menu.xml" value="0.23177083333333334" />
+        <entry key="app/src/main/res/layout/frag_no_report.xml" value="0.23177083333333334" />
+        <entry key="app/src/main/res/layout/frag_norp1.xml" value="0.23177083333333334" />
+        <entry key="app/src/main/res/layout/frag_norp1_2.xml" value="0.23177083333333334" />
+        <entry key="app/src/main/res/layout/frag_norp1_3.xml" value="0.23177083333333334" />
+        <entry key="app/src/main/res/layout/frag_norp1_4.xml" value="0.23177083333333334" />
+        <entry key="app/src/main/res/layout/frag_norp2.xml" value="0.23177083333333334" />
+        <entry key="app/src/main/res/layout/frag_norp2_lv.xml" value="0.23177083333333334" />
+        <entry key="app/src/main/res/layout/frag_norp3.xml" value="0.23177083333333334" />
+        <entry key="app/src/main/res/layout/frag_norp3_lv.xml" value="0.23177083333333334" />
+        <entry key="app/src/main/res/layout/frag_setting.xml" value="0.23177083333333334" />
+        <entry key="app/src/main/res/layout/frag_setting1.xml" value="0.23177083333333334" />
+        <entry key="app/src/main/res/layout/frag_setting1_lv.xml" value="0.23177083333333334" />
+        <entry key="app/src/main/res/layout/frag_setting3.xml" value="0.23177083333333334" />
+        <entry key="app/src/main/res/layout/frag_setting3_1.xml" value="0.23177083333333334" />
+        <entry key="app/src/main/res/layout/frag_setting4.xml" value="0.23177083333333334" />
+        <entry key="app/src/main/res/layout/frag_sms_load_lv.xml" value="0.23177083333333334" />
+        <entry key="app/src/main/res/layout/frag_sms_temp_lv.xml" value="0.23177083333333334" />
+        <entry key="app/src/main/res/layout/frag_sms_templates.xml" value="0.23177083333333334" />
+        <entry key="app/src/main/res/layout/frag_suatin.xml" value="0.23177083333333334" />
+        <entry key="app/src/main/res/layout/frag_suatin_1.xml" value="0.23177083333333334" />
+        <entry key="app/src/main/res/layout/frag_suatin_lv.xml" value="0.23177083333333334" />
+        <entry key="app/src/main/res/layout/frag_suatin_lv1.xml" value="0.23177083333333334" />
+        <entry key="app/src/main/res/layout/frag_suatin_lv2.xml" value="0.23177083333333334" />
+        <entry key="app/src/main/res/layout/item_nav_list.xml" value="0.35260416666666666" />
+        <entry key="app/src/main/res/layout/message_list_item_in.xml" value="0.23177083333333334" />
+        <entry key="app/src/main/res/layout/message_list_item_out.xml" value="0.23177083333333334" />
+        <entry key="app/src/main/res/layout/mtrl_layout_snackbar.xml" value="0.19635416666666666" />
+        <entry key="app/src/main/res/layout/mtrl_layout_snackbar_include.xml" value="0.19635416666666666" />
+        <entry key="app/src/main/res/layout/notification_action.xml" value="0.19635416666666666" />
+        <entry key="app/src/main/res/layout/notification_action_tombstone.xml" value="0.19635416666666666" />
+        <entry key="app/src/main/res/layout/select_dialog_singlechoice_material.xml" value="0.19635416666666666" />
+        <entry key="app/src/main/res/layout/send_sms_activity.xml" value="0.19635416666666666" />
+        <entry key="app/src/main/res/layout/spinner_item.xml" value="0.19635416666666666" />
+        <entry key="app/src/main/res/layout/support_simple_spinner_dropdown_item.xml" value="0.19635416666666666" />
+        <entry key="app/src/main/res/layout/tructiepxoso.xml" value="0.19635416666666666" />
+        <entry key="app/src/main/res/layout/tructiepxoso_lv.xml" value="0.23177083333333334" />
+        <entry key="app/src/main/res/menu/menu_main.xml" value="0.35260416666666666" />
+      </map>
+    </option>
+  </component>
+  <component name="ProjectRootManager" version="2" languageLevel="JDK_11" project-jdk-name="1.8" project-jdk-type="JavaSDK">
+    <output url="file://$PROJECT_DIR$/build/classes" />
+  </component>
+  <component name="ProjectType">
+    <option name="id" value="Android" />
+  </component>
+</project>

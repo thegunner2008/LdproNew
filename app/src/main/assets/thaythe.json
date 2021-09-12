@@ -1,0 +1,46 @@
+{"listKHs":[
+			{"ID":"5","str":"giap tij","repl_str":"05,17,29,41,53,65,77,89,"}
+			,{"ID":"6","str":"giap tis","repl_str":"00,12,24,36,48,60,72,84,96,"}
+			,{"ID":"7","str":"giap tys","repl_str":"00,12,24,36,48,60,72,84,96,"}
+			,{"ID":"8","str":"giap suu","repl_str":"01,13,25,37,49,61,73,85,97,"}
+			,{"ID":"9","str":"giap dan","repl_str":"02,14,26,38,50,62,74,86,98,"}
+			,{"ID":"10","str":"giap mao","repl_str":"03,15,27,39,51,63,75,87,99,"}
+			,{"ID":"11","str":"giap thin","repl_str":"04,16,28,40,52,64,76,88,"}
+			,{"ID":"12","str":"giap tyj","repl_str":"05,17,29,41,53,65,77,89,"}
+			,{"ID":"13","str":"giap ngo","repl_str":"06,18,30,42,54,66,78,90,"}
+			,{"ID":"14","str":"giap mui","repl_str":"07,19,31,43,55,67,79,91,"}
+			,{"ID":"15","str":"giap than","repl_str":"08,20,32,44,56,68,80,92,"}
+			,{"ID":"16","str":"giap dau","repl_str":"09,21,33,45,57,69,81,93,"}
+			,{"ID":"17","str":"giap tuat","repl_str":"10,22,34,46,58,70,82,94,"}
+			,{"ID":"18","str":"giap hoi","repl_str":"11,23,35,47,59,71,83,95,"}
+			,{"ID":"19","str":"cua","repl_str":"trung"}
+			,{"ID":"20","str":":","repl_str":" "}
+			,{"ID":"21","str":"\"","repl_str":","}
+			,{"ID":"22","str":"\\(","repl_str":" "}
+			,{"ID":"23","str":"\\)","repl_str":";"}
+			,{"ID":"24","str":"dan dan","repl_str":" dan "}
+			,{"ID":"25","str":"de bor","repl_str":" de dan 09 bor "}
+			,{"ID":"26","str":"dea bor","repl_str":" dea dan 09 bor "}
+			,{"ID":"27","str":"deb bor","repl_str":" deb dan 09 bor "}
+			,{"ID":"28","str":"dec bor","repl_str":" dec dan 09 bor "}
+			,{"ID":"29","str":"ded bor","repl_str":" ded dan 09 bor "}
+			,{"ID":"30","str":"giai nhat","repl_str":"nhat"}
+			,{"ID":"31","str":"de de","repl_str":" de"}
+			,{"ID":"32","str":"dede","repl_str":" de"}
+			,{"ID":"33","str":"hai kep","repl_str":" 00,11,22,33,44,55,66,77,88,99,050,161,272,383,494 "}
+			,{"ID":"34","str":"sat hai kep","repl_str":" 010,121,232,343,454,565,676,787,898,04,06,15,17,26,28,37,39,48,51,60,62,71,73,82,84,93,95 "}
+			,{"ID":"35","str":"sat 2 kep","repl_str":" 010,121,232,343,454,565,676,787,898,04,06,15,17,26,28,37,39,48,51,60,62,71,73,82,84,93,95 "}
+			,{"ID":"36","str":"\\*","repl_str":" x "}
+			,{"ID":"37","str":"\u0110","repl_str":"d "}
+			,{"ID":"38","str":"\u20ab","repl_str":" d "}
+			,{"ID":"39","str":"x x","repl_str":" x "}
+			,{"ID":"40","str":"xx","repl_str":" x "}
+			,{"ID":"41","str":"\u00d7","repl_str":" x "}
+			,{"ID":"42","str":"\u00e9","repl_str":"e "}
+			,{"ID":"43","str":"\/ 1 so","repl_str":" "}
+			,{"ID":"44","str":"\/ 1 s","repl_str":" "}
+			,{"ID":"45","str":"\/","repl_str":";"}
+			,{"ID":"46","str":" 1 s ","repl_str":" "}
+			,{"ID":"47","str":"_","repl_str":", "}
+	]
+} 
