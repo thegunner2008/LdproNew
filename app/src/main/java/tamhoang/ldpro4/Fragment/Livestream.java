@@ -211,8 +211,8 @@ public class Livestream extends Fragment {
     }
 
     class TNGAdapter extends ArrayAdapter {
-        DecimalFormat decimalFormat = new DecimalFormat(this.pattern);
         String pattern = "###,###";
+        DecimalFormat decimalFormat = new DecimalFormat(pattern);
 
         public TNGAdapter(Context context, int i, List<String> list) {
             super(context, i, list);

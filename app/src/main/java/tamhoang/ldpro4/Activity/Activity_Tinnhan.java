@@ -157,22 +157,11 @@ public class Activity_Tinnhan extends BaseToolBarActivity {
                 }
             }
         });
-        this.lv_suatin.setOnItemLongClickListener(new AdapterView.OnItemLongClickListener() {
-            /* class tamhoang.ldpro4.Activity.Activity_Tinnhan.AnonymousClass2 */
-
-            @Override // android.widget.AdapterView.OnItemLongClickListener
-            public boolean onItemLongClick(AdapterView<?> adapterView, View view, int position, long id) {
-                Activity_Tinnhan.this.lv_position = position;
-                return false;
-            }
+        this.lv_suatin.setOnItemLongClickListener((adapterView, view1, position, id) -> {
+            Activity_Tinnhan.this.lv_position = position;
+            return false;
         });
-        this.btn_xoatin.setOnClickListener(new View.OnClickListener() {
-            /* class tamhoang.ldpro4.Activity.Activity_Tinnhan.AnonymousClass3 */
-
-            public void onClick(View v) {
-                Activity_Tinnhan.this.finish();
-            }
-        });
+        this.btn_xoatin.setOnClickListener(v -> Activity_Tinnhan.this.finish());
         registerForContextMenu(this.lv_suatin);
         cursor.close();
     }

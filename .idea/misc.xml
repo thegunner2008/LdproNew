@@ -4,7 +4,10 @@
     <option name="filePathToZoomLevelMap">
       <map>
         <entry key="..\:/Users/Quangxb/Desktop/lodpro/DemoLD/app/src/main/res/layout/activity_chatbox.xml" value="0.2421875" />
+        <entry key="..\:/Users/Quangxb/Desktop/lodpro/DemoLD/app/src/main/res/layout/activity_livestream_lv.xml" value="0.23854166666666668" />
+        <entry key="..\:/Users/Quangxb/Desktop/lodpro/DemoLD/app/src/main/res/layout/activity_tinnhan.xml" value="0.152" />
         <entry key="..\:/Users/Quangxb/Desktop/lodpro/DemoLD/app/src/main/res/layout/frag_chat_manager.xml" value="0.23846153846153847" />
+        <entry key="..\:/Users/Quangxb/Desktop/lodpro/DemoLD/app/src/main/res/layout/frag_mo_report.xml" value="0.2421875" />
         <entry key="..\:/Users/Quangxb/Desktop/lodpro/DemoLD/app/src/main/res/layout/message_list_item_in.xml" value="0.2421875" />
         <entry key="..\:/Users/Quangxb/Desktop/lodpro/DemoLD/app/src/main/res/layout/message_list_item_out.xml" value="0.2421875" />
         <entry key="app/src/main/res/drawable/abc_btn_borderless_material.xml" value="0.36875" />

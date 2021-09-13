@@ -11,6 +11,7 @@ import android.graphics.BitmapFactory;
 import android.os.Build;
 import android.os.Bundle;
 import android.telephony.SmsMessage;
+import android.util.Log;
 
 import androidx.core.app.NotificationCompat;
 
@@ -104,7 +105,11 @@ public class SMSReceiver extends BroadcastReceiver {
                             if (MainActivity.DSkhachhang.size() == 0) {
                                 this.db.LayDanhsachKH();
                             }
-                            if (!(MainActivity.DSkhachhang.indexOf(this.mSDT) > -1 || this.body.indexOf("Ok") == 0 || this.body.indexOf("Bỏ") == 0 || this.body.indexOf("Thiếu") == 0) || this.body.indexOf("Tra lai") > -1) {
+                            if (!(MainActivity.DSkhachhang.contains(this.mSDT)
+                                    || this.body.indexOf("Ok") == 0
+                                    || this.body.indexOf("Bỏ") == 0
+                                    || this.body.indexOf("Thiếu") == 0)
+                                    || this.body.contains("Tra lai")) {
                                 MainActivity.sms = true;
                                 try {
                                     if (MainActivity.jSon_Setting.getInt("tin_trung") > 0) {
@@ -118,7 +123,7 @@ public class SMSReceiver extends BroadcastReceiver {
                                         }
                                     }
                                 } catch (JSONException e2) {
-                                    e2.printStackTrace();
+                                    Log.d(SMSReceiver.class.getName(), e2.getMessage());
                                 }
                                 try {
                                     Cursor getTenKH = this.db.GetData("Select * FROM tbl_kh_new WHERE sdt ='" + this.mSDT + "'");
@@ -130,7 +135,7 @@ public class SMSReceiver extends BroadcastReceiver {
                                             this.caidat_gia = jSONObject.getJSONObject("caidat_gia");
                                             this.caidat_tg = this.json.getJSONObject("caidat_tg");
                                         } catch (JSONException e3) {
-                                            e = e3;
+                                            Log.d(SMSReceiver.class.getName(), e3.getMessage());
                                         }
                                         try {
                                             Ktra = Ktra2;
@@ -154,7 +159,9 @@ public class SMSReceiver extends BroadcastReceiver {
                                                         getSoTN.close();
                                                     }
                                                 } catch (SQLException e5) {
+                                                    Log.d(SMSReceiver.class.getName(), e5.getMessage());
                                                 } catch (Throwable e6) {
+                                                    Log.d(SMSReceiver.class.getName(), e6.getMessage());
                                                 }
                                             } else {
                                                 Cursor getSoTN2 = this.db.GetData("Select max(so_tin_nhan) from tbl_tinnhanS WHERE ngay_nhan = '" + this.mNgayNhan + "' AND so_dienthoai = '" + this.mSDT + "' AND type_kh = 1");
@@ -172,43 +179,48 @@ public class SMSReceiver extends BroadcastReceiver {
                                         } catch (JSONException e7) {
                                             Ktra = Ktra2;
                                             JSONException e8 = e7;
+                                            Log.d(SMSReceiver.class.getName(), e7.getMessage());
                                             try {
                                                 e8.printStackTrace();
                                                 getTenKH.close();
                                                 return;
                                             } catch (Exception e9) {
+                                                Log.d(SMSReceiver.class.getName(), e9.getMessage());
                                                 return;
                                             }
                                         }
                                     } else {
                                         Ktra = Ktra2;
                                     }
-                                    if (getTenKH != null && !getTenKH.isClosed()) {
+                                    if (!getTenKH.isClosed()) {
                                         getTenKH.close();
                                     }
                                     return;
                                 } catch (Exception e10) {
+                                    Log.d(SMSReceiver.class.getName(), e10.getMessage());
                                     return;
                                 }
                             }
                         }
                     } catch (Exception e11) {
+                        Log.d(SMSReceiver.class.getName(), e11.getMessage());
                         return;
                     }
                 }
                 this.body = sms.getDisplayMessageBody().replace("'", "");
                 trim = sms.getDisplayOriginatingAddress().replace(" ", "").trim();
                 this.mSDT = trim;
-                if (trim.startsWith("0")) {
-                }
-                try {
-                    if (MainActivity.DSkhachhang.size() == 0) {
-                    }
-                } catch (Exception e12) {
-                }
-                if (MainActivity.DSkhachhang.indexOf(this.mSDT) > -1) {
-                }
+//                if (trim.startsWith("0")) {
+//                }
+//                try {
+//                    if (MainActivity.DSkhachhang.size() == 0) {
+//                    }
+//                } catch (Exception e12) {
+//                }
+//                if (MainActivity.DSkhachhang.indexOf(this.mSDT) > -1) {
+//                }
             } catch (Exception e13) {
+                Log.d(SMSReceiver.class.getName(), e13.getMessage());
             }
         }
     }
