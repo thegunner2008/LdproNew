@@ -66,7 +66,7 @@ public class Database extends SQLiteOpenHelper {
     public void Update_TinNhanGoc(int id, int type_kh) throws Throwable {
         Cursor c = GetData("Select * From tbl_tinnhanS WHERE id = " + id);
         c.moveToFirst();
-        if (c.getString(11).indexOf("ok") > -1) {
+        if (c.getString(11).contains("ok")) {
             Cursor c1 = GetData("Select nd_phantich FROM tbl_tinnhanS WHERE id = " + id);
             c1.moveToFirst();
             String str = c1.getString(0);
@@ -5690,46 +5690,56 @@ public class Database extends SQLiteOpenHelper {
             mSoDT2 = mNgayNhan2;
             mNgayNhan = tinNhan2;
         }
-        Cursor getTin22222222222222222222222222222222222222222222 = GetData("Select * From tbl_tinnhanS WHERE ngay_nhan = '" + mNgay2 + mGionhan2 + mSoDT + str8 + mSoTN2);
-        getTin22222222222222222222222222222222222222222222.moveToFirst();
-        StringBuilder sb22222222222222222222222222222222222222222222 = new StringBuilder();
-        sb22222222222222222222222222222222222222222222.append("Select * From tbl_chuyenthang WHERE sdt_nhan = '");
-        sb22222222222222222222222222222222222222222222.append(mSoDT);
-        sb22222222222222222222222222222222222222222222.append("'");
-        cur = GetData(sb22222222222222222222222222222222222222222222.toString());
+        Cursor getTin2 = GetData("Select * From tbl_tinnhanS WHERE ngay_nhan = '" + mNgay2 + mGionhan2 + mSoDT + str8 + mSoTN2);
+        getTin2.moveToFirst();
+        StringBuilder sb2 = new StringBuilder();
+        sb2.append("Select * From tbl_chuyenthang WHERE sdt_nhan = '");
+        sb2.append(mSoDT);
+        sb2.append("'");
+        cur = GetData(sb2.toString());
         cur.moveToFirst();
-        Cursor chuyen32222222222222222222222222222222222222222222 = GetData("Select Om_Xi3 FROM so_Om WHERE id = 13");
-        chuyen32222222222222222222222222222222222222222222.moveToFirst();
+        Cursor chuyen32 = GetData("Select Om_Xi3 FROM so_Om WHERE id = 13");
+        chuyen32.moveToFirst();
         if (cur.getCount() > 0) {
-            getTin = getTin22222222222222222222222222222222222222222222;
-            chuyen = chuyen32222222222222222222222222222222222222222222;
-        } else if (chuyen32222222222222222222222222222222222222222222.getInt(0) == 0) {
-            chuyen = chuyen32222222222222222222222222222222222222222222;
-            if (getTin22222222222222222222222222222222222222222222.getInt(14) == 1) {
+            getTin = getTin2;
+            chuyen = chuyen32;
+        } else if (chuyen32.getInt(0) == 0) {
+            chuyen = chuyen32;
+            if (getTin2.getInt(14) == 1) {
                 StringBuilder sb19 = new StringBuilder();
                 sb19.append("Select max(so_tin_nhan) From tbl_tinnhanS WHERE so_dienthoai = '");
-                getTin = getTin22222222222222222222222222222222222222222222;
-                sb19.append(cur.getString(4));
+                getTin = getTin2;
+                try {
+                    sb19.append(cur.getString(4));
+                } catch (Throwable e5){
+                    sb19.append(c.getString(1));
+                }
                 sb19.append("' AND ngay_nhan = '");
                 sb19.append(mNgay2);
                 sb19.append("'");
                 Cursor c12 = GetData(sb19.toString());
                 c12.moveToFirst();
                 int sotin4 = c12.getInt(0) + 1;
-                if (cur.getString(3).indexOf("ZL") > -1) {
-                    my_app = "ZL";
-                } else if (cur.getString(3).indexOf("VB") > -1) {
-                    my_app = "VB";
-                } else if (cur.getString(3).indexOf("WA") > -1) {
-                    my_app = "WA";
-                } else if (cur.getString(3).indexOf(str9) > -1) {
-                    my_app = "TL";
-                } else {
-                    my_app = "sms";
-                }
-                QueryData("Insert Into tbl_tinnhanS values (null, '" + getTinNhan.getString(1) + "', '" + getTinNhan.getString(2) + "',2, '" + cur.getString(3) + "', '" + cur.getString(4) + "', '" + my_app + "', " + sotin4 + ", '" + getTinNhan.getString(8) + "', null, '" + getTinNhan.getString(10) + "', 'ko',0,0,1, null)");
-                if (my_app.indexOf(str10) > -1) {
-                    SendSMS(cur.getString(4), "Tin " + sotin4 + ":\n" + getTinNhan.getString(8));
+//                if (cur.getString(3).indexOf("ZL") > -1) {
+//                    my_app = "ZL";
+//                } else if (cur.getString(3).indexOf("VB") > -1) {
+//                    my_app = "VB";
+//                } else if (cur.getString(3).indexOf("WA") > -1) {
+//                    my_app = "WA";
+//                } else if (cur.getString(3).indexOf(str9) > -1) {
+//                    my_app = "TL";
+//                } else {
+//                    my_app = "sms";
+//                }
+                QueryData("Insert Into tbl_tinnhanS values (null, '" + getTinNhan.getString(1) + "', '" + getTinNhan.getString(2) + "',2, '" + c.getString(0) + "', '" + mSoDT + "', '" + str3 + "', " + sotin4 + ", '" + getTinNhan.getString(8) + "', null, '" + getTinNhan.getString(10) + "', 'ko',0,0,1, null)");
+                if (str3.contains(str10)) {
+                    String phone = "";
+                    try {
+                        phone=cur.getString(4);
+                    } catch (Throwable e9){
+                        phone= c.getString(1);
+                    }
+                    SendSMS(phone, "Tin " + sotin4 + ":\n" + getTinNhan.getString(8));
                 } else if (getTinNhan.getString(6).indexOf(str9) > -1) {
                     final String tinNhan14 = "Tin " + sotin4 + ":\n" + getTinNhan.getString(8);
                     new Handler(Looper.getMainLooper()).post(new Runnable() {
@@ -5768,10 +5778,10 @@ public class Database extends SQLiteOpenHelper {
                 }
                 return;
             }
-            getTin = getTin22222222222222222222222222222222222222222222;
+            getTin = getTin2;
         } else {
-            getTin = getTin22222222222222222222222222222222222222222222;
-            chuyen = chuyen32222222222222222222222222222222222222222222;
+            getTin = getTin2;
+            chuyen = chuyen32;
         }
         TralaiSO(mID);
         if (getTin != null) {

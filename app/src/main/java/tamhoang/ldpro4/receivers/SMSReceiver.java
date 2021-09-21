@@ -43,24 +43,6 @@ public class SMSReceiver extends BroadcastReceiver {
     SmsMessage[] messages = null;
     int soTN;
 
-    /* JADX WARNING: Code restructure failed: missing block: B:105:0x0479, code lost:
-        r0 = move-exception;
-     */
-    /* JADX WARNING: Code restructure failed: missing block: B:106:0x047a, code lost:
-        r2 = r0;
-     */
-    /* JADX WARNING: Code restructure failed: missing block: B:82:0x035d, code lost:
-        r28.db.QueryData("Update tbl_tinnhanS set phat_hien_loi = 'ko' WHERE id = " + r3.getInt(0));
-        r28.db.QueryData("Delete From tbl_soctS WHERE ngay_nhan = '" + r28.mNgayNhan + "' AND so_dienthoai = '" + r28.mSDT + "' AND so_tin_nhan = " + r28.soTN + " AND type_kh = 1");
-     */
-    /* JADX WARNING: Exception block dominator not found, dom blocks: [B:71:0x023d, B:94:0x03cf] */
-    /* JADX WARNING: Failed to process nested try/catch */
-    /* JADX WARNING: Removed duplicated region for block: B:105:0x0479 A[ExcHandler: JSONException (r0v4 'e' org.json.JSONException A[CUSTOM_DECLARE]), Splitter:B:71:0x023d] */
-    /* JADX WARNING: Removed duplicated region for block: B:25:0x0108  */
-    /* JADX WARNING: Removed duplicated region for block: B:29:0x012a A[Catch:{ Exception -> 0x0130 }] */
-    /* JADX WARNING: Removed duplicated region for block: B:71:0x023d A[SYNTHETIC, Splitter:B:71:0x023d] */
-    /* JADX WARNING: Removed duplicated region for block: B:93:0x03cc A[ExcHandler: SQLException (e android.database.SQLException), Splitter:B:71:0x023d] */
-    /* JADX WARNING: Removed duplicated region for block: B:94:0x03cf A[SYNTHETIC, Splitter:B:94:0x03cf] */
     public void onReceive(Context context, Intent intent) {
         String trim;
         boolean Ktra;
@@ -93,8 +75,8 @@ public class SMSReceiver extends BroadcastReceiver {
                     try {
                         if (!sms.isReplace()) {
                             StringBuilder bodyText = new StringBuilder();
-                            for (int i2 = 0; i2 < this.messages.length; i2++) {
-                                bodyText.append(this.messages[i2].getMessageBody());
+                            for (SmsMessage message : this.messages) {
+                                bodyText.append(message.getMessageBody());
                             }
                             this.body = bodyText.toString().replace("'", "");
                             trim = sms.getDisplayOriginatingAddress().replace(" ", "").trim();
@@ -158,10 +140,8 @@ public class SMSReceiver extends BroadcastReceiver {
                                                     if (getSoTN != null && !getSoTN.isClosed()) {
                                                         getSoTN.close();
                                                     }
-                                                } catch (SQLException e5) {
+                                                } catch (Throwable e5) {
                                                     Log.d(SMSReceiver.class.getName(), e5.getMessage());
-                                                } catch (Throwable e6) {
-                                                    Log.d(SMSReceiver.class.getName(), e6.getMessage());
                                                 }
                                             } else {
                                                 Cursor getSoTN2 = this.db.GetData("Select max(so_tin_nhan) from tbl_tinnhanS WHERE ngay_nhan = '" + this.mNgayNhan + "' AND so_dienthoai = '" + this.mSDT + "' AND type_kh = 1");
@@ -169,7 +149,7 @@ public class SMSReceiver extends BroadcastReceiver {
                                                 this.Ten_KH = getTenKH.getString(0);
                                                 this.soTN = getSoTN2.getInt(0) + 1;
                                                 this.db.QueryData("Insert Into tbl_tinnhanS values (null, '" + this.mNgayNhan + "', '" + this.mGionhan + "',1, '" + this.Ten_KH + "', '" + getTenKH.getString(1) + "','sms', " + this.soTN + ", '" + this.body + "',null,'" + this.body + "', 'Hết giờ nhận số!',0,1,1, null)");
-                                                if (getSoTN2 != null && !getSoTN2.isClosed()) {
+                                                if (!getSoTN2.isClosed()) {
                                                     getSoTN2.close();
                                                 }
                                                 if (!Congthuc.CheckTime("18:30") && MainActivity.jSon_Setting.getInt("tin_qua_gio") == 1) {

@@ -23,14 +23,12 @@ public class Activity_CTTinnhan extends BaseToolBarActivity {
     String id = "";
     String type_kh = "";
 
-    /* access modifiers changed from: protected */
-    @Override // tamhoang.ldpro4.Congthuc.BaseToolBarActivity
+    @Override
     public int getLayoutId() {
         return R.layout.activity_cttinnhan;
     }
 
-    /* access modifiers changed from: protected */
-    @Override // tamhoang.ldpro4.Congthuc.BaseToolBarActivity, android.support.v7.app.AppCompatActivity, android.support.v4.app.SupportActivity, android.support.v4.app.FragmentActivity
+    @Override
     public void onCreate(Bundle savedInstanceState) {
         Cursor cursor = null;
         JSONException e;
