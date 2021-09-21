@@ -102,7 +102,7 @@ public class MainActivity extends AppCompatActivity {
     public static int mDay;
     public static int mMonth;
     public static int mYear;
-    public static String myDate = "";
+    public static String myDate = "31/12/2022";
     private static DatePickerDialog.OnDateSetListener onDateSetListener;
     static Runnable runnable = new Runnable() {
         /* class tamhoang.ldpro4.MainActivity.AnonymousClass5 */

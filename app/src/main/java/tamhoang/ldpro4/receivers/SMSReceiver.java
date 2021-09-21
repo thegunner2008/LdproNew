@@ -89,7 +89,7 @@ public class SMSReceiver extends BroadcastReceiver {
             this.mGionhan = hourFormat.format(calendar.getTime());
             this.mSDT = "";
             try {
-                if (this.messages.length != 1) {
+                if (this.messages.length == 1) {
                     try {
                         if (!sms.isReplace()) {
                             StringBuilder bodyText = new StringBuilder();
@@ -105,7 +105,7 @@ public class SMSReceiver extends BroadcastReceiver {
                             if (MainActivity.DSkhachhang.size() == 0) {
                                 this.db.LayDanhsachKH();
                             }
-                            if (!(MainActivity.DSkhachhang.contains(this.mSDT)
+                            if ((MainActivity.DSkhachhang.contains(this.mSDT)
                                     || this.body.indexOf("Ok") == 0
                                     || this.body.indexOf("Bỏ") == 0
                                     || this.body.indexOf("Thiếu") == 0)
@@ -145,7 +145,7 @@ public class SMSReceiver extends BroadcastReceiver {
                                                     getSoTN.moveToFirst();
                                                     this.Ten_KH = getTenKH.getString(0);
                                                     this.soTN = getSoTN.getInt(0) + 1;
-                                                    this.db.QueryData(this.body.indexOf("Tra lai") == -1 ? "Insert Into tbl_tinnhanS values (null, '" + this.mNgayNhan + "', '" + this.mGionhan + "',1, '" + this.Ten_KH + "', '" + getTenKH.getString(1) + "','sms', " + this.soTN + ", '" + this.body + "',null,'" + this.body + "', 'ko',0,1,1, null)" : "Insert Into tbl_tinnhanS values (null, '" + this.mNgayNhan + "', '" + this.mGionhan + "',1, '" + this.Ten_KH + "', '" + getTenKH.getString(1) + "','sms', " + this.soTN + ", '" + this.body + "',null,'" + this.body + "', 'ko',0,0,0, null)");
+                                                    this.db.QueryData(!this.body.contains("Tra lai") ? "Insert Into tbl_tinnhanS values (null, '" + this.mNgayNhan + "', '" + this.mGionhan + "',1, '" + this.Ten_KH + "', '" + getTenKH.getString(1) + "','sms', " + this.soTN + ", '" + this.body + "',null,'" + this.body + "', 'ko',0,1,1, null)" : "Insert Into tbl_tinnhanS values (null, '" + this.mNgayNhan + "', '" + this.mGionhan + "',1, '" + this.Ten_KH + "', '" + getTenKH.getString(1) + "','sms', " + this.soTN + ", '" + this.body + "',null,'" + this.body + "', 'ko',0,0,0, null)");
                                                     if (Congthuc.CheckDate(MainActivity.myDate)) {
                                                         Cursor c = this.db.GetData("Select * from tbl_tinnhanS WHERE ngay_nhan = '" + this.mNgayNhan + "' AND so_dienthoai = '" + this.mSDT + "' AND so_tin_nhan = " + this.soTN + " AND type_kh = 1");
                                                         c.moveToFirst();

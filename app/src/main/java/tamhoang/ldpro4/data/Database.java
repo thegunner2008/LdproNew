@@ -66,7 +66,7 @@ public class Database extends SQLiteOpenHelper {
     public void Update_TinNhanGoc(int id, int type_kh) throws Throwable {
         Cursor c = GetData("Select * From tbl_tinnhanS WHERE id = " + id);
         c.moveToFirst();
-        if (c.getString(11).indexOf("ok1") > -1) {
+        if (c.getString(11).indexOf("ok") > -1) {
             Cursor c1 = GetData("Select nd_phantich FROM tbl_tinnhanS WHERE id = " + id);
             c1.moveToFirst();
             String str = c1.getString(0);
@@ -138,7 +138,7 @@ public class Database extends SQLiteOpenHelper {
         nBuider.setLights(-16711936, 400, 400);
         @SuppressLint("WrongConstant") NotificationManager mNotificationManager = (NotificationManager) context.getSystemService("notification");
         if (Build.VERSION.SDK_INT >= 26) {
-            NotificationChannel notificationChannel = new NotificationChannel("10001", "NOTIFICATION_CHANNEL_NAME", 3);
+            NotificationChannel notificationChannel = new NotificationChannel("10001", "NOTIFICATION_CHANNEL_NAME", NotificationManager.IMPORTANCE_HIGH);
             notificationChannel.enableLights(true);
             notificationChannel.setLightColor(SupportMenu.CATEGORY_MASK);
             notificationChannel.enableVibration(true);
@@ -292,170 +292,117 @@ public class Database extends SQLiteOpenHelper {
         }
         String str55 = Congthuc.fixTinNhan(str53);
         getThongtin = getThongtin2;
-        try {
-            if (database3.caidat_tg.getInt("khach_de") == 1) {
-                str55 = str55.replaceAll("de ", "det").replaceAll("deb", "det");
-            }
-        } catch (JSONException e4) {
+        if (database3.caidat_tg.getInt("khach_de") == 1) {
+            str55 = str55.replaceAll("de ", "det").replaceAll("deb", "det");
         }
-        if (!str55.trim().startsWith(str_Err5) || MainActivity.jSon_Setting.getInt("baotinthieu") <= 0) {
-            str = so_tin5;
-            str2 = str49;
+        String so_tin6 = "";
+        str55 = str55 + str44;
+        int i1 = -1;
+        while (true) {
+            so_tin4 = so_tin6;
             str3 = str45;
-            so_tin = "";
-        } else {
-            String so_tin6 = "";
-            str55 = str55 + str44;
-            int i1 = -1;
-            while (true) {
-                so_tin4 = so_tin6;
-                str3 = str45;
-                try {
-                    int indexOf = str55.indexOf("tin", i1 + 1);
-                    i1 = indexOf;
-                    if (indexOf == -1) {
+            try {
+                int indexOf = str55.indexOf("tin", i1 + 1);
+                i1 = indexOf;
+                if (indexOf == -1) {
+                    break;
+                }
+                int i6 = i1 + 5;
+                while (i6 < i1 + 10 && Congthuc.isNumeric(str55.substring(i1 + 4, i6))) {
+                    i6++;
+                }
+                str2 = str49;
+                if (i6 - i1 > 5) {
+                    String sss = str55.substring(0, i6).replace("tin", "").trim();
+                    if (Congthuc.isNumeric(sss)) {
+                        so_tin4 = sss;
+                    }
+                    StringBuilder sb2 = new StringBuilder();
+                    str = so_tin5;
+                    sb2.append(str55.substring(0, i1));
+                    sb2.append(str55.substring(i6));
+                    str55 = sb2.toString();
+                    so_tin6 = so_tin4;
+                    str45 = str3;
+                    str49 = str2;
+                    so_tin5 = str;
+                } else {
+                    str = so_tin5;
+                    so_tin6 = so_tin4;
+                    str45 = str3;
+                    str49 = str2;
+                }
+            } catch (Exception e6) {
+                str = so_tin5;
+                str2 = str49;
+                so_tin = so_tin4;
+                if (so_tin.length() > 0) {
+                }
+                str4 = "Không hiểu";
+                if (str55.indexOf(str4) > -1) {
+                }
+                str_Err2 = str_Err;
+                str1 = Congthuc.PhanTichTinNhan(str55);
+                if (str1.indexOf(str4) <= i) {
+                }
+                quagio = true;
+                if (str_Err2.indexOf(str4) != -1) {
+                }
+                Dem_error = 0;
+                TinGoc3 = "";
+                TinXuly = "";
+                String rWError3 = "";
+                JSONObject jsonDan3 = new JSONObject();
+                int k3 = 0;
+                i2 = 1;
+                while (true) {
+                    if (i2 > 1000) {
                         break;
                     }
-                    int i6 = i1 + 5;
-                    while (i6 < i1 + 10 && Congthuc.isNumeric(str55.substring(i1 + 4, i6))) {
-                        i6++;
-                    }
-                    str2 = str49;
-                    if (i6 - i1 > 5) {
-                        String sss = str55.substring(0, i6).replace("tin", "").trim();
-                        if (Congthuc.isNumeric(sss)) {
-                            so_tin4 = sss;
-                        }
-                        StringBuilder sb2 = new StringBuilder();
-                        str = so_tin5;
-                        sb2.append(str55.substring(0, i1));
-                        sb2.append(str55.substring(i6));
-                        str55 = sb2.toString();
-                        so_tin6 = so_tin4;
-                        str45 = str3;
-                        str49 = str2;
-                        so_tin5 = str;
-                    } else {
-                        str = so_tin5;
-                        so_tin6 = so_tin4;
-                        str45 = str3;
-                        str49 = str2;
-                    }
-                } catch (Exception e6) {
-                    str = so_tin5;
-                    str2 = str49;
-                    so_tin = so_tin4;
-                    if (so_tin.length() > 0) {
-                    }
-                    str4 = "Không hiểu";
-                    if (str55.indexOf(str4) > -1) {
-                    }
-                    str_Err2 = str_Err;
-                    str1 = Congthuc.PhanTichTinNhan(str55);
-                    if (str1.indexOf(str4) <= i) {
-                    }
-                    quagio = true;
-                    if (str_Err2.indexOf(str4) != -1) {
-                    }
-                    Dem_error = 0;
-                    TinGoc3 = "";
-                    TinXuly = "";
-                    String rWError3 = "";
-                    JSONObject jsonDan3 = new JSONObject();
-                    int k3 = 0;
-                    i2 = 1;
-                    while (true) {
-                        if (i2 > 1000) {
-                            break;
-                        }
-                        TinGoc3 = TinGoc3 + database.mang[i2][c];
-                        i2++;
-                        str12 = str12;
-                        TinXuly = TinXuly;
-                        str_Err3 = str_Err3;
-                        soxien = str26;
-                    }
-                    if (Dem_error != 0) {
-                    }
-                    getThongtin.close();
-                    if (cursor != null) {
-                    }
-                } catch (Throwable th) {
+                    TinGoc3 = TinGoc3 + database.mang[i2][c];
+                    i2++;
+                    str12 = str12;
+                    TinXuly = TinXuly;
+                    str_Err3 = str_Err3;
+                    soxien = str26;
                 }
-            }
-            str = so_tin5;
-            str2 = str49;
-            str55 = str55.trim();
-            int i7 = 6;
-            so_tin = so_tin4;
-            while (i7 > 0) {
-                try {
-                    String Sss = str55.substring(0, i7);
-                    if (Sss.trim().indexOf(str_Err5) > -1) {
-                        String Sss2 = Sss.replaceAll(str_Err5, "").replaceAll(str44, "").replaceAll(theodoi6, "");
-                        if (Congthuc.isNumeric(Sss2)) {
-                            so_tin = Sss2;
-                            str55 = str55.substring(i7);
-                        }
-                    }
-                    i7--;
-                    i1 = i1;
-                } catch (Exception e7) {
-                    if (so_tin.length() > 0) {
-                    }
-                    str4 = "Không hiểu";
-                    if (str55.indexOf(str4) > -1) {
-                    }
-                    str_Err2 = str_Err;
-                    str1 = Congthuc.PhanTichTinNhan(str55);
-                    if (str1.indexOf(str4) <= i) {
-                    }
-                    quagio = true;
-                    if (str_Err2.indexOf(str4) != -1) {
-                    }
-                    Dem_error = 0;
-                    TinGoc3 = "";
-                    TinXuly = "";
-                    String rWError32 = "";
-                    JSONObject jsonDan32 = new JSONObject();
-                    int k32 = 0;
-                    i2 = 1;
-                    while (true) {
-                        if (i2 > 1000) {
-                            break;
-                        }
-                        TinGoc3 = TinGoc3 + database.mang[i2][c];
-                        i2++;
-                        str12 = str12;
-                        TinXuly = TinXuly;
-                        str_Err3 = str_Err3;
-                        soxien = str26;
-                    }
-                    if (Dem_error != 0) {
-                    }
-                    getThongtin.close();
-                    if (cursor != null) {
-                    }
-                } catch (Throwable th2) {
-                    String so_tin7 = so_tin;
-                    Throwable th3 = th2;
-                    if (so_tin7.length() > 0) {
-                    }
-                    try {
-                        throw th3;
-                    } catch (Throwable throwable) {
-                        throwable.printStackTrace();
-                    }
+                if (Dem_error != 0) {
                 }
-            }
-            if (so_tin.length() > 0) {
-                Cursor cursor1 = database3.GetData("Select * From tbl_tinnhanS WHERE ngay_nhan = '" + cursor2.getString(3) + "' AND ten_kh = '" + cursor2.getString(1) + "' AND so_tin_nhan = " + so_tin);
-                if (cursor1.getCount() > 0) {
-                    so_tin = "";
+                getThongtin.close();
+                if (cursor != null) {
                 }
-                cursor1.close();
+            } catch (Throwable th) {
             }
         }
+        str = so_tin5;
+        str2 = str49;
+        str55 = str55.trim();
+        int i7 = 6;
+        so_tin = so_tin4;
+        while (i7 > 0) {
+            try {
+                String Sss = str55.substring(0, i7);
+                if (Sss.trim().indexOf(str_Err5) > -1) {
+                    String Sss2 = Sss.replaceAll(str_Err5, "").replaceAll(str44, "").replaceAll(theodoi6, "");
+                    if (Congthuc.isNumeric(Sss2)) {
+                        so_tin = Sss2;
+                        str55 = str55.substring(i7);
+                    }
+                }
+                i7--;
+                i1 = i1;
+            } catch (Exception e7) {
+            } catch (Throwable th2) {
+            }
+        }
+        if (so_tin.length() > 0) {
+            Cursor cursor1 = database3.GetData("Select * From tbl_tinnhanS WHERE ngay_nhan = '" + cursor2.getString(3) + "' AND ten_kh = '" + cursor2.getString(1) + "' AND so_tin_nhan = " + so_tin);
+            if (cursor1.getCount() > 0) {
+                so_tin = "";
+            }
+            cursor1.close();
+        }
+//        }
         str4 = "Không hiểu";
         if (str55.indexOf(str4) > -1) {
             so_tin2 = so_tin;
@@ -544,7 +491,7 @@ public class Database extends SQLiteOpenHelper {
             if (Congthuc.CheckTime(database3.caidat_tg.getString("tg_loxien")) && !Congthuc.CheckTime("18:30")) {
                 quagio = true;
             }
-            if (str_Err2.indexOf(str4) != -1) {
+            if (!str_Err2.contains(str4)) {
                 String str56 = str1.replaceAll(" , ", str44).replaceAll(" ,", str44);
                 int i8 = 1;
                 while (i8 < 10) {
@@ -686,183 +633,31 @@ public class Database extends SQLiteOpenHelper {
                                 if (strf.length() > 6) {
                                     int f = 6;
                                     while (f > 0) {
-                                        try {
-                                            String Sss3 = strf.substring(0, f);
-                                            theodoi4 = theodoi3;
-                                            try {
-                                                if (Sss3.trim().indexOf(str_Err5) > -1) {
-                                                    theodoi5 = str6;
-                                                    try {
-                                                        if (Congthuc.isNumeric(Sss3.replaceAll(str_Err5, theodoi5).replaceAll(str44, theodoi5).replaceAll(theodoi6, theodoi5))) {
-                                                            StringBuilder sb3 = new StringBuilder();
-                                                            sb3.append(str44);
-                                                            str34 = str_Err5;
-                                                            try {
-                                                                sb3.append(strf.substring(f + 1));
-                                                                sb3.append(str44);
-                                                                dayso5 = sb3.toString();
-                                                            } catch (Exception e8) {
-                                                                database2 = this;
-                                                                str32 = so_tin3;
-                                                                soxien2 = str47;
-                                                                str31 = str44;
-                                                                i32 = i33;
-                                                                str37 = str51;
-                                                                str38 = str52;
-                                                                str44 = dayso;
-                                                                str30 = str28;
-                                                                str35 = str29;
-                                                                str36 = str8;
-                                                                k2 = k4;
-                                                                String[][] strArr = database2.mang;
-                                                                strArr[k][0] = strArr[k][0].replaceAll(str38, theodoi5);
-                                                                String[][] strArr2 = database2.mang;
-                                                                strArr2[k][0] = strArr2[k][0].replaceAll(str37, theodoi5);
-                                                                database2.mang[k][0] = str38 + database2.mang[k][0] + str37;
-                                                                rw = k;
-                                                                str47 = soxien2;
-                                                                database3 = database2;
-                                                                str8 = str36;
-                                                                str7 = str35;
-                                                                str_Err5 = str34;
-                                                                k4 = k2;
-                                                                str57 = str33;
-                                                                so_tin3 = str32;
-                                                                str4 = str30;
-                                                                str6 = theodoi5;
-                                                                str52 = str38;
-                                                                str51 = str37;
-                                                                str_Err2 = str_Err2;
-                                                                theodoi7 = theodoi4;
-                                                                str54 = str44;
-                                                                str44 = str31;
-                                                            }
-                                                        } else {
-                                                            str34 = str_Err5;
-                                                        }
-                                                    } catch (Exception e9) {
-                                                        str34 = str_Err5;
-                                                        database2 = this;
-                                                        str32 = so_tin3;
-                                                        soxien2 = str47;
-                                                        str31 = str44;
-                                                        i32 = i33;
-                                                        str37 = str51;
-                                                        str38 = str52;
-                                                        str44 = dayso;
-                                                        str30 = str28;
-                                                        str35 = str29;
-                                                        str36 = str8;
-                                                        k2 = k4;
-                                                        String[][] strArr3 = database2.mang;
-                                                        strArr3[k][0] = strArr3[k][0].replaceAll(str38, theodoi5);
-                                                        String[][] strArr22 = database2.mang;
-                                                        strArr22[k][0] = strArr22[k][0].replaceAll(str37, theodoi5);
-                                                        database2.mang[k][0] = str38 + database2.mang[k][0] + str37;
-                                                        rw = k;
-                                                        str47 = soxien2;
-                                                        database3 = database2;
-                                                        str8 = str36;
-                                                        str7 = str35;
-                                                        str_Err5 = str34;
-                                                        k4 = k2;
-                                                        str57 = str33;
-                                                        so_tin3 = str32;
-                                                        str4 = str30;
-                                                        str6 = theodoi5;
-                                                        str52 = str38;
-                                                        str51 = str37;
-                                                        str_Err2 = str_Err2;
-                                                        theodoi7 = theodoi4;
-                                                        str54 = str44;
-                                                        str44 = str31;
-                                                    }
-                                                } else {
-                                                    theodoi5 = str6;
-                                                    str34 = str_Err5;
-                                                }
-                                                f--;
-                                                str_Err5 = str34;
-                                                i22 = i22;
-                                                str6 = theodoi5;
-                                                theodoi3 = theodoi4;
-                                            } catch (Exception e10) {
-                                                theodoi5 = str6;
+                                        String Sss3 = strf.substring(0, f);
+                                        theodoi4 = theodoi3;
+
+                                        if (Sss3.trim().indexOf(str_Err5) > -1) {
+                                            theodoi5 = str6;
+
+                                            if (Congthuc.isNumeric(Sss3.replaceAll(str_Err5, theodoi5).replaceAll(str44, theodoi5).replaceAll(theodoi6, theodoi5))) {
+                                                StringBuilder sb3 = new StringBuilder();
+                                                sb3.append(str44);
                                                 str34 = str_Err5;
-                                                database2 = this;
-                                                str32 = so_tin3;
-                                                soxien2 = str47;
-                                                str31 = str44;
-                                                i32 = i33;
-                                                str37 = str51;
-                                                str38 = str52;
-                                                str44 = dayso;
-                                                str30 = str28;
-                                                str35 = str29;
-                                                str36 = str8;
-                                                k2 = k4;
-                                                String[][] strArr32 = database2.mang;
-                                                strArr32[k][0] = strArr32[k][0].replaceAll(str38, theodoi5);
-                                                String[][] strArr222 = database2.mang;
-                                                strArr222[k][0] = strArr222[k][0].replaceAll(str37, theodoi5);
-                                                database2.mang[k][0] = str38 + database2.mang[k][0] + str37;
-                                                rw = k;
-                                                str47 = soxien2;
-                                                database3 = database2;
-                                                str8 = str36;
-                                                str7 = str35;
-                                                str_Err5 = str34;
-                                                k4 = k2;
-                                                str57 = str33;
-                                                so_tin3 = str32;
-                                                str4 = str30;
-                                                str6 = theodoi5;
-                                                str52 = str38;
-                                                str51 = str37;
-                                                str_Err2 = str_Err2;
-                                                theodoi7 = theodoi4;
-                                                str54 = str44;
-                                                str44 = str31;
+                                                sb3.append(strf.substring(f + 1));
+                                                sb3.append(str44);
+                                                dayso5 = sb3.toString();
+                                            } else {
+                                                str34 = str_Err5;
                                             }
-                                        } catch (Exception e11) {
-                                            theodoi4 = theodoi3;
+                                        } else {
                                             theodoi5 = str6;
                                             str34 = str_Err5;
-                                            database2 = this;
-                                            str32 = so_tin3;
-                                            soxien2 = str47;
-                                            str31 = str44;
-                                            i32 = i33;
-                                            str37 = str51;
-                                            str38 = str52;
-                                            str44 = dayso;
-                                            str30 = str28;
-                                            str35 = str29;
-                                            str36 = str8;
-                                            k2 = k4;
-                                            String[][] strArr322 = database2.mang;
-                                            strArr322[k][0] = strArr322[k][0].replaceAll(str38, theodoi5);
-                                            String[][] strArr2222 = database2.mang;
-                                            strArr2222[k][0] = strArr2222[k][0].replaceAll(str37, theodoi5);
-                                            database2.mang[k][0] = str38 + database2.mang[k][0] + str37;
-                                            rw = k;
-                                            str47 = soxien2;
-                                            database3 = database2;
-                                            str8 = str36;
-                                            str7 = str35;
-                                            str_Err5 = str34;
-                                            k4 = k2;
-                                            str57 = str33;
-                                            so_tin3 = str32;
-                                            str4 = str30;
-                                            str6 = theodoi5;
-                                            str52 = str38;
-                                            str51 = str37;
-                                            str_Err2 = str_Err2;
-                                            theodoi7 = theodoi4;
-                                            str54 = str44;
-                                            str44 = str31;
                                         }
+                                        f--;
+                                        str_Err5 = str34;
+                                        i22 = i22;
+                                        str6 = theodoi5;
+                                        theodoi3 = theodoi4;
                                     }
                                     theodoi4 = theodoi3;
                                     theodoi5 = str6;
@@ -871,47 +666,10 @@ public class Database extends SQLiteOpenHelper {
                                     database2 = this;
                                     database2.mang[k][0] = str39;
                                     if (str39.indexOf("loa") > -1) {
-                                        try {
-                                            database2.mang[k][1] = "lo dau";
-                                            i32 = i33;
-                                            str41 = str29;
-                                            k2 = k4;
-                                        } catch (Exception e12) {
-                                            dayso5 = str39;
-                                            str32 = so_tin3;
-                                            soxien2 = str47;
-                                            str31 = str44;
-                                            i32 = i33;
-                                            str37 = str51;
-                                            str38 = str52;
-                                            str44 = dayso;
-                                            str30 = str28;
-                                            str35 = str29;
-                                            str36 = str8;
-                                            k2 = k4;
-                                            String[][] strArr3222 = database2.mang;
-                                            strArr3222[k][0] = strArr3222[k][0].replaceAll(str38, theodoi5);
-                                            String[][] strArr22222 = database2.mang;
-                                            strArr22222[k][0] = strArr22222[k][0].replaceAll(str37, theodoi5);
-                                            database2.mang[k][0] = str38 + database2.mang[k][0] + str37;
-                                            rw = k;
-                                            str47 = soxien2;
-                                            database3 = database2;
-                                            str8 = str36;
-                                            str7 = str35;
-                                            str_Err5 = str34;
-                                            k4 = k2;
-                                            str57 = str33;
-                                            so_tin3 = str32;
-                                            str4 = str30;
-                                            str6 = theodoi5;
-                                            str52 = str38;
-                                            str51 = str37;
-                                            str_Err2 = str_Err2;
-                                            theodoi7 = theodoi4;
-                                            str54 = str44;
-                                            str44 = str31;
-                                        }
+                                        database2.mang[k][1] = "lo dau";
+                                        i32 = i33;
+                                        str41 = str29;
+                                        k2 = k4;
                                     } else if (str39.indexOf(str46) > -1) {
                                         database2.mang[k][1] = str46;
                                         i32 = i33;
@@ -984,1455 +742,18 @@ public class Database extends SQLiteOpenHelper {
                                         k2 = k4;
                                     } else {
                                         str41 = str29;
-                                        try {
-                                            if (str39.indexOf(str41) > -1) {
-                                                try {
-                                                    database2.mang[k][1] = str41;
-                                                    k2 = k4;
-                                                    i32 = i33;
-                                                } catch (Exception e13) {
-                                                    dayso5 = str39;
-                                                    str32 = so_tin3;
-                                                    soxien2 = str47;
-                                                    str31 = str44;
-                                                    k2 = k4;
-                                                    i32 = i33;
-                                                    str37 = str51;
-                                                    str38 = str52;
-                                                    str44 = dayso;
-                                                    str30 = str28;
-                                                    str36 = str8;
-                                                    str35 = str41;
-                                                    String[][] strArr32222 = database2.mang;
-                                                    strArr32222[k][0] = strArr32222[k][0].replaceAll(str38, theodoi5);
-                                                    String[][] strArr222222 = database2.mang;
-                                                    strArr222222[k][0] = strArr222222[k][0].replaceAll(str37, theodoi5);
-                                                    database2.mang[k][0] = str38 + database2.mang[k][0] + str37;
-                                                    rw = k;
-                                                    str47 = soxien2;
-                                                    database3 = database2;
-                                                    str8 = str36;
-                                                    str7 = str35;
-                                                    str_Err5 = str34;
-                                                    k4 = k2;
-                                                    str57 = str33;
-                                                    so_tin3 = str32;
-                                                    str4 = str30;
-                                                    str6 = theodoi5;
-                                                    str52 = str38;
-                                                    str51 = str37;
-                                                    str_Err2 = str_Err2;
-                                                    theodoi7 = theodoi4;
-                                                    str54 = str44;
-                                                    str44 = str31;
-                                                }
-                                            } else if (str39.indexOf("xg") > -1) {
-                                                try {
-                                                    k2 = k4;
-                                                    i32 = i33;
-                                                    try {
-                                                        database2.mang[k][1] = str39.trim().substring(0, 4);
-                                                    } catch (Exception e14) {
-                                                        dayso5 = str39;
-                                                        str32 = so_tin3;
-                                                        soxien2 = str47;
-                                                        str31 = str44;
-                                                        str37 = str51;
-                                                        str38 = str52;
-                                                        str44 = dayso;
-                                                        str30 = str28;
-                                                        str36 = str8;
-                                                        str35 = str41;
-                                                    }
-                                                } catch (Exception e15) {
-                                                    k2 = k4;
-                                                    i32 = i33;
-                                                    dayso5 = str39;
-                                                    str32 = so_tin3;
-                                                    soxien2 = str47;
-                                                    str31 = str44;
-                                                    str37 = str51;
-                                                    str38 = str52;
-                                                    str44 = dayso;
-                                                    str30 = str28;
-                                                    str36 = str8;
-                                                    str35 = str41;
-                                                    String[][] strArr322222 = database2.mang;
-                                                    strArr322222[k][0] = strArr322222[k][0].replaceAll(str38, theodoi5);
-                                                    String[][] strArr2222222 = database2.mang;
-                                                    strArr2222222[k][0] = strArr2222222[k][0].replaceAll(str37, theodoi5);
-                                                    database2.mang[k][0] = str38 + database2.mang[k][0] + str37;
-                                                    rw = k;
-                                                    str47 = soxien2;
-                                                    database3 = database2;
-                                                    str8 = str36;
-                                                    str7 = str35;
-                                                    str_Err5 = str34;
-                                                    k4 = k2;
-                                                    str57 = str33;
-                                                    so_tin3 = str32;
-                                                    str4 = str30;
-                                                    str6 = theodoi5;
-                                                    str52 = str38;
-                                                    str51 = str37;
-                                                    str_Err2 = str_Err2;
-                                                    theodoi7 = theodoi4;
-                                                    str54 = str44;
-                                                    str44 = str31;
-                                                }
-                                            } else {
-                                                k2 = k4;
-                                                i32 = i33;
-                                                try {
-                                                    database2.mang[k][1] = database2.mang[k - 1][1];
-                                                } catch (Exception e16) {
-                                                    str32 = so_tin3;
-                                                    soxien2 = str47;
-                                                    str31 = str44;
-                                                    str37 = str51;
-                                                    str38 = str52;
-                                                    str44 = dayso;
-                                                    str30 = str28;
-                                                    str36 = str8;
-                                                    str35 = str41;
-                                                    dayso5 = str39;
-                                                    String[][] strArr3222222 = database2.mang;
-                                                    strArr3222222[k][0] = strArr3222222[k][0].replaceAll(str38, theodoi5);
-                                                    String[][] strArr22222222 = database2.mang;
-                                                    strArr22222222[k][0] = strArr22222222[k][0].replaceAll(str37, theodoi5);
-                                                    database2.mang[k][0] = str38 + database2.mang[k][0] + str37;
-                                                    rw = k;
-                                                    str47 = soxien2;
-                                                    database3 = database2;
-                                                    str8 = str36;
-                                                    str7 = str35;
-                                                    str_Err5 = str34;
-                                                    k4 = k2;
-                                                    str57 = str33;
-                                                    so_tin3 = str32;
-                                                    str4 = str30;
-                                                    str6 = theodoi5;
-                                                    str52 = str38;
-                                                    str51 = str37;
-                                                    str_Err2 = str_Err2;
-                                                    theodoi7 = theodoi4;
-                                                    str54 = str44;
-                                                    str44 = str31;
-                                                }
-                                            }
-                                        } catch (Exception e17) {
-                                            e = e17;
-                                            str40 = str39;
-                                            str32 = so_tin3;
-                                            soxien2 = str47;
-                                            str31 = str44;
+                                        if (str39.indexOf(str41) > -1) {
+                                            database2.mang[k][1] = str41;
                                             k2 = k4;
                                             i32 = i33;
-                                            str37 = str51;
-                                            str38 = str52;
-                                            str44 = dayso;
-                                            str30 = str28;
-                                            str36 = str8;
-                                            str35 = str41;
-                                            dayso5 = str40;
-                                            String[][] strArr32222222 = database2.mang;
-                                            strArr32222222[k][0] = strArr32222222[k][0].replaceAll(str38, theodoi5);
-                                            String[][] strArr222222222 = database2.mang;
-                                            strArr222222222[k][0] = strArr222222222[k][0].replaceAll(str37, theodoi5);
-                                            database2.mang[k][0] = str38 + database2.mang[k][0] + str37;
-                                            rw = k;
-                                            str47 = soxien2;
-                                            database3 = database2;
-                                            str8 = str36;
-                                            str7 = str35;
-                                            str_Err5 = str34;
-                                            k4 = k2;
-                                            str57 = str33;
-                                            so_tin3 = str32;
-                                            str4 = str30;
-                                            str6 = theodoi5;
-                                            str52 = str38;
-                                            str51 = str37;
-                                            str_Err2 = str_Err2;
-                                            theodoi7 = theodoi4;
-                                            str54 = str44;
-                                            str44 = str31;
+                                        } else {
+                                            k2 = k4;
+                                            i32 = i33;
+                                            database2.mang[k][1] = database2.mang[k - 1][1];
                                         }
                                     }
-                                    if (str39.indexOf(" x ") != -1) {
-                                        try {
-                                            if (str39.trim().indexOf("x ") < 2) {
-                                                str32 = so_tin3;
-                                                soxien2 = str47;
-                                                str31 = str44;
-                                                str37 = str51;
-                                                str38 = str52;
-                                                str44 = dayso;
-                                                str30 = str28;
-                                                str36 = str8;
-                                                dayso3 = str39;
-                                                str35 = str41;
-                                            } else {
-                                                database2.mang[k][2] = str39.substring(0, str39.indexOf(" x ")).trim();
-                                                database2.mang[k][3] = str39.substring(str39.indexOf(" x "));
-                                                if (k <= 1) {
-                                                    str32 = so_tin3;
-                                                } else if (database2.mang[k - 1][2].indexOf("xi 2 ") <= -1 && database2.mang[k - 1][2].indexOf("xi 3 ") <= -1 && database2.mang[k - 1][2].indexOf("xi 4 ") <= -1) {
-                                                    str32 = so_tin3;
-                                                } else if (database2.mang[k][1].indexOf(str47) <= -1 || database2.mang[k][2].indexOf(str47) != -1) {
-                                                    str32 = so_tin3;
-                                                } else {
-                                                    String[] strArr4 = database2.mang[k];
-                                                    StringBuilder sb4 = new StringBuilder();
-                                                    str32 = so_tin3;
-                                                    try {
-                                                        sb4.append(database2.mang[k - 1][2].substring(0, 5));
-                                                        sb4.append(database2.mang[k][2]);
-                                                        strArr4[2] = sb4.toString();
-                                                    } catch (Exception e18) {
-                                                        dayso5 = str39;
-                                                        soxien2 = str47;
-                                                        str31 = str44;
-                                                        str37 = str51;
-                                                        str38 = str52;
-                                                        str44 = dayso;
-                                                        str30 = str28;
-                                                        str36 = str8;
-                                                        str35 = str41;
-                                                    }
-                                                }
-                                                try {
-                                                    database2.XulyMang(k);
-                                                    database2.BaoLoiTien(k);
-                                                    if (database2.mang[k][1] != str46) {
-                                                        try {
-                                                            if (database2.mang[k][1].indexOf("de") <= -1 && database2.mang[k][1].indexOf("hai cua") <= -1) {
-                                                                if (database2.mang[k][1].indexOf(str8) > -1) {
-                                                                    str31 = str44;
-                                                                    str44 = dayso;
-                                                                    str30 = str28;
-                                                                    dayso4 = str39;
-                                                                    str42 = str47;
-                                                                    if (database2.mang[k][1] == str46) {
-                                                                        try {
-                                                                            if (database2.mang[k][3].indexOf("tr") > -1) {
-                                                                                database2.mang[k][5] = str44 + database2.mang[k][3];
-                                                                                String[] strArr5 = database2.mang[k];
-                                                                                String str58 = database2.mang[k][0];
-                                                                                String str59 = database2.mang[k][3];
-                                                                                StringBuilder sb5 = new StringBuilder();
-                                                                                str38 = str52;
-                                                                                try {
-                                                                                    sb5.append(str38);
-                                                                                    sb5.append(database2.mang[k][3]);
-                                                                                    str37 = str51;
-                                                                                    try {
-                                                                                        sb5.append(str37);
-                                                                                        strArr5[0] = str58.replace(str59, sb5.toString());
-                                                                                        if (MainActivity.jSon_Setting.getInt("canhbaodonvi") == 1) {
-                                                                                            try {
-                                                                                                if (database2.mang[k][1] == str46 && Integer.parseInt(database2.mang[k][5]) > 1000 && database2.mang[k][3].indexOf("d") == -1) {
-                                                                                                    database2.mang[k][5] = str44 + database2.mang[k][3];
-                                                                                                    database2.mang[k][0] = database2.mang[k][0].replace(database2.mang[k][3], str38 + database2.mang[k][3] + str37);
-                                                                                                }
-                                                                                                if ((database2.mang[k][1] == "de dit db" || database2.mang[k][1] == "de dau db" || database2.mang[k][1] == "hai cua" || database2.mang[k][1] == "de 8" || database2.mang[k][1] == "de dit nhat" || database2.mang[k][1] == "de dau nhat") && Integer.parseInt(database2.mang[k][5]) > 5000 && database2.mang[k][3].indexOf("n") == -1 && database2.mang[k][3].indexOf("tr") == -1 && database2.mang[k][3].indexOf("k") == -1) {
-                                                                                                    database2.mang[k][5] = str44 + database2.mang[k][3];
-                                                                                                    database2.mang[k][0] = database2.mang[k][0].replace(database2.mang[k][3], str38 + database2.mang[k][3] + str37);
-                                                                                                }
-                                                                                                if (database2.mang[k][1] == str8 && Integer.parseInt(database2.mang[k][5]) > 2000 && database2.mang[k][3].indexOf("n") == -1 && database2.mang[k][3].indexOf("tr") == -1 && database2.mang[k][3].indexOf("k") == -1) {
-                                                                                                    database2.mang[k][5] = str44 + database2.mang[k][3];
-                                                                                                    database2.mang[k][0] = database2.mang[k][0].replace(database2.mang[k][3], str38 + database2.mang[k][3] + str37);
-                                                                                                }
-                                                                                                soxien2 = str42;
-                                                                                                if (database2.mang[k][1] != soxien2) {
-                                                                                                    try {
-                                                                                                        if (database2.mang[k][1] != str41) {
-                                                                                                            str43 = str32;
-                                                                                                            if (database2.mang[k][1] != str43) {
-                                                                                                                str36 = str8;
-                                                                                                                str32 = str43;
-                                                                                                            }
-                                                                                                            if (Integer.parseInt(database2.mang[k][5]) > 2000) {
-                                                                                                                str36 = str8;
-                                                                                                                str32 = str43;
-                                                                                                            } else if (database2.mang[k][3].indexOf("n") != -1) {
-                                                                                                                str36 = str8;
-                                                                                                                str32 = str43;
-                                                                                                            } else if (database2.mang[k][3].indexOf("d") != -1) {
-                                                                                                                str36 = str8;
-                                                                                                                str32 = str43;
-                                                                                                            } else if (database2.mang[k][3].indexOf("tr") != -1) {
-                                                                                                                str36 = str8;
-                                                                                                                str32 = str43;
-                                                                                                            } else if (database2.mang[k][3].indexOf("k") == -1) {
-                                                                                                                database2.mang[k][5] = str44 + database2.mang[k][3];
-                                                                                                                String[] strArr6 = database2.mang[k];
-                                                                                                                String str60 = database2.mang[k][0];
-                                                                                                                String str61 = database2.mang[k][3];
-                                                                                                                str36 = str8;
-                                                                                                                try {
-                                                                                                                    StringBuilder sb6 = new StringBuilder();
-                                                                                                                    sb6.append(str38);
-                                                                                                                    str32 = str43;
-                                                                                                                    try {
-                                                                                                                        sb6.append(database2.mang[k][3]);
-                                                                                                                        sb6.append(str37);
-                                                                                                                        strArr6[0] = str60.replace(str61, sb6.toString());
-                                                                                                                    } catch (Exception e19) {
-                                                                                                                        e3 = e19;
-                                                                                                                    }
-                                                                                                                } catch (Exception e20) {
-                                                                                                                    e3 = e20;
-                                                                                                                    str32 = str43;
-                                                                                                                    str35 = str41;
-                                                                                                                    dayso5 = dayso4;
-                                                                                                                    String[][] strArr322222222 = database2.mang;
-                                                                                                                    strArr322222222[k][0] = strArr322222222[k][0].replaceAll(str38, theodoi5);
-                                                                                                                    String[][] strArr2222222222 = database2.mang;
-                                                                                                                    strArr2222222222[k][0] = strArr2222222222[k][0].replaceAll(str37, theodoi5);
-                                                                                                                    database2.mang[k][0] = str38 + database2.mang[k][0] + str37;
-                                                                                                                    rw = k;
-                                                                                                                    str47 = soxien2;
-                                                                                                                    database3 = database2;
-                                                                                                                    str8 = str36;
-                                                                                                                    str7 = str35;
-                                                                                                                    str_Err5 = str34;
-                                                                                                                    k4 = k2;
-                                                                                                                    str57 = str33;
-                                                                                                                    so_tin3 = str32;
-                                                                                                                    str4 = str30;
-                                                                                                                    str6 = theodoi5;
-                                                                                                                    str52 = str38;
-                                                                                                                    str51 = str37;
-                                                                                                                    str_Err2 = str_Err2;
-                                                                                                                    theodoi7 = theodoi4;
-                                                                                                                    str54 = str44;
-                                                                                                                    str44 = str31;
-                                                                                                                }
-                                                                                                            } else {
-                                                                                                                str36 = str8;
-                                                                                                                str32 = str43;
-                                                                                                            }
-                                                                                                        }
-                                                                                                    } catch (Exception e21) {
-                                                                                                        str36 = str8;
-                                                                                                        str35 = str41;
-                                                                                                        dayso5 = dayso4;
-                                                                                                        String[][] strArr3222222222 = database2.mang;
-                                                                                                        strArr3222222222[k][0] = strArr3222222222[k][0].replaceAll(str38, theodoi5);
-                                                                                                        String[][] strArr22222222222 = database2.mang;
-                                                                                                        strArr22222222222[k][0] = strArr22222222222[k][0].replaceAll(str37, theodoi5);
-                                                                                                        database2.mang[k][0] = str38 + database2.mang[k][0] + str37;
-                                                                                                        rw = k;
-                                                                                                        str47 = soxien2;
-                                                                                                        database3 = database2;
-                                                                                                        str8 = str36;
-                                                                                                        str7 = str35;
-                                                                                                        str_Err5 = str34;
-                                                                                                        k4 = k2;
-                                                                                                        str57 = str33;
-                                                                                                        so_tin3 = str32;
-                                                                                                        str4 = str30;
-                                                                                                        str6 = theodoi5;
-                                                                                                        str52 = str38;
-                                                                                                        str51 = str37;
-                                                                                                        str_Err2 = str_Err2;
-                                                                                                        theodoi7 = theodoi4;
-                                                                                                        str54 = str44;
-                                                                                                        str44 = str31;
-                                                                                                    }
-                                                                                                }
-                                                                                                str43 = str32;
-                                                                                                try {
-                                                                                                    if (Integer.parseInt(database2.mang[k][5]) > 2000) {
-                                                                                                    }
-                                                                                                } catch (Exception e22) {
-                                                                                                    e3 = e22;
-                                                                                                    str36 = str8;
-                                                                                                    str32 = str43;
-                                                                                                    str35 = str41;
-                                                                                                    dayso5 = dayso4;
-                                                                                                    String[][] strArr32222222222 = database2.mang;
-                                                                                                    strArr32222222222[k][0] = strArr32222222222[k][0].replaceAll(str38, theodoi5);
-                                                                                                    String[][] strArr222222222222 = database2.mang;
-                                                                                                    strArr222222222222[k][0] = strArr222222222222[k][0].replaceAll(str37, theodoi5);
-                                                                                                    database2.mang[k][0] = str38 + database2.mang[k][0] + str37;
-                                                                                                    rw = k;
-                                                                                                    str47 = soxien2;
-                                                                                                    database3 = database2;
-                                                                                                    str8 = str36;
-                                                                                                    str7 = str35;
-                                                                                                    str_Err5 = str34;
-                                                                                                    k4 = k2;
-                                                                                                    str57 = str33;
-                                                                                                    so_tin3 = str32;
-                                                                                                    str4 = str30;
-                                                                                                    str6 = theodoi5;
-                                                                                                    str52 = str38;
-                                                                                                    str51 = str37;
-                                                                                                    str_Err2 = str_Err2;
-                                                                                                    theodoi7 = theodoi4;
-                                                                                                    str54 = str44;
-                                                                                                    str44 = str31;
-                                                                                                }
-                                                                                            } catch (Exception e23) {
-                                                                                                e3 = e23;
-                                                                                                str36 = str8;
-                                                                                                soxien2 = str42;
-                                                                                                str35 = str41;
-                                                                                                dayso5 = dayso4;
-                                                                                                String[][] strArr322222222222 = database2.mang;
-                                                                                                strArr322222222222[k][0] = strArr322222222222[k][0].replaceAll(str38, theodoi5);
-                                                                                                String[][] strArr2222222222222 = database2.mang;
-                                                                                                strArr2222222222222[k][0] = strArr2222222222222[k][0].replaceAll(str37, theodoi5);
-                                                                                                database2.mang[k][0] = str38 + database2.mang[k][0] + str37;
-                                                                                                rw = k;
-                                                                                                str47 = soxien2;
-                                                                                                database3 = database2;
-                                                                                                str8 = str36;
-                                                                                                str7 = str35;
-                                                                                                str_Err5 = str34;
-                                                                                                k4 = k2;
-                                                                                                str57 = str33;
-                                                                                                so_tin3 = str32;
-                                                                                                str4 = str30;
-                                                                                                str6 = theodoi5;
-                                                                                                str52 = str38;
-                                                                                                str51 = str37;
-                                                                                                str_Err2 = str_Err2;
-                                                                                                theodoi7 = theodoi4;
-                                                                                                str54 = str44;
-                                                                                                str44 = str31;
-                                                                                            }
-                                                                                        } else {
-                                                                                            str36 = str8;
-                                                                                            soxien2 = str42;
-                                                                                        }
-                                                                                        if (database2.caidat_tg.getInt("loi_donvi") > 0) {
-                                                                                            String DonviTinh = database2.mang[k][3];
-                                                                                            if (database2.mang[k][1] != str46) {
-                                                                                                str35 = str41;
-                                                                                            } else if (DonviTinh.indexOf("n") > -1 || DonviTinh.indexOf("k") > -1) {
-                                                                                                database2.mang[k][5] = str44 + database2.mang[k][3];
-                                                                                                String[] strArr7 = database2.mang[k];
-                                                                                                String str62 = database2.mang[k][0];
-                                                                                                String str63 = database2.mang[k][3];
-                                                                                                StringBuilder sb7 = new StringBuilder();
-                                                                                                sb7.append(str38);
-                                                                                                str35 = str41;
-                                                                                                try {
-                                                                                                    sb7.append(database2.mang[k][3]);
-                                                                                                    sb7.append(str37);
-                                                                                                    strArr7[0] = str62.replace(str63, sb7.toString());
-                                                                                                } catch (Exception e24) {
-                                                                                                    e2 = e24;
-                                                                                                    dayso5 = dayso4;
-                                                                                                    String[][] strArr3222222222222 = database2.mang;
-                                                                                                    strArr3222222222222[k][0] = strArr3222222222222[k][0].replaceAll(str38, theodoi5);
-                                                                                                    String[][] strArr22222222222222 = database2.mang;
-                                                                                                    strArr22222222222222[k][0] = strArr22222222222222[k][0].replaceAll(str37, theodoi5);
-                                                                                                    database2.mang[k][0] = str38 + database2.mang[k][0] + str37;
-                                                                                                    rw = k;
-                                                                                                    str47 = soxien2;
-                                                                                                    database3 = database2;
-                                                                                                    str8 = str36;
-                                                                                                    str7 = str35;
-                                                                                                    str_Err5 = str34;
-                                                                                                    k4 = k2;
-                                                                                                    str57 = str33;
-                                                                                                    so_tin3 = str32;
-                                                                                                    str4 = str30;
-                                                                                                    str6 = theodoi5;
-                                                                                                    str52 = str38;
-                                                                                                    str51 = str37;
-                                                                                                    str_Err2 = str_Err2;
-                                                                                                    theodoi7 = theodoi4;
-                                                                                                    str54 = str44;
-                                                                                                    str44 = str31;
-                                                                                                }
-                                                                                            } else {
-                                                                                                str35 = str41;
-                                                                                            }
-                                                                                            if ((database2.mang[k][1] == "de dit db" || database2.mang[k][1] == "de dau db" || database2.mang[k][1] == "hai cua" || database2.mang[k][1] == "de 8" || database2.mang[k][1] == "de dit nhat" || database2.mang[k][1] == "de dau nhat") && DonviTinh.indexOf("d") > -1) {
-                                                                                                database2.mang[k][5] = str44 + database2.mang[k][3];
-                                                                                                database2.mang[k][0] = database2.mang[k][0].replace(database2.mang[k][3], str38 + database2.mang[k][3] + str37);
-                                                                                            }
-                                                                                        } else {
-                                                                                            str35 = str41;
-                                                                                        }
-                                                                                        database2.BaoLoiDan(k);
-                                                                                        dayso2 = dayso4;
-                                                                                        dayso5 = dayso2;
-                                                                                    } catch (Exception e25) {
-                                                                                        str36 = str8;
-                                                                                        str35 = str41;
-                                                                                        dayso5 = dayso4;
-                                                                                        soxien2 = str42;
-                                                                                    }
-                                                                                } catch (Exception e26) {
-                                                                                    str37 = str51;
-                                                                                    str36 = str8;
-                                                                                    str35 = str41;
-                                                                                    dayso5 = dayso4;
-                                                                                    soxien2 = str42;
-                                                                                    String[][] strArr32222222222222 = database2.mang;
-                                                                                    strArr32222222222222[k][0] = strArr32222222222222[k][0].replaceAll(str38, theodoi5);
-                                                                                    String[][] strArr222222222222222 = database2.mang;
-                                                                                    strArr222222222222222[k][0] = strArr222222222222222[k][0].replaceAll(str37, theodoi5);
-                                                                                    database2.mang[k][0] = str38 + database2.mang[k][0] + str37;
-                                                                                    rw = k;
-                                                                                    str47 = soxien2;
-                                                                                    database3 = database2;
-                                                                                    str8 = str36;
-                                                                                    str7 = str35;
-                                                                                    str_Err5 = str34;
-                                                                                    k4 = k2;
-                                                                                    str57 = str33;
-                                                                                    so_tin3 = str32;
-                                                                                    str4 = str30;
-                                                                                    str6 = theodoi5;
-                                                                                    str52 = str38;
-                                                                                    str51 = str37;
-                                                                                    str_Err2 = str_Err2;
-                                                                                    theodoi7 = theodoi4;
-                                                                                    str54 = str44;
-                                                                                    str44 = str31;
-                                                                                }
-                                                                                rw = k;
-                                                                                str47 = soxien2;
-                                                                                database3 = database2;
-                                                                                str8 = str36;
-                                                                                str7 = str35;
-                                                                                str_Err5 = str34;
-                                                                                k4 = k2;
-                                                                                str57 = str33;
-                                                                                so_tin3 = str32;
-                                                                                str4 = str30;
-                                                                                str6 = theodoi5;
-                                                                                str52 = str38;
-                                                                                str51 = str37;
-                                                                                str_Err2 = str_Err2;
-                                                                                theodoi7 = theodoi4;
-                                                                                str54 = str44;
-                                                                                str44 = str31;
-                                                                            }
-                                                                        } catch (Exception e27) {
-                                                                            str37 = str51;
-                                                                            str38 = str52;
-                                                                            str36 = str8;
-                                                                            str35 = str41;
-                                                                            dayso5 = dayso4;
-                                                                            soxien2 = str42;
-                                                                            String[][] strArr322222222222222 = database2.mang;
-                                                                            strArr322222222222222[k][0] = strArr322222222222222[k][0].replaceAll(str38, theodoi5);
-                                                                            String[][] strArr2222222222222222 = database2.mang;
-                                                                            strArr2222222222222222[k][0] = strArr2222222222222222[k][0].replaceAll(str37, theodoi5);
-                                                                            database2.mang[k][0] = str38 + database2.mang[k][0] + str37;
-                                                                            rw = k;
-                                                                            str47 = soxien2;
-                                                                            database3 = database2;
-                                                                            str8 = str36;
-                                                                            str7 = str35;
-                                                                            str_Err5 = str34;
-                                                                            k4 = k2;
-                                                                            str57 = str33;
-                                                                            so_tin3 = str32;
-                                                                            str4 = str30;
-                                                                            str6 = theodoi5;
-                                                                            str52 = str38;
-                                                                            str51 = str37;
-                                                                            str_Err2 = str_Err2;
-                                                                            theodoi7 = theodoi4;
-                                                                            str54 = str44;
-                                                                            str44 = str31;
-                                                                        }
-                                                                    }
-                                                                    str37 = str51;
-                                                                    str38 = str52;
-                                                                    try {
-                                                                        if (MainActivity.jSon_Setting.getInt("canhbaodonvi") == 1) {
-                                                                        }
-                                                                    } catch (Exception e28) {
-                                                                        e2 = e28;
-                                                                        str36 = str8;
-                                                                        str35 = str41;
-                                                                        soxien2 = str42;
-                                                                        dayso5 = dayso4;
-                                                                        String[][] strArr3222222222222222 = database2.mang;
-                                                                        strArr3222222222222222[k][0] = strArr3222222222222222[k][0].replaceAll(str38, theodoi5);
-                                                                        String[][] strArr22222222222222222 = database2.mang;
-                                                                        strArr22222222222222222[k][0] = strArr22222222222222222[k][0].replaceAll(str37, theodoi5);
-                                                                        database2.mang[k][0] = str38 + database2.mang[k][0] + str37;
-                                                                        rw = k;
-                                                                        str47 = soxien2;
-                                                                        database3 = database2;
-                                                                        str8 = str36;
-                                                                        str7 = str35;
-                                                                        str_Err5 = str34;
-                                                                        k4 = k2;
-                                                                        str57 = str33;
-                                                                        so_tin3 = str32;
-                                                                        str4 = str30;
-                                                                        str6 = theodoi5;
-                                                                        str52 = str38;
-                                                                        str51 = str37;
-                                                                        str_Err2 = str_Err2;
-                                                                        theodoi7 = theodoi4;
-                                                                        str54 = str44;
-                                                                        str44 = str31;
-                                                                    }
-                                                                    try {
-                                                                        if (database2.caidat_tg.getInt("loi_donvi") > 0) {
-                                                                        }
-                                                                        database2.BaoLoiDan(k);
-                                                                        dayso2 = dayso4;
-                                                                        dayso5 = dayso2;
-                                                                    } catch (Exception e29) {
-                                                                        e2 = e29;
-                                                                        str35 = str41;
-                                                                        dayso5 = dayso4;
-                                                                        String[][] strArr32222222222222222 = database2.mang;
-                                                                        strArr32222222222222222[k][0] = strArr32222222222222222[k][0].replaceAll(str38, theodoi5);
-                                                                        String[][] strArr222222222222222222 = database2.mang;
-                                                                        strArr222222222222222222[k][0] = strArr222222222222222222[k][0].replaceAll(str37, theodoi5);
-                                                                        database2.mang[k][0] = str38 + database2.mang[k][0] + str37;
-                                                                        rw = k;
-                                                                        str47 = soxien2;
-                                                                        database3 = database2;
-                                                                        str8 = str36;
-                                                                        str7 = str35;
-                                                                        str_Err5 = str34;
-                                                                        k4 = k2;
-                                                                        str57 = str33;
-                                                                        so_tin3 = str32;
-                                                                        str4 = str30;
-                                                                        str6 = theodoi5;
-                                                                        str52 = str38;
-                                                                        str51 = str37;
-                                                                        str_Err2 = str_Err2;
-                                                                        theodoi7 = theodoi4;
-                                                                        str54 = str44;
-                                                                        str44 = str31;
-                                                                    }
-                                                                    rw = k;
-                                                                    str47 = soxien2;
-                                                                    database3 = database2;
-                                                                    str8 = str36;
-                                                                    str7 = str35;
-                                                                    str_Err5 = str34;
-                                                                    k4 = k2;
-                                                                    str57 = str33;
-                                                                    so_tin3 = str32;
-                                                                    str4 = str30;
-                                                                    str6 = theodoi5;
-                                                                    str52 = str38;
-                                                                    str51 = str37;
-                                                                    str_Err2 = str_Err2;
-                                                                    theodoi7 = theodoi4;
-                                                                    str54 = str44;
-                                                                    str44 = str31;
-                                                                } else if (database2.mang[k][1].startsWith(str47) || database2.mang[k][1].startsWith(str41) || database2.mang[k][1].startsWith("xg")) {
-                                                                    String str64 = str28;
-                                                                    try {
-                                                                        if (database2.mang[k][4].indexOf(str64) == -1) {
-                                                                            String str210 = database2.mang[k][4];
-                                                                            String[] ArrXien = str210.split(str44);
-                                                                            boolean ktra2 = false;
-                                                                            int s1 = 0;
-                                                                            while (true) {
-                                                                                if (s1 >= ArrXien.length) {
-                                                                                    str28 = str47;
-                                                                                    ktra = ktra2;
-                                                                                    break;
-                                                                                }
-                                                                                try {
-                                                                                    str28 = str47;
-                                                                                    if (ArrXien[s1].replaceAll(theodoi6, theodoi5).length() != 2) {
-                                                                                        break;
-                                                                                    }
-                                                                                    try {
-                                                                                        if (!Congthuc.isNumeric(ArrXien[s1].replaceAll(theodoi6, theodoi5))) {
-                                                                                            break;
-                                                                                        }
-                                                                                        s1++;
-                                                                                        ktra2 = ktra2;
-                                                                                        str47 = str28;
-                                                                                    } catch (Exception e30) {
-                                                                                        dayso5 = str39;
-                                                                                        str30 = str64;
-                                                                                        str31 = str44;
-                                                                                        str37 = str51;
-                                                                                        str38 = str52;
-                                                                                        str44 = dayso;
-                                                                                        soxien2 = str28;
-                                                                                        str36 = str8;
-                                                                                        str35 = str41;
-                                                                                        String[][] strArr322222222222222222 = database2.mang;
-                                                                                        strArr322222222222222222[k][0] = strArr322222222222222222[k][0].replaceAll(str38, theodoi5);
-                                                                                        String[][] strArr2222222222222222222 = database2.mang;
-                                                                                        strArr2222222222222222222[k][0] = strArr2222222222222222222[k][0].replaceAll(str37, theodoi5);
-                                                                                        database2.mang[k][0] = str38 + database2.mang[k][0] + str37;
-                                                                                        rw = k;
-                                                                                        str47 = soxien2;
-                                                                                        database3 = database2;
-                                                                                        str8 = str36;
-                                                                                        str7 = str35;
-                                                                                        str_Err5 = str34;
-                                                                                        k4 = k2;
-                                                                                        str57 = str33;
-                                                                                        so_tin3 = str32;
-                                                                                        str4 = str30;
-                                                                                        str6 = theodoi5;
-                                                                                        str52 = str38;
-                                                                                        str51 = str37;
-                                                                                        str_Err2 = str_Err2;
-                                                                                        theodoi7 = theodoi4;
-                                                                                        str54 = str44;
-                                                                                        str44 = str31;
-                                                                                    }
-                                                                                } catch (Exception e31) {
-                                                                                    dayso5 = str39;
-                                                                                    str30 = str64;
-                                                                                    soxien2 = str47;
-                                                                                    str31 = str44;
-                                                                                    str37 = str51;
-                                                                                    str38 = str52;
-                                                                                    str44 = dayso;
-                                                                                    str36 = str8;
-                                                                                    str35 = str41;
-                                                                                    String[][] strArr3222222222222222222 = database2.mang;
-                                                                                    strArr3222222222222222222[k][0] = strArr3222222222222222222[k][0].replaceAll(str38, theodoi5);
-                                                                                    String[][] strArr22222222222222222222 = database2.mang;
-                                                                                    strArr22222222222222222222[k][0] = strArr22222222222222222222[k][0].replaceAll(str37, theodoi5);
-                                                                                    database2.mang[k][0] = str38 + database2.mang[k][0] + str37;
-                                                                                    rw = k;
-                                                                                    str47 = soxien2;
-                                                                                    database3 = database2;
-                                                                                    str8 = str36;
-                                                                                    str7 = str35;
-                                                                                    str_Err5 = str34;
-                                                                                    k4 = k2;
-                                                                                    str57 = str33;
-                                                                                    so_tin3 = str32;
-                                                                                    str4 = str30;
-                                                                                    str6 = theodoi5;
-                                                                                    str52 = str38;
-                                                                                    str51 = str37;
-                                                                                    str_Err2 = str_Err2;
-                                                                                    theodoi7 = theodoi4;
-                                                                                    str54 = str44;
-                                                                                    str44 = str31;
-                                                                                }
-                                                                            }
-                                                                            ktra = true;
-                                                                            if (!ktra && ArrXien.length < 5) {
-                                                                                str210 = Congthuc.XulySo(str210);
-                                                                            }
-                                                                            try {
-                                                                                String[] ArrXien2 = str210.split(str44);
-                                                                                int i9 = 0;
-                                                                                while (i9 < ArrXien2.length) {
-                                                                                    try {
-                                                                                        try {
-                                                                                            String ss = Congthuc.XulySo(ArrXien2[i9]);
-                                                                                            if (ss.length() < 5 || ss.length() > 12) {
-                                                                                                str31 = str44;
-                                                                                                str44 = dayso;
-                                                                                                dayso4 = str39;
-                                                                                            } else if (ss.indexOf(str64) > -1) {
-                                                                                                str31 = str44;
-                                                                                                str44 = dayso;
-                                                                                                dayso4 = str39;
-                                                                                            } else {
-                                                                                                if (database2.mang[k][1] == str41) {
-                                                                                                    try {
-                                                                                                        if (ss.length() < 8) {
-                                                                                                            String[] strArr8 = database2.mang[k];
-                                                                                                            StringBuilder sb8 = new StringBuilder();
-                                                                                                            str31 = str44;
-                                                                                                            str44 = dayso;
-                                                                                                            try {
-                                                                                                                sb8.append(str44);
-                                                                                                                sb8.append(str39);
-                                                                                                                strArr8[4] = sb8.toString();
-                                                                                                                dayso = str39;
-                                                                                                                i9++;
-                                                                                                                str210 = str210;
-                                                                                                                str39 = dayso;
-                                                                                                                ktra = ktra;
-                                                                                                                dayso = str44;
-                                                                                                                str44 = str31;
-                                                                                                            } catch (Exception e32) {
-                                                                                                                dayso5 = str39;
-                                                                                                                str30 = str64;
-                                                                                                                str37 = str51;
-                                                                                                                str38 = str52;
-                                                                                                                soxien2 = str28;
-                                                                                                                str36 = str8;
-                                                                                                                str35 = str41;
-                                                                                                                String[][] strArr32222222222222222222 = database2.mang;
-                                                                                                                strArr32222222222222222222[k][0] = strArr32222222222222222222[k][0].replaceAll(str38, theodoi5);
-                                                                                                                String[][] strArr222222222222222222222 = database2.mang;
-                                                                                                                strArr222222222222222222222[k][0] = strArr222222222222222222222[k][0].replaceAll(str37, theodoi5);
-                                                                                                                database2.mang[k][0] = str38 + database2.mang[k][0] + str37;
-                                                                                                                rw = k;
-                                                                                                                str47 = soxien2;
-                                                                                                                database3 = database2;
-                                                                                                                str8 = str36;
-                                                                                                                str7 = str35;
-                                                                                                                str_Err5 = str34;
-                                                                                                                k4 = k2;
-                                                                                                                str57 = str33;
-                                                                                                                so_tin3 = str32;
-                                                                                                                str4 = str30;
-                                                                                                                str6 = theodoi5;
-                                                                                                                str52 = str38;
-                                                                                                                str51 = str37;
-                                                                                                                str_Err2 = str_Err2;
-                                                                                                                theodoi7 = theodoi4;
-                                                                                                                str54 = str44;
-                                                                                                                str44 = str31;
-                                                                                                            }
-                                                                                                        }
-                                                                                                    } catch (Exception e33) {
-                                                                                                        str31 = str44;
-                                                                                                        str44 = dayso;
-                                                                                                        dayso5 = str39;
-                                                                                                        str30 = str64;
-                                                                                                        str37 = str51;
-                                                                                                        str38 = str52;
-                                                                                                        soxien2 = str28;
-                                                                                                        str36 = str8;
-                                                                                                        str35 = str41;
-                                                                                                        String[][] strArr322222222222222222222 = database2.mang;
-                                                                                                        strArr322222222222222222222[k][0] = strArr322222222222222222222[k][0].replaceAll(str38, theodoi5);
-                                                                                                        String[][] strArr2222222222222222222222 = database2.mang;
-                                                                                                        strArr2222222222222222222222[k][0] = strArr2222222222222222222222[k][0].replaceAll(str37, theodoi5);
-                                                                                                        database2.mang[k][0] = str38 + database2.mang[k][0] + str37;
-                                                                                                        rw = k;
-                                                                                                        str47 = soxien2;
-                                                                                                        database3 = database2;
-                                                                                                        str8 = str36;
-                                                                                                        str7 = str35;
-                                                                                                        str_Err5 = str34;
-                                                                                                        k4 = k2;
-                                                                                                        str57 = str33;
-                                                                                                        so_tin3 = str32;
-                                                                                                        str4 = str30;
-                                                                                                        str6 = theodoi5;
-                                                                                                        str52 = str38;
-                                                                                                        str51 = str37;
-                                                                                                        str_Err2 = str_Err2;
-                                                                                                        theodoi7 = theodoi4;
-                                                                                                        str54 = str44;
-                                                                                                        str44 = str31;
-                                                                                                    }
-                                                                                                }
-                                                                                                str31 = str44;
-                                                                                                str44 = dayso;
-                                                                                                try {
-                                                                                                    String[] danlayS = ss.split(theodoi6);
-                                                                                                    int i42 = 0;
-                                                                                                    while (true) {
-                                                                                                        if (i42 >= danlayS.length) {
-                                                                                                            dayso = str39;
-                                                                                                            break;
-                                                                                                        }
-                                                                                                        dayso = str39;
-                                                                                                        if (danlayS[i42].length() != 2) {
-                                                                                                            break;
-                                                                                                        }
-                                                                                                        try {
-                                                                                                            if (!Congthuc.isNumeric(danlayS[i42])) {
-                                                                                                                break;
-                                                                                                            }
-                                                                                                            i42++;
-                                                                                                            ss = ss;
-                                                                                                            str39 = dayso;
-                                                                                                        } catch (Exception e34) {
-                                                                                                            str30 = str64;
-                                                                                                            str37 = str51;
-                                                                                                            str38 = str52;
-                                                                                                            dayso5 = dayso;
-                                                                                                            soxien2 = str28;
-                                                                                                            str36 = str8;
-                                                                                                            str35 = str41;
-                                                                                                            String[][] strArr3222222222222222222222 = database2.mang;
-                                                                                                            strArr3222222222222222222222[k][0] = strArr3222222222222222222222[k][0].replaceAll(str38, theodoi5);
-                                                                                                            String[][] strArr22222222222222222222222 = database2.mang;
-                                                                                                            strArr22222222222222222222222[k][0] = strArr22222222222222222222222[k][0].replaceAll(str37, theodoi5);
-                                                                                                            database2.mang[k][0] = str38 + database2.mang[k][0] + str37;
-                                                                                                            rw = k;
-                                                                                                            str47 = soxien2;
-                                                                                                            database3 = database2;
-                                                                                                            str8 = str36;
-                                                                                                            str7 = str35;
-                                                                                                            str_Err5 = str34;
-                                                                                                            k4 = k2;
-                                                                                                            str57 = str33;
-                                                                                                            so_tin3 = str32;
-                                                                                                            str4 = str30;
-                                                                                                            str6 = theodoi5;
-                                                                                                            str52 = str38;
-                                                                                                            str51 = str37;
-                                                                                                            str_Err2 = str_Err2;
-                                                                                                            theodoi7 = theodoi4;
-                                                                                                            str54 = str44;
-                                                                                                            str44 = str31;
-                                                                                                        }
-                                                                                                    }
-                                                                                                    i9++;
-                                                                                                    str210 = str210;
-                                                                                                    str39 = dayso;
-                                                                                                    ktra = ktra;
-                                                                                                    dayso = str44;
-                                                                                                    str44 = str31;
-                                                                                                } catch (Exception e35) {
-                                                                                                    str30 = str64;
-                                                                                                    str37 = str51;
-                                                                                                    str38 = str52;
-                                                                                                    dayso5 = str39;
-                                                                                                    soxien2 = str28;
-                                                                                                    str36 = str8;
-                                                                                                    str35 = str41;
-                                                                                                    String[][] strArr32222222222222222222222 = database2.mang;
-                                                                                                    strArr32222222222222222222222[k][0] = strArr32222222222222222222222[k][0].replaceAll(str38, theodoi5);
-                                                                                                    String[][] strArr222222222222222222222222 = database2.mang;
-                                                                                                    strArr222222222222222222222222[k][0] = strArr222222222222222222222222[k][0].replaceAll(str37, theodoi5);
-                                                                                                    database2.mang[k][0] = str38 + database2.mang[k][0] + str37;
-                                                                                                    rw = k;
-                                                                                                    str47 = soxien2;
-                                                                                                    database3 = database2;
-                                                                                                    str8 = str36;
-                                                                                                    str7 = str35;
-                                                                                                    str_Err5 = str34;
-                                                                                                    k4 = k2;
-                                                                                                    str57 = str33;
-                                                                                                    so_tin3 = str32;
-                                                                                                    str4 = str30;
-                                                                                                    str6 = theodoi5;
-                                                                                                    str52 = str38;
-                                                                                                    str51 = str37;
-                                                                                                    str_Err2 = str_Err2;
-                                                                                                    theodoi7 = theodoi4;
-                                                                                                    str54 = str44;
-                                                                                                    str44 = str31;
-                                                                                                }
-                                                                                            }
-                                                                                            if (ArrXien2[i9].length() > 4) {
-                                                                                                database2.mang[k][4] = str44 + database2.mang[k][2];
-                                                                                            } else {
-                                                                                                database2.mang[k][4] = str44 + database2.mang[k][0];
-                                                                                            }
-                                                                                            if (database2.mang[k][5].indexOf(str64) == -1) {
-                                                                                                if (database2.caidat_tg.getInt("xien_nhan") == 1 && database2.mang[k][3].indexOf("d") > -1) {
-                                                                                                    try {
-                                                                                                        database2.mang[k][5] = (Integer.parseInt(tien) * 10) + theodoi5;
-                                                                                                    } catch (Exception e36) {
-                                                                                                        database2.mang[k][5] = str44 + database2.mang[k][3];
-                                                                                                    }
-                                                                                                } else if (database2.caidat_tg.getInt("xien_nhan") == 2) {
-                                                                                                    try {
-                                                                                                        database2.mang[k][5] = (Integer.parseInt(tien) * 10) + theodoi5;
-                                                                                                    } catch (Exception e37) {
-                                                                                                        database2.mang[k][5] = str44 + database2.mang[k][3];
-                                                                                                    }
-                                                                                                }
-                                                                                            }
-                                                                                            i5 = 0;
-                                                                                            while (i5 < ArrXien2.length) {
-                                                                                                try {
-                                                                                                    try {
-                                                                                                        soxien3 = Congthuc.XulySo(ArrXien2[i5]);
-                                                                                                    } catch (Exception e38) {
-                                                                                                        database2.mang[k][4] = str44 + ArrXien2[i5];
-                                                                                                        soxien3 = soxien4;
-                                                                                                    }
-                                                                                                    try {
-                                                                                                        if (soxien3.indexOf(str64) == -1) {
-                                                                                                            String[] socon = soxien3.split(theodoi6);
-                                                                                                            boolean check = false;
-                                                                                                            int j = 0;
-                                                                                                            while (j < socon.length) {
-                                                                                                                str30 = str64;
-                                                                                                                try {
-                                                                                                                    if (soxien3.length() - soxien3.replaceAll(socon[j], theodoi5).length() > 2) {
-                                                                                                                        check = true;
-                                                                                                                    }
-                                                                                                                    j++;
-                                                                                                                    ArrXien2 = ArrXien2;
-                                                                                                                    str64 = str30;
-                                                                                                                } catch (Exception e39) {
-                                                                                                                    soxien4 = soxien3;
-                                                                                                                    str37 = str51;
-                                                                                                                    str38 = str52;
-                                                                                                                    dayso5 = dayso4;
-                                                                                                                    soxien2 = str28;
-                                                                                                                    str36 = str8;
-                                                                                                                    str35 = str41;
-                                                                                                                    String[][] strArr322222222222222222222222 = database2.mang;
-                                                                                                                    strArr322222222222222222222222[k][0] = strArr322222222222222222222222[k][0].replaceAll(str38, theodoi5);
-                                                                                                                    String[][] strArr2222222222222222222222222 = database2.mang;
-                                                                                                                    strArr2222222222222222222222222[k][0] = strArr2222222222222222222222222[k][0].replaceAll(str37, theodoi5);
-                                                                                                                    database2.mang[k][0] = str38 + database2.mang[k][0] + str37;
-                                                                                                                    rw = k;
-                                                                                                                    str47 = soxien2;
-                                                                                                                    database3 = database2;
-                                                                                                                    str8 = str36;
-                                                                                                                    str7 = str35;
-                                                                                                                    str_Err5 = str34;
-                                                                                                                    k4 = k2;
-                                                                                                                    str57 = str33;
-                                                                                                                    so_tin3 = str32;
-                                                                                                                    str4 = str30;
-                                                                                                                    str6 = theodoi5;
-                                                                                                                    str52 = str38;
-                                                                                                                    str51 = str37;
-                                                                                                                    str_Err2 = str_Err2;
-                                                                                                                    theodoi7 = theodoi4;
-                                                                                                                    str54 = str44;
-                                                                                                                    str44 = str31;
-                                                                                                                }
-                                                                                                            }
-                                                                                                            str30 = str64;
-                                                                                                            if (soxien3.length() >= 5) {
-                                                                                                                if (soxien3.length() <= 12) {
-                                                                                                                    if (check) {
-                                                                                                                        database2.mang[k][4] = str44 + soxien3.substring(0, 2);
-                                                                                                                    } else {
-                                                                                                                        i5++;
-                                                                                                                        soxien4 = soxien3;
-                                                                                                                        ArrXien2 = ArrXien2;
-                                                                                                                        str64 = str30;
-                                                                                                                    }
-                                                                                                                }
-                                                                                                            }
-                                                                                                            database2.mang[k][4] = str44 + database2.mang[k][2];
-                                                                                                        } else {
-                                                                                                            str30 = str64;
-                                                                                                            database2.mang[k][4] = str44 + database2.mang[k][2];
-                                                                                                        }
-                                                                                                        soxien4 = soxien3;
-                                                                                                        str37 = str51;
-                                                                                                        str38 = str52;
-                                                                                                        soxien2 = str28;
-                                                                                                        str36 = str8;
-                                                                                                        str35 = str41;
-                                                                                                        break;
-                                                                                                    } catch (Exception e40) {
-                                                                                                        str30 = str64;
-                                                                                                        soxien4 = soxien3;
-                                                                                                        str37 = str51;
-                                                                                                        str38 = str52;
-                                                                                                        dayso5 = dayso4;
-                                                                                                        soxien2 = str28;
-                                                                                                        str36 = str8;
-                                                                                                        str35 = str41;
-                                                                                                        String[][] strArr3222222222222222222222222 = database2.mang;
-                                                                                                        strArr3222222222222222222222222[k][0] = strArr3222222222222222222222222[k][0].replaceAll(str38, theodoi5);
-                                                                                                        String[][] strArr22222222222222222222222222 = database2.mang;
-                                                                                                        strArr22222222222222222222222222[k][0] = strArr22222222222222222222222222[k][0].replaceAll(str37, theodoi5);
-                                                                                                        database2.mang[k][0] = str38 + database2.mang[k][0] + str37;
-                                                                                                        rw = k;
-                                                                                                        str47 = soxien2;
-                                                                                                        database3 = database2;
-                                                                                                        str8 = str36;
-                                                                                                        str7 = str35;
-                                                                                                        str_Err5 = str34;
-                                                                                                        k4 = k2;
-                                                                                                        str57 = str33;
-                                                                                                        so_tin3 = str32;
-                                                                                                        str4 = str30;
-                                                                                                        str6 = theodoi5;
-                                                                                                        str52 = str38;
-                                                                                                        str51 = str37;
-                                                                                                        str_Err2 = str_Err2;
-                                                                                                        theodoi7 = theodoi4;
-                                                                                                        str54 = str44;
-                                                                                                        str44 = str31;
-                                                                                                    }
-                                                                                                } catch (Exception e41) {
-                                                                                                    str30 = str64;
-                                                                                                    str37 = str51;
-                                                                                                    str38 = str52;
-                                                                                                    dayso5 = dayso4;
-                                                                                                    soxien2 = str28;
-                                                                                                    str36 = str8;
-                                                                                                    str35 = str41;
-                                                                                                    String[][] strArr32222222222222222222222222 = database2.mang;
-                                                                                                    strArr32222222222222222222222222[k][0] = strArr32222222222222222222222222[k][0].replaceAll(str38, theodoi5);
-                                                                                                    String[][] strArr222222222222222222222222222 = database2.mang;
-                                                                                                    strArr222222222222222222222222222[k][0] = strArr222222222222222222222222222[k][0].replaceAll(str37, theodoi5);
-                                                                                                    database2.mang[k][0] = str38 + database2.mang[k][0] + str37;
-                                                                                                    rw = k;
-                                                                                                    str47 = soxien2;
-                                                                                                    database3 = database2;
-                                                                                                    str8 = str36;
-                                                                                                    str7 = str35;
-                                                                                                    str_Err5 = str34;
-                                                                                                    k4 = k2;
-                                                                                                    str57 = str33;
-                                                                                                    so_tin3 = str32;
-                                                                                                    str4 = str30;
-                                                                                                    str6 = theodoi5;
-                                                                                                    str52 = str38;
-                                                                                                    str51 = str37;
-                                                                                                    str_Err2 = str_Err2;
-                                                                                                    theodoi7 = theodoi4;
-                                                                                                    str54 = str44;
-                                                                                                    str44 = str31;
-                                                                                                }
-                                                                                            }
-                                                                                            str30 = str64;
-                                                                                            str37 = str51;
-                                                                                            str38 = str52;
-                                                                                            soxien2 = str28;
-                                                                                            str36 = str8;
-                                                                                            str35 = str41;
-                                                                                        } catch (Exception e42) {
-                                                                                            str31 = str44;
-                                                                                            str44 = dayso;
-                                                                                            str30 = str64;
-                                                                                            str37 = str51;
-                                                                                            str38 = str52;
-                                                                                            dayso5 = str39;
-                                                                                            soxien2 = str28;
-                                                                                            str36 = str8;
-                                                                                            str35 = str41;
-                                                                                            String[][] strArr322222222222222222222222222 = database2.mang;
-                                                                                            strArr322222222222222222222222222[k][0] = strArr322222222222222222222222222[k][0].replaceAll(str38, theodoi5);
-                                                                                            String[][] strArr2222222222222222222222222222 = database2.mang;
-                                                                                            strArr2222222222222222222222222222[k][0] = strArr2222222222222222222222222222[k][0].replaceAll(str37, theodoi5);
-                                                                                            database2.mang[k][0] = str38 + database2.mang[k][0] + str37;
-                                                                                            rw = k;
-                                                                                            str47 = soxien2;
-                                                                                            database3 = database2;
-                                                                                            str8 = str36;
-                                                                                            str7 = str35;
-                                                                                            str_Err5 = str34;
-                                                                                            k4 = k2;
-                                                                                            str57 = str33;
-                                                                                            so_tin3 = str32;
-                                                                                            str4 = str30;
-                                                                                            str6 = theodoi5;
-                                                                                            str52 = str38;
-                                                                                            str51 = str37;
-                                                                                            str_Err2 = str_Err2;
-                                                                                            theodoi7 = theodoi4;
-                                                                                            str54 = str44;
-                                                                                            str44 = str31;
-                                                                                        }
-                                                                                    } catch (Exception e43) {
-                                                                                        str30 = str64;
-                                                                                        str31 = str44;
-                                                                                        str44 = dayso;
-                                                                                        str37 = str51;
-                                                                                        str38 = str52;
-                                                                                        dayso5 = str39;
-                                                                                        soxien2 = str28;
-                                                                                        str36 = str8;
-                                                                                        str35 = str41;
-                                                                                        String[][] strArr3222222222222222222222222222 = database2.mang;
-                                                                                        strArr3222222222222222222222222222[k][0] = strArr3222222222222222222222222222[k][0].replaceAll(str38, theodoi5);
-                                                                                        String[][] strArr22222222222222222222222222222 = database2.mang;
-                                                                                        strArr22222222222222222222222222222[k][0] = strArr22222222222222222222222222222[k][0].replaceAll(str37, theodoi5);
-                                                                                        database2.mang[k][0] = str38 + database2.mang[k][0] + str37;
-                                                                                        rw = k;
-                                                                                        str47 = soxien2;
-                                                                                        database3 = database2;
-                                                                                        str8 = str36;
-                                                                                        str7 = str35;
-                                                                                        str_Err5 = str34;
-                                                                                        k4 = k2;
-                                                                                        str57 = str33;
-                                                                                        so_tin3 = str32;
-                                                                                        str4 = str30;
-                                                                                        str6 = theodoi5;
-                                                                                        str52 = str38;
-                                                                                        str51 = str37;
-                                                                                        str_Err2 = str_Err2;
-                                                                                        theodoi7 = theodoi4;
-                                                                                        str54 = str44;
-                                                                                        str44 = str31;
-                                                                                    }
-                                                                                }
-                                                                                str31 = str44;
-                                                                                str44 = dayso;
-                                                                                dayso4 = str39;
-                                                                                if (database2.mang[k][5].indexOf(str64) == -1) {
-                                                                                }
-                                                                                i5 = 0;
-                                                                                while (i5 < ArrXien2.length) {
-                                                                                }
-                                                                                str30 = str64;
-                                                                                str37 = str51;
-                                                                                str38 = str52;
-                                                                                soxien2 = str28;
-                                                                                str36 = str8;
-                                                                                str35 = str41;
-                                                                            } catch (Exception e44) {
-                                                                                str30 = str64;
-                                                                                str31 = str44;
-                                                                                str44 = dayso;
-                                                                                str37 = str51;
-                                                                                str38 = str52;
-                                                                                dayso5 = str39;
-                                                                                soxien2 = str28;
-                                                                                str36 = str8;
-                                                                                str35 = str41;
-                                                                                String[][] strArr32222222222222222222222222222 = database2.mang;
-                                                                                strArr32222222222222222222222222222[k][0] = strArr32222222222222222222222222222[k][0].replaceAll(str38, theodoi5);
-                                                                                String[][] strArr222222222222222222222222222222 = database2.mang;
-                                                                                strArr222222222222222222222222222222[k][0] = strArr222222222222222222222222222222[k][0].replaceAll(str37, theodoi5);
-                                                                                database2.mang[k][0] = str38 + database2.mang[k][0] + str37;
-                                                                                rw = k;
-                                                                                str47 = soxien2;
-                                                                                database3 = database2;
-                                                                                str8 = str36;
-                                                                                str7 = str35;
-                                                                                str_Err5 = str34;
-                                                                                k4 = k2;
-                                                                                str57 = str33;
-                                                                                so_tin3 = str32;
-                                                                                str4 = str30;
-                                                                                str6 = theodoi5;
-                                                                                str52 = str38;
-                                                                                str51 = str37;
-                                                                                str_Err2 = str_Err2;
-                                                                                theodoi7 = theodoi4;
-                                                                                str54 = str44;
-                                                                                str44 = str31;
-                                                                            }
-                                                                        } else {
-                                                                            str30 = str64;
-                                                                            str31 = str44;
-                                                                            str44 = dayso;
-                                                                            dayso4 = str39;
-                                                                            str37 = str51;
-                                                                            str38 = str52;
-                                                                            soxien2 = str47;
-                                                                            str36 = str8;
-                                                                            str35 = str41;
-                                                                        }
-                                                                        database2.BaoLoiDan(k);
-                                                                        dayso2 = dayso4;
-                                                                        dayso5 = dayso2;
-                                                                    } catch (Exception e45) {
-                                                                        str30 = str64;
-                                                                        str31 = str44;
-                                                                        str44 = dayso;
-                                                                        soxien2 = str47;
-                                                                        str37 = str51;
-                                                                        str38 = str52;
-                                                                        dayso5 = str39;
-                                                                        str36 = str8;
-                                                                        str35 = str41;
-                                                                        String[][] strArr322222222222222222222222222222 = database2.mang;
-                                                                        strArr322222222222222222222222222222[k][0] = strArr322222222222222222222222222222[k][0].replaceAll(str38, theodoi5);
-                                                                        String[][] strArr2222222222222222222222222222222 = database2.mang;
-                                                                        strArr2222222222222222222222222222222[k][0] = strArr2222222222222222222222222222222[k][0].replaceAll(str37, theodoi5);
-                                                                        database2.mang[k][0] = str38 + database2.mang[k][0] + str37;
-                                                                        rw = k;
-                                                                        str47 = soxien2;
-                                                                        database3 = database2;
-                                                                        str8 = str36;
-                                                                        str7 = str35;
-                                                                        str_Err5 = str34;
-                                                                        k4 = k2;
-                                                                        str57 = str33;
-                                                                        so_tin3 = str32;
-                                                                        str4 = str30;
-                                                                        str6 = theodoi5;
-                                                                        str52 = str38;
-                                                                        str51 = str37;
-                                                                        str_Err2 = str_Err2;
-                                                                        theodoi7 = theodoi4;
-                                                                        str54 = str44;
-                                                                        str44 = str31;
-                                                                    }
-                                                                    rw = k;
-                                                                    str47 = soxien2;
-                                                                    database3 = database2;
-                                                                    str8 = str36;
-                                                                    str7 = str35;
-                                                                    str_Err5 = str34;
-                                                                    k4 = k2;
-                                                                    str57 = str33;
-                                                                    so_tin3 = str32;
-                                                                    str4 = str30;
-                                                                    str6 = theodoi5;
-                                                                    str52 = str38;
-                                                                    str51 = str37;
-                                                                    str_Err2 = str_Err2;
-                                                                    theodoi7 = theodoi4;
-                                                                    str54 = str44;
-                                                                    str44 = str31;
-                                                                } else {
-                                                                    soxien2 = str47;
-                                                                    str31 = str44;
-                                                                    str37 = str51;
-                                                                    str38 = str52;
-                                                                    str44 = dayso;
-                                                                    str30 = str28;
-                                                                    str36 = str8;
-                                                                    dayso4 = str39;
-                                                                    str35 = str41;
-                                                                    database2.BaoLoiDan(k);
-                                                                    dayso2 = dayso4;
-                                                                    dayso5 = dayso2;
-                                                                    rw = k;
-                                                                    str47 = soxien2;
-                                                                    database3 = database2;
-                                                                    str8 = str36;
-                                                                    str7 = str35;
-                                                                    str_Err5 = str34;
-                                                                    k4 = k2;
-                                                                    str57 = str33;
-                                                                    so_tin3 = str32;
-                                                                    str4 = str30;
-                                                                    str6 = theodoi5;
-                                                                    str52 = str38;
-                                                                    str51 = str37;
-                                                                    str_Err2 = str_Err2;
-                                                                    theodoi7 = theodoi4;
-                                                                    str54 = str44;
-                                                                    str44 = str31;
-                                                                }
-                                                            }
-                                                        } catch (Exception e46) {
-                                                            str31 = str44;
-                                                            str44 = dayso;
-                                                            str30 = str28;
-                                                            soxien2 = str47;
-                                                            str37 = str51;
-                                                            str38 = str52;
-                                                            dayso5 = str39;
-                                                            str36 = str8;
-                                                            str35 = str41;
-                                                            String[][] strArr3222222222222222222222222222222 = database2.mang;
-                                                            strArr3222222222222222222222222222222[k][0] = strArr3222222222222222222222222222222[k][0].replaceAll(str38, theodoi5);
-                                                            String[][] strArr22222222222222222222222222222222 = database2.mang;
-                                                            strArr22222222222222222222222222222222[k][0] = strArr22222222222222222222222222222222[k][0].replaceAll(str37, theodoi5);
-                                                            database2.mang[k][0] = str38 + database2.mang[k][0] + str37;
-                                                            rw = k;
-                                                            str47 = soxien2;
-                                                            database3 = database2;
-                                                            str8 = str36;
-                                                            str7 = str35;
-                                                            str_Err5 = str34;
-                                                            k4 = k2;
-                                                            str57 = str33;
-                                                            so_tin3 = str32;
-                                                            str4 = str30;
-                                                            str6 = theodoi5;
-                                                            str52 = str38;
-                                                            str51 = str37;
-                                                            str_Err2 = str_Err2;
-                                                            theodoi7 = theodoi4;
-                                                            str54 = str44;
-                                                            str44 = str31;
-                                                        }
-                                                    }
-                                                    str31 = str44;
-                                                    str44 = dayso;
-                                                    str30 = str28;
-                                                    dayso4 = str39;
-                                                    str42 = str47;
-                                                } catch (Exception e47) {
-                                                    soxien2 = str47;
-                                                    str31 = str44;
-                                                    str37 = str51;
-                                                    str38 = str52;
-                                                    str44 = dayso;
-                                                    str30 = str28;
-                                                    str36 = str8;
-                                                    str35 = str41;
-                                                    dayso5 = str39;
-                                                    String[][] strArr32222222222222222222222222222222 = database2.mang;
-                                                    strArr32222222222222222222222222222222[k][0] = strArr32222222222222222222222222222222[k][0].replaceAll(str38, theodoi5);
-                                                    String[][] strArr222222222222222222222222222222222 = database2.mang;
-                                                    strArr222222222222222222222222222222222[k][0] = strArr222222222222222222222222222222222[k][0].replaceAll(str37, theodoi5);
-                                                    database2.mang[k][0] = str38 + database2.mang[k][0] + str37;
-                                                    rw = k;
-                                                    str47 = soxien2;
-                                                    database3 = database2;
-                                                    str8 = str36;
-                                                    str7 = str35;
-                                                    str_Err5 = str34;
-                                                    k4 = k2;
-                                                    str57 = str33;
-                                                    so_tin3 = str32;
-                                                    str4 = str30;
-                                                    str6 = theodoi5;
-                                                    str52 = str38;
-                                                    str51 = str37;
-                                                    str_Err2 = str_Err2;
-                                                    theodoi7 = theodoi4;
-                                                    str54 = str44;
-                                                    str44 = str31;
-                                                }
-                                                try {
-                                                    if (database2.mang[k][1] == str46) {
-                                                    }
-                                                    str37 = str51;
-                                                    str38 = str52;
-                                                    if (MainActivity.jSon_Setting.getInt("canhbaodonvi") == 1) {
-                                                    }
-                                                    if (database2.caidat_tg.getInt("loi_donvi") > 0) {
-                                                    }
-                                                    database2.BaoLoiDan(k);
-                                                    dayso2 = dayso4;
-                                                    dayso5 = dayso2;
-                                                } catch (Exception e48) {
-                                                    e2 = e48;
-                                                    str37 = str51;
-                                                    str38 = str52;
-                                                    soxien2 = str42;
-                                                    str36 = str8;
-                                                    str35 = str41;
-                                                    dayso5 = dayso4;
-                                                    String[][] strArr322222222222222222222222222222222 = database2.mang;
-                                                    strArr322222222222222222222222222222222[k][0] = strArr322222222222222222222222222222222[k][0].replaceAll(str38, theodoi5);
-                                                    String[][] strArr2222222222222222222222222222222222 = database2.mang;
-                                                    strArr2222222222222222222222222222222222[k][0] = strArr2222222222222222222222222222222222[k][0].replaceAll(str37, theodoi5);
-                                                    database2.mang[k][0] = str38 + database2.mang[k][0] + str37;
-                                                    rw = k;
-                                                    str47 = soxien2;
-                                                    database3 = database2;
-                                                    str8 = str36;
-                                                    str7 = str35;
-                                                    str_Err5 = str34;
-                                                    k4 = k2;
-                                                    str57 = str33;
-                                                    so_tin3 = str32;
-                                                    str4 = str30;
-                                                    str6 = theodoi5;
-                                                    str52 = str38;
-                                                    str51 = str37;
-                                                    str_Err2 = str_Err2;
-                                                    theodoi7 = theodoi4;
-                                                    str54 = str44;
-                                                    str44 = str31;
-                                                }
-                                                rw = k;
-                                                str47 = soxien2;
-                                                database3 = database2;
-                                                str8 = str36;
-                                                str7 = str35;
-                                                str_Err5 = str34;
-                                                k4 = k2;
-                                                str57 = str33;
-                                                so_tin3 = str32;
-                                                str4 = str30;
-                                                str6 = theodoi5;
-                                                str52 = str38;
-                                                str51 = str37;
-                                                str_Err2 = str_Err2;
-                                                theodoi7 = theodoi4;
-                                                str54 = str44;
-                                                str44 = str31;
-                                            }
-                                        } catch (Exception e49) {
+                                    if (str39.contains(" x ")) {
+                                        if (str39.trim().indexOf("x ") < 2) {
                                             str32 = so_tin3;
                                             soxien2 = str47;
                                             str31 = str44;
@@ -2441,140 +762,38 @@ public class Database extends SQLiteOpenHelper {
                                             str44 = dayso;
                                             str30 = str28;
                                             str36 = str8;
+                                            dayso3 = str39;
                                             str35 = str41;
-                                            dayso5 = str39;
-                                            String[][] strArr3222222222222222222222222222222222 = database2.mang;
-                                            strArr3222222222222222222222222222222222[k][0] = strArr3222222222222222222222222222222222[k][0].replaceAll(str38, theodoi5);
-                                            String[][] strArr22222222222222222222222222222222222 = database2.mang;
-                                            strArr22222222222222222222222222222222222[k][0] = strArr22222222222222222222222222222222222[k][0].replaceAll(str37, theodoi5);
-                                            database2.mang[k][0] = str38 + database2.mang[k][0] + str37;
-                                            rw = k;
-                                            str47 = soxien2;
-                                            database3 = database2;
-                                            str8 = str36;
-                                            str7 = str35;
-                                            str_Err5 = str34;
-                                            k4 = k2;
-                                            str57 = str33;
-                                            so_tin3 = str32;
-                                            str4 = str30;
-                                            str6 = theodoi5;
-                                            str52 = str38;
-                                            str51 = str37;
-                                            str_Err2 = str_Err2;
-                                            theodoi7 = theodoi4;
-                                            str54 = str44;
-                                            str44 = str31;
+                                        } else {
+                                            database2.mang[k][2] = str39.substring(0, str39.indexOf(" x ")).trim();
+                                            database2.mang[k][3] = str39.substring(str39.indexOf(" x "));
+                                            if (k <= 1) {
+                                                str32 = so_tin3;
+                                            } else if (!database2.mang[k - 1][2].contains("xi 2 ") && !database2.mang[k - 1][2].contains("xi 3 ") && !database2.mang[k - 1][2].contains("xi 4 ")) {
+                                                str32 = so_tin3;
+                                            } else if (!database2.mang[k][1].contains(str47) || database2.mang[k][2].contains(str47)) {
+                                                str32 = so_tin3;
+                                            } else {
+                                                String[] strArr4 = database2.mang[k];
+                                                StringBuilder sb4 = new StringBuilder();
+                                                str32 = so_tin3;
+                                                sb4.append(database2.mang[k - 1][2].substring(0, 5));
+                                                sb4.append(database2.mang[k][2]);
+                                                strArr4[2] = sb4.toString();
+                                            }
+                                            database2.XulyMang(k);
+                                            database2.BaoLoiTien(k);
+                                            if (database2.mang[k][1].equals(str46)) {
+
+                                            }
                                         }
-                                    } else {
-                                        str32 = so_tin3;
-                                        soxien2 = str47;
-                                        str31 = str44;
-                                        str37 = str51;
-                                        str38 = str52;
-                                        str44 = dayso;
-                                        str30 = str28;
-                                        str36 = str8;
-                                        dayso3 = str39;
-                                        str35 = str41;
                                     }
-                                    database2.mang[k][2] = dayso3;
-                                    database2.mang[k][3] = theodoi5;
-                                    String[] strArr9 = database2.mang[k];
-                                    StringBuilder sb9 = new StringBuilder();
-                                    sb9.append(str44);
-                                    dayso2 = dayso3;
-                                    try {
-                                        sb9.append(dayso2);
-                                        strArr9[4] = sb9.toString();
-                                        database2.BaoLoiDan(k);
-                                        dayso5 = dayso2;
-                                    } catch (Exception e50) {
-                                        dayso5 = dayso2;
-                                        String[][] strArr32222222222222222222222222222222222 = database2.mang;
-                                        strArr32222222222222222222222222222222222[k][0] = strArr32222222222222222222222222222222222[k][0].replaceAll(str38, theodoi5);
-                                        String[][] strArr222222222222222222222222222222222222 = database2.mang;
-                                        strArr222222222222222222222222222222222222[k][0] = strArr222222222222222222222222222222222222[k][0].replaceAll(str37, theodoi5);
-                                        database2.mang[k][0] = str38 + database2.mang[k][0] + str37;
-                                        rw = k;
-                                        str47 = soxien2;
-                                        database3 = database2;
-                                        str8 = str36;
-                                        str7 = str35;
-                                        str_Err5 = str34;
-                                        k4 = k2;
-                                        str57 = str33;
-                                        so_tin3 = str32;
-                                        str4 = str30;
-                                        str6 = theodoi5;
-                                        str52 = str38;
-                                        str51 = str37;
-                                        str_Err2 = str_Err2;
-                                        theodoi7 = theodoi4;
-                                        str54 = str44;
-                                        str44 = str31;
-                                    }
-                                    rw = k;
-                                    str47 = soxien2;
-                                    database3 = database2;
-                                    str8 = str36;
-                                    str7 = str35;
-                                    str_Err5 = str34;
-                                    k4 = k2;
-                                    str57 = str33;
-                                    so_tin3 = str32;
-                                    str4 = str30;
-                                    str6 = theodoi5;
-                                    str52 = str38;
-                                    str51 = str37;
-                                    str_Err2 = str_Err2;
-                                    theodoi7 = theodoi4;
-                                    str54 = str44;
-                                    str44 = str31;
                                 } else {
                                     theodoi4 = theodoi3;
                                     theodoi5 = str6;
                                     str34 = str_Err5;
                                 }
                             } catch (Exception e51) {
-                                str33 = str57;
-                                theodoi4 = theodoi3;
-                                theodoi5 = str6;
-                                str34 = str_Err5;
-                                database2 = this;
-                                str32 = so_tin3;
-                                soxien2 = str47;
-                                str31 = str44;
-                                i32 = i33;
-                                str37 = str51;
-                                str38 = str52;
-                                str44 = dayso;
-                                str30 = str28;
-                                str35 = str29;
-                                str36 = str8;
-                                k2 = k4;
-                                String[][] strArr322222222222222222222222222222222222 = database2.mang;
-                                strArr322222222222222222222222222222222222[k][0] = strArr322222222222222222222222222222222222[k][0].replaceAll(str38, theodoi5);
-                                String[][] strArr2222222222222222222222222222222222222 = database2.mang;
-                                strArr2222222222222222222222222222222222222[k][0] = strArr2222222222222222222222222222222222222[k][0].replaceAll(str37, theodoi5);
-                                database2.mang[k][0] = str38 + database2.mang[k][0] + str37;
-                                rw = k;
-                                str47 = soxien2;
-                                database3 = database2;
-                                str8 = str36;
-                                str7 = str35;
-                                str_Err5 = str34;
-                                k4 = k2;
-                                str57 = str33;
-                                so_tin3 = str32;
-                                str4 = str30;
-                                str6 = theodoi5;
-                                str52 = str38;
-                                str51 = str37;
-                                str_Err2 = str_Err2;
-                                theodoi7 = theodoi4;
-                                str54 = str44;
-                                str44 = str31;
                             }
                         } else {
                             str33 = str57;
@@ -2589,42 +808,16 @@ public class Database extends SQLiteOpenHelper {
                         }
                         if (str39.indexOf(" x ") != -1) {
                         }
-                        try {
-                            database2.mang[k][2] = dayso3;
-                            database2.mang[k][3] = theodoi5;
-                            String[] strArr92 = database2.mang[k];
-                            StringBuilder sb92 = new StringBuilder();
-                            sb92.append(str44);
-                            dayso2 = dayso3;
-                            sb92.append(dayso2);
-                            strArr92[4] = sb92.toString();
-                            database2.BaoLoiDan(k);
-                            dayso5 = dayso2;
-                        } catch (Exception e52) {
-                            dayso5 = dayso3;
-                            String[][] strArr3222222222222222222222222222222222222 = database2.mang;
-                            strArr3222222222222222222222222222222222222[k][0] = strArr3222222222222222222222222222222222222[k][0].replaceAll(str38, theodoi5);
-                            String[][] strArr22222222222222222222222222222222222222 = database2.mang;
-                            strArr22222222222222222222222222222222222222[k][0] = strArr22222222222222222222222222222222222222[k][0].replaceAll(str37, theodoi5);
-                            database2.mang[k][0] = str38 + database2.mang[k][0] + str37;
-                            rw = k;
-                            str47 = soxien2;
-                            database3 = database2;
-                            str8 = str36;
-                            str7 = str35;
-                            str_Err5 = str34;
-                            k4 = k2;
-                            str57 = str33;
-                            so_tin3 = str32;
-                            str4 = str30;
-                            str6 = theodoi5;
-                            str52 = str38;
-                            str51 = str37;
-                            str_Err2 = str_Err2;
-                            theodoi7 = theodoi4;
-                            str54 = str44;
-                            str44 = str31;
-                        }
+                        database2.mang[k][2] = dayso3;
+                        database2.mang[k][3] = theodoi5;
+                        String[] strArr92 = database2.mang[k];
+                        StringBuilder sb92 = new StringBuilder();
+                        sb92.append(str44);
+                        dayso2 = dayso3;
+                        sb92.append(dayso2);
+                        strArr92[4] = sb92.toString();
+                        database2.BaoLoiDan(k);
+                        dayso5 = dayso2;
                         rw = k;
                         str47 = soxien2;
                         database3 = database2;
@@ -2647,123 +840,6 @@ public class Database extends SQLiteOpenHelper {
                     theodoi3 = str57.substring(i22);
                     k4 = i22;
                     k = rw + 1;
-                    try {
-                        strf = dayso5.trim();
-                        if (!strf.startsWith(str_Err5)) {
-                        }
-                        str39 = dayso5;
-                        database2 = this;
-                        try {
-                            database2.mang[k][0] = str39;
-                            if (str39.indexOf("loa") > -1) {
-                            }
-                            if (str39.indexOf(" x ") != -1) {
-                            }
-                            database2.mang[k][2] = dayso3;
-                            database2.mang[k][3] = theodoi5;
-                            String[] strArr922 = database2.mang[k];
-                            StringBuilder sb922 = new StringBuilder();
-                            sb922.append(str44);
-                            dayso2 = dayso3;
-                            sb922.append(dayso2);
-                            strArr922[4] = sb922.toString();
-                            database2.BaoLoiDan(k);
-                            dayso5 = dayso2;
-                        } catch (Exception e53) {
-                            e = e53;
-                            str40 = str39;
-                            str32 = so_tin3;
-                            soxien2 = str47;
-                            str31 = str44;
-                            i32 = i33;
-                            str37 = str51;
-                            str38 = str52;
-                            str44 = dayso;
-                            str30 = str28;
-                            str35 = str29;
-                            str36 = str8;
-                            k2 = k4;
-                            dayso5 = str40;
-                            String[][] strArr32222222222222222222222222222222222222 = database2.mang;
-                            strArr32222222222222222222222222222222222222[k][0] = strArr32222222222222222222222222222222222222[k][0].replaceAll(str38, theodoi5);
-                            String[][] strArr222222222222222222222222222222222222222 = database2.mang;
-                            strArr222222222222222222222222222222222222222[k][0] = strArr222222222222222222222222222222222222222[k][0].replaceAll(str37, theodoi5);
-                            database2.mang[k][0] = str38 + database2.mang[k][0] + str37;
-                            rw = k;
-                            str47 = soxien2;
-                            database3 = database2;
-                            str8 = str36;
-                            str7 = str35;
-                            str_Err5 = str34;
-                            k4 = k2;
-                            str57 = str33;
-                            so_tin3 = str32;
-                            str4 = str30;
-                            str6 = theodoi5;
-                            str52 = str38;
-                            str51 = str37;
-                            str_Err2 = str_Err2;
-                            theodoi7 = theodoi4;
-                            str54 = str44;
-                            str44 = str31;
-                        }
-                    } catch (Exception e54) {
-                        str33 = str57;
-                        str32 = so_tin3;
-                        theodoi4 = theodoi3;
-                        soxien2 = str47;
-                        str31 = str44;
-                        i32 = i33;
-                        str37 = str51;
-                        str38 = str52;
-                        theodoi5 = str6;
-                        str44 = dayso;
-                        str30 = str28;
-                        str35 = str29;
-                        str36 = str8;
-                        str34 = str_Err5;
-                        k2 = k4;
-                        database2 = this;
-                        String[][] strArr322222222222222222222222222222222222222 = database2.mang;
-                        strArr322222222222222222222222222222222222222[k][0] = strArr322222222222222222222222222222222222222[k][0].replaceAll(str38, theodoi5);
-                        String[][] strArr2222222222222222222222222222222222222222 = database2.mang;
-                        strArr2222222222222222222222222222222222222222[k][0] = strArr2222222222222222222222222222222222222222[k][0].replaceAll(str37, theodoi5);
-                        database2.mang[k][0] = str38 + database2.mang[k][0] + str37;
-                        rw = k;
-                        str47 = soxien2;
-                        database3 = database2;
-                        str8 = str36;
-                        str7 = str35;
-                        str_Err5 = str34;
-                        k4 = k2;
-                        str57 = str33;
-                        so_tin3 = str32;
-                        str4 = str30;
-                        str6 = theodoi5;
-                        str52 = str38;
-                        str51 = str37;
-                        str_Err2 = str_Err2;
-                        theodoi7 = theodoi4;
-                        str54 = str44;
-                        str44 = str31;
-                    }
-                    rw = k;
-                    str47 = soxien2;
-                    database3 = database2;
-                    str8 = str36;
-                    str7 = str35;
-                    str_Err5 = str34;
-                    k4 = k2;
-                    str57 = str33;
-                    so_tin3 = str32;
-                    str4 = str30;
-                    str6 = theodoi5;
-                    str52 = str38;
-                    str51 = str37;
-                    str_Err2 = str_Err2;
-                    theodoi7 = theodoi4;
-                    str54 = str44;
-                    str44 = str31;
                 }
                 database = database3;
                 TinGoc = so_tin3;
@@ -2909,15 +985,15 @@ public class Database extends SQLiteOpenHelper {
                             str17 = TinGoc2;
                             TinGoc5 = TinGoc3;
                         } else {
-                            if (database.mang[rw2][1].indexOf(str13) <= -1) {
+                            if (!database.mang[rw2][1].contains(str13)) {
                                 str16 = str46;
                                 str17 = TinGoc2;
-                                if (database.mang[rw2][1].indexOf(str17) <= -1) {
+                                if (!database.mang[rw2][1].contains(str17)) {
                                     TinGoc5 = TinGoc3;
                                     if (database.mang[rw2][1].indexOf(TinGoc) <= -1) {
                                         TinGoc = TinGoc;
-                                        if (database.mang[rw2][1].indexOf("xg") <= -1) {
-                                            if (database.mang[rw2][1].indexOf("de dau nhat") > -1 || database.mang[rw2][1].indexOf("de dit nhat") > -1 || database.mang[rw2][1].indexOf("hai cua") > -1) {
+                                        if (!database.mang[rw2][1].contains("xg")) {
+                                            if (database.mang[rw2][1].contains("de dau nhat") || database.mang[rw2][1].contains("de dit nhat") || database.mang[rw2][1].indexOf("hai cua") > -1) {
                                                 nhat2 = true;
                                             }
                                         }
@@ -3048,7 +1124,7 @@ public class Database extends SQLiteOpenHelper {
                         str20 = str9;
                         String[][] strArr18 = database.mang;
                         TinXuly3 = str_Err4;
-                        if (strArr18[rw2][1] == "hai cua") {
+                        if (strArr18[rw2][1].equals("hai cua")) {
                             String TinXuly7 = TinXuly4 + "de dit db:" + database.mang[rw2][4].trim() + "x" + database.mang[rw2][5] + str65;
                             String[] So3 = database.mang[rw2][4].split(theodoi6);
                             JSONObject json_hc = new JSONObject();
@@ -3068,13 +1144,13 @@ public class Database extends SQLiteOpenHelper {
                             str18 = str65;
                             i2 = i2;
                             str21 = str14;
-                        } else if (strArr18[rw2][1].indexOf(str13) > -1 || database.mang[rw2][1].indexOf(str17) > -1 || database.mang[rw2][1].indexOf("xg") > -1) {
+                        } else if (strArr18[rw2][1].contains(str13) || database.mang[rw2][1].contains(str17) || database.mang[rw2][1].contains("xg")) {
                             str21 = str14;
                             String[] mArr = database.mang[rw2][4].split(str21);
                             int i10 = 0;
                             while (i10 < mArr.length) {
                                 TinXuly4 = TinXuly4 + database.mang[rw2][1] + ":" + mArr[i10] + "x" + database.mang[rw2][5] + str65;
-                                if (database.mang[rw2][1].indexOf(str17) > -1) {
+                                if (database.mang[rw2][1].contains(str17)) {
                                     String[] XienQuay = database.xuly_Xq(mArr[i10]).split(str21);
                                     JSONObject json_xq = new JSONObject();
                                     str23 = theodoi6;
@@ -3570,35 +1646,30 @@ public class Database extends SQLiteOpenHelper {
                 if (!cursor.moveToNext()) {
                     break;
                 }
-                try {
-                    if (json_LoKhong.has(cursor.getString(1))) {
-                        jsonSoCt.put(str, cursor.getString(1));
-                        jsonSoCt.put("Da_nhan", cursor.getInt(2));
-                        jsonSoCt.put("Da_tra", cursor.getInt(3));
-                        jsonSoCt.put("Khong_Tien", json_LoKhong.getInt(cursor.getString(1)));
-                        jsonSoCt.put("Se_tra", (jsonSoCt.getInt("Da_nhan") - jsonSoCt.getInt("Da_tra")) - jsonSoCt.getInt("Khong_Tien"));
-                        if (jsonSoCt.getInt("Se_tra") > 0) {
-                            jSon_Deb.put(cursor.getString(1), jsonSoCt.toString());
-                            mDate = mDate;
-                            calendar = calendar;
-                            dmyFormat = dmyFormat;
-                            hourFormat = hourFormat;
-                        } else {
-                            mDate = mDate;
-                            calendar = calendar;
-                            dmyFormat = dmyFormat;
-                            hourFormat = hourFormat;
-                        }
+
+                if (json_LoKhong.has(cursor.getString(1))) {
+                    jsonSoCt.put(str, cursor.getString(1));
+                    jsonSoCt.put("Da_nhan", cursor.getInt(2));
+                    jsonSoCt.put("Da_tra", cursor.getInt(3));
+                    jsonSoCt.put("Khong_Tien", json_LoKhong.getInt(cursor.getString(1)));
+                    jsonSoCt.put("Se_tra", (jsonSoCt.getInt("Da_nhan") - jsonSoCt.getInt("Da_tra")) - jsonSoCt.getInt("Khong_Tien"));
+                    if (jsonSoCt.getInt("Se_tra") > 0) {
+                        jSon_Deb.put(cursor.getString(1), jsonSoCt.toString());
+                        mDate = mDate;
+                        calendar = calendar;
+                        dmyFormat = dmyFormat;
+                        hourFormat = hourFormat;
                     } else {
                         mDate = mDate;
                         calendar = calendar;
                         dmyFormat = dmyFormat;
                         hourFormat = hourFormat;
                     }
-                } catch (JSONException e2) {
-                    e = e2;
-                    e.printStackTrace();
-                    return Str2;
+                } else {
+                    mDate = mDate;
+                    calendar = calendar;
+                    dmyFormat = dmyFormat;
+                    hourFormat = hourFormat;
                 }
             }
             if (jSon_Deb.length() <= 0) {
@@ -3681,9 +1752,6 @@ public class Database extends SQLiteOpenHelper {
                     cursor = cursor;
                     jsonValues = jsonValues;
                 } catch (JSONException e7) {
-                    e = e7;
-                    Str2 = Str2;
-                    e.printStackTrace();
                     return Str2;
                 }
             }
@@ -3751,47 +1819,16 @@ public class Database extends SQLiteOpenHelper {
                     break;
                 }
                 JSONObject jsonSoCt = new JSONObject();
-                try {
-                    jsonSoCt.put(Str1, cursor.getString(1));
-                    jsonSoCt.put("Da_nhan", cursor.getInt(2));
-                    jsonSoCt.put("Da_tra", cursor.getInt(3));
-                    if (jsonXien.has("xien2")) {
-                        try {
-                            if (jsonSoCt.getString(Str1).length() == 5) {
-                                jsonSoCt.put("Khong_Tien", jsonXien.getInt("xien2"));
-                                jsonSoCt.put("Se_tra", (jsonSoCt.getInt("Da_nhan") - jsonSoCt.getInt("Da_tra")) - jsonSoCt.getInt("Khong_Tien"));
-                                if (jsonSoCt.getInt("Se_tra") > 0) {
-                                    jSon_Deb.put(cursor.getString(1), jsonSoCt.toString());
-                                }
-                                hourFormat = hourFormat;
-                                Str12 = Str12;
-                                dmyFormat = dmyFormat;
-                                Str2 = Str2;
-                                mDate = mDate;
-                            }
-                        } catch (JSONException e2) {
-                            e = e2;
-                            Str2 = Str2;
-                            e.printStackTrace();
-                            return Str2;
-                        }
-                    }
-                    if (!jsonXien.has("xien3") || jsonSoCt.getString(Str1).length() != 8) {
-                        if (jsonXien.has("xien4") && jsonSoCt.getString(Str1).length() == 11) {
-                            jsonSoCt.put("Khong_Tien", jsonXien.getInt("xien4"));
-                            jsonSoCt.put("Se_tra", (jsonSoCt.getInt("Da_nhan") - jsonSoCt.getInt("Da_tra")) - jsonSoCt.getInt("Khong_Tien"));
-                        }
-                        if (jsonSoCt.getInt("Se_tra") > 0) {
-                        }
-                        hourFormat = hourFormat;
-                        Str12 = Str12;
-                        dmyFormat = dmyFormat;
-                        Str2 = Str2;
-                        mDate = mDate;
-                    } else {
-                        jsonSoCt.put("Khong_Tien", jsonXien.getInt("xien3"));
+
+                jsonSoCt.put(Str1, cursor.getString(1));
+                jsonSoCt.put("Da_nhan", cursor.getInt(2));
+                jsonSoCt.put("Da_tra", cursor.getInt(3));
+                if (jsonXien.has("xien2")) {
+                    if (jsonSoCt.getString(Str1).length() == 5) {
+                        jsonSoCt.put("Khong_Tien", jsonXien.getInt("xien2"));
                         jsonSoCt.put("Se_tra", (jsonSoCt.getInt("Da_nhan") - jsonSoCt.getInt("Da_tra")) - jsonSoCt.getInt("Khong_Tien"));
                         if (jsonSoCt.getInt("Se_tra") > 0) {
+                            jSon_Deb.put(cursor.getString(1), jsonSoCt.toString());
                         }
                         hourFormat = hourFormat;
                         Str12 = Str12;
@@ -3799,10 +1836,29 @@ public class Database extends SQLiteOpenHelper {
                         Str2 = Str2;
                         mDate = mDate;
                     }
-                } catch (JSONException e3) {
-                    e = e3;
-                    e.printStackTrace();
-                    return Str2;
+                }
+                if (!jsonXien.has("xien3") || jsonSoCt.getString(Str1).length() != 8) {
+                    if (jsonXien.has("xien4") && jsonSoCt.getString(Str1).length() == 11) {
+                        jsonSoCt.put("Khong_Tien", jsonXien.getInt("xien4"));
+                        jsonSoCt.put("Se_tra", (jsonSoCt.getInt("Da_nhan") - jsonSoCt.getInt("Da_tra")) - jsonSoCt.getInt("Khong_Tien"));
+                    }
+                    if (jsonSoCt.getInt("Se_tra") > 0) {
+                    }
+                    hourFormat = hourFormat;
+                    Str12 = Str12;
+                    dmyFormat = dmyFormat;
+                    Str2 = Str2;
+                    mDate = mDate;
+                } else {
+                    jsonSoCt.put("Khong_Tien", jsonXien.getInt("xien3"));
+                    jsonSoCt.put("Se_tra", (jsonSoCt.getInt("Da_nhan") - jsonSoCt.getInt("Da_tra")) - jsonSoCt.getInt("Khong_Tien"));
+                    if (jsonSoCt.getInt("Se_tra") > 0) {
+                    }
+                    hourFormat = hourFormat;
+                    Str12 = Str12;
+                    dmyFormat = dmyFormat;
+                    Str2 = Str2;
+                    mDate = mDate;
                 }
             }
             try {
@@ -4557,9 +2613,9 @@ public class Database extends SQLiteOpenHelper {
                     strArr73[4] = sb12.toString();
                     i = 4;
                 }
-            } else if (this.mang[rw][1].indexOf("xq") > -1) {
-                if (this.mang[rw][2].indexOf("xq") <= -1 || this.mang[rw][2].trim().indexOf("xq") <= 0) {
-                    if (this.mang[rw][2].indexOf("xqa") > -1) {
+            } else if (this.mang[rw][1].contains("xq")) {
+                if (!this.mang[rw][2].contains("xq") || this.mang[rw][2].trim().indexOf("xq") <= 0) {
+                    if (this.mang[rw][2].contains("xqa")) {
                         String[] Danxi4 = this.mang[rw][2].split("xqa");
                         this.mang[rw][1] = "xq dau";
                         Danxi = Danxi4;
@@ -4598,16 +2654,15 @@ public class Database extends SQLiteOpenHelper {
                     String[] ArrXien5 = this.mang[rw][c].split(" ");
                     boolean ktra3 = false;
                     int s13 = 0;
-                    while (true) {
-                        if (s13 >= ArrXien5.length) {
-                            break;
-                        } else if (ArrXien5[s13].replaceAll(",", "").length() != 2 || !Congthuc.isNumeric(ArrXien5[s13].replaceAll(",", ""))) {
-                            ktra3 = true;
-                        } else {
-                            s13++;
-                        }
-                    }
-                    ktra3 = true;
+//                    while (true) {
+//                        if (s13 >= ArrXien5.length) {
+//                            break;
+//                        } else if (ArrXien5[s13].replaceAll(",", "").length() != 2 || !Congthuc.isNumeric(ArrXien5[s13].replaceAll(",", ""))) {
+//                            ktra3 = true;
+//                        } else {
+//                            s13++;
+//                        }
+//                    }
                     if (ktra3 || ArrXien5.length >= 8) {
                         c2 = 4;
                     } else {
@@ -4617,82 +2672,81 @@ public class Database extends SQLiteOpenHelper {
                     }
                     String[] ArrXien6 = this.mang[rw][c2].split(" ");
                     int i11 = 0;
-                    while (i11 < ArrXien6.length) {
-                        String ss3 = Congthuc.XulySo(ArrXien6[i11]);
-                        if (ss3.length() >= 8 && ss3.length() <= 12) {
-                            if (ss3.indexOf("Không hiểu") <= -1) {
-                                if (this.mang[rw][1] != "xq" || ss3.length() >= 8) {
-                                    String[] danlayS4 = ss3.split(",");
-                                    int i46 = 0;
-                                    while (i46 < danlayS4.length) {
-                                        if (danlayS4[i46].length() == 2 && Congthuc.isNumeric(danlayS4[i46])) {
-                                            Danxi2 = Danxi;
-                                        } else if (this.mang[rw][4].length() > 4) {
-                                            String[] strArr79 = this.mang[rw];
-                                            StringBuilder sb13 = new StringBuilder();
-                                            sb13.append("Không hiểu ");
-                                            Danxi2 = Danxi;
-                                            sb13.append(this.mang[rw][2]);
-                                            strArr79[4] = sb13.toString();
-                                        } else {
-                                            Danxi2 = Danxi;
-                                            this.mang[rw][4] = "Không hiểu " + this.mang[rw][0];
-                                        }
-                                        i46++;
-                                        Danxienghep = Danxienghep;
-                                        Danxi = Danxi2;
-                                    }
-                                } else {
-                                    this.mang[rw][4] = "Không hiểu " + this.mang[rw][0];
-                                }
-                                i11++;
-                                Danxienghep = Danxienghep;
-                                Danxi = Danxi;
-                            }
-                        }
-                        if (ArrXien6[i11].length() > 8) {
-                            c3 = 4;
-                            this.mang[rw][4] = "Không hiểu " + this.mang[rw][2];
-                        } else {
-                            c3 = 4;
-                            this.mang[rw][4] = "Không hiểu " + this.mang[rw][0];
-                        }
-                        if (this.mang[rw][c3].indexOf("Không hiểu") == -1) {
-                            this.mang[rw][c3] = "";
-                            int i12 = 0;
-                            String soxien3 = "";
-                            while (true) {
-                                if (i12 >= ArrXien6.length) {
-                                    break;
-                                }
-                                try {
-                                    soxien3 = Congthuc.XulySo(ArrXien6[i12]);
-                                } catch (Exception e3) {
-                                    this.mang[rw][4] = "Không hiểu " + ArrXien6[i12];
-                                }
-                                if (soxien3.indexOf("Không hiểu") != -1) {
-                                    break;
-                                }
-                                boolean check3 = false;
-                                for (String str3 : soxien3.split(",")) {
-                                    if (soxien3.length() - soxien3.replaceAll(str3, "").length() > 2) {
-                                        check3 = true;
-                                    }
-                                }
-                                if (soxien3.length() < 5 || soxien3.length() > 12 || check3) {
-                                    this.mang[rw][4] = "Không hiểu " + this.mang[rw][2];
-                                } else {
-                                    this.mang[rw][4] = this.mang[rw][4] + Congthuc.sortXien(soxien3) + " ";
-                                    i12++;
-                                }
-                            }
-                        }
-                        i = 4;
-                    }
+//                    while (i11 < ArrXien6.length) {
+//                        String ss3 = Congthuc.XulySo(ArrXien6[i11]);
+//                        if (ss3.length() >= 8 && ss3.length() <= 12) {
+//                            if (ss3.indexOf("Không hiểu") <= -1) {
+//                                if (this.mang[rw][1] != "xq" || ss3.length() >= 8) {
+//                                    String[] danlayS4 = ss3.split(",");
+//                                    int i46 = 0;
+//                                    while (i46 < danlayS4.length) {
+//                                        if (danlayS4[i46].length() == 2 && Congthuc.isNumeric(danlayS4[i46])) {
+//                                            Danxi2 = Danxi;
+//                                        } else if (this.mang[rw][4].length() > 4) {
+//                                            String[] strArr79 = this.mang[rw];
+//                                            StringBuilder sb13 = new StringBuilder();
+//                                            sb13.append("Không hiểu ");
+//                                            Danxi2 = Danxi;
+//                                            sb13.append(this.mang[rw][2]);
+//                                            strArr79[4] = sb13.toString();
+//                                        } else {
+//                                            Danxi2 = Danxi;
+//                                            this.mang[rw][4] = "Không hiểu " + this.mang[rw][0];
+//                                        }
+//                                        i46++;
+//                                        Danxienghep = Danxienghep;
+//                                        Danxi = Danxi2;
+//                                    }
+//                                } else {
+//                                    this.mang[rw][4] = "Không hiểu " + this.mang[rw][0];
+//                                }
+//                                i11++;
+//                                Danxienghep = Danxienghep;
+//                                Danxi = Danxi;
+//                            }
+//                        }
+//                        if (ArrXien6[i11].length() > 8) {
+//                            c3 = 4;
+//                            this.mang[rw][4] = "Không hiểu " + this.mang[rw][2];
+//                        } else {
+//                            c3 = 4;
+//                            this.mang[rw][4] = "Không hiểu " + this.mang[rw][0];
+//                        }
+//                        if (this.mang[rw][c3].indexOf("Không hiểu") == -1) {
+//                            this.mang[rw][c3] = "";
+//                            int i12 = 0;
+//                            String soxien3 = "";
+//                            while (true) {
+//                                if (i12 >= ArrXien6.length) {
+//                                    break;
+//                                }
+//                                try {
+//                                    soxien3 = Congthuc.XulySo(ArrXien6[i12]);
+//                                } catch (Exception e3) {
+//                                    this.mang[rw][4] = "Không hiểu " + ArrXien6[i12];
+//                                }
+//                                if (soxien3.indexOf("Không hiểu") != -1) {
+//                                    break;
+//                                }
+//                                boolean check3 = false;
+//                                for (String str3 : soxien3.split(",")) {
+//                                    if (soxien3.length() - soxien3.replaceAll(str3, "").length() > 2) {
+//                                        check3 = true;
+//                                    }
+//                                }
+//                                if (soxien3.length() < 5 || soxien3.length() > 12 || check3) {
+//                                    this.mang[rw][4] = "Không hiểu " + this.mang[rw][2];
+//                                } else {
+//                                    this.mang[rw][4] = this.mang[rw][4] + Congthuc.sortXien(soxien3) + " ";
+//                                    i12++;
+//                                }
+//                            }
+//                        }
+//                        i = 4;
+//                    }
                     c3 = 4;
                     if (this.mang[rw][c3].indexOf("Không hiểu") == -1) {
                     }
-                    i = 4;
                 } else {
                     String[] strArr80 = this.mang[rw];
                     StringBuilder sb14 = new StringBuilder();
@@ -4700,8 +2754,8 @@ public class Database extends SQLiteOpenHelper {
                     String[][] strArr81 = this.mang;
                     sb14.append(strArr81[rw][2].substring(0, strArr81[rw][2].indexOf("xq")));
                     strArr80[4] = sb14.toString();
-                    i = 4;
                 }
+                i = 4;
             } else if (this.mang[rw][1].indexOf("xg") <= -1) {
                 i = 4;
             } else if (this.mang[rw][2].indexOf("xg") <= -1 || this.mang[rw][2].trim().indexOf("xg") <= 0) {
@@ -4883,7 +2937,7 @@ public class Database extends SQLiteOpenHelper {
                                 mThe_loai = "dea";
                             } else {
                                 try {
-                                    mThe_loai = dan.getString(str5).indexOf("de dit db") > -1 ? "deb" : dan.getString(str5).indexOf("de 8") > -1 ? "det" : dan.getString(str5).indexOf("de dau nhat") > -1 ? "dec" : dan.getString(str5).indexOf("de dit nhat") > -1 ? "ded" : dan.getString(str5).indexOf("bc dau") > -1 ? "bca" : dan.getString(str5).indexOf("bc") > -1 ? "bc" : dan.getString(str5).indexOf("lo dau") > -1 ? "loa" : dan.getString(str5).indexOf("lo") > -1 ? "lo" : dan.getString(str5).indexOf("xien dau") > -1 ? "xia" : (dan.getString(str5).indexOf(str6) > -1 || dan.getString(str5).indexOf("xg") > -1) ? str6 : dan.getString(str5).indexOf("xn") > -1 ? "xn" : mThe_loai3;
+                                    mThe_loai = dan.getString(str5).contains("de dit db") ? "deb" : dan.getString(str5).indexOf("de 8") > -1 ? "det" : dan.getString(str5).indexOf("de dau nhat") > -1 ? "dec" : dan.getString(str5).indexOf("de dit nhat") > -1 ? "ded" : dan.getString(str5).indexOf("bc dau") > -1 ? "bca" : dan.getString(str5).indexOf("bc") > -1 ? "bc" : dan.getString(str5).indexOf("lo dau") > -1 ? "loa" : dan.getString(str5).indexOf("lo") > -1 ? "lo" : dan.getString(str5).indexOf("xien dau") > -1 ? "xia" : (dan.getString(str5).indexOf(str6) > -1 || dan.getString(str5).indexOf("xg") > -1) ? str6 : dan.getString(str5).indexOf("xn") > -1 ? "xn" : mThe_loai3;
                                 } catch (Exception e7) {
                                     ih = ih2;
                                     cursor_ktra2 = c;
@@ -4921,35 +2975,12 @@ public class Database extends SQLiteOpenHelper {
                                         } else {
                                             if (mThe_loai.indexOf("lo") > -1) {
                                                 str4 = str43;
-                                                try {
-                                                    mKhachGiu2 = database.caidat_tg.getInt("khgiu_lo");
-                                                    mKhachGiu = database.caidat_tg.getInt("dlgiu_lo");
-                                                } catch (Exception e8) {
-                                                    e = e8;
-                                                    cursor = cursor2;
-                                                    ih = ih2;
-                                                    cursor_ktra2 = c;
-                                                    e.printStackTrace();
-                                                    db3.endTransaction();
-                                                    ih.close();
-                                                    db3.close();
-                                                    if (!cursor_ktra2.isClosed()) {
-                                                    }
-                                                    if (!cursor.isClosed()) {
-                                                    }
-                                                    cursor_ktra.close();
-                                                } catch (Throwable th5) {
-                                                    th = th5;
-                                                    ih = ih2;
-                                                    db3.endTransaction();
-                                                    ih.close();
-                                                    db3.close();
-                                                    throw th;
-                                                }
+                                                mKhachGiu2 = database.caidat_tg.getInt("khgiu_lo");
+                                                mKhachGiu = database.caidat_tg.getInt("dlgiu_lo");
                                             } else {
                                                 str4 = str43;
                                                 if (mThe_loai.indexOf(str6) <= -1) {
-                                                    if (mThe_loai.indexOf("xq") <= -1) {
+                                                    if (!mThe_loai.contains("xq")) {
                                                         if (mThe_loai.indexOf("xn") > -1) {
                                                             mKhachGiu2 = database.caidat_tg.getInt("khgiu_xn");
                                                             mKhachGiu = database.caidat_tg.getInt("dlgiu_xn");
@@ -5021,282 +3052,118 @@ public class Database extends SQLiteOpenHelper {
                                             }
                                             mGia = mGia2;
                                             mDiem = Integer.parseInt(str3);
-                                            try {
-                                                if (mThe_loai.indexOf("deb") > -1) {
-                                                    try {
-                                                        if (database.caidat_tg.getInt("heso_de") == 2) {
-                                                            Double.isNaN(mDiem);
-                                                            mDiemquydoi = (int) (0.875d * mDiem);
-                                                            cursor_ktra2 = c;
-                                                            if (cursor_ktra2.getInt(3) == 1) {
-                                                                mDiem_DlyGiu = (int) ((mDiemquydoi * mKhachGiu) / 100.0d);
-                                                                mLanAn2 = mLanAn;
-                                                                mDiem_KhachGiu = (int) ((mDiemquydoi * mKhachGiu2) / 100.0d);
-                                                                mDlyGiu = mKhachGiu;
-                                                                mLanAn3 = mKhachGiu2;
-                                                            } else {
-                                                                mLanAn2 = mLanAn;
-                                                                mDlyGiu = 0.0d;
-                                                                mLanAn3 = 0.0d;
-                                                                mDiem_DlyGiu = 0;
-                                                                mDiem_KhachGiu = 0;
-                                                            }
-                                                            double mKhachGiu3 = mLanAn3;
-                                                            double mKhachGiu4 = mDiem_KhachGiu;
-                                                            Double.isNaN(mKhachGiu4);
-                                                            double d = mDiemquydoi - mKhachGiu4;
-                                                            double mDiemquydoi2 = mDiemquydoi;
-                                                            double mDiemquydoi3 = mDiem_DlyGiu;
-                                                            Double.isNaN(mDiemquydoi3);
-                                                            int mDiemton = (int) (d - mDiemquydoi3);
-                                                            String str8 = ",";
-                                                            if ("dea,deb,dec,ded,det,lo,loa,bc,bca".indexOf(mThe_loai) > -1) {
-                                                                try {
-                                                                    str2 = str4.split(str8);
-                                                                } catch (Exception e10) {
-                                                                    e = e10;
-                                                                    cursor = cursor2;
-                                                                    ih = ih2;
-                                                                } catch (Throwable th7) {
-                                                                    th = th7;
-                                                                    ih = ih2;
-                                                                    db3.endTransaction();
-                                                                    ih.close();
-                                                                    db3.close();
-                                                                    throw th;
-                                                                }
-                                                            } else {
-                                                                str2 = str4.split(" ");
-                                                            }
-                                                            length = str2.length;
-                                                            i = 0;
-                                                            while (i < length) {
-                                                                String So_chon = str2[i].trim();
-                                                                if (So_chon.endsWith(str8)) {
-                                                                    mDiem_KhachGiu2 = mDiem_KhachGiu;
-                                                                    mDiem_DlyGiu2 = mDiem_DlyGiu;
-                                                                    So_chon = So_chon.substring(0, So_chon.length() - 1);
-                                                                } else {
-                                                                    mDiem_KhachGiu2 = mDiem_KhachGiu;
-                                                                    mDiem_DlyGiu2 = mDiem_DlyGiu;
-                                                                }
-                                                                if (mThe_loai.indexOf(str6) > -1 && So_chon.length() == 5) {
-                                                                    mGia = database.caidat_gia.getDouble(str7);
-                                                                    mLanAn2 = database.caidat_gia.getDouble("an_x2");
-                                                                } else if (mThe_loai.indexOf(str6) > -1 && So_chon.length() == 8) {
-                                                                    mGia = database.caidat_gia.getDouble("gia_x3");
-                                                                    mLanAn2 = database.caidat_gia.getDouble("an_x3");
-                                                                } else if (mThe_loai.indexOf(str6) > -1 && So_chon.length() == 11) {
-                                                                    mGia = database.caidat_gia.getDouble("gia_x4");
-                                                                    mLanAn2 = database.caidat_gia.getDouble("an_x4");
-                                                                }
-                                                                Double.isNaN(mDiem);
-                                                                double mThanhTien = mDiem * mGia;
-                                                                ih2.prepareForInsert();
-                                                                ih = ih2;
-                                                                try {
-                                                                    ih.bind(ih.getColumnIndex("ID"), (byte[]) null);
-                                                                    try {
-                                                                        ih.bind(ih.getColumnIndex("ngay_nhan"), mNgay_Nhan);
-                                                                        mNgay_Nhan = mNgay_Nhan;
-                                                                        ih.bind(ih.getColumnIndex("type_kh"), cursor_ktra2.getInt(3));
-                                                                        try {
-                                                                            ih.bind(ih.getColumnIndex("ten_kh"), cursor2.getString(0));
-                                                                            ih.bind(ih.getColumnIndex("so_dienthoai"), cursor_ktra2.getString(5));
-                                                                            ih.bind(ih.getColumnIndex("so_tin_nhan"), cursor_ktra2.getInt(7));
-                                                                            ih.bind(ih.getColumnIndex(str), mThe_loai);
-                                                                            ih.bind(ih.getColumnIndex("so_chon"), So_chon);
-                                                                            ih.bind(ih.getColumnIndex("diem"), mDiem);
-                                                                            ih.bind(ih.getColumnIndex("diem_quydoi"), mDiemquydoi2);
-                                                                        } catch (Exception e11) {
-                                                                            e = e11;
-                                                                            cursor = cursor2;
-                                                                            e.printStackTrace();
-                                                                            db3.endTransaction();
-                                                                            ih.close();
-                                                                            db3.close();
-                                                                            if (!cursor_ktra2.isClosed()) {
-                                                                            }
-                                                                            if (!cursor.isClosed()) {
-                                                                            }
-                                                                            cursor_ktra.close();
-                                                                        } catch (Throwable th8) {
-                                                                            th = th8;
-                                                                            db3.endTransaction();
-                                                                            ih.close();
-                                                                            db3.close();
-                                                                            throw th;
-                                                                        }
-                                                                    } catch (Exception e12) {
-                                                                        e = e12;
-                                                                        cursor = cursor2;
-                                                                        e.printStackTrace();
-                                                                        db3.endTransaction();
-                                                                        ih.close();
-                                                                        db3.close();
-                                                                        if (!cursor_ktra2.isClosed()) {
-                                                                        }
-                                                                        if (!cursor.isClosed()) {
-                                                                        }
-                                                                        cursor_ktra.close();
-                                                                    } catch (Throwable th9) {
-                                                                        th = th9;
-                                                                        db3.endTransaction();
-                                                                        ih.close();
-                                                                        db3.close();
-                                                                        throw th;
-                                                                    }
-                                                                    try {
-                                                                        ih.bind(ih.getColumnIndex("diem_khachgiu"), mKhachGiu3);
-                                                                        mKhachGiu3 = mKhachGiu3;
-                                                                        ih.bind(ih.getColumnIndex("diem_dly_giu"), mDlyGiu);
-                                                                        ih.bind(ih.getColumnIndex("diem_ton"), mDiemton);
-                                                                        ih.bind(ih.getColumnIndex("gia"), mGia * 1000.0d);
-                                                                        ih.bind(ih.getColumnIndex("lan_an"), mLanAn2 * 1000.0d);
-                                                                        ih.bind(ih.getColumnIndex("so_nhay"), 0);
-                                                                        ih.bind(ih.getColumnIndex("tong_tien"), mThanhTien * 1000.0d);
-                                                                        ih.bind(ih.getColumnIndex("ket_qua"), 0);
-                                                                        ih.execute();
-                                                                        i++;
-                                                                        database = this;
-                                                                        mDiemquydoi2 = mDiemquydoi2;
-                                                                        str4 = str4;
-                                                                        str2 = str2;
-                                                                        cursor2 = cursor2;
-                                                                        mDiem_DlyGiu = mDiem_DlyGiu2;
-                                                                        mDiem_KhachGiu = mDiem_KhachGiu2;
-                                                                        mDiemton = mDiemton;
-                                                                        str = str;
-                                                                        str7 = str7;
-                                                                        ih2 = ih;
-                                                                        mDlyGiu = mDlyGiu;
-                                                                        mThe_loai = mThe_loai;
-                                                                        str8 = str8;
-                                                                        str6 = str6;
-                                                                        mDiem = mDiem;
-                                                                    } catch (Exception e13) {
-                                                                        e = e13;
-                                                                        cursor = cursor2;
-                                                                        e.printStackTrace();
-                                                                        db3.endTransaction();
-                                                                        ih.close();
-                                                                        db3.close();
-                                                                        if (!cursor_ktra2.isClosed()) {
-                                                                        }
-                                                                        if (!cursor.isClosed()) {
-                                                                        }
-                                                                        cursor_ktra.close();
-                                                                    } catch (Throwable th10) {
-                                                                        th = th10;
-                                                                        db3.endTransaction();
-                                                                        ih.close();
-                                                                        db3.close();
-                                                                        throw th;
-                                                                    }
-                                                                } catch (Exception e14) {
-                                                                    e = e14;
-                                                                    cursor = cursor2;
-                                                                    e.printStackTrace();
-                                                                    db3.endTransaction();
-                                                                    ih.close();
-                                                                    db3.close();
-                                                                    if (!cursor_ktra2.isClosed()) {
-                                                                    }
-                                                                    if (!cursor.isClosed()) {
-                                                                    }
-                                                                    cursor_ktra.close();
-                                                                } catch (Throwable th11) {
-                                                                    th = th11;
-                                                                    db3.endTransaction();
-                                                                    ih.close();
-                                                                    db3.close();
-                                                                    throw th;
-                                                                }
-                                                            }
-                                                            ih = ih2;
-                                                            database = this;
-                                                            mThe_loai3 = mThe_loai;
-                                                            c = cursor_ktra2;
-                                                            keys = keys;
-                                                            mDlyGiu2 = mLanAn2;
-                                                            mThe_loai2 = mThe_loai2;
-                                                            mTenKH = mTenKH;
-                                                            c2 = cursor_ktra;
-                                                            db2 = db3;
-                                                            mNgay_Nhan2 = mNgay_Nhan;
-                                                            str42 = str4;
-                                                            cursor3 = cursor2;
-                                                            str5 = str;
-                                                        }
-                                                    } catch (Exception e15) {
-                                                        e = e15;
-                                                        cursor = cursor2;
-                                                        ih = ih2;
-                                                        cursor_ktra2 = c;
-                                                        e.printStackTrace();
-                                                        db3.endTransaction();
-                                                        ih.close();
-                                                        db3.close();
-                                                        if (!cursor_ktra2.isClosed()) {
-                                                        }
-                                                        if (!cursor.isClosed()) {
-                                                        }
-                                                        cursor_ktra.close();
-                                                    } catch (Throwable th12) {
-                                                        th = th12;
-                                                        ih = ih2;
-                                                        db3.endTransaction();
-                                                        ih.close();
-                                                        db3.close();
-                                                        throw th;
-                                                    }
-                                                }
-                                                if (mThe_loai.indexOf("det") > -1 || database.caidat_tg.getInt("heso_de") != 1) {
-                                                    mDiemquydoi = mDiem;
-                                                } else {
+
+                                            if (mThe_loai.indexOf("deb") > -1) {
+
+                                                if (database.caidat_tg.getInt("heso_de") == 2) {
                                                     Double.isNaN(mDiem);
-                                                    mDiemquydoi = (int) (1.143d * mDiem);
-                                                }
-                                                cursor_ktra2 = c;
-                                                try {
+                                                    mDiemquydoi = (int) (0.875d * mDiem);
+                                                    cursor_ktra2 = c;
                                                     if (cursor_ktra2.getInt(3) == 1) {
+                                                        mDiem_DlyGiu = (int) ((mDiemquydoi * mKhachGiu) / 100.0d);
+                                                        mLanAn2 = mLanAn;
+                                                        mDiem_KhachGiu = (int) ((mDiemquydoi * mKhachGiu2) / 100.0d);
+                                                        mDlyGiu = mKhachGiu;
+                                                        mLanAn3 = mKhachGiu2;
+                                                    } else {
+                                                        mLanAn2 = mLanAn;
+                                                        mDlyGiu = 0.0d;
+                                                        mLanAn3 = 0.0d;
+                                                        mDiem_DlyGiu = 0;
+                                                        mDiem_KhachGiu = 0;
                                                     }
-                                                    double mKhachGiu32 = mLanAn3;
-                                                    double mKhachGiu42 = mDiem_KhachGiu;
-                                                    Double.isNaN(mKhachGiu42);
-                                                    double d2 = mDiemquydoi - mKhachGiu42;
-                                                    double mDiemquydoi22 = mDiemquydoi;
-                                                    double mDiemquydoi32 = mDiem_DlyGiu;
-                                                    Double.isNaN(mDiemquydoi32);
-                                                    int mDiemton2 = (int) (d2 - mDiemquydoi32);
-                                                } catch (Exception e16) {
-                                                    ih = ih2;
-                                                    e = e16;
-                                                    cursor = cursor2;
-                                                    e.printStackTrace();
-                                                    db3.endTransaction();
-                                                    ih.close();
-                                                    db3.close();
-                                                    if (!cursor_ktra2.isClosed()) {
-                                                    }
-                                                    if (!cursor.isClosed()) {
-                                                    }
-                                                    cursor_ktra.close();
-                                                } catch (Throwable th13) {
-                                                    ih = ih2;
-                                                    th = th13;
-                                                    db3.endTransaction();
-                                                    ih.close();
-                                                    db3.close();
-                                                    throw th;
-                                                }
-                                                try {
-                                                    String str82 = ",";
+                                                    double mKhachGiu3 = mLanAn3;
+                                                    double mKhachGiu4 = mDiem_KhachGiu;
+                                                    Double.isNaN(mKhachGiu4);
+                                                    double d = mDiemquydoi - mKhachGiu4;
+                                                    double mDiemquydoi2 = mDiemquydoi;
+                                                    double mDiemquydoi3 = mDiem_DlyGiu;
+                                                    Double.isNaN(mDiemquydoi3);
+                                                    int mDiemton = (int) (d - mDiemquydoi3);
+                                                    String str8 = ",";
                                                     if ("dea,deb,dec,ded,det,lo,loa,bc,bca".indexOf(mThe_loai) > -1) {
+                                                        try {
+                                                            str2 = str4.split(str8);
+                                                        } catch (Exception e10) {
+                                                            e = e10;
+                                                            cursor = cursor2;
+                                                            ih = ih2;
+                                                        } catch (Throwable th7) {
+                                                            th = th7;
+                                                            ih = ih2;
+                                                            db3.endTransaction();
+                                                            ih.close();
+                                                            db3.close();
+                                                            throw th;
+                                                        }
+                                                    } else {
+                                                        str2 = str4.split(" ");
                                                     }
                                                     length = str2.length;
                                                     i = 0;
                                                     while (i < length) {
+                                                        String So_chon = str2[i].trim();
+                                                        if (So_chon.endsWith(str8)) {
+                                                            mDiem_KhachGiu2 = mDiem_KhachGiu;
+                                                            mDiem_DlyGiu2 = mDiem_DlyGiu;
+                                                            So_chon = So_chon.substring(0, So_chon.length() - 1);
+                                                        } else {
+                                                            mDiem_KhachGiu2 = mDiem_KhachGiu;
+                                                            mDiem_DlyGiu2 = mDiem_DlyGiu;
+                                                        }
+                                                        if (mThe_loai.indexOf(str6) > -1 && So_chon.length() == 5) {
+                                                            mGia = database.caidat_gia.getDouble(str7);
+                                                            mLanAn2 = database.caidat_gia.getDouble("an_x2");
+                                                        } else if (mThe_loai.indexOf(str6) > -1 && So_chon.length() == 8) {
+                                                            mGia = database.caidat_gia.getDouble("gia_x3");
+                                                            mLanAn2 = database.caidat_gia.getDouble("an_x3");
+                                                        } else if (mThe_loai.indexOf(str6) > -1 && So_chon.length() == 11) {
+                                                            mGia = database.caidat_gia.getDouble("gia_x4");
+                                                            mLanAn2 = database.caidat_gia.getDouble("an_x4");
+                                                        }
+                                                        Double.isNaN(mDiem);
+                                                        double mThanhTien = mDiem * mGia;
+                                                        ih2.prepareForInsert();
+                                                        ih = ih2;
+
+                                                        ih.bind(ih.getColumnIndex("ID"), (byte[]) null);
+                                                        ih.bind(ih.getColumnIndex("ngay_nhan"), mNgay_Nhan);
+                                                        mNgay_Nhan = mNgay_Nhan;
+                                                        ih.bind(ih.getColumnIndex("type_kh"), cursor_ktra2.getInt(3));
+                                                        ih.bind(ih.getColumnIndex("ten_kh"), cursor2.getString(0));
+                                                        ih.bind(ih.getColumnIndex("so_dienthoai"), cursor_ktra2.getString(5));
+                                                        ih.bind(ih.getColumnIndex("so_tin_nhan"), cursor_ktra2.getInt(7));
+                                                        ih.bind(ih.getColumnIndex(str), mThe_loai);
+                                                        ih.bind(ih.getColumnIndex("so_chon"), So_chon);
+                                                        ih.bind(ih.getColumnIndex("diem"), mDiem);
+                                                        ih.bind(ih.getColumnIndex("diem_quydoi"), mDiemquydoi2);
+                                                        ih.bind(ih.getColumnIndex("diem_khachgiu"), mKhachGiu3);
+                                                        mKhachGiu3 = mKhachGiu3;
+                                                        ih.bind(ih.getColumnIndex("diem_dly_giu"), mDlyGiu);
+                                                        ih.bind(ih.getColumnIndex("diem_ton"), mDiemton);
+                                                        ih.bind(ih.getColumnIndex("gia"), mGia * 1000.0d);
+                                                        ih.bind(ih.getColumnIndex("lan_an"), mLanAn2 * 1000.0d);
+                                                        ih.bind(ih.getColumnIndex("so_nhay"), 0);
+                                                        ih.bind(ih.getColumnIndex("tong_tien"), mThanhTien * 1000.0d);
+                                                        ih.bind(ih.getColumnIndex("ket_qua"), 0);
+                                                        ih.execute();
+                                                        i++;
+                                                        database = this;
+                                                        mDiemquydoi2 = mDiemquydoi2;
+                                                        str4 = str4;
+                                                        str2 = str2;
+                                                        cursor2 = cursor2;
+                                                        mDiem_DlyGiu = mDiem_DlyGiu2;
+                                                        mDiem_KhachGiu = mDiem_KhachGiu2;
+                                                        mDiemton = mDiemton;
+                                                        str = str;
+                                                        str7 = str7;
+                                                        ih2 = ih;
+                                                        mDlyGiu = mDlyGiu;
+                                                        mThe_loai = mThe_loai;
+                                                        str8 = str8;
+                                                        str6 = str6;
+                                                        mDiem = mDiem;
                                                     }
                                                     ih = ih2;
                                                     database = this;
@@ -5312,297 +3179,112 @@ public class Database extends SQLiteOpenHelper {
                                                     str42 = str4;
                                                     cursor3 = cursor2;
                                                     str5 = str;
-                                                } catch (Exception e17) {
-                                                    ih = ih2;
-                                                    e = e17;
-                                                    cursor = cursor2;
-                                                    e.printStackTrace();
-                                                    db3.endTransaction();
-                                                    ih.close();
-                                                    db3.close();
-                                                    if (!cursor_ktra2.isClosed()) {
-                                                    }
-                                                    if (!cursor.isClosed()) {
-                                                    }
-                                                    cursor_ktra.close();
-                                                } catch (Throwable th14) {
-                                                    ih = ih2;
-                                                    th = th14;
-                                                    db3.endTransaction();
-                                                    ih.close();
-                                                    db3.close();
-                                                    throw th;
                                                 }
-                                            } catch (Exception e18) {
-                                                ih = ih2;
-                                                cursor_ktra2 = c;
-                                                e = e18;
-                                                cursor = cursor2;
-                                                e.printStackTrace();
-                                                db3.endTransaction();
-                                                ih.close();
-                                                db3.close();
-                                                if (!cursor_ktra2.isClosed()) {
-                                                }
-                                                if (!cursor.isClosed()) {
-                                                }
-                                                cursor_ktra.close();
-                                            } catch (Throwable th15) {
-                                                ih = ih2;
-                                                th = th15;
-                                                db3.endTransaction();
-                                                ih.close();
-                                                db3.close();
-                                                throw th;
                                             }
+                                            if (mThe_loai.indexOf("det") > -1 || database.caidat_tg.getInt("heso_de") != 1) {
+                                                mDiemquydoi = mDiem;
+                                            } else {
+                                                Double.isNaN(mDiem);
+                                                mDiemquydoi = (int) (1.143d * mDiem);
+                                            }
+                                            cursor_ktra2 = c;
+                                            if (cursor_ktra2.getInt(3) == 1) {
+                                            }
+                                            double mKhachGiu32 = mLanAn3;
+                                            double mKhachGiu42 = mDiem_KhachGiu;
+                                            Double.isNaN(mKhachGiu42);
+                                            double d2 = mDiemquydoi - mKhachGiu42;
+                                            double mDiemquydoi22 = mDiemquydoi;
+                                            double mDiemquydoi32 = mDiem_DlyGiu;
+                                            Double.isNaN(mDiemquydoi32);
+                                            int mDiemton2 = (int) (d2 - mDiemquydoi32);
+
+                                            String str82 = ",";
+                                            if ("dea,deb,dec,ded,det,lo,loa,bc,bca".indexOf(mThe_loai) > -1) {
+                                            }
+                                            length = str2.length;
+                                            i = 0;
+                                            while (i < length) {
+                                            }
+                                            ih = ih2;
+                                            database = this;
+                                            mThe_loai3 = mThe_loai;
+                                            c = cursor_ktra2;
+                                            keys = keys;
+                                            mDlyGiu2 = mLanAn2;
+                                            mThe_loai2 = mThe_loai2;
+                                            mTenKH = mTenKH;
+                                            c2 = cursor_ktra;
+                                            db2 = db3;
+                                            mNgay_Nhan2 = mNgay_Nhan;
+                                            str42 = str4;
+                                            cursor3 = cursor2;
+                                            str5 = str;
+
                                         }
                                     } catch (Exception e19) {
-                                        e = e19;
-                                        cursor = cursor2;
-                                        ih = ih2;
-                                        cursor_ktra2 = c;
-                                        e.printStackTrace();
-                                        db3.endTransaction();
-                                        ih.close();
-                                        db3.close();
-                                        if (!cursor_ktra2.isClosed()) {
-                                        }
-                                        if (!cursor.isClosed()) {
-                                        }
-                                        cursor_ktra.close();
                                     } catch (Throwable th16) {
-                                        th = th16;
-                                        ih = ih2;
-                                        db3.endTransaction();
-                                        ih.close();
-                                        db3.close();
-                                        throw th;
                                     }
                                 } else {
                                     str4 = str43;
                                 }
                             } catch (Exception e20) {
-                                ih = ih2;
-                                cursor_ktra2 = c;
-                                e = e20;
-                                cursor = cursor2;
-                                e.printStackTrace();
-                                db3.endTransaction();
-                                ih.close();
-                                db3.close();
-                                if (!cursor_ktra2.isClosed()) {
-                                }
-                                if (!cursor.isClosed()) {
-                                }
-                                cursor_ktra.close();
                             } catch (Throwable th17) {
-                                ih = ih2;
-                                th = th17;
-                                db3.endTransaction();
-                                ih.close();
-                                db3.close();
-                                throw th;
                             }
                         } catch (Exception e21) {
-                            db3 = db2;
-                            cursor_ktra = c2;
-                            cursor_ktra2 = c;
-                            e = e21;
-                            cursor = cursor3;
-                            e.printStackTrace();
-                            db3.endTransaction();
-                            ih.close();
-                            db3.close();
-                            if (!cursor_ktra2.isClosed()) {
-                            }
-                            if (!cursor.isClosed()) {
-                            }
-                            cursor_ktra.close();
                         } catch (Throwable th18) {
-                            db3 = db2;
-                            th = th18;
-                            db3.endTransaction();
-                            ih.close();
-                            db3.close();
-                            throw th;
                         }
-                        try {
-                            mKhachGiu2 = database.caidat_tg.getInt("khgiu_de");
-                            mKhachGiu = database.caidat_tg.getInt("dlgiu_de");
-                            str = str5;
-                            String str72 = "gia_x2";
-                            if (mThe_loai.indexOf("dea") <= -1) {
-                            }
-                        } catch (Exception e22) {
-                            ih = ih2;
-                            cursor_ktra2 = c;
-                            e = e22;
-                            cursor = cursor2;
-                            e.printStackTrace();
-                            db3.endTransaction();
-                            ih.close();
-                            db3.close();
-                            if (!cursor_ktra2.isClosed()) {
-                            }
-                            if (!cursor.isClosed()) {
-                            }
-                            cursor_ktra.close();
-                        } catch (Throwable th19) {
-                            ih = ih2;
-                            th = th19;
-                            db3.endTransaction();
-                            ih.close();
-                            db3.close();
-                            throw th;
+                        mKhachGiu2 = database.caidat_tg.getInt("khgiu_de");
+                        mKhachGiu = database.caidat_tg.getInt("dlgiu_de");
+                        str = str5;
+                        String str72 = "gia_x2";
+                        if (mThe_loai.indexOf("dea") <= -1) {
                         }
-                        try {
-                            mGia = mGia2;
-                            mDiem = Integer.parseInt(str3);
-                            if (mThe_loai.indexOf("deb") > -1) {
-                            }
-                            if (mThe_loai.indexOf("det") > -1) {
-                            }
-                            mDiemquydoi = mDiem;
-                            cursor_ktra2 = c;
-                            if (cursor_ktra2.getInt(3) == 1) {
-                            }
-                            double mKhachGiu322 = mLanAn3;
-                            double mKhachGiu422 = mDiem_KhachGiu;
-                            Double.isNaN(mKhachGiu422);
-                            double d22 = mDiemquydoi - mKhachGiu422;
-                            double mDiemquydoi222 = mDiemquydoi;
-                            double mDiemquydoi322 = mDiem_DlyGiu;
-                            Double.isNaN(mDiemquydoi322);
-                            int mDiemton22 = (int) (d22 - mDiemquydoi322);
-                            String str822 = ",";
-                            if ("dea,deb,dec,ded,det,lo,loa,bc,bca".indexOf(mThe_loai) > -1) {
-                            }
-                            length = str2.length;
-                            i = 0;
-                            while (i < length) {
-                            }
-                            ih = ih2;
-                            database = this;
-                            mThe_loai3 = mThe_loai;
-                            c = cursor_ktra2;
-                            keys = keys;
-                            mDlyGiu2 = mLanAn2;
-                            mThe_loai2 = mThe_loai2;
-                            mTenKH = mTenKH;
-                            c2 = cursor_ktra;
-                            db2 = db3;
-                            mNgay_Nhan2 = mNgay_Nhan;
-                            str42 = str4;
-                            cursor3 = cursor2;
-                            str5 = str;
-                        } catch (Exception e23) {
-                            mGia = mGia2;
-                            ih = ih2;
-                            cursor_ktra2 = c;
-                            e = e23;
-                            cursor = cursor2;
-                            e.printStackTrace();
-                            db3.endTransaction();
-                            ih.close();
-                            db3.close();
-                            if (!cursor_ktra2.isClosed()) {
-                            }
-                            if (!cursor.isClosed()) {
-                            }
-                            cursor_ktra.close();
-                        } catch (Throwable th20) {
-                            ih = ih2;
-                            th = th20;
-                            db3.endTransaction();
-                            ih.close();
-                            db3.close();
-                            throw th;
+
+                        mGia = mGia2;
+                        mDiem = Integer.parseInt(str3);
+                        if (mThe_loai.indexOf("deb") > -1) {
+                        }
+                        if (mThe_loai.indexOf("det") > -1) {
+                        }
+                        mDiemquydoi = mDiem;
+                        cursor_ktra2 = c;
+                        if (cursor_ktra2.getInt(3) == 1) {
+                        }
+                        double mKhachGiu322 = mLanAn3;
+                        double mKhachGiu422 = mDiem_KhachGiu;
+                        Double.isNaN(mKhachGiu422);
+                        double d22 = mDiemquydoi - mKhachGiu422;
+                        double mDiemquydoi222 = mDiemquydoi;
+                        double mDiemquydoi322 = mDiem_DlyGiu;
+                        Double.isNaN(mDiemquydoi322);
+                        int mDiemton22 = (int) (d22 - mDiemquydoi322);
+                        String str822 = ",";
+                        if ("dea,deb,dec,ded,det,lo,loa,bc,bca".indexOf(mThe_loai) > -1) {
+                        }
+                        length = str2.length;
+                        i = 0;
+                        while (i < length) {
                         }
                     } catch (Exception e24) {
-                        db3 = db2;
-                        cursor_ktra = c2;
-                        cursor_ktra2 = c;
-                        e = e24;
-                        cursor = cursor3;
-                        e.printStackTrace();
-                        db3.endTransaction();
-                        ih.close();
-                        db3.close();
-                        if (!cursor_ktra2.isClosed()) {
-                        }
-                        if (!cursor.isClosed()) {
-                        }
-                        cursor_ktra.close();
                     } catch (Throwable th21) {
-                        db3 = db2;
-                        th = th21;
-                        db3.endTransaction();
-                        ih.close();
-                        db3.close();
-                        throw th;
                     }
                 }
                 db3 = db2;
                 cursor_ktra = c2;
                 cursor_ktra2 = c;
-                try {
-                    db3.setTransactionSuccessful();
-                    db3.endTransaction();
-                    ih.close();
-                    db3.close();
-                    cursor = cursor3;
-                } catch (Exception e25) {
-                    e = e25;
-                    cursor = cursor3;
-                    e.printStackTrace();
-                    db3.endTransaction();
-                    ih.close();
-                    db3.close();
-                    if (!cursor_ktra2.isClosed()) {
-                    }
-                    if (!cursor.isClosed()) {
-                    }
-                    cursor_ktra.close();
-                } catch (Throwable th22) {
-                    th = th22;
-                    db3.endTransaction();
-                    ih.close();
-                    db3.close();
-                    throw th;
-                }
-            } catch (Exception e26) {
+                db3.setTransactionSuccessful();
+                db3.endTransaction();
+                ih.close();
+                db3.close();
                 cursor = cursor3;
-                db3 = db2;
-                cursor_ktra = c2;
-                cursor_ktra2 = c;
-                e = e26;
-                e.printStackTrace();
-                db3.endTransaction();
-                ih.close();
-                db3.close();
-                if (!cursor_ktra2.isClosed()) {
-                }
-                if (!cursor.isClosed()) {
-                }
-                cursor_ktra.close();
+
+            } catch (Exception e26) {
             } catch (Throwable th23) {
-                db3 = db2;
-                th = th23;
-                db3.endTransaction();
-                ih.close();
-                db3.close();
-                throw th;
-            }
-            if (!cursor_ktra2.isClosed()) {
-                cursor_ktra2.close();
-            }
-            if (!cursor.isClosed()) {
-                cursor.close();
             }
         } else {
             cursor_ktra = c2;
         }
-        cursor_ktra.close();
     }
 
     private String xuly_Xq(String str) {
@@ -6659,82 +4341,10 @@ public class Database extends SQLiteOpenHelper {
         String TinChot = null;
         Cursor ThongTin_khach2 = GetData("Select * From tbl_kh_new Where ten_kh = '" + TenKH + "'");
         ThongTin_khach2.moveToFirst();
-        try {
-            str = "'";
-            JSONObject jSONObject = new JSONObject(ThongTin_khach2.getString(5));
-            this.json = jSONObject;
-            this.caidat_tg = jSONObject.getJSONObject("caidat_tg");
-        } catch (JSONException e3) {
-            e = e3;
-            str = "'";
-            e.printStackTrace();
-            CongNo_Nhan = GetData("Select ten_kh, so_dienthoai \n, SUM((ngay_nhan < '" + mDate3 + "') * ket_qua * (100-diem_khachgiu)/100)/1000  as NoCu \n, SUM((ngay_nhan <= '" + mDate3 + "')*ket_qua*(100-diem_khachgiu)/100)/1000 as SoCuoi  \n FROM tbl_soctS WHERE ten_kh = '" + TenKH + "'  GROUP BY ten_kh");
-            CongNo_Nhan.moveToFirst();
-            StringBuilder sb = new StringBuilder();
-            sb.append("So cu: ");
-            str2 = "bc";
-            socuoi = "xn";
-            sb.append(decimalFormat.format(CongNo_Nhan.getDouble(2)));
-            nocu = sb.toString();
-            StringBuilder sb2 = new StringBuilder();
-            sb2.append("So cuoi: ");
-            str3 = "lo";
-            str4 = "KQChuyen";
-            sb2.append(decimalFormat.format(CongNo_Nhan.getDouble(3)));
-            socuoi2 = sb2.toString();
-            String Sql = "Select ten_kh, so_dienthoai, CASE \nWHEN the_loai = 'xi' And length(so_chon) = 5 THEN 'xi2' \nWHEN the_loai = 'xi' And length(so_chon) = 8 THEN 'xi3' \nWHEN the_loai = 'xi' And length(so_chon) = 11 THEN 'xi4' \nWHEN the_loai = 'xia' And length(so_chon) = 5 THEN 'xia2' \nWHEN the_loai = 'xia' And length(so_chon) = 8 THEN 'xia3' \nWHEN the_loai = 'xia' And length(so_chon) = 11 THEN 'xia4' \nELSE the_loai END m_theloai\n, sum((type_kh = 1)*diem) as mDiem\n, sum((type_kh = 1)*diem*so_nhay) as mAn \n, sum((type_kh = 1)*ket_qua)/1000 as mKetqua\n, sum((type_kh = 2)*diem) as mDiem\n, sum((type_kh = 2)*diem*so_nhay) as mAn \n, sum((type_kh = 2)*ket_qua)/1000 as mKetqua\n, 100-(diem_khachgiu*(type_kh=1)) as PT\n  From tbl_soctS Where the_loai <> 'tt' AND ten_kh = '" + TenKH + "' and ngay_nhan = '" + mDate3 + "'\n  GROUP by m_theloai";
-            Tin_nhan = GetData(Sql);
-            jsonKhach = new JSONObject();
-            TienNhan = 0.0d;
-            TienChuyen = 0.0d;
-            nocu2 = nocu;
-            CongNo_Nhan2 = CongNo_Nhan;
-            str8 = str3;
-            nocu3 = str2;
-            str6 = str4;
-            ThongTin_khach = ThongTin_khach2;
-            jsonKhach2 = jsonKhach;
-            str5 = str13;
-            str7 = socuoi;
-            socuoi3 = socuoi2;
-            TienNhan2 = TienNhan;
-            TienChuyen2 = TienChuyen;
-            JSONObject jsonObject2 = new JSONObject();
-            String str162 = str5;
-            jsonObject2.put("dea", "Dau DB: ");
-            jsonObject2.put("deb", "De: ");
-            jsonObject2.put("det", "De 8: ");
-            jsonObject2.put("dec", "Dau Nhat: ");
-            jsonObject2.put("ded", "Dit Nhat: ");
-            jsonObject2.put(str8, "Lo: ");
-            jsonObject2.put("xi2", "Xien 2: ");
-            jsonObject2.put("xi3", "Xien 3: ");
-            jsonObject2.put("xi4", "Xien 4: ");
-            jsonObject2.put(str7, "X.nhay: ");
-            jsonObject2.put(nocu3, "3Cang: ");
-            jsonObject2.put("loa", "Lo dau: ");
-            jsonObject2.put("xia2", "Xia 2: ");
-            jsonObject2.put("xia3", "Xia 3: ");
-            jsonObject2.put("xia4", "Xia 4: ");
-            jsonObject2.put("bca", "3Cang dau: ");
-            keys = jsonObject2.keys();
-            String Str_n2 = "";
-            String Str_c2 = "";
-            while (keys.hasNext()) {
-            }
-            ThanhToan = GetData("SELECT SUM((the_loai = 'tt') * ket_qua) AS Ttoan \n FROM tbl_soctS WHERE ten_kh = '" + TenKH + "' AND ngay_nhan ='" + mDate3 + str);
-            ThanhToan.moveToFirst();
-            String Ttoan2 = "";
-            if (ThanhToan.getInt(0) != 0) {
-            }
-            if (this.caidat_tg.getInt("chot_sodu") != 0) {
-            }
-            if (!CongNo_Nhan2.isClosed()) {
-            }
-            if (!ThongTin_khach.isClosed()) {
-            }
-            return TinChot;
-        }
+        str = "'";
+        JSONObject jSONObject = new JSONObject(ThongTin_khach2.getString(5));
+        this.json = jSONObject;
+        this.caidat_tg = jSONObject.getJSONObject("caidat_tg");
         CongNo_Nhan = GetData("Select ten_kh, so_dienthoai \n, SUM((ngay_nhan < '" + mDate3 + "') * ket_qua * (100-diem_khachgiu)/100)/1000  as NoCu \n, SUM((ngay_nhan <= '" + mDate3 + "')*ket_qua*(100-diem_khachgiu)/100)/1000 as SoCuoi  \n FROM tbl_soctS WHERE ten_kh = '" + TenKH + "'  GROUP BY ten_kh");
         CongNo_Nhan.moveToFirst();
         StringBuilder sb3 = new StringBuilder();
@@ -6756,757 +4366,78 @@ public class Database extends SQLiteOpenHelper {
         TienChuyen = 0.0d;
         while (Tin_nhan.moveToNext()) {
             JSONObject jsonDang = new JSONObject();
-            try {
-                jsonDang.put("DiemNhan", Tin_nhan.getDouble(3));
-                jsonDang.put(str14, Tin_nhan.getDouble(4));
-                CongNo_Nhan2 = CongNo_Nhan;
-            } catch (JSONException e5) {
-                CongNo_Nhan2 = CongNo_Nhan;
-                str8 = str3;
-                str7 = socuoi;
-                str6 = str4;
-                socuoi3 = socuoi2;
-                jsonKhach2 = jsonKhach;
-                nocu2 = nocu;
-                nocu3 = str2;
-                ThongTin_khach = ThongTin_khach2;
-                str5 = str13;
-                TienNhan2 = TienNhan;
-                TienChuyen2 = TienChuyen;
-                JSONObject jsonObject22 = new JSONObject();
-                String str1622 = str5;
-                jsonObject22.put("dea", "Dau DB: ");
-                jsonObject22.put("deb", "De: ");
-                jsonObject22.put("det", "De 8: ");
-                jsonObject22.put("dec", "Dau Nhat: ");
-                jsonObject22.put("ded", "Dit Nhat: ");
-                jsonObject22.put(str8, "Lo: ");
-                jsonObject22.put("xi2", "Xien 2: ");
-                jsonObject22.put("xi3", "Xien 3: ");
-                jsonObject22.put("xi4", "Xien 4: ");
-                jsonObject22.put(str7, "X.nhay: ");
-                jsonObject22.put(nocu3, "3Cang: ");
-                jsonObject22.put("loa", "Lo dau: ");
-                jsonObject22.put("xia2", "Xia 2: ");
-                jsonObject22.put("xia3", "Xia 3: ");
-                jsonObject22.put("xia4", "Xia 4: ");
-                jsonObject22.put("bca", "3Cang dau: ");
-                keys = jsonObject22.keys();
-                String Str_n22 = "";
-                String Str_c22 = "";
-                while (keys.hasNext()) {
-                }
-                ThanhToan = GetData("SELECT SUM((the_loai = 'tt') * ket_qua) AS Ttoan \n FROM tbl_soctS WHERE ten_kh = '" + TenKH + "' AND ngay_nhan ='" + mDate3 + str);
-                ThanhToan.moveToFirst();
-                String Ttoan22 = "";
-                if (ThanhToan.getInt(0) != 0) {
-                }
-                if (this.caidat_tg.getInt("chot_sodu") != 0) {
-                }
-                if (!CongNo_Nhan2.isClosed()) {
-                }
-                if (!ThongTin_khach.isClosed()) {
-                }
-                return TinChot;
-            }
-            try {
-                jsonDang.put(str15, Tin_nhan.getDouble(5));
-            } catch (JSONException e6) {
-                str8 = str3;
-                str6 = str4;
-                str5 = str13;
-                nocu2 = nocu;
-                nocu3 = str2;
-                jsonKhach2 = jsonKhach;
-                ThongTin_khach = ThongTin_khach2;
-                str7 = socuoi;
-                socuoi3 = socuoi2;
-                TienNhan2 = TienNhan;
-                TienChuyen2 = TienChuyen;
-                JSONObject jsonObject222 = new JSONObject();
-                String str16222 = str5;
-                jsonObject222.put("dea", "Dau DB: ");
-                jsonObject222.put("deb", "De: ");
-                jsonObject222.put("det", "De 8: ");
-                jsonObject222.put("dec", "Dau Nhat: ");
-                jsonObject222.put("ded", "Dit Nhat: ");
-                jsonObject222.put(str8, "Lo: ");
-                jsonObject222.put("xi2", "Xien 2: ");
-                jsonObject222.put("xi3", "Xien 3: ");
-                jsonObject222.put("xi4", "Xien 4: ");
-                jsonObject222.put(str7, "X.nhay: ");
-                jsonObject222.put(nocu3, "3Cang: ");
-                jsonObject222.put("loa", "Lo dau: ");
-                jsonObject222.put("xia2", "Xia 2: ");
-                jsonObject222.put("xia3", "Xia 3: ");
-                jsonObject222.put("xia4", "Xia 4: ");
-                jsonObject222.put("bca", "3Cang dau: ");
-                keys = jsonObject222.keys();
-                String Str_n222 = "";
-                String Str_c222 = "";
-                while (keys.hasNext()) {
-                }
-                ThanhToan = GetData("SELECT SUM((the_loai = 'tt') * ket_qua) AS Ttoan \n FROM tbl_soctS WHERE ten_kh = '" + TenKH + "' AND ngay_nhan ='" + mDate3 + str);
-                ThanhToan.moveToFirst();
-                String Ttoan222 = "";
-                if (ThanhToan.getInt(0) != 0) {
-                }
-                if (this.caidat_tg.getInt("chot_sodu") != 0) {
-                }
-                if (!CongNo_Nhan2.isClosed()) {
-                }
-                if (!ThongTin_khach.isClosed()) {
-                }
-                return TinChot;
-            }
+            jsonDang.put("DiemNhan", Tin_nhan.getDouble(3));
+            jsonDang.put(str14, Tin_nhan.getDouble(4));
+            CongNo_Nhan2 = CongNo_Nhan;
+            jsonDang.put(str15, Tin_nhan.getDouble(5));
             try {
                 jsonDang.put(str13, Tin_nhan.getDouble(6));
                 nocu2 = nocu;
-                try {
-                    jsonDang.put("AnChuyen", Tin_nhan.getDouble(7));
-                    str6 = str4;
-                    try {
-                        jsonDang.put(str6, Tin_nhan.getDouble(8));
-                        if (Tin_nhan.getString(2).indexOf("de") > -1) {
-                            try {
-                                jsonDang.put("PhanTram", 100 - this.caidat_tg.getInt("khgiu_de"));
-                                str5 = str13;
-                                str8 = str3;
-                                nocu3 = str2;
-                                ThongTin_khach = ThongTin_khach2;
-                                str7 = socuoi;
-                                socuoi3 = socuoi2;
-                            } catch (JSONException e7) {
-                                str5 = str13;
-                                str8 = str3;
-                                nocu3 = str2;
-                                ThongTin_khach = ThongTin_khach2;
-                                str7 = socuoi;
-                                jsonKhach2 = jsonKhach;
-                                socuoi3 = socuoi2;
-                                TienNhan2 = TienNhan;
-                                TienChuyen2 = TienChuyen;
-                                JSONObject jsonObject2222 = new JSONObject();
-                                String str162222 = str5;
-                                jsonObject2222.put("dea", "Dau DB: ");
-                                jsonObject2222.put("deb", "De: ");
-                                jsonObject2222.put("det", "De 8: ");
-                                jsonObject2222.put("dec", "Dau Nhat: ");
-                                jsonObject2222.put("ded", "Dit Nhat: ");
-                                jsonObject2222.put(str8, "Lo: ");
-                                jsonObject2222.put("xi2", "Xien 2: ");
-                                jsonObject2222.put("xi3", "Xien 3: ");
-                                jsonObject2222.put("xi4", "Xien 4: ");
-                                jsonObject2222.put(str7, "X.nhay: ");
-                                jsonObject2222.put(nocu3, "3Cang: ");
-                                jsonObject2222.put("loa", "Lo dau: ");
-                                jsonObject2222.put("xia2", "Xia 2: ");
-                                jsonObject2222.put("xia3", "Xia 3: ");
-                                jsonObject2222.put("xia4", "Xia 4: ");
-                                jsonObject2222.put("bca", "3Cang dau: ");
-                                keys = jsonObject2222.keys();
-                                String Str_n2222 = "";
-                                String Str_c2222 = "";
-                                while (keys.hasNext()) {
-                                }
-                                ThanhToan = GetData("SELECT SUM((the_loai = 'tt') * ket_qua) AS Ttoan \n FROM tbl_soctS WHERE ten_kh = '" + TenKH + "' AND ngay_nhan ='" + mDate3 + str);
-                                ThanhToan.moveToFirst();
-                                String Ttoan2222 = "";
-                                if (ThanhToan.getInt(0) != 0) {
-                                }
-                                if (this.caidat_tg.getInt("chot_sodu") != 0) {
-                                }
-                                if (!CongNo_Nhan2.isClosed()) {
-                                }
-                                if (!ThongTin_khach.isClosed()) {
-                                }
-                                return TinChot;
-                            }
-                        } else {
-                            str8 = str3;
-                            try {
-                                if (Tin_nhan.getString(2).indexOf(str8) > -1) {
-                                    try {
-                                        jsonDang.put("PhanTram", 100 - this.caidat_tg.getInt("khgiu_lo"));
-                                        str5 = str13;
-                                        nocu3 = str2;
-                                        ThongTin_khach = ThongTin_khach2;
-                                        str7 = socuoi;
-                                        socuoi3 = socuoi2;
-                                    } catch (JSONException e8) {
-                                        str5 = str13;
-                                        nocu3 = str2;
-                                        jsonKhach2 = jsonKhach;
-                                        ThongTin_khach = ThongTin_khach2;
-                                        str7 = socuoi;
-                                        socuoi3 = socuoi2;
-                                        TienNhan2 = TienNhan;
-                                        TienChuyen2 = TienChuyen;
-                                        JSONObject jsonObject22222 = new JSONObject();
-                                        String str1622222 = str5;
-                                        jsonObject22222.put("dea", "Dau DB: ");
-                                        jsonObject22222.put("deb", "De: ");
-                                        jsonObject22222.put("det", "De 8: ");
-                                        jsonObject22222.put("dec", "Dau Nhat: ");
-                                        jsonObject22222.put("ded", "Dit Nhat: ");
-                                        jsonObject22222.put(str8, "Lo: ");
-                                        jsonObject22222.put("xi2", "Xien 2: ");
-                                        jsonObject22222.put("xi3", "Xien 3: ");
-                                        jsonObject22222.put("xi4", "Xien 4: ");
-                                        jsonObject22222.put(str7, "X.nhay: ");
-                                        jsonObject22222.put(nocu3, "3Cang: ");
-                                        jsonObject22222.put("loa", "Lo dau: ");
-                                        jsonObject22222.put("xia2", "Xia 2: ");
-                                        jsonObject22222.put("xia3", "Xia 3: ");
-                                        jsonObject22222.put("xia4", "Xia 4: ");
-                                        jsonObject22222.put("bca", "3Cang dau: ");
-                                        keys = jsonObject22222.keys();
-                                        String Str_n22222 = "";
-                                        String Str_c22222 = "";
-                                        while (keys.hasNext()) {
-                                        }
-                                        ThanhToan = GetData("SELECT SUM((the_loai = 'tt') * ket_qua) AS Ttoan \n FROM tbl_soctS WHERE ten_kh = '" + TenKH + "' AND ngay_nhan ='" + mDate3 + str);
-                                        ThanhToan.moveToFirst();
-                                        String Ttoan22222 = "";
-                                        if (ThanhToan.getInt(0) != 0) {
-                                        }
-                                        if (this.caidat_tg.getInt("chot_sodu") != 0) {
-                                        }
-                                        if (!CongNo_Nhan2.isClosed()) {
-                                        }
-                                        if (!ThongTin_khach.isClosed()) {
-                                        }
-                                        return TinChot;
-                                    }
-                                } else if (Tin_nhan.getString(2).indexOf("xi") > -1) {
-                                    jsonDang.put("PhanTram", 100 - this.caidat_tg.getInt("khgiu_xi"));
-                                    str5 = str13;
-                                    nocu3 = str2;
-                                    ThongTin_khach = ThongTin_khach2;
-                                    str7 = socuoi;
-                                    socuoi3 = socuoi2;
-                                } else {
-                                    nocu3 = str2;
-                                    try {
-                                        ThongTin_khach = ThongTin_khach2;
-                                        if (Tin_nhan.getString(2).indexOf(nocu3) > -1) {
-                                            try {
-                                                jsonDang.put("PhanTram", 100 - this.caidat_tg.getInt("khgiu_bc"));
-                                                str5 = str13;
-                                                str7 = socuoi;
-                                                socuoi3 = socuoi2;
-                                            } catch (JSONException e9) {
-                                                str5 = str13;
-                                                str7 = socuoi;
-                                                jsonKhach2 = jsonKhach;
-                                                socuoi3 = socuoi2;
-                                                TienNhan2 = TienNhan;
-                                                TienChuyen2 = TienChuyen;
-                                                JSONObject jsonObject222222 = new JSONObject();
-                                                String str16222222 = str5;
-                                                jsonObject222222.put("dea", "Dau DB: ");
-                                                jsonObject222222.put("deb", "De: ");
-                                                jsonObject222222.put("det", "De 8: ");
-                                                jsonObject222222.put("dec", "Dau Nhat: ");
-                                                jsonObject222222.put("ded", "Dit Nhat: ");
-                                                jsonObject222222.put(str8, "Lo: ");
-                                                jsonObject222222.put("xi2", "Xien 2: ");
-                                                jsonObject222222.put("xi3", "Xien 3: ");
-                                                jsonObject222222.put("xi4", "Xien 4: ");
-                                                jsonObject222222.put(str7, "X.nhay: ");
-                                                jsonObject222222.put(nocu3, "3Cang: ");
-                                                jsonObject222222.put("loa", "Lo dau: ");
-                                                jsonObject222222.put("xia2", "Xia 2: ");
-                                                jsonObject222222.put("xia3", "Xia 3: ");
-                                                jsonObject222222.put("xia4", "Xia 4: ");
-                                                jsonObject222222.put("bca", "3Cang dau: ");
-                                                keys = jsonObject222222.keys();
-                                                String Str_n222222 = "";
-                                                String Str_c222222 = "";
-                                                while (keys.hasNext()) {
-                                                }
-                                                ThanhToan = GetData("SELECT SUM((the_loai = 'tt') * ket_qua) AS Ttoan \n FROM tbl_soctS WHERE ten_kh = '" + TenKH + "' AND ngay_nhan ='" + mDate3 + str);
-                                                ThanhToan.moveToFirst();
-                                                String Ttoan222222 = "";
-                                                if (ThanhToan.getInt(0) != 0) {
-                                                }
-                                                if (this.caidat_tg.getInt("chot_sodu") != 0) {
-                                                }
-                                                if (!CongNo_Nhan2.isClosed()) {
-                                                }
-                                                if (!ThongTin_khach.isClosed()) {
-                                                }
-                                                return TinChot;
-                                            }
-                                        } else {
-                                            try {
-                                                str7 = socuoi;
-                                                try {
-                                                    socuoi3 = socuoi2;
-                                                    if (Tin_nhan.getString(2).indexOf(str7) > -1) {
-                                                        try {
-                                                            jsonDang.put("PhanTram", 100 - this.caidat_tg.getInt("khgiu_xn"));
-                                                            str5 = str13;
-                                                        } catch (JSONException e10) {
-                                                            str5 = str13;
-                                                            jsonKhach2 = jsonKhach;
-                                                            TienNhan2 = TienNhan;
-                                                            TienChuyen2 = TienChuyen;
-                                                            JSONObject jsonObject2222222 = new JSONObject();
-                                                            String str162222222 = str5;
-                                                            jsonObject2222222.put("dea", "Dau DB: ");
-                                                            jsonObject2222222.put("deb", "De: ");
-                                                            jsonObject2222222.put("det", "De 8: ");
-                                                            jsonObject2222222.put("dec", "Dau Nhat: ");
-                                                            jsonObject2222222.put("ded", "Dit Nhat: ");
-                                                            jsonObject2222222.put(str8, "Lo: ");
-                                                            jsonObject2222222.put("xi2", "Xien 2: ");
-                                                            jsonObject2222222.put("xi3", "Xien 3: ");
-                                                            jsonObject2222222.put("xi4", "Xien 4: ");
-                                                            jsonObject2222222.put(str7, "X.nhay: ");
-                                                            jsonObject2222222.put(nocu3, "3Cang: ");
-                                                            jsonObject2222222.put("loa", "Lo dau: ");
-                                                            jsonObject2222222.put("xia2", "Xia 2: ");
-                                                            jsonObject2222222.put("xia3", "Xia 3: ");
-                                                            jsonObject2222222.put("xia4", "Xia 4: ");
-                                                            jsonObject2222222.put("bca", "3Cang dau: ");
-                                                            keys = jsonObject2222222.keys();
-                                                            String Str_n2222222 = "";
-                                                            String Str_c2222222 = "";
-                                                            while (keys.hasNext()) {
-                                                            }
-                                                            ThanhToan = GetData("SELECT SUM((the_loai = 'tt') * ket_qua) AS Ttoan \n FROM tbl_soctS WHERE ten_kh = '" + TenKH + "' AND ngay_nhan ='" + mDate3 + str);
-                                                            ThanhToan.moveToFirst();
-                                                            String Ttoan2222222 = "";
-                                                            if (ThanhToan.getInt(0) != 0) {
-                                                            }
-                                                            if (this.caidat_tg.getInt("chot_sodu") != 0) {
-                                                            }
-                                                            if (!CongNo_Nhan2.isClosed()) {
-                                                            }
-                                                            if (!ThongTin_khach.isClosed()) {
-                                                            }
-                                                            return TinChot;
-                                                        }
-                                                    } else {
-                                                        str5 = str13;
-                                                        try {
-                                                            jsonDang.put("PhanTram", Tin_nhan.getDouble(9));
-                                                        } catch (JSONException e11) {
-                                                            jsonKhach2 = jsonKhach;
-                                                            TienNhan2 = TienNhan;
-                                                            TienChuyen2 = TienChuyen;
-                                                            JSONObject jsonObject22222222 = new JSONObject();
-                                                            String str1622222222 = str5;
-                                                            jsonObject22222222.put("dea", "Dau DB: ");
-                                                            jsonObject22222222.put("deb", "De: ");
-                                                            jsonObject22222222.put("det", "De 8: ");
-                                                            jsonObject22222222.put("dec", "Dau Nhat: ");
-                                                            jsonObject22222222.put("ded", "Dit Nhat: ");
-                                                            jsonObject22222222.put(str8, "Lo: ");
-                                                            jsonObject22222222.put("xi2", "Xien 2: ");
-                                                            jsonObject22222222.put("xi3", "Xien 3: ");
-                                                            jsonObject22222222.put("xi4", "Xien 4: ");
-                                                            jsonObject22222222.put(str7, "X.nhay: ");
-                                                            jsonObject22222222.put(nocu3, "3Cang: ");
-                                                            jsonObject22222222.put("loa", "Lo dau: ");
-                                                            jsonObject22222222.put("xia2", "Xia 2: ");
-                                                            jsonObject22222222.put("xia3", "Xia 3: ");
-                                                            jsonObject22222222.put("xia4", "Xia 4: ");
-                                                            jsonObject22222222.put("bca", "3Cang dau: ");
-                                                            keys = jsonObject22222222.keys();
-                                                            String Str_n22222222 = "";
-                                                            String Str_c22222222 = "";
-                                                            while (keys.hasNext()) {
-                                                            }
-                                                            ThanhToan = GetData("SELECT SUM((the_loai = 'tt') * ket_qua) AS Ttoan \n FROM tbl_soctS WHERE ten_kh = '" + TenKH + "' AND ngay_nhan ='" + mDate3 + str);
-                                                            ThanhToan.moveToFirst();
-                                                            String Ttoan22222222 = "";
-                                                            if (ThanhToan.getInt(0) != 0) {
-                                                            }
-                                                            if (this.caidat_tg.getInt("chot_sodu") != 0) {
-                                                            }
-                                                            if (!CongNo_Nhan2.isClosed()) {
-                                                            }
-                                                            if (!ThongTin_khach.isClosed()) {
-                                                            }
-                                                            return TinChot;
-                                                        }
-                                                    }
-                                                } catch (JSONException e12) {
-                                                    socuoi3 = socuoi2;
-                                                    str5 = str13;
-                                                    jsonKhach2 = jsonKhach;
-                                                    TienNhan2 = TienNhan;
-                                                    TienChuyen2 = TienChuyen;
-                                                    JSONObject jsonObject222222222 = new JSONObject();
-                                                    String str16222222222 = str5;
-                                                    jsonObject222222222.put("dea", "Dau DB: ");
-                                                    jsonObject222222222.put("deb", "De: ");
-                                                    jsonObject222222222.put("det", "De 8: ");
-                                                    jsonObject222222222.put("dec", "Dau Nhat: ");
-                                                    jsonObject222222222.put("ded", "Dit Nhat: ");
-                                                    jsonObject222222222.put(str8, "Lo: ");
-                                                    jsonObject222222222.put("xi2", "Xien 2: ");
-                                                    jsonObject222222222.put("xi3", "Xien 3: ");
-                                                    jsonObject222222222.put("xi4", "Xien 4: ");
-                                                    jsonObject222222222.put(str7, "X.nhay: ");
-                                                    jsonObject222222222.put(nocu3, "3Cang: ");
-                                                    jsonObject222222222.put("loa", "Lo dau: ");
-                                                    jsonObject222222222.put("xia2", "Xia 2: ");
-                                                    jsonObject222222222.put("xia3", "Xia 3: ");
-                                                    jsonObject222222222.put("xia4", "Xia 4: ");
-                                                    jsonObject222222222.put("bca", "3Cang dau: ");
-                                                    keys = jsonObject222222222.keys();
-                                                    String Str_n222222222 = "";
-                                                    String Str_c222222222 = "";
-                                                    while (keys.hasNext()) {
-                                                    }
-                                                    ThanhToan = GetData("SELECT SUM((the_loai = 'tt') * ket_qua) AS Ttoan \n FROM tbl_soctS WHERE ten_kh = '" + TenKH + "' AND ngay_nhan ='" + mDate3 + str);
-                                                    ThanhToan.moveToFirst();
-                                                    String Ttoan222222222 = "";
-                                                    if (ThanhToan.getInt(0) != 0) {
-                                                    }
-                                                    if (this.caidat_tg.getInt("chot_sodu") != 0) {
-                                                    }
-                                                    if (!CongNo_Nhan2.isClosed()) {
-                                                    }
-                                                    if (!ThongTin_khach.isClosed()) {
-                                                    }
-                                                    return TinChot;
-                                                }
-                                            } catch (JSONException e13) {
-                                                str5 = str13;
-                                                str7 = socuoi;
-                                                jsonKhach2 = jsonKhach;
-                                                socuoi3 = socuoi2;
-                                                TienNhan2 = TienNhan;
-                                                TienChuyen2 = TienChuyen;
-                                                JSONObject jsonObject2222222222 = new JSONObject();
-                                                String str162222222222 = str5;
-                                                jsonObject2222222222.put("dea", "Dau DB: ");
-                                                jsonObject2222222222.put("deb", "De: ");
-                                                jsonObject2222222222.put("det", "De 8: ");
-                                                jsonObject2222222222.put("dec", "Dau Nhat: ");
-                                                jsonObject2222222222.put("ded", "Dit Nhat: ");
-                                                jsonObject2222222222.put(str8, "Lo: ");
-                                                jsonObject2222222222.put("xi2", "Xien 2: ");
-                                                jsonObject2222222222.put("xi3", "Xien 3: ");
-                                                jsonObject2222222222.put("xi4", "Xien 4: ");
-                                                jsonObject2222222222.put(str7, "X.nhay: ");
-                                                jsonObject2222222222.put(nocu3, "3Cang: ");
-                                                jsonObject2222222222.put("loa", "Lo dau: ");
-                                                jsonObject2222222222.put("xia2", "Xia 2: ");
-                                                jsonObject2222222222.put("xia3", "Xia 3: ");
-                                                jsonObject2222222222.put("xia4", "Xia 4: ");
-                                                jsonObject2222222222.put("bca", "3Cang dau: ");
-                                                keys = jsonObject2222222222.keys();
-                                                String Str_n2222222222 = "";
-                                                String Str_c2222222222 = "";
-                                                while (keys.hasNext()) {
-                                                }
-                                                ThanhToan = GetData("SELECT SUM((the_loai = 'tt') * ket_qua) AS Ttoan \n FROM tbl_soctS WHERE ten_kh = '" + TenKH + "' AND ngay_nhan ='" + mDate3 + str);
-                                                ThanhToan.moveToFirst();
-                                                String Ttoan2222222222 = "";
-                                                if (ThanhToan.getInt(0) != 0) {
-                                                }
-                                                if (this.caidat_tg.getInt("chot_sodu") != 0) {
-                                                }
-                                                if (!CongNo_Nhan2.isClosed()) {
-                                                }
-                                                if (!ThongTin_khach.isClosed()) {
-                                                }
-                                                return TinChot;
-                                            }
-                                        }
-                                    } catch (JSONException e14) {
-                                        str5 = str13;
-                                        ThongTin_khach = ThongTin_khach2;
-                                        str7 = socuoi;
-                                        jsonKhach2 = jsonKhach;
-                                        socuoi3 = socuoi2;
-                                        TienNhan2 = TienNhan;
-                                        TienChuyen2 = TienChuyen;
-                                        JSONObject jsonObject22222222222 = new JSONObject();
-                                        String str1622222222222 = str5;
-                                        jsonObject22222222222.put("dea", "Dau DB: ");
-                                        jsonObject22222222222.put("deb", "De: ");
-                                        jsonObject22222222222.put("det", "De 8: ");
-                                        jsonObject22222222222.put("dec", "Dau Nhat: ");
-                                        jsonObject22222222222.put("ded", "Dit Nhat: ");
-                                        jsonObject22222222222.put(str8, "Lo: ");
-                                        jsonObject22222222222.put("xi2", "Xien 2: ");
-                                        jsonObject22222222222.put("xi3", "Xien 3: ");
-                                        jsonObject22222222222.put("xi4", "Xien 4: ");
-                                        jsonObject22222222222.put(str7, "X.nhay: ");
-                                        jsonObject22222222222.put(nocu3, "3Cang: ");
-                                        jsonObject22222222222.put("loa", "Lo dau: ");
-                                        jsonObject22222222222.put("xia2", "Xia 2: ");
-                                        jsonObject22222222222.put("xia3", "Xia 3: ");
-                                        jsonObject22222222222.put("xia4", "Xia 4: ");
-                                        jsonObject22222222222.put("bca", "3Cang dau: ");
-                                        keys = jsonObject22222222222.keys();
-                                        String Str_n22222222222 = "";
-                                        String Str_c22222222222 = "";
-                                        while (keys.hasNext()) {
-                                        }
-                                        ThanhToan = GetData("SELECT SUM((the_loai = 'tt') * ket_qua) AS Ttoan \n FROM tbl_soctS WHERE ten_kh = '" + TenKH + "' AND ngay_nhan ='" + mDate3 + str);
-                                        ThanhToan.moveToFirst();
-                                        String Ttoan22222222222 = "";
-                                        if (ThanhToan.getInt(0) != 0) {
-                                        }
-                                        if (this.caidat_tg.getInt("chot_sodu") != 0) {
-                                        }
-                                        if (!CongNo_Nhan2.isClosed()) {
-                                        }
-                                        if (!ThongTin_khach.isClosed()) {
-                                        }
-                                        return TinChot;
-                                    }
-                                }
-                            } catch (JSONException e15) {
-                                str5 = str13;
-                                nocu3 = str2;
-                                jsonKhach2 = jsonKhach;
-                                ThongTin_khach = ThongTin_khach2;
-                                str7 = socuoi;
-                                socuoi3 = socuoi2;
-                                TienNhan2 = TienNhan;
-                                TienChuyen2 = TienChuyen;
-                                JSONObject jsonObject222222222222 = new JSONObject();
-                                String str16222222222222 = str5;
-                                jsonObject222222222222.put("dea", "Dau DB: ");
-                                jsonObject222222222222.put("deb", "De: ");
-                                jsonObject222222222222.put("det", "De 8: ");
-                                jsonObject222222222222.put("dec", "Dau Nhat: ");
-                                jsonObject222222222222.put("ded", "Dit Nhat: ");
-                                jsonObject222222222222.put(str8, "Lo: ");
-                                jsonObject222222222222.put("xi2", "Xien 2: ");
-                                jsonObject222222222222.put("xi3", "Xien 3: ");
-                                jsonObject222222222222.put("xi4", "Xien 4: ");
-                                jsonObject222222222222.put(str7, "X.nhay: ");
-                                jsonObject222222222222.put(nocu3, "3Cang: ");
-                                jsonObject222222222222.put("loa", "Lo dau: ");
-                                jsonObject222222222222.put("xia2", "Xia 2: ");
-                                jsonObject222222222222.put("xia3", "Xia 3: ");
-                                jsonObject222222222222.put("xia4", "Xia 4: ");
-                                jsonObject222222222222.put("bca", "3Cang dau: ");
-                                keys = jsonObject222222222222.keys();
-                                String Str_n222222222222 = "";
-                                String Str_c222222222222 = "";
-                                while (keys.hasNext()) {
-                                }
-                                ThanhToan = GetData("SELECT SUM((the_loai = 'tt') * ket_qua) AS Ttoan \n FROM tbl_soctS WHERE ten_kh = '" + TenKH + "' AND ngay_nhan ='" + mDate3 + str);
-                                ThanhToan.moveToFirst();
-                                String Ttoan222222222222 = "";
-                                if (ThanhToan.getInt(0) != 0) {
-                                }
-                                if (this.caidat_tg.getInt("chot_sodu") != 0) {
-                                }
-                                if (!CongNo_Nhan2.isClosed()) {
-                                }
-                                if (!ThongTin_khach.isClosed()) {
-                                }
-                                return TinChot;
-                            }
-                        }
-                        TienNhan += (jsonDang.getDouble(str15) * jsonDang.getDouble("PhanTram")) / 100.0d;
-                        TienChuyen += jsonDang.getDouble(str6);
-                        String string = Tin_nhan.getString(2);
-                        jsonKhach2 = jsonKhach;
-                        try {
-                            jsonKhach2.put(string, jsonDang.toString());
-                            jsonKhach = jsonKhach2;
-                            str4 = str6;
-                            Tin_nhan = Tin_nhan;
-                            CongNo_Nhan = CongNo_Nhan2;
-                            socuoi2 = socuoi3;
-                            Sql2 = Sql2;
-                            str3 = str8;
-                            socuoi = str7;
-                            str13 = str5;
-                            ThongTin_khach2 = ThongTin_khach;
-                            str2 = nocu3;
-                            nocu = nocu2;
-                        } catch (JSONException e16) {
-                            TienNhan2 = TienNhan;
-                            TienChuyen2 = TienChuyen;
-                            JSONObject jsonObject2222222222222 = new JSONObject();
-                            String str162222222222222 = str5;
-                            jsonObject2222222222222.put("dea", "Dau DB: ");
-                            jsonObject2222222222222.put("deb", "De: ");
-                            jsonObject2222222222222.put("det", "De 8: ");
-                            jsonObject2222222222222.put("dec", "Dau Nhat: ");
-                            jsonObject2222222222222.put("ded", "Dit Nhat: ");
-                            jsonObject2222222222222.put(str8, "Lo: ");
-                            jsonObject2222222222222.put("xi2", "Xien 2: ");
-                            jsonObject2222222222222.put("xi3", "Xien 3: ");
-                            jsonObject2222222222222.put("xi4", "Xien 4: ");
-                            jsonObject2222222222222.put(str7, "X.nhay: ");
-                            jsonObject2222222222222.put(nocu3, "3Cang: ");
-                            jsonObject2222222222222.put("loa", "Lo dau: ");
-                            jsonObject2222222222222.put("xia2", "Xia 2: ");
-                            jsonObject2222222222222.put("xia3", "Xia 3: ");
-                            jsonObject2222222222222.put("xia4", "Xia 4: ");
-                            jsonObject2222222222222.put("bca", "3Cang dau: ");
-                            keys = jsonObject2222222222222.keys();
-                            String Str_n2222222222222 = "";
-                            String Str_c2222222222222 = "";
-                            while (keys.hasNext()) {
-                            }
-                            ThanhToan = GetData("SELECT SUM((the_loai = 'tt') * ket_qua) AS Ttoan \n FROM tbl_soctS WHERE ten_kh = '" + TenKH + "' AND ngay_nhan ='" + mDate3 + str);
-                            ThanhToan.moveToFirst();
-                            String Ttoan2222222222222 = "";
-                            if (ThanhToan.getInt(0) != 0) {
-                            }
-                            if (this.caidat_tg.getInt("chot_sodu") != 0) {
-                            }
-                            if (!CongNo_Nhan2.isClosed()) {
-                            }
-                            if (!ThongTin_khach.isClosed()) {
-                            }
-                            return TinChot;
-                        }
-                    } catch (JSONException e17) {
-                        str5 = str13;
-                        str8 = str3;
-                        nocu3 = str2;
-                        ThongTin_khach = ThongTin_khach2;
-                        str7 = socuoi;
-                        jsonKhach2 = jsonKhach;
-                        socuoi3 = socuoi2;
-                        TienNhan2 = TienNhan;
-                        TienChuyen2 = TienChuyen;
-                        JSONObject jsonObject22222222222222 = new JSONObject();
-                        String str1622222222222222 = str5;
-                        jsonObject22222222222222.put("dea", "Dau DB: ");
-                        jsonObject22222222222222.put("deb", "De: ");
-                        jsonObject22222222222222.put("det", "De 8: ");
-                        jsonObject22222222222222.put("dec", "Dau Nhat: ");
-                        jsonObject22222222222222.put("ded", "Dit Nhat: ");
-                        jsonObject22222222222222.put(str8, "Lo: ");
-                        jsonObject22222222222222.put("xi2", "Xien 2: ");
-                        jsonObject22222222222222.put("xi3", "Xien 3: ");
-                        jsonObject22222222222222.put("xi4", "Xien 4: ");
-                        jsonObject22222222222222.put(str7, "X.nhay: ");
-                        jsonObject22222222222222.put(nocu3, "3Cang: ");
-                        jsonObject22222222222222.put("loa", "Lo dau: ");
-                        jsonObject22222222222222.put("xia2", "Xia 2: ");
-                        jsonObject22222222222222.put("xia3", "Xia 3: ");
-                        jsonObject22222222222222.put("xia4", "Xia 4: ");
-                        jsonObject22222222222222.put("bca", "3Cang dau: ");
-                        keys = jsonObject22222222222222.keys();
-                        String Str_n22222222222222 = "";
-                        String Str_c22222222222222 = "";
-                        while (keys.hasNext()) {
-                        }
-                        ThanhToan = GetData("SELECT SUM((the_loai = 'tt') * ket_qua) AS Ttoan \n FROM tbl_soctS WHERE ten_kh = '" + TenKH + "' AND ngay_nhan ='" + mDate3 + str);
-                        ThanhToan.moveToFirst();
-                        String Ttoan22222222222222 = "";
-                        if (ThanhToan.getInt(0) != 0) {
-                        }
-                        if (this.caidat_tg.getInt("chot_sodu") != 0) {
-                        }
-                        if (!CongNo_Nhan2.isClosed()) {
-                        }
-                        if (!ThongTin_khach.isClosed()) {
-                        }
-                        return TinChot;
-                    }
-                } catch (JSONException e18) {
+                jsonDang.put("AnChuyen", Tin_nhan.getDouble(7));
+                str6 = str4;
+
+                jsonDang.put(str6, Tin_nhan.getDouble(8));
+                if (Tin_nhan.getString(2).indexOf("de") > -1) {
+                    jsonDang.put("PhanTram", 100 - this.caidat_tg.getInt("khgiu_de"));
                     str5 = str13;
                     str8 = str3;
                     nocu3 = str2;
-                    str6 = str4;
                     ThongTin_khach = ThongTin_khach2;
                     str7 = socuoi;
-                    jsonKhach2 = jsonKhach;
                     socuoi3 = socuoi2;
-                    TienNhan2 = TienNhan;
-                    TienChuyen2 = TienChuyen;
-                    JSONObject jsonObject222222222222222 = new JSONObject();
-                    String str16222222222222222 = str5;
-                    jsonObject222222222222222.put("dea", "Dau DB: ");
-                    jsonObject222222222222222.put("deb", "De: ");
-                    jsonObject222222222222222.put("det", "De 8: ");
-                    jsonObject222222222222222.put("dec", "Dau Nhat: ");
-                    jsonObject222222222222222.put("ded", "Dit Nhat: ");
-                    jsonObject222222222222222.put(str8, "Lo: ");
-                    jsonObject222222222222222.put("xi2", "Xien 2: ");
-                    jsonObject222222222222222.put("xi3", "Xien 3: ");
-                    jsonObject222222222222222.put("xi4", "Xien 4: ");
-                    jsonObject222222222222222.put(str7, "X.nhay: ");
-                    jsonObject222222222222222.put(nocu3, "3Cang: ");
-                    jsonObject222222222222222.put("loa", "Lo dau: ");
-                    jsonObject222222222222222.put("xia2", "Xia 2: ");
-                    jsonObject222222222222222.put("xia3", "Xia 3: ");
-                    jsonObject222222222222222.put("xia4", "Xia 4: ");
-                    jsonObject222222222222222.put("bca", "3Cang dau: ");
-                    keys = jsonObject222222222222222.keys();
-                    String Str_n222222222222222 = "";
-                    String Str_c222222222222222 = "";
-                    while (keys.hasNext()) {
+                } else {
+                    str8 = str3;
+                    try {
+                        if (Tin_nhan.getString(2).indexOf(str8) > -1) {
+                            try {
+                                jsonDang.put("PhanTram", 100 - this.caidat_tg.getInt("khgiu_lo"));
+                                str5 = str13;
+                                nocu3 = str2;
+                                ThongTin_khach = ThongTin_khach2;
+                                str7 = socuoi;
+                                socuoi3 = socuoi2;
+                            } catch (JSONException e8) {
+                            }
+                        } else if (Tin_nhan.getString(2).indexOf("xi") > -1) {
+                            jsonDang.put("PhanTram", 100 - this.caidat_tg.getInt("khgiu_xi"));
+                            str5 = str13;
+                            nocu3 = str2;
+                            ThongTin_khach = ThongTin_khach2;
+                            str7 = socuoi;
+                            socuoi3 = socuoi2;
+                        } else {
+                            nocu3 = str2;
+                            ThongTin_khach = ThongTin_khach2;
+                            if (Tin_nhan.getString(2).indexOf(nocu3) > -1) {
+                                try {
+                                    jsonDang.put("PhanTram", 100 - this.caidat_tg.getInt("khgiu_bc"));
+                                    str5 = str13;
+                                    str7 = socuoi;
+                                    socuoi3 = socuoi2;
+                                } catch (JSONException e9) {
+                                }
+                            } else {
+                                str7 = socuoi;
+                                socuoi3 = socuoi2;
+                                if (Tin_nhan.getString(2).indexOf(str7) > -1) {
+                                    try {
+                                        jsonDang.put("PhanTram", 100 - this.caidat_tg.getInt("khgiu_xn"));
+                                        str5 = str13;
+                                    } catch (JSONException e10) {
+                                    }
+                                } else {
+                                    str5 = str13;
+                                    try {
+                                        jsonDang.put("PhanTram", Tin_nhan.getDouble(9));
+                                    } catch (JSONException e11) {
+                                    }
+                                }
+                            }
+                        }
+                    } catch (JSONException e15) {
                     }
-                    ThanhToan = GetData("SELECT SUM((the_loai = 'tt') * ket_qua) AS Ttoan \n FROM tbl_soctS WHERE ten_kh = '" + TenKH + "' AND ngay_nhan ='" + mDate3 + str);
-                    ThanhToan.moveToFirst();
-                    String Ttoan222222222222222 = "";
-                    if (ThanhToan.getInt(0) != 0) {
-                    }
-                    if (this.caidat_tg.getInt("chot_sodu") != 0) {
-                    }
-                    if (!CongNo_Nhan2.isClosed()) {
-                    }
-                    if (!ThongTin_khach.isClosed()) {
-                    }
-                    return TinChot;
                 }
             } catch (JSONException e19) {
-                nocu2 = nocu;
-                str5 = str13;
-                str8 = str3;
-                nocu3 = str2;
-                str6 = str4;
-                ThongTin_khach = ThongTin_khach2;
-                str7 = socuoi;
-                jsonKhach2 = jsonKhach;
-                socuoi3 = socuoi2;
-                TienNhan2 = TienNhan;
-                TienChuyen2 = TienChuyen;
-                JSONObject jsonObject2222222222222222 = new JSONObject();
-                String str162222222222222222 = str5;
-                jsonObject2222222222222222.put("dea", "Dau DB: ");
-                jsonObject2222222222222222.put("deb", "De: ");
-                jsonObject2222222222222222.put("det", "De 8: ");
-                jsonObject2222222222222222.put("dec", "Dau Nhat: ");
-                jsonObject2222222222222222.put("ded", "Dit Nhat: ");
-                jsonObject2222222222222222.put(str8, "Lo: ");
-                jsonObject2222222222222222.put("xi2", "Xien 2: ");
-                jsonObject2222222222222222.put("xi3", "Xien 3: ");
-                jsonObject2222222222222222.put("xi4", "Xien 4: ");
-                jsonObject2222222222222222.put(str7, "X.nhay: ");
-                jsonObject2222222222222222.put(nocu3, "3Cang: ");
-                jsonObject2222222222222222.put("loa", "Lo dau: ");
-                jsonObject2222222222222222.put("xia2", "Xia 2: ");
-                jsonObject2222222222222222.put("xia3", "Xia 3: ");
-                jsonObject2222222222222222.put("xia4", "Xia 4: ");
-                jsonObject2222222222222222.put("bca", "3Cang dau: ");
-                keys = jsonObject2222222222222222.keys();
-                String Str_n2222222222222222 = "";
-                String Str_c2222222222222222 = "";
-                while (keys.hasNext()) {
-                }
-                ThanhToan = GetData("SELECT SUM((the_loai = 'tt') * ket_qua) AS Ttoan \n FROM tbl_soctS WHERE ten_kh = '" + TenKH + "' AND ngay_nhan ='" + mDate3 + str);
-                ThanhToan.moveToFirst();
-                String Ttoan2222222222222222 = "";
-                if (ThanhToan.getInt(0) != 0) {
-                }
-                if (this.caidat_tg.getInt("chot_sodu") != 0) {
-                }
-                if (!CongNo_Nhan2.isClosed()) {
-                }
-                if (!ThongTin_khach.isClosed()) {
-                }
-                return TinChot;
             }
         }
         nocu2 = nocu;
@@ -7984,69 +4915,20 @@ public class Database extends SQLiteOpenHelper {
         String mNgay5 = getTinNhan.getString(1);
         Cursor c = GetData("Select * From tbl_kh_new Where sdt = '" + getTinNhan.getString(5) + "'");
         c.moveToFirst();
-        try {
-            sotin = 0;
-            JSONObject jSONObject = new JSONObject(c.getString(5));
-            this.json = jSONObject;
-            JSONObject jSONObject2 = jSONObject.getJSONObject("caidat_tg");
-            this.caidat_tg = jSONObject2;
-            ok_TIN = jSONObject2.getInt("ok_tin");
-        } catch (JSONException e5) {
-            e3 = e5;
-            sotin = 0;
-            e3.printStackTrace();
-            ok_TIN = 0;
-            String mGionhan52 = mGionhan4;
-            if (getTinNhan.getInt(13) != 1) {
-            }
-            if (getTinNhan.getString(11).indexOf("ok") != 0) {
-            }
-            mNgay3 = str7;
-            mSoTN2 = mSoTN5;
-            mNgay2 = mNgay;
-            mGionhan2 = str5;
-            str8 = tinNhan;
-            str10 = str3;
-            str9 = str;
-            mGionhan3 = mGionhan;
-            mNgay4 = str6;
-            mSoDT = mSoDT4;
-            mSoDT2 = mNgayNhan2;
-            mNgayNhan = tinNhan2;
-            Cursor getTin22 = GetData("Select * From tbl_tinnhanS WHERE ngay_nhan = '" + mNgay2 + mGionhan2 + mSoDT + str8 + mSoTN2);
-            getTin22.moveToFirst();
-            StringBuilder sb22 = new StringBuilder();
-            sb22.append("Select * From tbl_chuyenthang WHERE sdt_nhan = '");
-            sb22.append(mSoDT);
-            sb22.append("'");
-            cur = GetData(sb22.toString());
-            cur.moveToFirst();
-            Cursor chuyen32 = GetData("Select Om_Xi3 FROM so_Om WHERE id = 13");
-            chuyen32.moveToFirst();
-            if (cur.getCount() > 0) {
-            }
-            TralaiSO(mID);
-            if (getTin != null) {
-            }
-            if (chuyen != null) {
-            }
-            if (getTinNhan != null) {
-            }
-            if (c != null) {
-            }
-            if (cur != null) {
-            }
-        }
+        sotin = 0;
+        JSONObject jSONObject = new JSONObject(c.getString(5));
+        this.json = jSONObject;
+        JSONObject jSONObject2 = jSONObject.getJSONObject("caidat_tg");
+        this.caidat_tg = jSONObject2;
+        ok_TIN = jSONObject2.getInt("ok_tin");
         String mGionhan522 = mGionhan4;
         if (getTinNhan.getInt(13) != 1) {
-//            mSoTN = "\n";
             str2 = "Time";
             str = "TL";
             tinNhan = "' AND so_tin_nhan = ";
             str6 = "',1)";
             str7 = "','";
             mGionhan = mGionhan522;
-//            mGionhan522 = ok_TIN;
             str4 = "Ok Tin ";
             str3 = "sms";
             str5 = "' AND so_dienthoai = '";
@@ -8085,236 +4967,14 @@ public class Database extends SQLiteOpenHelper {
                     JSONObject jsonObject = new JSONObject(MainActivity.json_Tinnhan.getString(mSoDT4));
                     str2 = "Time";
                     if (jsonObject.getInt("Time") > 3) {
-                        try {
-                            str = "TL";
-                            try {
-                                new NotificationReader().NotificationWearReader(getTinNhan.getString(5), tinNhan5);
-                            } catch (Exception e6) {
-                                new NotificationReader().NotificationWearReader(getTinNhan.getString(5), tinNhan5);
-                                StringBuilder sb4 = new StringBuilder();
-                                sb4.append("Insert into Chat_database Values( null,'");
-                                sb4.append(mNgayNhan2);
-                                sb4.append("', '");
-                                mGionhan = mGionhan522;
-                                sb4.append(mGionhan);
-                                sb4.append("', 2, '");
-                                sb4.append(getTinNhan.getString(4));
-                                sb4.append("', '");
-                                sb4.append(getTinNhan.getString(5));
-                                sb4.append("', '");
-                                sb4.append(getTinNhan.getString(6));
-                                str7 = "','";
-                                sb4.append(str7);
-                                sb4.append(tinNhan5);
-                                str6 = "',1)";
-                                sb4.append(str6);
-                                QueryData(sb4.toString());
-                                StringBuilder sb5 = new StringBuilder();
-                                sb5.append("Update tbl_tinnhanS set ok_tn = 0 WHERE ngay_nhan = '");
-                                sb5.append(mNgay5);
-                                sb5.append("' AND so_dienthoai = '");
-                                sb5.append(mSoDT4);
-                                tinNhan = "' AND so_tin_nhan = ";
-                                sb5.append(tinNhan);
-                                sb5.append(mSoTN5);
-                                QueryData(sb5.toString());
-//                                //mGionhan522 = ok_TIN;
-                                str4 = "Ok Tin ";
-                                str3 = "sms";
-                                str5 = "' AND so_dienthoai = '";
-                                mNgay = mNgay5;
-                                tinNhan2 = "', 2, '";
-                                if (getTinNhan.getString(11).indexOf("ok") != 0) {
-                                }
-                                mNgay3 = str7;
-                                mSoTN2 = mSoTN5;
-                                mNgay2 = mNgay;
-                                mGionhan2 = str5;
-                                str8 = tinNhan;
-                                str10 = str3;
-                                str9 = str;
-                                mGionhan3 = mGionhan;
-                                mNgay4 = str6;
-                                mSoDT = mSoDT4;
-                                mSoDT2 = mNgayNhan2;
-                                mNgayNhan = tinNhan2;
-                                Cursor getTin222 = GetData("Select * From tbl_tinnhanS WHERE ngay_nhan = '" + mNgay2 + mGionhan2 + mSoDT + str8 + mSoTN2);
-                                getTin222.moveToFirst();
-                                StringBuilder sb222 = new StringBuilder();
-                                sb222.append("Select * From tbl_chuyenthang WHERE sdt_nhan = '");
-                                sb222.append(mSoDT);
-                                sb222.append("'");
-                                cur = GetData(sb222.toString());
-                                cur.moveToFirst();
-                                Cursor chuyen322 = GetData("Select Om_Xi3 FROM so_Om WHERE id = 13");
-                                chuyen322.moveToFirst();
-                                if (cur.getCount() > 0) {
-                                }
-                                TralaiSO(mID);
-                                if (getTin != null) {
-                                }
-                                if (chuyen != null) {
-                                }
-                                if (getTinNhan != null) {
-                                }
-                                if (c != null) {
-                                }
-                                if (cur != null) {
-                                }
-                            }
-                        } catch (Exception e7) {
-                            str = "TL";
-                            new NotificationReader().NotificationWearReader(getTinNhan.getString(5), tinNhan5);
-                            StringBuilder sb42 = new StringBuilder();
-                            sb42.append("Insert into Chat_database Values( null,'");
-                            sb42.append(mNgayNhan2);
-                            sb42.append("', '");
-                            mGionhan = mGionhan522;
-                            sb42.append(mGionhan);
-                            sb42.append("', 2, '");
-                            sb42.append(getTinNhan.getString(4));
-                            sb42.append("', '");
-                            sb42.append(getTinNhan.getString(5));
-                            sb42.append("', '");
-                            sb42.append(getTinNhan.getString(6));
-                            str7 = "','";
-                            sb42.append(str7);
-                            sb42.append(tinNhan5);
-                            str6 = "',1)";
-                            sb42.append(str6);
-                            QueryData(sb42.toString());
-                            StringBuilder sb52 = new StringBuilder();
-                            sb52.append("Update tbl_tinnhanS set ok_tn = 0 WHERE ngay_nhan = '");
-                            sb52.append(mNgay5);
-                            sb52.append("' AND so_dienthoai = '");
-                            sb52.append(mSoDT4);
-                            tinNhan = "' AND so_tin_nhan = ";
-                            sb52.append(tinNhan);
-                            sb52.append(mSoTN5);
-                            QueryData(sb52.toString());
-                            ////mGionhan522 = ok_TIN;
-                            str4 = "Ok Tin ";
-                            str3 = "sms";
-                            str5 = "' AND so_dienthoai = '";
-                            mNgay = mNgay5;
-                            tinNhan2 = "', 2, '";
-                            if (getTinNhan.getString(11).indexOf("ok") != 0) {
-                            }
-                            mNgay3 = str7;
-                            mSoTN2 = mSoTN5;
-                            mNgay2 = mNgay;
-                            mGionhan2 = str5;
-                            str8 = tinNhan;
-                            str10 = str3;
-                            str9 = str;
-                            mGionhan3 = mGionhan;
-                            mNgay4 = str6;
-                            mSoDT = mSoDT4;
-                            mSoDT2 = mNgayNhan2;
-                            mNgayNhan = tinNhan2;
-                            Cursor getTin2222 = GetData("Select * From tbl_tinnhanS WHERE ngay_nhan = '" + mNgay2 + mGionhan2 + mSoDT + str8 + mSoTN2);
-                            getTin2222.moveToFirst();
-                            StringBuilder sb2222 = new StringBuilder();
-                            sb2222.append("Select * From tbl_chuyenthang WHERE sdt_nhan = '");
-                            sb2222.append(mSoDT);
-                            sb2222.append("'");
-                            cur = GetData(sb2222.toString());
-                            cur.moveToFirst();
-                            Cursor chuyen3222 = GetData("Select Om_Xi3 FROM so_Om WHERE id = 13");
-                            chuyen3222.moveToFirst();
-                            if (cur.getCount() > 0) {
-                            }
-                            TralaiSO(mID);
-                            if (getTin != null) {
-                            }
-                            if (chuyen != null) {
-                            }
-                            if (getTinNhan != null) {
-                            }
-                            if (c != null) {
-                            }
-                            if (cur != null) {
-                            }
-                        }
+                        str = "TL";
+                        new NotificationReader().NotificationWearReader(getTinNhan.getString(5), tinNhan5);
                     } else {
                         str = "TL";
                         jsonObject.put(tinNhan5, "OK");
                         MainActivity.json_Tinnhan.put(mSoDT4, jsonObject);
                     }
                 } catch (Exception e8) {
-                    str2 = "Time";
-                    str = "TL";
-                    new NotificationReader().NotificationWearReader(getTinNhan.getString(5), tinNhan5);
-                    StringBuilder sb422 = new StringBuilder();
-                    sb422.append("Insert into Chat_database Values( null,'");
-                    sb422.append(mNgayNhan2);
-                    sb422.append("', '");
-                    mGionhan = mGionhan522;
-                    sb422.append(mGionhan);
-                    sb422.append("', 2, '");
-                    sb422.append(getTinNhan.getString(4));
-                    sb422.append("', '");
-                    sb422.append(getTinNhan.getString(5));
-                    sb422.append("', '");
-                    sb422.append(getTinNhan.getString(6));
-                    str7 = "','";
-                    sb422.append(str7);
-                    sb422.append(tinNhan5);
-                    str6 = "',1)";
-                    sb422.append(str6);
-                    QueryData(sb422.toString());
-                    StringBuilder sb522 = new StringBuilder();
-                    sb522.append("Update tbl_tinnhanS set ok_tn = 0 WHERE ngay_nhan = '");
-                    sb522.append(mNgay5);
-                    sb522.append("' AND so_dienthoai = '");
-                    sb522.append(mSoDT4);
-                    tinNhan = "' AND so_tin_nhan = ";
-                    sb522.append(tinNhan);
-                    sb522.append(mSoTN5);
-                    QueryData(sb522.toString());
-                    //mGionhan522 = ok_TIN;
-                    str4 = "Ok Tin ";
-                    str3 = "sms";
-                    str5 = "' AND so_dienthoai = '";
-                    mNgay = mNgay5;
-                    tinNhan2 = "', 2, '";
-                    if (getTinNhan.getString(11).indexOf("ok") != 0) {
-                    }
-                    mNgay3 = str7;
-                    mSoTN2 = mSoTN5;
-                    mNgay2 = mNgay;
-                    mGionhan2 = str5;
-                    str8 = tinNhan;
-                    str10 = str3;
-                    str9 = str;
-                    mGionhan3 = mGionhan;
-                    mNgay4 = str6;
-                    mSoDT = mSoDT4;
-                    mSoDT2 = mNgayNhan2;
-                    mNgayNhan = tinNhan2;
-                    Cursor getTin22222 = GetData("Select * From tbl_tinnhanS WHERE ngay_nhan = '" + mNgay2 + mGionhan2 + mSoDT + str8 + mSoTN2);
-                    getTin22222.moveToFirst();
-                    StringBuilder sb22222 = new StringBuilder();
-                    sb22222.append("Select * From tbl_chuyenthang WHERE sdt_nhan = '");
-                    sb22222.append(mSoDT);
-                    sb22222.append("'");
-                    cur = GetData(sb22222.toString());
-                    cur.moveToFirst();
-                    Cursor chuyen32222 = GetData("Select Om_Xi3 FROM so_Om WHERE id = 13");
-                    chuyen32222.moveToFirst();
-                    if (cur.getCount() > 0) {
-                    }
-                    TralaiSO(mID);
-                    if (getTin != null) {
-                    }
-                    if (chuyen != null) {
-                    }
-                    if (getTinNhan != null) {
-                    }
-                    if (c != null) {
-                    }
-                    if (cur != null) {
-                    }
                 }
                 StringBuilder sb4222 = new StringBuilder();
                 sb4222.append("Insert into Chat_database Values( null,'");
@@ -8389,139 +5049,8 @@ public class Database extends SQLiteOpenHelper {
                                     try {
                                         new NotificationReader().NotificationWearReader(getTinNhan.getString(5), tinNhan6);
                                     } catch (Exception e9) {
-                                        new NotificationReader().NotificationWearReader(getTinNhan.getString(5), tinNhan6);
-                                        StringBuilder sb6 = new StringBuilder();
-                                        sb6.append("Insert into Chat_database Values( null,'");
-                                        sb6.append(mNgayNhan2);
-                                        sb6.append("', '");
-                                        sb6.append(mGionhan);
-                                        tinNhan2 = "', 2, '";
-                                        sb6.append(tinNhan2);
-                                        sb6.append(getTinNhan.getString(5));
-                                        sb6.append("', '");
-                                        sb6.append(mSoDT4);
-                                        sb6.append("', '");
-                                        sb6.append(getTinNhan.getString(6));
-                                        sb6.append(str7);
-                                        sb6.append(tinNhan6);
-                                        sb6.append(str6);
-                                        QueryData(sb6.toString());
-                                        StringBuilder sb7 = new StringBuilder();
-                                        sb7.append("Update tbl_tinnhanS set ok_tn = 0 WHERE ngay_nhan = '");
-                                        mNgay = mNgay5;
-                                        sb7.append(mNgay);
-                                        str5 = "' AND so_dienthoai = '";
-                                        sb7.append(str5);
-                                        sb7.append(mSoDT4);
-                                        tinNhan = "' AND so_tin_nhan = ";
-                                        sb7.append(tinNhan);
-                                        sb7.append(mSoTN5);
-                                        QueryData(sb7.toString());
-                                        if (getTinNhan.getString(11).indexOf("ok") != 0) {
-                                        }
-                                        mNgay3 = str7;
-                                        mSoTN2 = mSoTN5;
-                                        mNgay2 = mNgay;
-                                        mGionhan2 = str5;
-                                        str8 = tinNhan;
-                                        str10 = str3;
-                                        str9 = str;
-                                        mGionhan3 = mGionhan;
-                                        mNgay4 = str6;
-                                        mSoDT = mSoDT4;
-                                        mSoDT2 = mNgayNhan2;
-                                        mNgayNhan = tinNhan2;
-                                        Cursor getTin222222 = GetData("Select * From tbl_tinnhanS WHERE ngay_nhan = '" + mNgay2 + mGionhan2 + mSoDT + str8 + mSoTN2);
-                                        getTin222222.moveToFirst();
-                                        StringBuilder sb222222 = new StringBuilder();
-                                        sb222222.append("Select * From tbl_chuyenthang WHERE sdt_nhan = '");
-                                        sb222222.append(mSoDT);
-                                        sb222222.append("'");
-                                        cur = GetData(sb222222.toString());
-                                        cur.moveToFirst();
-                                        Cursor chuyen322222 = GetData("Select Om_Xi3 FROM so_Om WHERE id = 13");
-                                        chuyen322222.moveToFirst();
-                                        if (cur.getCount() > 0) {
-                                        }
-                                        TralaiSO(mID);
-                                        if (getTin != null) {
-                                        }
-                                        if (chuyen != null) {
-                                        }
-                                        if (getTinNhan != null) {
-                                        }
-                                        if (c != null) {
-                                        }
-                                        if (cur != null) {
-                                        }
                                     }
                                 } catch (Exception e10) {
-                                    //mGionhan522 = ok_TIN;
-                                    new NotificationReader().NotificationWearReader(getTinNhan.getString(5), tinNhan6);
-                                    StringBuilder sb62 = new StringBuilder();
-                                    sb62.append("Insert into Chat_database Values( null,'");
-                                    sb62.append(mNgayNhan2);
-                                    sb62.append("', '");
-                                    sb62.append(mGionhan);
-                                    tinNhan2 = "', 2, '";
-                                    sb62.append(tinNhan2);
-                                    sb62.append(getTinNhan.getString(5));
-                                    sb62.append("', '");
-                                    sb62.append(mSoDT4);
-                                    sb62.append("', '");
-                                    sb62.append(getTinNhan.getString(6));
-                                    sb62.append(str7);
-                                    sb62.append(tinNhan6);
-                                    sb62.append(str6);
-                                    QueryData(sb62.toString());
-                                    StringBuilder sb72 = new StringBuilder();
-                                    sb72.append("Update tbl_tinnhanS set ok_tn = 0 WHERE ngay_nhan = '");
-                                    mNgay = mNgay5;
-                                    sb72.append(mNgay);
-                                    str5 = "' AND so_dienthoai = '";
-                                    sb72.append(str5);
-                                    sb72.append(mSoDT4);
-                                    tinNhan = "' AND so_tin_nhan = ";
-                                    sb72.append(tinNhan);
-                                    sb72.append(mSoTN5);
-                                    QueryData(sb72.toString());
-                                    if (getTinNhan.getString(11).indexOf("ok") != 0) {
-                                    }
-                                    mNgay3 = str7;
-                                    mSoTN2 = mSoTN5;
-                                    mNgay2 = mNgay;
-                                    mGionhan2 = str5;
-                                    str8 = tinNhan;
-                                    str10 = str3;
-                                    str9 = str;
-                                    mGionhan3 = mGionhan;
-                                    mNgay4 = str6;
-                                    mSoDT = mSoDT4;
-                                    mSoDT2 = mNgayNhan2;
-                                    mNgayNhan = tinNhan2;
-                                    Cursor getTin2222222 = GetData("Select * From tbl_tinnhanS WHERE ngay_nhan = '" + mNgay2 + mGionhan2 + mSoDT + str8 + mSoTN2);
-                                    getTin2222222.moveToFirst();
-                                    StringBuilder sb2222222 = new StringBuilder();
-                                    sb2222222.append("Select * From tbl_chuyenthang WHERE sdt_nhan = '");
-                                    sb2222222.append(mSoDT);
-                                    sb2222222.append("'");
-                                    cur = GetData(sb2222222.toString());
-                                    cur.moveToFirst();
-                                    Cursor chuyen3222222 = GetData("Select Om_Xi3 FROM so_Om WHERE id = 13");
-                                    chuyen3222222.moveToFirst();
-                                    if (cur.getCount() > 0) {
-                                    }
-                                    TralaiSO(mID);
-                                    if (getTin != null) {
-                                    }
-                                    if (chuyen != null) {
-                                    }
-                                    if (getTinNhan != null) {
-                                    }
-                                    if (c != null) {
-                                    }
-                                    if (cur != null) {
-                                    }
                                 }
                             } else {
                                 //mGionhan522 = ok_TIN;
@@ -8529,142 +5058,8 @@ public class Database extends SQLiteOpenHelper {
                                 MainActivity.json_Tinnhan.put(mSoDT4, jsonObject2);
                             }
                         } catch (Exception e11) {
-                            //mGionhan522 = ok_TIN;
-                            str2 = str2;
-                            new NotificationReader().NotificationWearReader(getTinNhan.getString(5), tinNhan6);
-                            StringBuilder sb622 = new StringBuilder();
-                            sb622.append("Insert into Chat_database Values( null,'");
-                            sb622.append(mNgayNhan2);
-                            sb622.append("', '");
-                            sb622.append(mGionhan);
-                            tinNhan2 = "', 2, '";
-                            sb622.append(tinNhan2);
-                            sb622.append(getTinNhan.getString(5));
-                            sb622.append("', '");
-                            sb622.append(mSoDT4);
-                            sb622.append("', '");
-                            sb622.append(getTinNhan.getString(6));
-                            sb622.append(str7);
-                            sb622.append(tinNhan6);
-                            sb622.append(str6);
-                            QueryData(sb622.toString());
-                            StringBuilder sb722 = new StringBuilder();
-                            sb722.append("Update tbl_tinnhanS set ok_tn = 0 WHERE ngay_nhan = '");
-                            mNgay = mNgay5;
-                            sb722.append(mNgay);
-                            str5 = "' AND so_dienthoai = '";
-                            sb722.append(str5);
-                            sb722.append(mSoDT4);
-                            tinNhan = "' AND so_tin_nhan = ";
-                            sb722.append(tinNhan);
-                            sb722.append(mSoTN5);
-                            QueryData(sb722.toString());
-                            if (getTinNhan.getString(11).indexOf("ok") != 0) {
-                            }
-                            mNgay3 = str7;
-                            mSoTN2 = mSoTN5;
-                            mNgay2 = mNgay;
-                            mGionhan2 = str5;
-                            str8 = tinNhan;
-                            str10 = str3;
-                            str9 = str;
-                            mGionhan3 = mGionhan;
-                            mNgay4 = str6;
-                            mSoDT = mSoDT4;
-                            mSoDT2 = mNgayNhan2;
-                            mNgayNhan = tinNhan2;
-                            Cursor getTin22222222 = GetData("Select * From tbl_tinnhanS WHERE ngay_nhan = '" + mNgay2 + mGionhan2 + mSoDT + str8 + mSoTN2);
-                            getTin22222222.moveToFirst();
-                            StringBuilder sb22222222 = new StringBuilder();
-                            sb22222222.append("Select * From tbl_chuyenthang WHERE sdt_nhan = '");
-                            sb22222222.append(mSoDT);
-                            sb22222222.append("'");
-                            cur = GetData(sb22222222.toString());
-                            cur.moveToFirst();
-                            Cursor chuyen32222222 = GetData("Select Om_Xi3 FROM so_Om WHERE id = 13");
-                            chuyen32222222.moveToFirst();
-                            if (cur.getCount() > 0) {
-                            }
-                            TralaiSO(mID);
-                            if (getTin != null) {
-                            }
-                            if (chuyen != null) {
-                            }
-                            if (getTinNhan != null) {
-                            }
-                            if (c != null) {
-                            }
-                            if (cur != null) {
-                            }
                         }
                     } catch (Exception e12) {
-                        //mGionhan522 = ok_TIN;
-                        str3 = "sms";
-                        new NotificationReader().NotificationWearReader(getTinNhan.getString(5), tinNhan6);
-                        StringBuilder sb6222 = new StringBuilder();
-                        sb6222.append("Insert into Chat_database Values( null,'");
-                        sb6222.append(mNgayNhan2);
-                        sb6222.append("', '");
-                        sb6222.append(mGionhan);
-                        tinNhan2 = "', 2, '";
-                        sb6222.append(tinNhan2);
-                        sb6222.append(getTinNhan.getString(5));
-                        sb6222.append("', '");
-                        sb6222.append(mSoDT4);
-                        sb6222.append("', '");
-                        sb6222.append(getTinNhan.getString(6));
-                        sb6222.append(str7);
-                        sb6222.append(tinNhan6);
-                        sb6222.append(str6);
-                        QueryData(sb6222.toString());
-                        StringBuilder sb7222 = new StringBuilder();
-                        sb7222.append("Update tbl_tinnhanS set ok_tn = 0 WHERE ngay_nhan = '");
-                        mNgay = mNgay5;
-                        sb7222.append(mNgay);
-                        str5 = "' AND so_dienthoai = '";
-                        sb7222.append(str5);
-                        sb7222.append(mSoDT4);
-                        tinNhan = "' AND so_tin_nhan = ";
-                        sb7222.append(tinNhan);
-                        sb7222.append(mSoTN5);
-                        QueryData(sb7222.toString());
-                        if (getTinNhan.getString(11).indexOf("ok") != 0) {
-                        }
-                        mNgay3 = str7;
-                        mSoTN2 = mSoTN5;
-                        mNgay2 = mNgay;
-                        mGionhan2 = str5;
-                        str8 = tinNhan;
-                        str10 = str3;
-                        str9 = str;
-                        mGionhan3 = mGionhan;
-                        mNgay4 = str6;
-                        mSoDT = mSoDT4;
-                        mSoDT2 = mNgayNhan2;
-                        mNgayNhan = tinNhan2;
-                        Cursor getTin222222222 = GetData("Select * From tbl_tinnhanS WHERE ngay_nhan = '" + mNgay2 + mGionhan2 + mSoDT + str8 + mSoTN2);
-                        getTin222222222.moveToFirst();
-                        StringBuilder sb222222222 = new StringBuilder();
-                        sb222222222.append("Select * From tbl_chuyenthang WHERE sdt_nhan = '");
-                        sb222222222.append(mSoDT);
-                        sb222222222.append("'");
-                        cur = GetData(sb222222222.toString());
-                        cur.moveToFirst();
-                        Cursor chuyen322222222 = GetData("Select Om_Xi3 FROM so_Om WHERE id = 13");
-                        chuyen322222222.moveToFirst();
-                        if (cur.getCount() > 0) {
-                        }
-                        TralaiSO(mID);
-                        if (getTin != null) {
-                        }
-                        if (chuyen != null) {
-                        }
-                        if (getTinNhan != null) {
-                        }
-                        if (c != null) {
-                        }
-                        if (cur != null) {
-                        }
                     }
                     StringBuilder sb62222 = new StringBuilder();
                     sb62222.append("Insert into Chat_database Values( null,'");
@@ -8741,105 +5136,8 @@ public class Database extends SQLiteOpenHelper {
                                     try {
                                         new NotificationReader().NotificationWearReader(getTinNhan.getString(5), tinNhan7);
                                     } catch (Exception e13) {
-                                        new NotificationReader().NotificationWearReader(getTinNhan.getString(5), tinNhan7);
-                                        QueryData("Insert into Chat_database Values( null,'" + mNgayNhan2 + "', '" + mGionhan + tinNhan2 + getTinNhan.getString(4) + "', '" + getTinNhan.getString(5) + "', '" + getTinNhan.getString(6) + str7 + tinNhan7 + str6);
-                                        tinNhan3 = tinNhan2;
-                                        str12 = str6;
-                                        str10 = str16;
-                                        mSoTN3 = mSoTN;
-                                        str13 = str7;
-                                        str9 = str;
-                                        str = str2;
-                                        cur2 = GetData("Select * From tbl_chuyenthang WHERE sdt_nhan = '" + mSoDT4 + "'");
-                                        cur2.moveToFirst();
-                                        if (cur2.getCount() <= 0) {
-                                        }
-                                        mSoTN2 = mSoTN3;
-                                        mSoDT3 = mSoDT4;
-                                        mNgay3 = str13;
-                                        str8 = tinNhan;
-                                        mGionhan2 = str11;
-                                        mSoDT2 = mNgayNhan2;
-                                        mNgayNhan = tinNhan3;
-                                        mGionhan3 = mGionhan;
-                                        if (getTinNhan.getInt(3) == 1) {
-                                        }
-                                        mNgay4 = str12;
-                                        mSoDT = mSoDT3;
-                                        Cursor getTin2222222222 = GetData("Select * From tbl_tinnhanS WHERE ngay_nhan = '" + mNgay2 + mGionhan2 + mSoDT + str8 + mSoTN2);
-                                        getTin2222222222.moveToFirst();
-                                        StringBuilder sb2222222222 = new StringBuilder();
-                                        sb2222222222.append("Select * From tbl_chuyenthang WHERE sdt_nhan = '");
-                                        sb2222222222.append(mSoDT);
-                                        sb2222222222.append("'");
-                                        cur = GetData(sb2222222222.toString());
-                                        cur.moveToFirst();
-                                        Cursor chuyen3222222222 = GetData("Select Om_Xi3 FROM so_Om WHERE id = 13");
-                                        chuyen3222222222.moveToFirst();
-                                        if (cur.getCount() > 0) {
-                                        }
-                                        TralaiSO(mID);
-                                        if (getTin != null) {
-                                        }
-                                        if (chuyen != null) {
-                                        }
-                                        if (getTinNhan != null) {
-                                        }
-                                        if (c != null) {
-                                        }
-                                        if (cur != null) {
-                                        }
                                     }
                                 } catch (Exception e14) {
-                                    mSoTN = mSoTN5;
-                                    new NotificationReader().NotificationWearReader(getTinNhan.getString(5), tinNhan7);
-                                    QueryData("Insert into Chat_database Values( null,'" + mNgayNhan2 + "', '" + mGionhan + tinNhan2 + getTinNhan.getString(4) + "', '" + getTinNhan.getString(5) + "', '" + getTinNhan.getString(6) + str7 + tinNhan7 + str6);
-                                    tinNhan3 = tinNhan2;
-                                    str12 = str6;
-                                    str10 = str16;
-                                    mSoTN3 = mSoTN;
-                                    str13 = str7;
-                                    str9 = str;
-                                    str = str2;
-                                    cur2 = GetData("Select * From tbl_chuyenthang WHERE sdt_nhan = '" + mSoDT4 + "'");
-                                    cur2.moveToFirst();
-                                    if (cur2.getCount() <= 0) {
-                                    }
-                                    mSoTN2 = mSoTN3;
-                                    mSoDT3 = mSoDT4;
-                                    mNgay3 = str13;
-                                    str8 = tinNhan;
-                                    mGionhan2 = str11;
-                                    mSoDT2 = mNgayNhan2;
-                                    mNgayNhan = tinNhan3;
-                                    mGionhan3 = mGionhan;
-                                    if (getTinNhan.getInt(3) == 1) {
-                                    }
-                                    mNgay4 = str12;
-                                    mSoDT = mSoDT3;
-                                    Cursor getTin22222222222 = GetData("Select * From tbl_tinnhanS WHERE ngay_nhan = '" + mNgay2 + mGionhan2 + mSoDT + str8 + mSoTN2);
-                                    getTin22222222222.moveToFirst();
-                                    StringBuilder sb22222222222 = new StringBuilder();
-                                    sb22222222222.append("Select * From tbl_chuyenthang WHERE sdt_nhan = '");
-                                    sb22222222222.append(mSoDT);
-                                    sb22222222222.append("'");
-                                    cur = GetData(sb22222222222.toString());
-                                    cur.moveToFirst();
-                                    Cursor chuyen32222222222 = GetData("Select Om_Xi3 FROM so_Om WHERE id = 13");
-                                    chuyen32222222222.moveToFirst();
-                                    if (cur.getCount() > 0) {
-                                    }
-                                    TralaiSO(mID);
-                                    if (getTin != null) {
-                                    }
-                                    if (chuyen != null) {
-                                    }
-                                    if (getTinNhan != null) {
-                                    }
-                                    if (c != null) {
-                                    }
-                                    if (cur != null) {
-                                    }
                                 }
                             } else {
                                 mSoTN = mSoTN5;
@@ -8847,108 +5145,8 @@ public class Database extends SQLiteOpenHelper {
                                 MainActivity.json_Tinnhan.put(mSoDT4, jsonObject3);
                             }
                         } catch (Exception e15) {
-                            mSoTN = mSoTN5;
-                            str2 = str2;
-                            new NotificationReader().NotificationWearReader(getTinNhan.getString(5), tinNhan7);
-                            QueryData("Insert into Chat_database Values( null,'" + mNgayNhan2 + "', '" + mGionhan + tinNhan2 + getTinNhan.getString(4) + "', '" + getTinNhan.getString(5) + "', '" + getTinNhan.getString(6) + str7 + tinNhan7 + str6);
-                            tinNhan3 = tinNhan2;
-                            str12 = str6;
-                            str10 = str16;
-                            mSoTN3 = mSoTN;
-                            str13 = str7;
-                            str9 = str;
-                            str = str2;
-                            cur2 = GetData("Select * From tbl_chuyenthang WHERE sdt_nhan = '" + mSoDT4 + "'");
-                            cur2.moveToFirst();
-                            if (cur2.getCount() <= 0) {
-                            }
-                            mSoTN2 = mSoTN3;
-                            mSoDT3 = mSoDT4;
-                            mNgay3 = str13;
-                            str8 = tinNhan;
-                            mGionhan2 = str11;
-                            mSoDT2 = mNgayNhan2;
-                            mNgayNhan = tinNhan3;
-                            mGionhan3 = mGionhan;
-                            if (getTinNhan.getInt(3) == 1) {
-                            }
-                            mNgay4 = str12;
-                            mSoDT = mSoDT3;
-                            Cursor getTin222222222222 = GetData("Select * From tbl_tinnhanS WHERE ngay_nhan = '" + mNgay2 + mGionhan2 + mSoDT + str8 + mSoTN2);
-                            getTin222222222222.moveToFirst();
-                            StringBuilder sb222222222222 = new StringBuilder();
-                            sb222222222222.append("Select * From tbl_chuyenthang WHERE sdt_nhan = '");
-                            sb222222222222.append(mSoDT);
-                            sb222222222222.append("'");
-                            cur = GetData(sb222222222222.toString());
-                            cur.moveToFirst();
-                            Cursor chuyen322222222222 = GetData("Select Om_Xi3 FROM so_Om WHERE id = 13");
-                            chuyen322222222222.moveToFirst();
-                            if (cur.getCount() > 0) {
-                            }
-                            TralaiSO(mID);
-                            if (getTin != null) {
-                            }
-                            if (chuyen != null) {
-                            }
-                            if (getTinNhan != null) {
-                            }
-                            if (c != null) {
-                            }
-                            if (cur != null) {
-                            }
                         }
                     } catch (Exception e16) {
-                        mSoTN = mSoTN5;
-                        str16 = str3;
-                        new NotificationReader().NotificationWearReader(getTinNhan.getString(5), tinNhan7);
-                        QueryData("Insert into Chat_database Values( null,'" + mNgayNhan2 + "', '" + mGionhan + tinNhan2 + getTinNhan.getString(4) + "', '" + getTinNhan.getString(5) + "', '" + getTinNhan.getString(6) + str7 + tinNhan7 + str6);
-                        tinNhan3 = tinNhan2;
-                        str12 = str6;
-                        str10 = str16;
-                        mSoTN3 = mSoTN;
-                        str13 = str7;
-                        str9 = str;
-                        str = str2;
-                        cur2 = GetData("Select * From tbl_chuyenthang WHERE sdt_nhan = '" + mSoDT4 + "'");
-                        cur2.moveToFirst();
-                        if (cur2.getCount() <= 0) {
-                        }
-                        mSoTN2 = mSoTN3;
-                        mSoDT3 = mSoDT4;
-                        mNgay3 = str13;
-                        str8 = tinNhan;
-                        mGionhan2 = str11;
-                        mSoDT2 = mNgayNhan2;
-                        mNgayNhan = tinNhan3;
-                        mGionhan3 = mGionhan;
-                        if (getTinNhan.getInt(3) == 1) {
-                        }
-                        mNgay4 = str12;
-                        mSoDT = mSoDT3;
-                        Cursor getTin2222222222222 = GetData("Select * From tbl_tinnhanS WHERE ngay_nhan = '" + mNgay2 + mGionhan2 + mSoDT + str8 + mSoTN2);
-                        getTin2222222222222.moveToFirst();
-                        StringBuilder sb2222222222222 = new StringBuilder();
-                        sb2222222222222.append("Select * From tbl_chuyenthang WHERE sdt_nhan = '");
-                        sb2222222222222.append(mSoDT);
-                        sb2222222222222.append("'");
-                        cur = GetData(sb2222222222222.toString());
-                        cur.moveToFirst();
-                        Cursor chuyen3222222222222 = GetData("Select Om_Xi3 FROM so_Om WHERE id = 13");
-                        chuyen3222222222222.moveToFirst();
-                        if (cur.getCount() > 0) {
-                        }
-                        TralaiSO(mID);
-                        if (getTin != null) {
-                        }
-                        if (chuyen != null) {
-                        }
-                        if (getTinNhan != null) {
-                        }
-                        if (c != null) {
-                        }
-                        if (cur != null) {
-                        }
                     }
                     QueryData("Insert into Chat_database Values( null,'" + mNgayNhan2 + "', '" + mGionhan + tinNhan2 + getTinNhan.getString(4) + "', '" + getTinNhan.getString(5) + "', '" + getTinNhan.getString(6) + str7 + tinNhan7 + str6);
                 }
@@ -9006,199 +5204,14 @@ public class Database extends SQLiteOpenHelper {
                                 try {
                                     JSONObject jsonObject4 = new JSONObject(MainActivity.json_Tinnhan.getString(mSoDT4));
                                     if (jsonObject4.getInt(str2) > 3) {
-                                        try {
-                                            str = str2;
-                                            try {
-                                                new NotificationReader().NotificationWearReader(getTinNhan.getString(5), tinNhan8);
-                                            } catch (Exception e17) {
-                                                new NotificationReader().NotificationWearReader(getTinNhan.getString(5), tinNhan8);
-                                                StringBuilder sb9 = new StringBuilder();
-                                                sb9.append("Insert into Chat_database Values( null,'");
-                                                sb9.append(mNgayNhan2);
-                                                sb9.append("', '");
-                                                sb9.append(mGionhan);
-                                                sb9.append(tinNhan2);
-                                                sb9.append(getTinNhan.getString(4));
-                                                sb9.append("', '");
-                                                sb9.append(getTinNhan.getString(5));
-                                                sb9.append("', '");
-                                                sb9.append(getTinNhan.getString(6));
-                                                str13 = str7;
-                                                sb9.append(str13);
-                                                sb9.append(tinNhan8);
-                                                str12 = str6;
-                                                sb9.append(str12);
-                                                QueryData(sb9.toString());
-                                                tinNhan3 = tinNhan2;
-                                                str10 = str14;
-                                                cur2 = GetData("Select * From tbl_chuyenthang WHERE sdt_nhan = '" + mSoDT4 + "'");
-                                                cur2.moveToFirst();
-                                                if (cur2.getCount() <= 0) {
-                                                }
-                                                mSoTN2 = mSoTN3;
-                                                mSoDT3 = mSoDT4;
-                                                mNgay3 = str13;
-                                                str8 = tinNhan;
-                                                mGionhan2 = str11;
-                                                mSoDT2 = mNgayNhan2;
-                                                mNgayNhan = tinNhan3;
-                                                mGionhan3 = mGionhan;
-                                                if (getTinNhan.getInt(3) == 1) {
-                                                }
-                                                mNgay4 = str12;
-                                                mSoDT = mSoDT3;
-                                                Cursor getTin22222222222222 = GetData("Select * From tbl_tinnhanS WHERE ngay_nhan = '" + mNgay2 + mGionhan2 + mSoDT + str8 + mSoTN2);
-                                                getTin22222222222222.moveToFirst();
-                                                StringBuilder sb22222222222222 = new StringBuilder();
-                                                sb22222222222222.append("Select * From tbl_chuyenthang WHERE sdt_nhan = '");
-                                                sb22222222222222.append(mSoDT);
-                                                sb22222222222222.append("'");
-                                                cur = GetData(sb22222222222222.toString());
-                                                cur.moveToFirst();
-                                                Cursor chuyen32222222222222 = GetData("Select Om_Xi3 FROM so_Om WHERE id = 13");
-                                                chuyen32222222222222.moveToFirst();
-                                                if (cur.getCount() > 0) {
-                                                }
-                                                TralaiSO(mID);
-                                                if (getTin != null) {
-                                                }
-                                                if (chuyen != null) {
-                                                }
-                                                if (getTinNhan != null) {
-                                                }
-                                                if (c != null) {
-                                                }
-                                                if (cur != null) {
-                                                }
-                                            }
-                                        } catch (Exception e18) {
-                                            str = str2;
-                                            new NotificationReader().NotificationWearReader(getTinNhan.getString(5), tinNhan8);
-                                            StringBuilder sb92 = new StringBuilder();
-                                            sb92.append("Insert into Chat_database Values( null,'");
-                                            sb92.append(mNgayNhan2);
-                                            sb92.append("', '");
-                                            sb92.append(mGionhan);
-                                            sb92.append(tinNhan2);
-                                            sb92.append(getTinNhan.getString(4));
-                                            sb92.append("', '");
-                                            sb92.append(getTinNhan.getString(5));
-                                            sb92.append("', '");
-                                            sb92.append(getTinNhan.getString(6));
-                                            str13 = str7;
-                                            sb92.append(str13);
-                                            sb92.append(tinNhan8);
-                                            str12 = str6;
-                                            sb92.append(str12);
-                                            QueryData(sb92.toString());
-                                            tinNhan3 = tinNhan2;
-                                            str10 = str14;
-                                            cur2 = GetData("Select * From tbl_chuyenthang WHERE sdt_nhan = '" + mSoDT4 + "'");
-                                            cur2.moveToFirst();
-                                            if (cur2.getCount() <= 0) {
-                                            }
-                                            mSoTN2 = mSoTN3;
-                                            mSoDT3 = mSoDT4;
-                                            mNgay3 = str13;
-                                            str8 = tinNhan;
-                                            mGionhan2 = str11;
-                                            mSoDT2 = mNgayNhan2;
-                                            mNgayNhan = tinNhan3;
-                                            mGionhan3 = mGionhan;
-                                            if (getTinNhan.getInt(3) == 1) {
-                                            }
-                                            mNgay4 = str12;
-                                            mSoDT = mSoDT3;
-                                            Cursor getTin222222222222222 = GetData("Select * From tbl_tinnhanS WHERE ngay_nhan = '" + mNgay2 + mGionhan2 + mSoDT + str8 + mSoTN2);
-                                            getTin222222222222222.moveToFirst();
-                                            StringBuilder sb222222222222222 = new StringBuilder();
-                                            sb222222222222222.append("Select * From tbl_chuyenthang WHERE sdt_nhan = '");
-                                            sb222222222222222.append(mSoDT);
-                                            sb222222222222222.append("'");
-                                            cur = GetData(sb222222222222222.toString());
-                                            cur.moveToFirst();
-                                            Cursor chuyen322222222222222 = GetData("Select Om_Xi3 FROM so_Om WHERE id = 13");
-                                            chuyen322222222222222.moveToFirst();
-                                            if (cur.getCount() > 0) {
-                                            }
-                                            TralaiSO(mID);
-                                            if (getTin != null) {
-                                            }
-                                            if (chuyen != null) {
-                                            }
-                                            if (getTinNhan != null) {
-                                            }
-                                            if (c != null) {
-                                            }
-                                            if (cur != null) {
-                                            }
-                                        }
+                                        str = str2;
+                                        new NotificationReader().NotificationWearReader(getTinNhan.getString(5), tinNhan8);
                                     } else {
                                         str = str2;
                                         jsonObject4.put(tinNhan8, "OK");
                                         MainActivity.json_Tinnhan.put(mSoDT4, jsonObject4);
                                     }
                                 } catch (Exception e19) {
-                                    str = str2;
-                                    new NotificationReader().NotificationWearReader(getTinNhan.getString(5), tinNhan8);
-                                    StringBuilder sb922 = new StringBuilder();
-                                    sb922.append("Insert into Chat_database Values( null,'");
-                                    sb922.append(mNgayNhan2);
-                                    sb922.append("', '");
-                                    sb922.append(mGionhan);
-                                    sb922.append(tinNhan2);
-                                    sb922.append(getTinNhan.getString(4));
-                                    sb922.append("', '");
-                                    sb922.append(getTinNhan.getString(5));
-                                    sb922.append("', '");
-                                    sb922.append(getTinNhan.getString(6));
-                                    str13 = str7;
-                                    sb922.append(str13);
-                                    sb922.append(tinNhan8);
-                                    str12 = str6;
-                                    sb922.append(str12);
-                                    QueryData(sb922.toString());
-                                    tinNhan3 = tinNhan2;
-                                    str10 = str14;
-                                    cur2 = GetData("Select * From tbl_chuyenthang WHERE sdt_nhan = '" + mSoDT4 + "'");
-                                    cur2.moveToFirst();
-                                    if (cur2.getCount() <= 0) {
-                                    }
-                                    mSoTN2 = mSoTN3;
-                                    mSoDT3 = mSoDT4;
-                                    mNgay3 = str13;
-                                    str8 = tinNhan;
-                                    mGionhan2 = str11;
-                                    mSoDT2 = mNgayNhan2;
-                                    mNgayNhan = tinNhan3;
-                                    mGionhan3 = mGionhan;
-                                    if (getTinNhan.getInt(3) == 1) {
-                                    }
-                                    mNgay4 = str12;
-                                    mSoDT = mSoDT3;
-                                    Cursor getTin2222222222222222 = GetData("Select * From tbl_tinnhanS WHERE ngay_nhan = '" + mNgay2 + mGionhan2 + mSoDT + str8 + mSoTN2);
-                                    getTin2222222222222222.moveToFirst();
-                                    StringBuilder sb2222222222222222 = new StringBuilder();
-                                    sb2222222222222222.append("Select * From tbl_chuyenthang WHERE sdt_nhan = '");
-                                    sb2222222222222222.append(mSoDT);
-                                    sb2222222222222222.append("'");
-                                    cur = GetData(sb2222222222222222.toString());
-                                    cur.moveToFirst();
-                                    Cursor chuyen3222222222222222 = GetData("Select Om_Xi3 FROM so_Om WHERE id = 13");
-                                    chuyen3222222222222222.moveToFirst();
-                                    if (cur.getCount() > 0) {
-                                    }
-                                    TralaiSO(mID);
-                                    if (getTin != null) {
-                                    }
-                                    if (chuyen != null) {
-                                    }
-                                    if (getTinNhan != null) {
-                                    }
-                                    if (c != null) {
-                                    }
-                                    if (cur != null) {
-                                    }
                                 }
                                 StringBuilder sb9222 = new StringBuilder();
                                 sb9222.append("Insert into Chat_database Values( null,'");
@@ -9244,137 +5257,14 @@ public class Database extends SQLiteOpenHelper {
                             tinNhan3 = tinNhan2;
                             str12 = str6;
                         } else {
-                            try {
-                                JSONObject jsonObject5 = new JSONObject(MainActivity.json_Tinnhan.getString(mSoDT4));
-                                try {
-                                    if (jsonObject5.getInt(str) > 3) {
-                                        str = str;
-                                        new NotificationReader().NotificationWearReader(getTinNhan.getString(5), tinNhan9);
-                                    } else {
-                                        str = str;
-                                        jsonObject5.put(tinNhan9, "OK");
-                                        MainActivity.json_Tinnhan.put(mSoDT4, jsonObject5);
-                                    }
-                                } catch (Exception e20) {
-                                    str = str;
-                                    new NotificationReader().NotificationWearReader(getTinNhan.getString(5), tinNhan9);
-                                    StringBuilder sb10 = new StringBuilder();
-                                    sb10.append("Insert into Chat_database Values( null,'");
-                                    sb10.append(mNgayNhan2);
-                                    sb10.append("', '");
-                                    sb10.append(mGionhan);
-                                    tinNhan3 = tinNhan2;
-                                    sb10.append(tinNhan3);
-                                    sb10.append(getTinNhan.getString(4));
-                                    sb10.append("', '");
-                                    sb10.append(getTinNhan.getString(5));
-                                    sb10.append("', '");
-                                    sb10.append(getTinNhan.getString(6));
-                                    str13 = str7;
-                                    sb10.append(str13);
-                                    sb10.append(tinNhan9);
-                                    str12 = str6;
-                                    sb10.append(str12);
-                                    QueryData(sb10.toString());
-                                    cur2 = GetData("Select * From tbl_chuyenthang WHERE sdt_nhan = '" + mSoDT4 + "'");
-                                    cur2.moveToFirst();
-                                    if (cur2.getCount() <= 0) {
-                                    }
-                                    mSoTN2 = mSoTN3;
-                                    mSoDT3 = mSoDT4;
-                                    mNgay3 = str13;
-                                    str8 = tinNhan;
-                                    mGionhan2 = str11;
-                                    mSoDT2 = mNgayNhan2;
-                                    mNgayNhan = tinNhan3;
-                                    mGionhan3 = mGionhan;
-                                    if (getTinNhan.getInt(3) == 1) {
-                                    }
-                                    mNgay4 = str12;
-                                    mSoDT = mSoDT3;
-                                    Cursor getTin22222222222222222 = GetData("Select * From tbl_tinnhanS WHERE ngay_nhan = '" + mNgay2 + mGionhan2 + mSoDT + str8 + mSoTN2);
-                                    getTin22222222222222222.moveToFirst();
-                                    StringBuilder sb22222222222222222 = new StringBuilder();
-                                    sb22222222222222222.append("Select * From tbl_chuyenthang WHERE sdt_nhan = '");
-                                    sb22222222222222222.append(mSoDT);
-                                    sb22222222222222222.append("'");
-                                    cur = GetData(sb22222222222222222.toString());
-                                    cur.moveToFirst();
-                                    Cursor chuyen32222222222222222 = GetData("Select Om_Xi3 FROM so_Om WHERE id = 13");
-                                    chuyen32222222222222222.moveToFirst();
-                                    if (cur.getCount() > 0) {
-                                    }
-                                    TralaiSO(mID);
-                                    if (getTin != null) {
-                                    }
-                                    if (chuyen != null) {
-                                    }
-                                    if (getTinNhan != null) {
-                                    }
-                                    if (c != null) {
-                                    }
-                                    if (cur != null) {
-                                    }
-                                }
-                            } catch (Exception e21) {
+                            JSONObject jsonObject5 = new JSONObject(MainActivity.json_Tinnhan.getString(mSoDT4));
+                            if (jsonObject5.getInt(str) > 3) {
+                                str = str;
                                 new NotificationReader().NotificationWearReader(getTinNhan.getString(5), tinNhan9);
-                                StringBuilder sb102 = new StringBuilder();
-                                sb102.append("Insert into Chat_database Values( null,'");
-                                sb102.append(mNgayNhan2);
-                                sb102.append("', '");
-                                sb102.append(mGionhan);
-                                tinNhan3 = tinNhan2;
-                                sb102.append(tinNhan3);
-                                sb102.append(getTinNhan.getString(4));
-                                sb102.append("', '");
-                                sb102.append(getTinNhan.getString(5));
-                                sb102.append("', '");
-                                sb102.append(getTinNhan.getString(6));
-                                str13 = str7;
-                                sb102.append(str13);
-                                sb102.append(tinNhan9);
-                                str12 = str6;
-                                sb102.append(str12);
-                                QueryData(sb102.toString());
-                                cur2 = GetData("Select * From tbl_chuyenthang WHERE sdt_nhan = '" + mSoDT4 + "'");
-                                cur2.moveToFirst();
-                                if (cur2.getCount() <= 0) {
-                                }
-                                mSoTN2 = mSoTN3;
-                                mSoDT3 = mSoDT4;
-                                mNgay3 = str13;
-                                str8 = tinNhan;
-                                mGionhan2 = str11;
-                                mSoDT2 = mNgayNhan2;
-                                mNgayNhan = tinNhan3;
-                                mGionhan3 = mGionhan;
-                                if (getTinNhan.getInt(3) == 1) {
-                                }
-                                mNgay4 = str12;
-                                mSoDT = mSoDT3;
-                                Cursor getTin222222222222222222 = GetData("Select * From tbl_tinnhanS WHERE ngay_nhan = '" + mNgay2 + mGionhan2 + mSoDT + str8 + mSoTN2);
-                                getTin222222222222222222.moveToFirst();
-                                StringBuilder sb222222222222222222 = new StringBuilder();
-                                sb222222222222222222.append("Select * From tbl_chuyenthang WHERE sdt_nhan = '");
-                                sb222222222222222222.append(mSoDT);
-                                sb222222222222222222.append("'");
-                                cur = GetData(sb222222222222222222.toString());
-                                cur.moveToFirst();
-                                Cursor chuyen322222222222222222 = GetData("Select Om_Xi3 FROM so_Om WHERE id = 13");
-                                chuyen322222222222222222.moveToFirst();
-                                if (cur.getCount() > 0) {
-                                }
-                                TralaiSO(mID);
-                                if (getTin != null) {
-                                }
-                                if (chuyen != null) {
-                                }
-                                if (getTinNhan != null) {
-                                }
-                                if (c != null) {
-                                }
-                                if (cur != null) {
-                                }
+                            } else {
+                                str = str;
+                                jsonObject5.put(tinNhan9, "OK");
+                                MainActivity.json_Tinnhan.put(mSoDT4, jsonObject5);
                             }
                             StringBuilder sb1022 = new StringBuilder();
                             sb1022.append("Insert into Chat_database Values( null,'");
@@ -9422,108 +5312,8 @@ public class Database extends SQLiteOpenHelper {
                                 if (i3 > 3) {
                                     try {
                                         mSoTN6 = mSoTN6;
-                                        try {
-                                            new NotificationReader().NotificationWearReader(getTinNhan.getString(5), tinNhan10);
-                                        } catch (Exception e22) {
-                                            new NotificationReader().NotificationWearReader(getTinNhan.getString(5), tinNhan10);
-                                            QueryData("Insert into Chat_database Values( null,'" + mNgayNhan2 + "', '" + mGionhan + tinNhan2 + getTinNhan.getString(4) + "', '" + getTinNhan.getString(5) + "', '" + getTinNhan.getString(6) + str7 + tinNhan10 + str6);
-                                            tinNhan3 = tinNhan2;
-                                            str12 = str6;
-                                            str10 = str15;
-                                            mSoTN3 = mSoTN6;
-                                            str13 = str7;
-                                            str9 = str;
-                                            str = str2;
-                                            cur2 = GetData("Select * From tbl_chuyenthang WHERE sdt_nhan = '" + mSoDT4 + "'");
-                                            cur2.moveToFirst();
-                                            if (cur2.getCount() <= 0) {
-                                            }
-                                            mSoTN2 = mSoTN3;
-                                            mSoDT3 = mSoDT4;
-                                            mNgay3 = str13;
-                                            str8 = tinNhan;
-                                            mGionhan2 = str11;
-                                            mSoDT2 = mNgayNhan2;
-                                            mNgayNhan = tinNhan3;
-                                            mGionhan3 = mGionhan;
-                                            if (getTinNhan.getInt(3) == 1) {
-                                            }
-                                            mNgay4 = str12;
-                                            mSoDT = mSoDT3;
-                                            Cursor getTin2222222222222222222 = GetData("Select * From tbl_tinnhanS WHERE ngay_nhan = '" + mNgay2 + mGionhan2 + mSoDT + str8 + mSoTN2);
-                                            getTin2222222222222222222.moveToFirst();
-                                            StringBuilder sb2222222222222222222 = new StringBuilder();
-                                            sb2222222222222222222.append("Select * From tbl_chuyenthang WHERE sdt_nhan = '");
-                                            sb2222222222222222222.append(mSoDT);
-                                            sb2222222222222222222.append("'");
-                                            cur = GetData(sb2222222222222222222.toString());
-                                            cur.moveToFirst();
-                                            Cursor chuyen3222222222222222222 = GetData("Select Om_Xi3 FROM so_Om WHERE id = 13");
-                                            chuyen3222222222222222222.moveToFirst();
-                                            if (cur.getCount() > 0) {
-                                            }
-                                            TralaiSO(mID);
-                                            if (getTin != null) {
-                                            }
-                                            if (chuyen != null) {
-                                            }
-                                            if (getTinNhan != null) {
-                                            }
-                                            if (c != null) {
-                                            }
-                                            if (cur != null) {
-                                            }
-                                        }
-                                    } catch (Exception e23) {
-                                        mSoTN6 = mSoTN6;
                                         new NotificationReader().NotificationWearReader(getTinNhan.getString(5), tinNhan10);
-                                        QueryData("Insert into Chat_database Values( null,'" + mNgayNhan2 + "', '" + mGionhan + tinNhan2 + getTinNhan.getString(4) + "', '" + getTinNhan.getString(5) + "', '" + getTinNhan.getString(6) + str7 + tinNhan10 + str6);
-                                        tinNhan3 = tinNhan2;
-                                        str12 = str6;
-                                        str10 = str15;
-                                        mSoTN3 = mSoTN6;
-                                        str13 = str7;
-                                        str9 = str;
-                                        str = str2;
-                                        cur2 = GetData("Select * From tbl_chuyenthang WHERE sdt_nhan = '" + mSoDT4 + "'");
-                                        cur2.moveToFirst();
-                                        if (cur2.getCount() <= 0) {
-                                        }
-                                        mSoTN2 = mSoTN3;
-                                        mSoDT3 = mSoDT4;
-                                        mNgay3 = str13;
-                                        str8 = tinNhan;
-                                        mGionhan2 = str11;
-                                        mSoDT2 = mNgayNhan2;
-                                        mNgayNhan = tinNhan3;
-                                        mGionhan3 = mGionhan;
-                                        if (getTinNhan.getInt(3) == 1) {
-                                        }
-                                        mNgay4 = str12;
-                                        mSoDT = mSoDT3;
-                                        Cursor getTin22222222222222222222 = GetData("Select * From tbl_tinnhanS WHERE ngay_nhan = '" + mNgay2 + mGionhan2 + mSoDT + str8 + mSoTN2);
-                                        getTin22222222222222222222.moveToFirst();
-                                        StringBuilder sb22222222222222222222 = new StringBuilder();
-                                        sb22222222222222222222.append("Select * From tbl_chuyenthang WHERE sdt_nhan = '");
-                                        sb22222222222222222222.append(mSoDT);
-                                        sb22222222222222222222.append("'");
-                                        cur = GetData(sb22222222222222222222.toString());
-                                        cur.moveToFirst();
-                                        Cursor chuyen32222222222222222222 = GetData("Select Om_Xi3 FROM so_Om WHERE id = 13");
-                                        chuyen32222222222222222222.moveToFirst();
-                                        if (cur.getCount() > 0) {
-                                        }
-                                        TralaiSO(mID);
-                                        if (getTin != null) {
-                                        }
-                                        if (chuyen != null) {
-                                        }
-                                        if (getTinNhan != null) {
-                                        }
-                                        if (c != null) {
-                                        }
-                                        if (cur != null) {
-                                        }
+                                    } catch (Exception e23) {
                                     }
                                 } else {
                                     mSoTN6 = mSoTN6;
@@ -9531,108 +5321,8 @@ public class Database extends SQLiteOpenHelper {
                                     MainActivity.json_Tinnhan.put(mSoDT4, jsonObject6);
                                 }
                             } catch (Exception e24) {
-                                mSoTN6 = mSoTN6;
-                                str2 = str2;
-                                new NotificationReader().NotificationWearReader(getTinNhan.getString(5), tinNhan10);
-                                QueryData("Insert into Chat_database Values( null,'" + mNgayNhan2 + "', '" + mGionhan + tinNhan2 + getTinNhan.getString(4) + "', '" + getTinNhan.getString(5) + "', '" + getTinNhan.getString(6) + str7 + tinNhan10 + str6);
-                                tinNhan3 = tinNhan2;
-                                str12 = str6;
-                                str10 = str15;
-                                mSoTN3 = mSoTN6;
-                                str13 = str7;
-                                str9 = str;
-                                str = str2;
-                                cur2 = GetData("Select * From tbl_chuyenthang WHERE sdt_nhan = '" + mSoDT4 + "'");
-                                cur2.moveToFirst();
-                                if (cur2.getCount() <= 0) {
-                                }
-                                mSoTN2 = mSoTN3;
-                                mSoDT3 = mSoDT4;
-                                mNgay3 = str13;
-                                str8 = tinNhan;
-                                mGionhan2 = str11;
-                                mSoDT2 = mNgayNhan2;
-                                mNgayNhan = tinNhan3;
-                                mGionhan3 = mGionhan;
-                                if (getTinNhan.getInt(3) == 1) {
-                                }
-                                mNgay4 = str12;
-                                mSoDT = mSoDT3;
-                                Cursor getTin222222222222222222222 = GetData("Select * From tbl_tinnhanS WHERE ngay_nhan = '" + mNgay2 + mGionhan2 + mSoDT + str8 + mSoTN2);
-                                getTin222222222222222222222.moveToFirst();
-                                StringBuilder sb222222222222222222222 = new StringBuilder();
-                                sb222222222222222222222.append("Select * From tbl_chuyenthang WHERE sdt_nhan = '");
-                                sb222222222222222222222.append(mSoDT);
-                                sb222222222222222222222.append("'");
-                                cur = GetData(sb222222222222222222222.toString());
-                                cur.moveToFirst();
-                                Cursor chuyen322222222222222222222 = GetData("Select Om_Xi3 FROM so_Om WHERE id = 13");
-                                chuyen322222222222222222222.moveToFirst();
-                                if (cur.getCount() > 0) {
-                                }
-                                TralaiSO(mID);
-                                if (getTin != null) {
-                                }
-                                if (chuyen != null) {
-                                }
-                                if (getTinNhan != null) {
-                                }
-                                if (c != null) {
-                                }
-                                if (cur != null) {
-                                }
                             }
                         } catch (Exception e25) {
-                            mSoTN6 = mSoTN6;
-                            str15 = str3;
-                            new NotificationReader().NotificationWearReader(getTinNhan.getString(5), tinNhan10);
-                            QueryData("Insert into Chat_database Values( null,'" + mNgayNhan2 + "', '" + mGionhan + tinNhan2 + getTinNhan.getString(4) + "', '" + getTinNhan.getString(5) + "', '" + getTinNhan.getString(6) + str7 + tinNhan10 + str6);
-                            tinNhan3 = tinNhan2;
-                            str12 = str6;
-                            str10 = str15;
-                            mSoTN3 = mSoTN6;
-                            str13 = str7;
-                            str9 = str;
-                            str = str2;
-                            cur2 = GetData("Select * From tbl_chuyenthang WHERE sdt_nhan = '" + mSoDT4 + "'");
-                            cur2.moveToFirst();
-                            if (cur2.getCount() <= 0) {
-                            }
-                            mSoTN2 = mSoTN3;
-                            mSoDT3 = mSoDT4;
-                            mNgay3 = str13;
-                            str8 = tinNhan;
-                            mGionhan2 = str11;
-                            mSoDT2 = mNgayNhan2;
-                            mNgayNhan = tinNhan3;
-                            mGionhan3 = mGionhan;
-                            if (getTinNhan.getInt(3) == 1) {
-                            }
-                            mNgay4 = str12;
-                            mSoDT = mSoDT3;
-                            Cursor getTin2222222222222222222222 = GetData("Select * From tbl_tinnhanS WHERE ngay_nhan = '" + mNgay2 + mGionhan2 + mSoDT + str8 + mSoTN2);
-                            getTin2222222222222222222222.moveToFirst();
-                            StringBuilder sb2222222222222222222222 = new StringBuilder();
-                            sb2222222222222222222222.append("Select * From tbl_chuyenthang WHERE sdt_nhan = '");
-                            sb2222222222222222222222.append(mSoDT);
-                            sb2222222222222222222222.append("'");
-                            cur = GetData(sb2222222222222222222222.toString());
-                            cur.moveToFirst();
-                            Cursor chuyen3222222222222222222222 = GetData("Select Om_Xi3 FROM so_Om WHERE id = 13");
-                            chuyen3222222222222222222222.moveToFirst();
-                            if (cur.getCount() > 0) {
-                            }
-                            TralaiSO(mID);
-                            if (getTin != null) {
-                            }
-                            if (chuyen != null) {
-                            }
-                            if (getTinNhan != null) {
-                            }
-                            if (c != null) {
-                            }
-                            if (cur != null) {
-                            }
                         }
                         QueryData("Insert into Chat_database Values( null,'" + mNgayNhan2 + "', '" + mGionhan + tinNhan2 + getTinNhan.getString(4) + "', '" + getTinNhan.getString(5) + "', '" + getTinNhan.getString(6) + str7 + tinNhan10 + str6);
                     }
@@ -9670,219 +5360,16 @@ public class Database extends SQLiteOpenHelper {
                                     int i4 = jsonObject7.getInt(str2);
                                     str2 = str2;
                                     if (i4 > 3) {
-                                        try {
-                                            str3 = str3;
-                                            try {
-                                                new NotificationReader().NotificationWearReader(getTinNhan.getString(5), tinNhan11);
-                                            } catch (Exception e26) {
-                                                new NotificationReader().NotificationWearReader(getTinNhan.getString(5), tinNhan11);
-                                                QueryData("Insert into Chat_database Values( null,'" + mNgayNhan2 + "', '" + mGionhan + tinNhan2 + getTinNhan.getString(4) + "', '" + getTinNhan.getString(5) + "', '" + getTinNhan.getString(6) + str7 + tinNhan11 + str6);
-                                                tinNhan3 = tinNhan2;
-                                                str12 = str6;
-                                                str10 = str3;
-                                                mSoTN3 = mSoTN4;
-                                                str13 = str7;
-                                                str9 = str;
-                                                str = str2;
-                                                cur2 = GetData("Select * From tbl_chuyenthang WHERE sdt_nhan = '" + mSoDT4 + "'");
-                                                cur2.moveToFirst();
-                                                if (cur2.getCount() <= 0) {
-                                                }
-                                                mSoTN2 = mSoTN3;
-                                                mSoDT3 = mSoDT4;
-                                                mNgay3 = str13;
-                                                str8 = tinNhan;
-                                                mGionhan2 = str11;
-                                                mSoDT2 = mNgayNhan2;
-                                                mNgayNhan = tinNhan3;
-                                                mGionhan3 = mGionhan;
-                                                if (getTinNhan.getInt(3) == 1) {
-                                                }
-                                                mNgay4 = str12;
-                                                mSoDT = mSoDT3;
-                                                Cursor getTin22222222222222222222222 = GetData("Select * From tbl_tinnhanS WHERE ngay_nhan = '" + mNgay2 + mGionhan2 + mSoDT + str8 + mSoTN2);
-                                                getTin22222222222222222222222.moveToFirst();
-                                                StringBuilder sb22222222222222222222222 = new StringBuilder();
-                                                sb22222222222222222222222.append("Select * From tbl_chuyenthang WHERE sdt_nhan = '");
-                                                sb22222222222222222222222.append(mSoDT);
-                                                sb22222222222222222222222.append("'");
-                                                cur = GetData(sb22222222222222222222222.toString());
-                                                cur.moveToFirst();
-                                                Cursor chuyen32222222222222222222222 = GetData("Select Om_Xi3 FROM so_Om WHERE id = 13");
-                                                chuyen32222222222222222222222.moveToFirst();
-                                                if (cur.getCount() > 0) {
-                                                }
-                                                TralaiSO(mID);
-                                                if (getTin != null) {
-                                                }
-                                                if (chuyen != null) {
-                                                }
-                                                if (getTinNhan != null) {
-                                                }
-                                                if (c != null) {
-                                                }
-                                                if (cur != null) {
-                                                }
-                                            }
-                                        } catch (Exception e27) {
-                                            str3 = str3;
-                                            new NotificationReader().NotificationWearReader(getTinNhan.getString(5), tinNhan11);
-                                            QueryData("Insert into Chat_database Values( null,'" + mNgayNhan2 + "', '" + mGionhan + tinNhan2 + getTinNhan.getString(4) + "', '" + getTinNhan.getString(5) + "', '" + getTinNhan.getString(6) + str7 + tinNhan11 + str6);
-                                            tinNhan3 = tinNhan2;
-                                            str12 = str6;
-                                            str10 = str3;
-                                            mSoTN3 = mSoTN4;
-                                            str13 = str7;
-                                            str9 = str;
-                                            str = str2;
-                                            cur2 = GetData("Select * From tbl_chuyenthang WHERE sdt_nhan = '" + mSoDT4 + "'");
-                                            cur2.moveToFirst();
-                                            if (cur2.getCount() <= 0) {
-                                            }
-                                            mSoTN2 = mSoTN3;
-                                            mSoDT3 = mSoDT4;
-                                            mNgay3 = str13;
-                                            str8 = tinNhan;
-                                            mGionhan2 = str11;
-                                            mSoDT2 = mNgayNhan2;
-                                            mNgayNhan = tinNhan3;
-                                            mGionhan3 = mGionhan;
-                                            if (getTinNhan.getInt(3) == 1) {
-                                            }
-                                            mNgay4 = str12;
-                                            mSoDT = mSoDT3;
-                                            Cursor getTin222222222222222222222222 = GetData("Select * From tbl_tinnhanS WHERE ngay_nhan = '" + mNgay2 + mGionhan2 + mSoDT + str8 + mSoTN2);
-                                            getTin222222222222222222222222.moveToFirst();
-                                            StringBuilder sb222222222222222222222222 = new StringBuilder();
-                                            sb222222222222222222222222.append("Select * From tbl_chuyenthang WHERE sdt_nhan = '");
-                                            sb222222222222222222222222.append(mSoDT);
-                                            sb222222222222222222222222.append("'");
-                                            cur = GetData(sb222222222222222222222222.toString());
-                                            cur.moveToFirst();
-                                            Cursor chuyen322222222222222222222222 = GetData("Select Om_Xi3 FROM so_Om WHERE id = 13");
-                                            chuyen322222222222222222222222.moveToFirst();
-                                            if (cur.getCount() > 0) {
-                                            }
-                                            TralaiSO(mID);
-                                            if (getTin != null) {
-                                            }
-                                            if (chuyen != null) {
-                                            }
-                                            if (getTinNhan != null) {
-                                            }
-                                            if (c != null) {
-                                            }
-                                            if (cur != null) {
-                                            }
-                                        }
+                                        str3 = str3;
+                                        new NotificationReader().NotificationWearReader(getTinNhan.getString(5), tinNhan11);
                                     } else {
                                         str3 = str3;
                                         jsonObject7.put(tinNhan11, "OK");
                                         MainActivity.json_Tinnhan.put(mSoDT4, jsonObject7);
                                     }
                                 } catch (Exception e28) {
-                                    str2 = str2;
-                                    str3 = str3;
-                                    new NotificationReader().NotificationWearReader(getTinNhan.getString(5), tinNhan11);
-                                    QueryData("Insert into Chat_database Values( null,'" + mNgayNhan2 + "', '" + mGionhan + tinNhan2 + getTinNhan.getString(4) + "', '" + getTinNhan.getString(5) + "', '" + getTinNhan.getString(6) + str7 + tinNhan11 + str6);
-                                    tinNhan3 = tinNhan2;
-                                    str12 = str6;
-                                    str10 = str3;
-                                    mSoTN3 = mSoTN4;
-                                    str13 = str7;
-                                    str9 = str;
-                                    str = str2;
-                                    cur2 = GetData("Select * From tbl_chuyenthang WHERE sdt_nhan = '" + mSoDT4 + "'");
-                                    cur2.moveToFirst();
-                                    if (cur2.getCount() <= 0) {
-                                    }
-                                    mSoTN2 = mSoTN3;
-                                    mSoDT3 = mSoDT4;
-                                    mNgay3 = str13;
-                                    str8 = tinNhan;
-                                    mGionhan2 = str11;
-                                    mSoDT2 = mNgayNhan2;
-                                    mNgayNhan = tinNhan3;
-                                    mGionhan3 = mGionhan;
-                                    if (getTinNhan.getInt(3) == 1) {
-                                    }
-                                    mNgay4 = str12;
-                                    mSoDT = mSoDT3;
-                                    Cursor getTin2222222222222222222222222 = GetData("Select * From tbl_tinnhanS WHERE ngay_nhan = '" + mNgay2 + mGionhan2 + mSoDT + str8 + mSoTN2);
-                                    getTin2222222222222222222222222.moveToFirst();
-                                    StringBuilder sb2222222222222222222222222 = new StringBuilder();
-                                    sb2222222222222222222222222.append("Select * From tbl_chuyenthang WHERE sdt_nhan = '");
-                                    sb2222222222222222222222222.append(mSoDT);
-                                    sb2222222222222222222222222.append("'");
-                                    cur = GetData(sb2222222222222222222222222.toString());
-                                    cur.moveToFirst();
-                                    Cursor chuyen3222222222222222222222222 = GetData("Select Om_Xi3 FROM so_Om WHERE id = 13");
-                                    chuyen3222222222222222222222222.moveToFirst();
-                                    if (cur.getCount() > 0) {
-                                    }
-                                    TralaiSO(mID);
-                                    if (getTin != null) {
-                                    }
-                                    if (chuyen != null) {
-                                    }
-                                    if (getTinNhan != null) {
-                                    }
-                                    if (c != null) {
-                                    }
-                                    if (cur != null) {
-                                    }
                                 }
                             } catch (Exception e29) {
-                                str = str;
-                                str3 = str3;
-                                new NotificationReader().NotificationWearReader(getTinNhan.getString(5), tinNhan11);
-                                QueryData("Insert into Chat_database Values( null,'" + mNgayNhan2 + "', '" + mGionhan + tinNhan2 + getTinNhan.getString(4) + "', '" + getTinNhan.getString(5) + "', '" + getTinNhan.getString(6) + str7 + tinNhan11 + str6);
-                                tinNhan3 = tinNhan2;
-                                str12 = str6;
-                                str10 = str3;
-                                mSoTN3 = mSoTN4;
-                                str13 = str7;
-                                str9 = str;
-                                str = str2;
-                                cur2 = GetData("Select * From tbl_chuyenthang WHERE sdt_nhan = '" + mSoDT4 + "'");
-                                cur2.moveToFirst();
-                                if (cur2.getCount() <= 0) {
-                                }
-                                mSoTN2 = mSoTN3;
-                                mSoDT3 = mSoDT4;
-                                mNgay3 = str13;
-                                str8 = tinNhan;
-                                mGionhan2 = str11;
-                                mSoDT2 = mNgayNhan2;
-                                mNgayNhan = tinNhan3;
-                                mGionhan3 = mGionhan;
-                                if (getTinNhan.getInt(3) == 1) {
-                                }
-                                mNgay4 = str12;
-                                mSoDT = mSoDT3;
-                                Cursor getTin22222222222222222222222222 = GetData("Select * From tbl_tinnhanS WHERE ngay_nhan = '" + mNgay2 + mGionhan2 + mSoDT + str8 + mSoTN2);
-                                getTin22222222222222222222222222.moveToFirst();
-                                StringBuilder sb22222222222222222222222222 = new StringBuilder();
-                                sb22222222222222222222222222.append("Select * From tbl_chuyenthang WHERE sdt_nhan = '");
-                                sb22222222222222222222222222.append(mSoDT);
-                                sb22222222222222222222222222.append("'");
-                                cur = GetData(sb22222222222222222222222222.toString());
-                                cur.moveToFirst();
-                                Cursor chuyen32222222222222222222222222 = GetData("Select Om_Xi3 FROM so_Om WHERE id = 13");
-                                chuyen32222222222222222222222222.moveToFirst();
-                                if (cur.getCount() > 0) {
-                                }
-                                TralaiSO(mID);
-                                if (getTin != null) {
-                                }
-                                if (chuyen != null) {
-                                }
-                                if (getTinNhan != null) {
-                                }
-                                if (c != null) {
-                                }
-                                if (cur != null) {
-                                }
                             }
                             QueryData("Insert into Chat_database Values( null,'" + mNgayNhan2 + "', '" + mGionhan + tinNhan2 + getTinNhan.getString(4) + "', '" + getTinNhan.getString(5) + "', '" + getTinNhan.getString(6) + str7 + tinNhan11 + str6);
                         }
@@ -10086,36 +5573,6 @@ public class Database extends SQLiteOpenHelper {
                                 mNgay6 = mNgay2;
                                 str12 = str12;
                             } catch (JSONException e34) {
-                                e2 = e34;
-                                mNgay2 = mNgay6;
-                                cursor = cursor2;
-                                mNgay4 = str12;
-                                e2.printStackTrace();
-                                if (cursor != null) {
-                                }
-                                Cursor getTin2222222222222222222222222222222 = GetData("Select * From tbl_tinnhanS WHERE ngay_nhan = '" + mNgay2 + mGionhan2 + mSoDT + str8 + mSoTN2);
-                                getTin2222222222222222222222222222222.moveToFirst();
-                                StringBuilder sb2222222222222222222222222222222 = new StringBuilder();
-                                sb2222222222222222222222222222222.append("Select * From tbl_chuyenthang WHERE sdt_nhan = '");
-                                sb2222222222222222222222222222222.append(mSoDT);
-                                sb2222222222222222222222222222222.append("'");
-                                cur = GetData(sb2222222222222222222222222222222.toString());
-                                cur.moveToFirst();
-                                Cursor chuyen3222222222222222222222222222222 = GetData("Select Om_Xi3 FROM so_Om WHERE id = 13");
-                                chuyen3222222222222222222222222222222.moveToFirst();
-                                if (cur.getCount() > 0) {
-                                }
-                                TralaiSO(mID);
-                                if (getTin != null) {
-                                }
-                                if (chuyen != null) {
-                                }
-                                if (getTinNhan != null) {
-                                }
-                                if (c != null) {
-                                }
-                                if (cur != null) {
-                                }
                             }
                         }
                         mNgay2 = mNgay6;
@@ -10171,99 +5628,12 @@ public class Database extends SQLiteOpenHelper {
                                         mNgay4 = str12;
                                         sb18.append(mNgay4);
                                         QueryData(sb18.toString());
-                                        try {
-                                            new NotificationReader().NotificationWearReader(getTinNhan.getString(5), NoIDungThieu);
-                                        } catch (Exception e41) {
-                                            new NotificationReader().NotificationWearReader(getTinNhan.getString(5), NoIDungThieu);
-                                            StringBuilder sb182 = new StringBuilder();
-                                            sb182.append("Insert into Chat_database Values( null,'");
-                                            sb182.append(mSoDT2);
-                                            sb182.append("', '");
-                                            sb182.append(mGionhan3);
-                                            sb182.append(mNgayNhan);
-                                            sb182.append(getTinNhan.getString(4));
-                                            sb182.append("', '");
-                                            sb182.append(getTinNhan.getString(5));
-                                            sb182.append("', '");
-                                            sb182.append(getTinNhan.getString(6));
-                                            sb182.append(mNgay3);
-                                            sb182.append(NoIDungThieu);
-                                            mNgay4 = str12;
-                                            sb182.append(mNgay4);
-                                            QueryData(sb182.toString());
-                                            if (cursor != null) {
-                                            }
-                                            Cursor getTin22222222222222222222222222222222222222 = GetData("Select * From tbl_tinnhanS WHERE ngay_nhan = '" + mNgay2 + mGionhan2 + mSoDT + str8 + mSoTN2);
-                                            getTin22222222222222222222222222222222222222.moveToFirst();
-                                            StringBuilder sb22222222222222222222222222222222222222 = new StringBuilder();
-                                            sb22222222222222222222222222222222222222.append("Select * From tbl_chuyenthang WHERE sdt_nhan = '");
-                                            sb22222222222222222222222222222222222222.append(mSoDT);
-                                            sb22222222222222222222222222222222222222.append("'");
-                                            cur = GetData(sb22222222222222222222222222222222222222.toString());
-                                            cur.moveToFirst();
-                                            Cursor chuyen32222222222222222222222222222222222222 = GetData("Select Om_Xi3 FROM so_Om WHERE id = 13");
-                                            chuyen32222222222222222222222222222222222222.moveToFirst();
-                                            if (cur.getCount() > 0) {
-                                            }
-                                            TralaiSO(mID);
-                                            if (getTin != null) {
-                                            }
-                                            if (chuyen != null) {
-                                            }
-                                            if (getTinNhan != null) {
-                                            }
-                                            if (c != null) {
-                                            }
-                                            if (cur != null) {
-                                            }
-                                        }
+                                        new NotificationReader().NotificationWearReader(getTinNhan.getString(5), NoIDungThieu);
                                     } else {
                                         jsonObject8.put(NoIDungThieu, obj);
                                         MainActivity.json_Tinnhan.put(mSoDT, jsonObject8);
                                     }
                                 } catch (Exception e42) {
-                                    new NotificationReader().NotificationWearReader(getTinNhan.getString(5), NoIDungThieu);
-                                    StringBuilder sb1822 = new StringBuilder();
-                                    sb1822.append("Insert into Chat_database Values( null,'");
-                                    sb1822.append(mSoDT2);
-                                    sb1822.append("', '");
-                                    sb1822.append(mGionhan3);
-                                    sb1822.append(mNgayNhan);
-                                    sb1822.append(getTinNhan.getString(4));
-                                    sb1822.append("', '");
-                                    sb1822.append(getTinNhan.getString(5));
-                                    sb1822.append("', '");
-                                    sb1822.append(getTinNhan.getString(6));
-                                    sb1822.append(mNgay3);
-                                    sb1822.append(NoIDungThieu);
-                                    mNgay4 = str12;
-                                    sb1822.append(mNgay4);
-                                    QueryData(sb1822.toString());
-                                    if (cursor != null) {
-                                    }
-                                    Cursor getTin222222222222222222222222222222222222222 = GetData("Select * From tbl_tinnhanS WHERE ngay_nhan = '" + mNgay2 + mGionhan2 + mSoDT + str8 + mSoTN2);
-                                    getTin222222222222222222222222222222222222222.moveToFirst();
-                                    StringBuilder sb222222222222222222222222222222222222222 = new StringBuilder();
-                                    sb222222222222222222222222222222222222222.append("Select * From tbl_chuyenthang WHERE sdt_nhan = '");
-                                    sb222222222222222222222222222222222222222.append(mSoDT);
-                                    sb222222222222222222222222222222222222222.append("'");
-                                    cur = GetData(sb222222222222222222222222222222222222222.toString());
-                                    cur.moveToFirst();
-                                    Cursor chuyen322222222222222222222222222222222222222 = GetData("Select Om_Xi3 FROM so_Om WHERE id = 13");
-                                    chuyen322222222222222222222222222222222222222.moveToFirst();
-                                    if (cur.getCount() > 0) {
-                                    }
-                                    TralaiSO(mID);
-                                    if (getTin != null) {
-                                    }
-                                    if (chuyen != null) {
-                                    }
-                                    if (getTinNhan != null) {
-                                    }
-                                    if (c != null) {
-                                    }
-                                    if (cur != null) {
-                                    }
                                 }
                                 StringBuilder sb18222 = new StringBuilder();
                                 sb18222.append("Insert into Chat_database Values( null,'");

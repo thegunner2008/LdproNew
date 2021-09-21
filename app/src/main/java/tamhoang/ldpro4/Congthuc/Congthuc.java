@@ -1,5 +1,8 @@
 package tamhoang.ldpro4.Congthuc;
 
+import android.util.Log;
+
+
 import java.lang.reflect.Array;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
@@ -9,23 +12,16 @@ import java.util.Collections;
 import java.util.Date;
 import java.util.List;
 import java.util.Locale;
+import java.util.Objects;
 import java.util.TimeZone;
+
 import org.json.JSONException;
+
 import tamhoang.ldpro4.MainActivity;
 
 public class Congthuc {
     public static String[][] mang;
 
-    /* JADX INFO: Multiple debug info for r0v60 'k'  int: [D('k' int), D('dayso' java.lang.String)] */
-    /* JADX WARNING: Code restructure failed: missing block: B:178:0x04f0, code lost:
-        r3 = r19;
-        r2 = r0;
-        r0 = r6 + r5;
-     */
-    /* JADX WARNING: Removed duplicated region for block: B:142:0x0359  */
-    /* JADX WARNING: Removed duplicated region for block: B:143:0x0371  */
-    /* JADX WARNING: Removed duplicated region for block: B:170:0x049a  */
-    /* JADX WARNING: Removed duplicated region for block: B:215:0x04ee A[SYNTHETIC] */
     public static String NhanTinNhan(String str) {
         String str2;
         String str3;
@@ -34,14 +30,14 @@ public class Congthuc {
         String str6;
         String str7;
         String str8;
-        String str22 = null;
+        String str22 = "";
         String str23;
-        String dayso = null;
+        String dayso = "";
         String str9;
         String dayso2;
         int i3;
-        String dayso3 = null;
-        String dayso4 = null;
+        String dayso3 = "";
+        String dayso4 = "";
         String str24 = "";
         String str10 = "\n";
         String str11 = " ";
@@ -52,17 +48,17 @@ public class Congthuc {
         if (str14.length() < 3) {
             return str15 + str14;
         }
-        String str16 = fixTinNhan(str14);
-        if (str16.indexOf("de") == -1 && str16.indexOf("lo") == -1) {
-            return "Không hiểu dạng";
-        }
+        String str16 = str14;
+//        if (!str16.contains("de") && !str16.contains("lo")) {
+//            return "Không hiểu dạng";
+//        }
         if (str16.length() < 8) {
             return str15 + str16;
         }
         String str17 = PhanTichTinNhan(str16);
         int i32 = 0;
         String dayso5 = "Không hiểu";
-        if (str17.indexOf("x ") == -1 && str17.indexOf(dayso5) == -1) {
+        if (!str17.contains("x ") && !str17.contains(dayso5)) {
             return str15 + str17;
         }
         Calendar calendar = Calendar.getInstance();
@@ -72,7 +68,7 @@ public class Congthuc {
         hourFormat.setTimeZone(TimeZone.getDefault());
         String mGionhan = hourFormat.format(calendar.getTime());
         String theodoi = null;
-        if (str17.indexOf(dayso5) > -1) {
+        if (str17.contains(dayso5)) {
             return str17;
         }
         String[][] mang2 = (String[][]) Array.newInstance(String.class, 300, 4);
@@ -107,8 +103,9 @@ public class Congthuc {
                 dayso = str25;
                 break;
             }
-            String tien = "";
+            String tien;
             int i2 = i1;
+            StringBuilder tienBuilder = new StringBuilder();
             while (true) {
                 str3 = str10;
                 if (i2 >= str19.length()) {
@@ -116,16 +113,17 @@ public class Congthuc {
                     break;
                 }
                 str6 = str13;
-                if (str19.charAt(i2) == ' ' && tien.length() > 0) {
+                if (str19.charAt(i2) == ' ' && tienBuilder.length() > 0) {
                     break;
                 }
-                if ("0123456789,tr".indexOf(str19.substring(i2, i2 + 1)) > -1) {
-                    tien = tien + str19.substring(i2, i2 + 1);
+                if ("0123456789,tr".contains(str19.substring(i2, i2 + 1))) {
+                    tienBuilder.append(str19.charAt(i2));
                 }
                 i2++;
                 str10 = str3;
                 str13 = str6;
             }
+            tien = tienBuilder.toString();
             String dtien = "";
             int i33 = i2;
             while (true) {
@@ -147,31 +145,31 @@ public class Congthuc {
                 i33--;
             }
             str4 = str11;
-            if (dtien.indexOf("dau") <= -1) {
-                if (dtien.indexOf("dit") <= -1) {
-                    if (dtien.indexOf("tong") <= -1) {
-                        if (dtien.indexOf("cham") <= -1) {
-                            if (dtien.indexOf("dan") <= -1) {
-                                if (dtien.indexOf("boj") <= -1) {
-                                    if (dtien.indexOf("lo") <= -1) {
-                                        if (dtien.indexOf("de") <= -1) {
-                                            if (dtien.indexOf("xi") <= -1) {
-                                                if (dtien.indexOf("xn") <= -1) {
-                                                    if (dtien.indexOf("hc") <= -1) {
-                                                        if (dtien.indexOf("xq") <= -1) {
-                                                            if (dtien.indexOf("xg") <= -1) {
-                                                                if (dtien.indexOf("bc") <= -1) {
-                                                                    if (dtien.indexOf("kep") <= -1) {
-                                                                        if (dtien.indexOf("sat") <= -1) {
-                                                                            if (dtien.indexOf("to") <= -1) {
-                                                                                if (dtien.indexOf("nho") <= -1) {
-                                                                                    if (dtien.indexOf("chan") <= -1) {
-                                                                                        if (dtien.indexOf("le") <= -1) {
-                                                                                            if (dtien.indexOf("ko") <= -1) {
-                                                                                                if (dtien.indexOf("chia") <= -1) {
-                                                                                                    if (dtien.indexOf("duoi") <= -1) {
-                                                                                                        if (dtien.indexOf("be") <= -1) {
-                                                                                                            if (dtien.indexOf("x ") > -1) {
+            if (!dtien.contains("dau")) {
+                if (!dtien.contains("dit")) {
+                    if (!dtien.contains("tong")) {
+                        if (!dtien.contains("cham")) {
+                            if (!dtien.contains("dan")) {
+                                if (!dtien.contains("boj")) {
+                                    if (!dtien.contains("lo")) {
+                                        if (!dtien.contains("de")) {
+                                            if (!dtien.contains("xi")) {
+                                                if (!dtien.contains("xn")) {
+                                                    if (!dtien.contains("hc")) {
+                                                        if (!dtien.contains("xq")) {
+                                                            if (!dtien.contains("xg")) {
+                                                                if (!dtien.contains("bc")) {
+                                                                    if (!dtien.contains("kep")) {
+                                                                        if (!dtien.contains("sat")) {
+                                                                            if (!dtien.contains("to")) {
+                                                                                if (!dtien.contains("nho")) {
+                                                                                    if (!dtien.contains("chan")) {
+                                                                                        if (!dtien.contains("le")) {
+                                                                                            if (!dtien.contains("ko")) {
+                                                                                                if (!dtien.contains("chia")) {
+                                                                                                    if (!dtien.contains("duoi")) {
+                                                                                                        if (!dtien.contains("be")) {
+                                                                                                            if (dtien.contains("x ")) {
                                                                                                                 i3 = i2 - 1;
                                                                                                                 while (true) {
                                                                                                                     if (i3 <= 0) {
@@ -190,7 +188,7 @@ public class Congthuc {
                                                                                                                 }
                                                                                                             } else {
                                                                                                                 String dayso8 = str19.substring(k, i33);
-                                                                                                                if (dayso8.substring(0, 4).indexOf("bor") > -1) {
+                                                                                                                if (dayso8.substring(0, 4).contains("bor")) {
                                                                                                                     dayso4 = "de " + dayso8;
                                                                                                                 } else {
                                                                                                                     dayso4 = dayso8;
@@ -209,28 +207,28 @@ public class Congthuc {
                                                                                                                 str2 = str19;
                                                                                                             } else {
                                                                                                                 str2 = str19;
-                                                                                                                if (dayso2.indexOf("dea") > -1) {
+                                                                                                                if (dayso2.contains("dea")) {
                                                                                                                     mang2[rw][1] = "de dau db";
                                                                                                                     dayso3 = dayso2.replaceAll("dea", "").replaceAll("dea:", "").replaceAll("dea :", "");
-                                                                                                                } else if (dayso2.indexOf("deb") > -1) {
+                                                                                                                } else if (dayso2.contains("deb")) {
                                                                                                                     mang2[rw][1] = "de dit db";
                                                                                                                     dayso3 = dayso2.replaceAll("deb", "").replaceAll("deb:", "").replaceAll("deb :", "");
-                                                                                                                } else if (dayso2.indexOf("dec") > -1) {
+                                                                                                                } else if (dayso2.contains("dec")) {
                                                                                                                     mang2[rw][1] = "de dau nhat";
                                                                                                                     dayso3 = dayso2.replaceAll("dec", "").replaceAll("dec:", "").replaceAll("dec :", "");
-                                                                                                                } else if (dayso2.indexOf("ded") > -1) {
+                                                                                                                } else if (dayso2.contains("ded")) {
                                                                                                                     mang2[rw][1] = "de dit nhat";
                                                                                                                     dayso3 = dayso2.replaceAll("ded", "").replaceAll("ded:", "").replaceAll("ded :", "");
-                                                                                                                } else if (dayso2.indexOf("de") > -1) {
+                                                                                                                } else if (dayso2.contains("de")) {
                                                                                                                     mang2[rw][1] = "de dit db";
                                                                                                                     dayso3 = dayso2.replaceAll("de", "").replaceAll("de:", "").replaceAll("de :", "");
-                                                                                                                } else if (dayso2.indexOf("bc") > -1) {
+                                                                                                                } else if (dayso2.contains("bc")) {
                                                                                                                     mang2[rw][1] = "bc";
                                                                                                                     dayso3 = dayso2.replaceAll("bc", "").replaceAll("bc:", "").replaceAll("bc :", "");
-                                                                                                                } else if (dayso2.indexOf("xi") > -1) {
+                                                                                                                } else if (dayso2.contains("xi")) {
                                                                                                                     mang2[rw][1] = "xi";
                                                                                                                     dayso3 = dayso2.replaceAll("xi", "").replaceAll("xien", "");
-                                                                                                                } else if (dayso2.indexOf("xq") > -1) {
+                                                                                                                } else if (dayso2.contains("xq")) {
                                                                                                                     mang2[rw][1] = "xq";
                                                                                                                     dayso3 = dayso2.replaceAll("xq", "");
                                                                                                                 } else {
@@ -242,13 +240,13 @@ public class Congthuc {
                                                                                                             mang2[rw][3] = XulyTien(dayso3.substring(dayso3.indexOf("x"), dayso3.length()));
                                                                                                             str25 = "";
                                                                                                             str8 = dayso5;
-                                                                                                            if (mang2[rw][2].indexOf(str8) <= -1) {
+                                                                                                            if (!mang2[rw][2].contains(str8)) {
                                                                                                                 str7 = str15;
-                                                                                                                break;
+//                                                                                                                break;
                                                                                                             } else if (mang2[rw][2].length() < 3) {
                                                                                                                 str7 = str15;
                                                                                                                 break;
-                                                                                                            } else if (mang2[rw][3].indexOf(str8) > -1) {
+                                                                                                            } else if (mang2[rw][3].contains(str8)) {
                                                                                                                 StringBuilder sb2 = new StringBuilder();
                                                                                                                 str7 = str15;
                                                                                                                 sb2.append(str7);
@@ -296,32 +294,29 @@ public class Congthuc {
                     }
                 }
             }
-            String dayso9 = str19.substring(k, i2);
-            k = i2;
-            theodoi = str19.substring(i2);
-            i3 = i33;
-            dayso2 = dayso9;
-            String str110 = dayso2.replaceAll("\\n", "");
-            rw++;
-            mang2[rw][0] = dayso2;
-            if (dayso2.indexOf("lo") <= -1) {
-            }
-            mang2[rw][2] = XulyLoDe(dayso3.substring(0, dayso3.indexOf("x")));
-            mang2[rw][3] = XulyTien(dayso3.substring(dayso3.indexOf("x"), dayso3.length()));
-            str25 = "";
-            str8 = dayso5;
-            if (mang2[rw][2].indexOf(str8) <= -1) {
-            }
+//            String aaa = "34";
+//            String dayso9 = str19.substring(k, i2);
+//            k = i2;
+//            theodoi = str19.substring(i2);
+//            i3 = i33;
+//            dayso2 = dayso9;
+//            String str110 = dayso2.replaceAll("\\n", "");
+//            rw++;
+//            mang2[rw][0] = dayso2;
+//            mang2[rw][2] = XulyLoDe(dayso3.substring(0, dayso3.indexOf("x")));
+//            mang2[rw][3] = XulyTien(dayso3.substring(dayso3.indexOf("x"), dayso3.length()));
+//            str25 = "";
+//            str8 = dayso5;
         }
         String theodoi2 = str22.replaceAll(str4, "").replaceAll(str5, "").replaceAll(str6, "");
-        if (dayso.indexOf(str8) > -1) {
+        if (dayso.contains(str8)) {
             return dayso;
         }
         if (theodoi2.length() > 0) {
             return str7 + str22;
         }
         String dayso10 = "";
-        if (dayso.indexOf(str8) != -1) {
+        if (dayso.contains(str8)) {
             return dayso;
         }
         int rw2 = 1;
@@ -354,13 +349,13 @@ public class Congthuc {
         return dayso10;
     }
 
-    public static final String convertKhongDau(String stringInput) {
+    public static String convertKhongDau(String stringInput) {
         String stringInput2 = (stringInput.toLowerCase() + " ").replaceAll("bỏ", "bor").replaceAll("bộ", "boj").replaceAll("\\.", ",").replaceAll("́", "").replaceAll("̀", "").replaceAll("̉", "").replaceAll("̣", "").replaceAll("̃", "").replaceAll("\\+", "!");
         for (int i = 0; i < "aaaaaaaaaaaaaaaaaeeeeeeeeeeeooooooooooooooooouuuuuuuuuuuiiiiiyyyyydx".length(); i++) {
             stringInput2 = stringInput2.replace("ăâàằầáắấảẳẩãẵẫạặậễẽểẻéêèềếẹệôòồơờóốớỏổởõỗỡọộợưúùứừủửũữụựìíỉĩịỳýỷỹỵđ×".charAt(i), "aaaaaaaaaaaaaaaaaeeeeeeeeeeeooooooooooooooooouuuuuuuuuuuiiiiiyyyyydx".charAt(i));
         }
         String stringInput3 = stringInput2.replaceAll("\n d", "\nd");
-        if (stringInput3.indexOf("\nđ") > -1 || stringInput3.indexOf("\nd") > -1) {
+        if (stringInput3.contains("\nđ") || stringInput3.contains("\nd")) {
             int i1 = -1;
             while (true) {
                 int indexOf = stringInput3.indexOf("\nd", i1 + 1);
@@ -384,10 +379,10 @@ public class Congthuc {
     public static String Xuly_DauTN(String str) {
         String str2 = str.replaceAll(" ̂ ", " ").replaceAll("tong k ", "tong ko ").replaceAll("tong 0 chia", "tong ko chia").replaceAll("botrung", "bor trung").replaceAll(" ̂", "");
         for (int i = 0; i < MainActivity.formList.size(); i++) {
-            str2 = str2.replaceAll(MainActivity.formList.get(i).get("datas"), MainActivity.formList.get(i).get("type")).replaceAll("  ", " ");
+            str2 = str2.replaceAll(Objects.requireNonNull(MainActivity.formList.get(i).get("datas")), MainActivity.formList.get(i).get("type")).replaceAll("  ", " ");
         }
         for (int i2 = 0; i2 < MainActivity.formArray.size(); i2++) {
-            str2 = str2.replaceAll(MainActivity.formArray.get(i2).get("str"), MainActivity.formArray.get(i2).get("repl_str")).replaceAll("  ", " ");
+            str2 = str2.replaceAll(MainActivity.formArray.get(i2).get("str"),MainActivity.formArray.get(i2).get("repl_str")).replaceAll("  ", " ");
         }
         for (int i3 = 1; i3 < 10; i3++) {
             str2 = str2.replaceAll("  ", " ");
@@ -419,7 +414,7 @@ public class Congthuc {
         for (int i2 = 1; i2 < 10; i2++) {
             str3 = str3.replaceAll("  ", " ");
         }
-        if (str3.indexOf("(") > -1 && str3.indexOf(")") > -1) {
+        if (str3.contains("(") && str3.contains(")")) {
             int i1 = -1;
             while (true) {
                 int indexOf = str3.indexOf("(", i1 + 1);
@@ -428,12 +423,13 @@ public class Congthuc {
                     break;
                 }
                 int i22 = i1;
-                while (i22 < str3.length() && str3.substring(i22, i22 + 1).indexOf(")") <= -1) {
+                while (i22 < str3.length() && !str3.substring(i22, i22 + 1).contains(")")) {
                     i22++;
                 }
                 if (isNumeric(str3.substring(i1 + 1, i22).replaceAll(" ", ""))) {
                     for (int i3 = i1; i3 < i22; i3++) {
-                        if (isNumeric(str3.substring(i3 - 1, i3)) && str3.substring(i3, i3 + 1).indexOf(" ") > -1 && isNumeric(str3.substring(i3 + 1, i3 + 2))) {
+                        Log.i("ISNUMBERIC", i1 + "");
+                        if (isNumeric(str3.substring(i3 - 1, i3)) && str3.substring(i3, i3 + 1).contains(" ") && isNumeric(str3.substring(i3 + 1, i3 + 2))) {
                             str3 = str3.substring(0, i3) + "," + str3.substring(i3 + 1);
                         }
                     }
@@ -593,17 +589,17 @@ public class Congthuc {
 
     public static String PhanTichTinNhan(String str) {
         String str2 = str.replace("  ", " ");
-        if (str2.indexOf("Không hiểu") > -1) {
+        if (str2.contains("Không hiểu")) {
             return str2;
         }
-        if (str2.substring(0, 5).indexOf("de") == -1 && str2.substring(0, 5).indexOf("lo") == -1 && str2.substring(0, 5).indexOf("hc") == -1 && str2.substring(0, 5).indexOf("xi") == -1 && str2.substring(0, 5).indexOf("xq") == -1 && str2.substring(0, 5).indexOf("xn") == -1 && str2.substring(0, 5).indexOf("bc") == -1 && str2.substring(0, 5).indexOf("xg") == -1) {
+        if (!str2.substring(0, 5).contains("de") && !str2.substring(0, 5).contains("lo") && !str2.substring(0, 5).contains("hc") && str2.substring(0, 5).indexOf("xi") == -1 && str2.substring(0, 5).indexOf("xq") == -1 && str2.substring(0, 5).indexOf("xn") == -1 && str2.substring(0, 5).indexOf("bc") == -1 && str2.substring(0, 5).indexOf("xg") == -1) {
             return "Không hiểu dạng";
         }
         String str3 = str2 + "      ";
         str3.toCharArray();
         int I2 = 3;
         while (I2 < str3.length() - 4) {
-            if (isNumeric(str3.substring(I2, I2 + 1)) && str3.charAt(I2 + 1) == ' ' && "ndk".indexOf(str3.substring(I2 + 2, I2 + 3)) > -1 && str3.charAt(I2 + 3) == ' ') {
+            if (isNumeric(str3.substring(I2, I2 + 1)) && str3.charAt(I2 + 1) == ' ' && "ndk".contains(str3.substring(I2 + 2, I2 + 3)) && str3.charAt(I2 + 3) == ' ') {
                 int I3 = I2;
                 while (I3 > 0 && isNumeric(str3.substring(I3, I3 + 1))) {
                     I3--;
@@ -641,18 +637,18 @@ public class Congthuc {
     }
 
     public static String XulyXien(String str) {
-        String str2;
-        int i;
-        String ThayThe;
-        String sss;
-        String strKQ;
-        int j;
+        String str2 = "";
+        int i = 0;
+        String ThayThe = "";
+        String sss = "";
+        String strKQ = "";
+        int j = 0;
         boolean Ktra = false;
-        String strKQ2 = null;
+        String strKQ2 = "";
         String ThayThe2 = " ,";
         int i2 = 0;
         int j2 = 0;
-        String strKQ3 = "";
+        StringBuilder strKQ3 = new StringBuilder();
         boolean Ktra2 = true;
         int i3 = 0;
         if (str.length() > 6) {
@@ -704,10 +700,10 @@ public class Congthuc {
                     }
                     if (Arrx[i1].length() != i5 || !isNumeric(Arrx[i1])) {
                         j = j2;
-                        strKQ2 = strKQ3;
+                        strKQ2 = strKQ3.toString();
                         Ktra = Ktra2;
                         if ((Arrx[i1].length() != 2 || !isNumeric(Arrx[i1])) && Arrx[i1].length() > 1) {
-                            strKQ3 = "";
+                            strKQ3 = new StringBuilder();
                             Ktra2 = false;
                             break;
                         }
@@ -717,12 +713,12 @@ public class Congthuc {
                         j = j2;
                         String So3 = Arrx[i1].substring(2, 3);
                         if (So1.indexOf(So2) != -1 || So1.indexOf(So3) <= -1) {
-                            strKQ3 = "";
+                            strKQ3 = new StringBuilder();
                             Ktra2 = false;
                         } else {
                             String str3 = Arrx[i1];
                             StringBuilder sb = new StringBuilder();
-                            strKQ2 = strKQ3;
+                            strKQ2 = strKQ3.toString();
                             Ktra = Ktra2;
                             sb.append(Arrx[i1].substring(0, 1));
                             sb.append(Arrx[i1].substring(1, 2));
@@ -734,14 +730,14 @@ public class Congthuc {
                     }
                     i1++;
                     j2 = j;
-                    strKQ3 = strKQ2;
+                    strKQ3 = new StringBuilder(strKQ2);
                     Ktra2 = Ktra;
                     i3 = 0;
                     i6 = 1;
                     i5 = 3;
                 }
                 if (Ktra2) {
-                    strKQ3 = strKQ3 + ArrSS[i7] + " ";
+                    strKQ3.append(ArrSS[i7]).append(" ");
                 }
                 i7++;
                 j2 = j;
@@ -750,8 +746,8 @@ public class Congthuc {
                 i5 = 3;
             }
         } else {
-            String sss5 = str2.replaceAll(" ", "");
-            String[] Arrx2 = sss5.split(",");
+//            String sss5 = str2.replaceAll(" ", "");
+            String[] Arrx2 = str2.split(",");
             int i12 = 0;
             while (true) {
                 if (i12 >= Arrx2.length) {
@@ -760,10 +756,10 @@ public class Congthuc {
                 }
                 if (Arrx2[i12].length() != 3 || !isNumeric(Arrx2[i12])) {
                     i = i2;
-                    strKQ = strKQ3;
+                    strKQ = strKQ3.toString();
                     if ((Arrx2[i12].length() != 2 || !isNumeric(Arrx2[i12])) && Arrx2[i12].length() > 1) {
                         Ktra2 = false;
-                        strKQ3 = "";
+                        strKQ3 = new StringBuilder();
                         break;
                     }
                 } else {
@@ -772,25 +768,25 @@ public class Congthuc {
                     String So32 = Arrx2[i12].substring(2, 3);
                     if (So12.indexOf(So22) != -1 || So12.indexOf(So32) <= -1) {
                         i = i2;
-                        strKQ = strKQ3;
+                        strKQ = strKQ3.toString();
                     } else {
                         String str4 = Arrx2[i12];
                         StringBuilder sb2 = new StringBuilder();
                         i = i2;
-                        strKQ = strKQ3;
+                        strKQ = strKQ3.toString();
                         sb2.append(Arrx2[i12].substring(0, 1));
                         sb2.append(Arrx2[i12].substring(1, 2));
                         sb2.append(",");
                         sb2.append(Arrx2[i12].substring(1, 2));
                         sb2.append(Arrx2[i12].substring(0, 1));
-                        sss5 = sss5.replaceAll(str4, sb2.toString());
+                        str2 = str2.replaceAll(str4, sb2.toString());
                     }
                 }
                 i12++;
                 i2 = i;
-                strKQ3 = strKQ;
+                strKQ3 = new StringBuilder(strKQ);
             }
-            String[] Arrx3 = sss5.split(",");
+            String[] Arrx3 = str2.split(",");
             if (Arrx3.length < 2 || Arrx3.length > 4) {
                 Ktra2 = false;
             }
@@ -802,7 +798,7 @@ public class Congthuc {
                         break;
                     }
                     boolean Ktra3 = true;
-                    String[] ArrSS2 = sss6.split(ThayThe2.substring(j3, j3 + 1));
+                    String[] ArrSS2 = sss6.split(",");
                     int i8 = 0;
                     while (true) {
                         if (i8 >= ArrSS2.length) {
@@ -818,7 +814,7 @@ public class Congthuc {
                             if (str22.split(" ").length == 1) {
                                 String[] Arrx4 = str22.split(",");
                                 if (Arrx4.length == 1) {
-                                    strKQ3 = "";
+                                    strKQ3 = new StringBuilder();
                                     ThayThe = ThayThe2;
                                     sss = sss6;
                                     break;
@@ -835,7 +831,7 @@ public class Congthuc {
                                         sss = sss6;
                                         if ((Arrx4[i13].length() != 2 || !isNumeric(Arrx4[i13])) && Arrx4[i13].length() > 1) {
                                             Ktra3 = false;
-                                            strKQ3 = "";
+                                            strKQ3 = new StringBuilder();
                                             break;
                                         }
                                     } else {
@@ -861,38 +857,32 @@ public class Congthuc {
                                     sss6 = sss;
                                 }
                                 if (Ktra3 && str22.length() > 4) {
-                                    strKQ3 = strKQ3 + str22.replaceAll(" ", ",") + " ";
+                                    strKQ3.append(str22.replaceAll(" ", ",")).append(" ");
                                 }
                             } else {
                                 ThayThe = ThayThe2;
                                 sss = sss6;
                                 String[] Arrx5 = str22.split(" ");
                                 if (Arrx5.length == 1) {
-                                    strKQ3 = "";
+                                    strKQ3 = new StringBuilder();
                                     break;
                                 }
                                 int i14 = 0;
-                                while (true) {
-                                    if (i14 >= Arrx5.length) {
-                                        break;
-                                    }
+                                while (i14 < Arrx5.length) {
                                     if (Arrx5[i14].length() != 3 || !isNumeric(Arrx5[i14])) {
                                         if (Arrx5[i14].length() != 2 || !isNumeric(Arrx5[i14])) {
                                             Ktra3 = false;
-                                            strKQ3 = "";
                                         }
-                                    } else if (Arrx5[i14].substring(0, 1) != Arrx5[i14].substring(1, 2)) {
-                                        if (Arrx5[i14].substring(0, 1) == Arrx5[i14].substring(2, 3)) {
+                                    } else if (!Arrx5[i14].substring(0, 1).equals(Arrx5[i14].substring(1, 2))) {
+                                        if (Arrx5[i14].substring(0, 1).equals(Arrx5[i14].substring(2, 3))) {
                                             str22 = str22.replaceAll(Arrx5[i14], Arrx5[i14].substring(0, 1) + Arrx5[i14].substring(1, 2) + "," + Arrx5[i14].substring(1, 2) + Arrx5[i14].substring(0, 1));
                                         }
                                     }
                                     i14++;
                                 }
-                                Ktra3 = false;
-                                strKQ3 = "";
                                 if (Ktra3) {
                                     if (str22.length() > 4) {
-                                        strKQ3 = strKQ3 + str22.replaceAll(" ", ",") + " ";
+                                        strKQ3.append(str22.replaceAll(" ", ",")).append(" ");
                                     }
                                 }
                             }
@@ -910,10 +900,10 @@ public class Congthuc {
                     sss6 = sss;
                 }
             } else {
-                strKQ3 = sss5;
+                strKQ3 = new StringBuilder(str2);
             }
         }
-        return strKQ3.trim();
+        return strKQ3.toString().trim();
     }
 
     public static String sortXien(String xien) {
@@ -972,7 +962,7 @@ public class Congthuc {
     public static String XulyLoDe(String str) {
         String DanGoc;
         String sauloc = "";
-        if (str.indexOf("bor trung") > -1) {
+        if (str.contains("bor trung")) {
             String[] ArrBT = str.split("bor trung ");
             String[] strArr = new String[0];
             String DanBo = "";
@@ -1019,7 +1009,7 @@ public class Congthuc {
             }
             return sauloc2;
         }
-        if (str.indexOf("trung") <= -1 && str.indexOf("bor") <= -1) {
+        if (!str.contains("trung") && str.indexOf("bor") <= -1) {
             try {
                 String mDanSo = XulySo(str);
                 if (mDanSo.indexOf("Không hiểu") > -1) {
@@ -1031,13 +1021,13 @@ public class Congthuc {
             } catch (Exception e2) {
                 return "Không hiểu " + str;
             }
-        } else if (str.indexOf("trung") <= -1 || str.indexOf("bor") <= -1) {
-            if (str.indexOf("trung") == -1 && str.indexOf("bor") > -1) {
+        } else if (!str.contains("trung") || str.indexOf("bor") <= -1) {
+            if (!str.contains("truing") && str.indexOf("bor") > -1) {
                 String[] ArrBor = str.split("bor");
                 List<String> mBor = new ArrayList<>();
                 for (String str2 : ArrBor) {
                     String ss = XulySo(str2);
-                    if (ss.indexOf("Không hiểu") != -1) {
+                    if (ss.contains("Không hiểu")) {
                         return ss;
                     }
                     mBor.add(ss);
@@ -1216,9 +1206,9 @@ public class Congthuc {
         return "ldpro" + NoiDung + "</font>";
     }
 
-    /* JADX INFO: Multiple debug info for r5v3 int: [D('DemVonglap' int), D('str2' java.lang.String)] */
-    /* JADX INFO: Multiple debug info for r26v23 'str_Dau'  java.lang.String: [D('str_Dau' java.lang.String), D('i1' int)] */
-    /* JADX INFO: Multiple debug info for r25v29 java.lang.String: [D('str_Dau' java.lang.String), D('i1' int)] */
+    /* JADX INFO: Multiple debug info for r5v3 int: [D('str2' java.lang.String), D('DemVonglap' int)] */
+    /* JADX INFO: Multiple debug info for r26v23 'str_Dau'  java.lang.String: [D('i1' int), D('str_Dau' java.lang.String)] */
+    /* JADX INFO: Multiple debug info for r25v29 java.lang.String: [D('i1' int), D('str_Dau' java.lang.String)] */
     /* JADX WARNING: Code restructure failed: missing block: B:17:0x010b, code lost:
         r7 = r26;
      */
@@ -1247,7 +1237,7 @@ public class Congthuc {
         if (r10.indexOf(r0 + r11) > -1) goto L_0x1143;
      */
     public static String XulySo(String str) {
-        String str_Dit = null;
+        String str_Dit = "";
         String str_Tong;
         String ndung1;
         String Dan;
@@ -1324,19 +1314,20 @@ public class Congthuc {
             boolean check2 = true;
             String str23 = str_Dau4;
             int DemVonglap2 = DemVonglap + 1;
+            DemVonglap++;
             if (DemVonglap2 > 50) {
                 return "Không hiểu " + str;
             }
             int DemVonglap3 = DemVonglap2;
             String str_Dit7 = str_Tong5;
-            if ((str19.indexOf(SKtra2) <= -1 || str19.length() != SKtra2.length()) && str19.length() != 0) {
+            if ((!str19.contains(SKtra2) || str19.length() != SKtra2.length()) && str19.length() != 0) {
                 String SKtra3 = str19;
                 str19 = " " + str19.trim() + " ";
                 String str20 = "0";
                 String str_Tong6 = str_Tong4;
-                if (str19.indexOf("den") > -1) {
+                if (str19.contains("den")) {
                     ndung12 = ndung19;
-                    if (str19.substring(0, 3).indexOf("tu") > -1) {
+                    if (str19.substring(0, 3).contains("tu")) {
                         str19 = str19.substring(3);
                     }
                     int i2 = str19.indexOf("den");
@@ -1376,7 +1367,7 @@ public class Congthuc {
                     so1 = "";
                 }
                 String str21 = "Không hiểu";
-                if (str19.indexOf("ghep dit") > -1) {
+                if (str19.contains("ghep dit")) {
                     int i3 = str19.indexOf("ghep dit");
                     while (true) {
                         i3--;
@@ -1405,12 +1396,12 @@ public class Congthuc {
                         return "Không hiểu " + str19;
                     } else if (ndung29.length() == 0) {
                         return "Không hiểu " + str;
-                    } else if (!xuLymem(ndung110).booleanValue()) {
+                    } else if (!xuLymem(ndung110)) {
                         return "Không hiểu " + str19.substring(i3, str19.indexOf("ghep dit"));
-                    } else if (!xuLymem(ndung29).booleanValue()) {
+                    } else if (!xuLymem(ndung29)) {
                         return "Không hiểu " + str19.substring(str19.indexOf("ghep dit"), j + 1);
                     } else {
-                        if (!xuLymem(ndung110).booleanValue() || !xuLymem(ndung29).booleanValue()) {
+                        if (!xuLymem(ndung110) || !xuLymem(ndung29)) {
                             str2 = str21;
                             ndung18 = ndung110;
                             ndung27 = ndung29;
@@ -1508,12 +1499,12 @@ public class Congthuc {
                         return "Không hiểu " + str19;
                     } else if (ndung210.length() == 0) {
                         return "Không hiểu " + str;
-                    } else if (!xuLymem(ndung111).booleanValue()) {
+                    } else if (!xuLymem(ndung111)) {
                         return "Không hiểu " + str19.substring(i4, str19.indexOf("ghep dau"));
-                    } else if (!xuLymem(ndung210).booleanValue()) {
+                    } else if (!xuLymem(ndung210)) {
                         return "Không hiểu " + str19.substring(str19.indexOf("ghep dau"), j2 + 1);
                     } else {
-                        if (!xuLymem(ndung111).booleanValue() || !xuLymem(ndung210).booleanValue()) {
+                        if (!xuLymem(ndung111) || !xuLymem(ndung210)) {
                             ndung17 = ndung111;
                             ndung26 = ndung210;
                             str_Dau = str_Dau3;
@@ -1589,7 +1580,7 @@ public class Congthuc {
                     String Dan6 = str19.substring(str19.indexOf("ghepdd"), j3).replaceAll("ghepdd", "").trim();
                     if (Dan6.length() == 0) {
                         return "Không hiểu " + str;
-                    } else if (xuLymem(Dan6).booleanValue()) {
+                    } else if (xuLymem(Dan6)) {
                         String[] DanArr = Dan6.split(",");
                         ndung13 = ndung19;
                         int i32 = 0;
@@ -1890,9 +1881,9 @@ public class Congthuc {
                         String[] DanArr3 = Dan5.split(",");
                         int i33 = 0;
                         while (i33 < DanArr3.length) {
-                            if (DanArr3[i33].length() == 2 && isNumeric(DanArr3[i33]) && i33 > 0 && !xuLymem(Dan5).booleanValue()) {
+                            if (DanArr3[i33].length() == 2 && isNumeric(DanArr3[i33]) && i33 > 0 && !xuLymem(Dan5)) {
                                 return "Không hiểu " + str19.substring(str19.indexOf(DanArr3[i33]), i11);
-                            } else if (DanArr3[i33].length() == 3 && isNumeric(DanArr3[i33]) && i33 > 0 && !xuLymem(Dan5).booleanValue()) {
+                            } else if (DanArr3[i33].length() == 3 && isNumeric(DanArr3[i33]) && i33 > 0 && !xuLymem(Dan5)) {
                                 return "Không hiểu " + str19.substring(str19.indexOf(DanArr3[i33]), i11);
                             } else if (!isNumeric(DanArr3[i33])) {
                                 return "Không hiểu " + str19.substring(i15, i11);
@@ -2915,7 +2906,7 @@ public class Congthuc {
     public static String GhepDau(String str) {
         String[] arr = new String[15];
         String str1 = "";
-        if (!xuLymem(str).booleanValue()) {
+        if (!xuLymem(str)) {
             return "Không hiểu " + str;
         }
         arr[0] = "00,01,02,03,04,05,06,07,08,09,";
@@ -2939,7 +2930,7 @@ public class Congthuc {
     public static String GhepDit(String str) {
         String[] arr = new String[15];
         String str1 = "";
-        if (!xuLymem(str).booleanValue()) {
+        if (!xuLymem(str)) {
             return "Không hiểu " + str;
         }
         arr[0] = "00,10,20,30,40,50,60,70,80,90,";
@@ -2963,7 +2954,7 @@ public class Congthuc {
     public static String GhepTong(String str) {
         String[] arr = new String[15];
         String str1 = "";
-        if (!xuLymem(str).booleanValue()) {
+        if (!xuLymem(str)) {
             return "Không hiểu " + str;
         }
         arr[0] = "00,19,28,37,46,55,64,73,82,91,";
@@ -3016,7 +3007,7 @@ public class Congthuc {
                 return false;
             }
         }
-        return B.booleanValue();
+        return B;
     }
 
     public static Boolean xuLymem(String str) {
