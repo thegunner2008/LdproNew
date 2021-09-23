@@ -15,6 +15,7 @@ import android.os.Environment;
 import android.os.Handler;
 import android.os.Looper;
 import android.telephony.SmsManager;
+import android.util.Log;
 
 import androidx.core.app.NotificationCompat;
 import androidx.core.app.TaskStackBuilder;
@@ -91,33 +92,30 @@ public class Database extends SQLiteOpenHelper {
             }
             String str3 = Congthuc.fixTinNhan1(str2);
             QueryData("Update tbl_tinnhanS set nd_phantich = '" + str3 + "', nd_sua = '" + str3 + "' WHERE id = " + id);
-            if (str3.indexOf("bo") > -1 && str3.indexOf("bor") == -1) {
+            if (str3.contains("bo") && !str3.contains("bor")) {
                 for (int j = str3.indexOf("bo") + 3; j < str3.length(); j++) {
-                    if (str3.substring(j, j + 1).indexOf(" ") == -1 && !Congthuc.isNumeric(str3.substring(j, j + 1))) {
+                    if (!str3.substring(j, j + 1).contains(" ") && !Congthuc.isNumeric(str3.substring(j, j + 1))) {
                         Loi = "Không hiểu " + str3.substring(str3.indexOf("bo"));
                     }
                 }
             }
-            if (str3.indexOf("Không hiểu") > -1) {
+            if (str3.contains("Không hiểu")) {
                 QueryData("Update tbl_tinnhanS set nd_phantich = '" + str3 + "', nd_sua = '" + str3 + "',  phat_hien_loi ='" + Loi + "' Where id = " + id);
                 createNotification(str3, this.mcontext);
             } else {
-                NhanTinNhan(Integer.valueOf(id), type_kh);
+                NhanTinNhan(id, type_kh);
                 c = GetData("Select * From tbl_tinnhanS WHERE id = " + id);
                 c.moveToFirst();
                 String _xulytin = c.getString(11);
-                if (_xulytin.indexOf("Không hiểu") > -1) {
+                if (_xulytin.contains("Không hiểu")) {
                     createNotification(_xulytin, this.mcontext);
                 } else {
                     NhapSoChiTiet(id);
                 }
-                if (!(c == null || c.isClosed())) {
+                if (!c.isClosed()) {
                     c.close();
-                    return;
                 }
             }
-        }
-        if (c == null) {
         }
     }
 
@@ -178,7 +176,7 @@ public class Database extends SQLiteOpenHelper {
         String str_Err3 = null;
         String str_Err4 = null;
         String str13;
-        String str14;
+        String str14 = "";
         String theodoi;
         int Dem_error;
         String TinGoc3;
@@ -292,8 +290,12 @@ public class Database extends SQLiteOpenHelper {
         }
         String str55 = Congthuc.fixTinNhan(str53);
         getThongtin = getThongtin2;
-        if (database3.caidat_tg.getInt("khach_de") == 1) {
-            str55 = str55.replaceAll("de ", "det").replaceAll("deb", "det");
+        try {
+            if (database3.caidat_tg.getInt("khach_de") == 1) {
+                str55 = str55.replaceAll("de ", "det").replaceAll("deb", "det");
+             }
+        }catch (Throwable e1) {
+            System.out.println("e1 = " + e1);
         }
         String so_tin6 = "";
         str55 = str55 + str44;
@@ -426,29 +428,29 @@ public class Database extends SQLiteOpenHelper {
                 str8 = str3;
             } else {
                 cursor = cursor2;
-                if (str55.substring(0, 5).indexOf("de") == -1) {
+                if (!str55.substring(0, 5).contains("de")) {
                     so_tin2 = so_tin;
-                    if (str55.substring(0, 5).indexOf(str46) != -1) {
+                    if (str55.substring(0, 5).contains(str46)) {
                         so_tin3 = str2;
                         str7 = str;
                         str5 = str55;
                         str6 = "";
                         str8 = str3;
-                    } else if (str55.substring(0, 5).indexOf(str47) == -1) {
+                    } else if (!str55.substring(0, 5).contains(str47)) {
                         str7 = str;
-                        if (str55.substring(0, 5).indexOf(str7) != -1) {
+                        if (str55.substring(0, 5).contains(str7)) {
                             str5 = str55;
                             str8 = str3;
                             so_tin3 = str2;
                             str6 = "";
-                        } else if (str55.substring(0, 5).indexOf("hc") == -1) {
+                        } else if (!str55.substring(0, 5).contains("hc")) {
                             str5 = str55;
                             so_tin3 = str2;
-                            if (str55.substring(0, 5).indexOf(so_tin3) == -1) {
+                            if (!str55.substring(0, 5).contains(so_tin3)) {
                                 str6 = "";
                                 String substring = str55.substring(0, 5);
                                 str8 = str3;
-                                if (substring.indexOf(str8) == -1 && str55.substring(0, 5).indexOf("xg") == -1) {
+                                if (!substring.contains(str8) && !str55.substring(0, 5).contains("xg")) {
                                     str_Err2 = "Không hiểu dạng";
                                     i = -1;
                                 }
@@ -478,7 +480,7 @@ public class Database extends SQLiteOpenHelper {
                     str8 = str3;
                 }
                 i = -1;
-                if (str55.indexOf(" bo ") > -1) {
+                if (str55.contains(" bo ")) {
                     str_Err2 = "Không hiểu bo ";
                 }
             }
@@ -521,7 +523,7 @@ public class Database extends SQLiteOpenHelper {
                         if (str57.charAt(i22) == ' ' && tien.length() > 0) {
                             break;
                         }
-                        if ("0123456789,tr".indexOf(str57.substring(i22, i22 + 1)) > -1) {
+                        if ("0123456789,tr".contains(str57.substring(i22, i22 + 1))) {
                             tien = tien + str57.charAt(i22);
                         }
                         i22++;
@@ -538,58 +540,19 @@ public class Database extends SQLiteOpenHelper {
                     if (i22 == i33) {
                         i33--;
                     }
-                    if (dtien.indexOf("dau") > -1) {
-                        str29 = str7;
-                    } else if (dtien.indexOf("dit") > -1) {
-                        str29 = str7;
-                    } else if (dtien.indexOf("tong") > -1) {
-                        str29 = str7;
-                    } else if (dtien.indexOf("cham") > -1) {
-                        str29 = str7;
-                    } else if (dtien.indexOf("dan") > -1) {
-                        str29 = str7;
-                    } else if (dtien.indexOf("boj") > -1) {
-                        str29 = str7;
-                    } else if (dtien.indexOf(str46) > -1) {
-                        str29 = str7;
-                    } else if (dtien.indexOf("de") > -1) {
-                        str29 = str7;
-                    } else if (dtien.indexOf(str47) > -1) {
-                        str29 = str7;
-                    } else if (dtien.indexOf(so_tin3) > -1) {
-                        str29 = str7;
-                    } else if (dtien.indexOf("hc") > -1) {
-                        str29 = str7;
-                    } else if (dtien.indexOf(str7) > -1) {
-                        str29 = str7;
-                    } else if (dtien.indexOf("xg") > -1) {
-                        str29 = str7;
-                    } else if (dtien.indexOf(str8) > -1) {
-                        str29 = str7;
-                    } else if (dtien.indexOf(" x") > -1) {
-                        str29 = str7;
-                    } else if (dtien.indexOf("kep") > -1) {
-                        str29 = str7;
-                    } else if (dtien.indexOf("sat") > -1) {
-                        str29 = str7;
-                    } else if (dtien.indexOf("to") > -1) {
-                        str29 = str7;
-                    } else if (dtien.indexOf("nho") > -1) {
-                        str29 = str7;
-                    } else if (dtien.indexOf("chan") > -1) {
-                        str29 = str7;
-                    } else if (dtien.indexOf("le") > -1) {
-                        str29 = str7;
-                    } else if (dtien.indexOf("ko") > -1) {
-                        str29 = str7;
-                    } else if (dtien.indexOf("chia") > -1) {
-                        str29 = str7;
-                    } else if (dtien.indexOf("duoi") > -1) {
-                        str29 = str7;
-                    } else if (dtien.indexOf("be") > -1) {
+                    if (dtien.contains("dau") || dtien.contains("dit") || dtien.contains("tong") ||
+                            dtien.contains("cham") || dtien.contains("dan") || dtien.contains("boj") ||
+                            dtien.contains("de") || dtien.contains("hc") ||
+//                            dtien.contains(str47) || dtien.contains(str46) || dtien.contains(so_tin3)  || dtien.contains(str7) || || dtien.contains(str8)
+                            dtien.contains("xg") || dtien.contains(" x") ||
+                            dtien.contains("kep") || dtien.contains("sat") || dtien.contains("to") ||
+                            dtien.contains("nho") || dtien.contains("chan") || dtien.contains("le") ||
+                            dtien.contains("ko") || dtien.contains("chia") || dtien.contains("duoi") ||
+                            dtien.contains("be")
+                    ) {
                         str29 = str7;
                     } else {
-                        if (dtien.indexOf("x ") > -1) {
+                        if (dtien.contains("x ")) {
                             int i34 = i22 - 1;
                             while (true) {
                                 if (i34 <= 0) {
@@ -613,7 +576,7 @@ public class Database extends SQLiteOpenHelper {
                             String dayso6 = str57.substring(k4, i33);
                             if (dayso6.trim().length() > 3) {
                                 str29 = str7;
-                                if (dayso6.substring(0, 4).indexOf("bor") > -1) {
+                                if (dayso6.substring(0, 4).contains("bor")) {
                                     dayso5 = "de " + dayso6;
                                     theodoi3 = str57.substring(i33);
                                     k4 = i33;
@@ -636,7 +599,7 @@ public class Database extends SQLiteOpenHelper {
                                         String Sss3 = strf.substring(0, f);
                                         theodoi4 = theodoi3;
 
-                                        if (Sss3.trim().indexOf(str_Err5) > -1) {
+                                        if (Sss3.trim().contains(str_Err5)) {
                                             theodoi5 = str6;
 
                                             if (Congthuc.isNumeric(Sss3.replaceAll(str_Err5, theodoi5).replaceAll(str44, theodoi5).replaceAll(theodoi6, theodoi5))) {
@@ -665,84 +628,84 @@ public class Database extends SQLiteOpenHelper {
                                     str39 = dayso5;
                                     database2 = this;
                                     database2.mang[k][0] = str39;
-                                    if (str39.indexOf("loa") > -1) {
+                                    if (str39.contains("loa")) {
                                         database2.mang[k][1] = "lo dau";
                                         i32 = i33;
                                         str41 = str29;
                                         k2 = k4;
-                                    } else if (str39.indexOf(str46) > -1) {
+                                    } else if (str39.contains(str46)) {
                                         database2.mang[k][1] = str46;
                                         i32 = i33;
                                         str41 = str29;
                                         k2 = k4;
-                                    } else if (str39.indexOf("dea") > -1) {
+                                    } else if (str39.contains("dea")) {
                                         database2.mang[k][1] = "de dau db";
                                         i32 = i33;
                                         str41 = str29;
                                         k2 = k4;
-                                    } else if (str39.indexOf("deb") > -1) {
+                                    } else if (str39.contains("deb")) {
                                         database2.mang[k][1] = "de dit db";
                                         i32 = i33;
                                         str41 = str29;
                                         k2 = k4;
-                                    } else if (str39.indexOf("det") > -1) {
+                                    } else if (str39.contains("det")) {
                                         database2.mang[k][1] = "de 8";
                                         i32 = i33;
                                         str41 = str29;
                                         k2 = k4;
-                                    } else if (str39.indexOf("hc") > -1) {
+                                    } else if (str39.contains("hc")) {
                                         database2.mang[k][1] = "hai cua";
                                         i32 = i33;
                                         str41 = str29;
                                         k2 = k4;
-                                    } else if (str39.indexOf(so_tin3) > -1) {
+                                    } else if (str39.contains(so_tin3)) {
                                         database2.mang[k][1] = so_tin3;
                                         i32 = i33;
                                         str41 = str29;
                                         k2 = k4;
-                                    } else if (str39.indexOf("dec") > -1) {
+                                    } else if (str39.contains("dec")) {
                                         database2.mang[k][1] = "de dau nhat";
                                         i32 = i33;
                                         str41 = str29;
                                         k2 = k4;
-                                    } else if (str39.indexOf("ded") > -1) {
+                                    } else if (str39.contains("ded")) {
                                         database2.mang[k][1] = "de dit nhat";
                                         i32 = i33;
                                         str41 = str29;
                                         k2 = k4;
-                                    } else if (str39.indexOf("de ") > -1) {
+                                    } else if (str39.contains("de ")) {
                                         database2.mang[k][1] = "de dit db";
                                         i32 = i33;
                                         str41 = str29;
                                         k2 = k4;
-                                    } else if (str39.indexOf("bca") > -1) {
+                                    } else if (str39.contains("bca")) {
                                         database2.mang[k][1] = "bc dau";
                                         i32 = i33;
                                         str41 = str29;
                                         k2 = k4;
-                                    } else if (str39.indexOf(str8) > -1) {
+                                    } else if (str39.contains(str8)) {
                                         database2.mang[k][1] = str8;
                                         i32 = i33;
                                         str41 = str29;
                                         k2 = k4;
-                                    } else if (str39.indexOf("xia") > -1) {
+                                    } else if (str39.contains("xia")) {
                                         database2.mang[k][1] = "xien dau";
                                         i32 = i33;
                                         str41 = str29;
                                         k2 = k4;
-                                    } else if (str39.indexOf(str47) > -1) {
+                                    } else if (str39.contains(str47)) {
                                         database2.mang[k][1] = str47;
                                         i32 = i33;
                                         str41 = str29;
                                         k2 = k4;
-                                    } else if (str39.indexOf("xqa") > -1) {
+                                    } else if (str39.contains("xqa")) {
                                         database2.mang[k][1] = "xqa";
                                         i32 = i33;
                                         str41 = str29;
                                         k2 = k4;
                                     } else {
                                         str41 = str29;
-                                        if (str39.indexOf(str41) > -1) {
+                                        if (str39.contains(str41)) {
                                             database2.mang[k][1] = str41;
                                             k2 = k4;
                                             i32 = i33;
@@ -783,9 +746,9 @@ public class Database extends SQLiteOpenHelper {
                                             }
                                             database2.XulyMang(k);
                                             database2.BaoLoiTien(k);
-                                            if (database2.mang[k][1].equals(str46)) {
-
-                                            }
+//                                            if (database2.mang[k][1].equals(str46)) {
+//
+//                                            }
                                         }
                                     }
                                 } else {
@@ -804,10 +767,10 @@ public class Database extends SQLiteOpenHelper {
                         str39 = dayso5;
                         database2 = this;
                         database2.mang[k][0] = str39;
-                        if (str39.indexOf("loa") > -1) {
-                        }
-                        if (str39.indexOf(" x ") != -1) {
-                        }
+//                        if (str39.indexOf("loa") > -1) {
+//                        }
+//                        if (str39.indexOf(" x ") != -1) {
+//                        }
                         database2.mang[k][2] = dayso3;
                         database2.mang[k][3] = theodoi5;
                         String[] strArr92 = database2.mang[k];
@@ -836,7 +799,11 @@ public class Database extends SQLiteOpenHelper {
                         str54 = str44;
                         str44 = str31;
                     }
-                    dayso5 = str57.substring(k4, i22);
+                    try {
+                        dayso5 = str57.substring(k4, i22);
+                    } catch (Throwable e7){
+                        Log.d("Database", e7.getMessage());
+                    }
                     theodoi3 = str57.substring(i22);
                     k4 = i22;
                     k = rw + 1;
@@ -852,14 +819,18 @@ public class Database extends SQLiteOpenHelper {
                 TinGoc2 = str7;
                 if (theodoi7.length() > 0) {
                     str14 = str44;
-                    theodoi2 = theodoi7.replaceAll(str14, str_Err4).replaceAll("\\.", str_Err4).replaceAll(theodoi6, str_Err4).replaceAll(";", str_Err4);
-                    if (theodoi2.length() > 0) {
-                        String[][] strArr10 = database.mang;
-                        strArr10[rw + 1][0] = theodoi7;
-                        strArr10[rw + 1][2] = theodoi7;
-                        strArr10[rw + 1][3] = theodoi7;
-                        strArr10[rw + 1][4] = str54 + theodoi7;
-                        database.BaoLoiDan(rw + 1);
+                    try {
+                        theodoi2 = theodoi7.replaceAll(str14, str_Err4).replaceAll("\\.", str_Err4).replaceAll(theodoi6, str_Err4).replaceAll(";", str_Err4);
+                        if (theodoi2.length() > 0) {
+                            String[][] strArr10 = database.mang;
+                            strArr10[rw + 1][0] = theodoi7;
+                            strArr10[rw + 1][2] = theodoi7;
+                            strArr10[rw + 1][3] = theodoi7;
+                            strArr10[rw + 1][4] = str54 + theodoi7;
+                            database.BaoLoiDan(rw + 1);
+                        }
+                    }catch (Throwable e7){
+                        System.out.println(e7);
                     }
                 } else {
                     theodoi2 = theodoi7;
@@ -883,7 +854,7 @@ public class Database extends SQLiteOpenHelper {
                 strArr11[1][0] = str5;
                 strArr11[1][4] = str_Err2;
                 str_Err3 = str_Err2;
-                if (str_Err3.indexOf("Không hiểu dạng") > -1) {
+                if (str_Err3.contains("Không hiểu dạng")) {
                     String[] strArr12 = database.mang[1];
                     StringBuilder sb10 = new StringBuilder();
                     sb10.append(str54);
@@ -917,9 +888,9 @@ public class Database extends SQLiteOpenHelper {
                     TinXuly2 = TinXuly;
                     break;
                 }
-                if (strArr14[i2][4].indexOf(soxien) > -1 || database.mang[i2][5].indexOf(soxien) > -1) {
+                if (strArr14[i2][4].contains(soxien) || database.mang[i2][5].contains(soxien)) {
                     int Dem_error2 = Dem_error + 1;
-                    if (database.mang[i2][4].indexOf(soxien) > -1) {
+                    if (database.mang[i2][4].contains(soxien)) {
                         String[][] strArr15 = database.mang;
                         rWError2 = strArr15[i2][4];
                         KhongHieu = strArr15[i2][4].replaceAll(soxien, str_Err4).trim();
@@ -928,7 +899,7 @@ public class Database extends SQLiteOpenHelper {
                         rWError2 = strArr16[i2][5];
                         KhongHieu = strArr16[i2][5].replaceAll(soxien, str_Err4).trim();
                     }
-                    if (database.mang[i2][0].indexOf(str11) == -1) {
+                    if (!database.mang[i2][0].contains(str11)) {
                         String[][] strArr17 = database.mang;
                         c = 0;
                         str26 = soxien;
@@ -2892,7 +2863,9 @@ public class Database extends SQLiteOpenHelper {
         Cursor c2 = database.GetData(mThe_loai2);
         if (c2.getCount() == 0) {
             try {
-                database.jsonDanSo = new JSONObject(c.getString(15));
+                if (c.getString(15) != null) {
+                    database.jsonDanSo = new JSONObject(c.getString(15));
+                }
             } catch (JSONException e3) {
                 e3.printStackTrace();
             }
