@@ -24,10 +24,10 @@
     <color name="cardview_light_background">#ffffffff</color>
     <color name="cardview_shadow_end_color">#03000000</color>
     <color name="cardview_shadow_start_color">#37000000</color>
-    <color name="colorAccent">@color/material_blue_grey_800</color>
+    <color name="colorAccent">@color/colorPrimary</color>
     <color name="colorBackGround">#ffeae4c7</color>
-    <color name="colorPrimary">@color/material_blue_grey_800</color>
-    <color name="colorPrimaryDark">@color/material_blue_grey_800</color>
+    <color name="colorPrimary">#FF9300</color>
+    <color name="colorPrimaryDark">#FF9300</color>
     <color name="design_bottom_navigation_shadow_color">#14000000</color>
     <color name="design_default_color_primary">#ff3f51b5</color>
     <color name="design_default_color_primary_dark">#ff303f9f</color>

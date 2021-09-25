@@ -252,7 +252,7 @@ public class MainActivity extends AppCompatActivity {
                 textView.setText(sb.toString());
             }
         };
-        actionBar.setBackgroundDrawable(new ColorDrawable(Color.parseColor("#ff37474f")));
+        actionBar.setBackgroundDrawable(new ColorDrawable(Color.parseColor("#FF9300")));
         this.drawerLayout = (DrawerLayout) findViewById(R.id.drawer_layout);
         this.drawerPane = (RelativeLayout) findViewById(R.id.drawer_pane);
         this.lvNav = (ListView) findViewById(R.id.nav_list);
