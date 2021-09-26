@@ -1,6 +1,7 @@
 package tamhoang.ldpro4;
 
 import android.annotation.SuppressLint;
+import android.app.role.RoleManager;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.database.Cursor;
@@ -141,14 +142,20 @@ public class Login extends AppCompatActivity {
         if (Telephony.Sms.getDefaultSmsPackage(getApplicationContext()).equals(getApplicationContext().getPackageName())) {
             return true;
         }
-        showAlertBox("Cài đặt mặc định!", "Để ứng dụng thành quản lý tin nhắn mặc định để quản lý tin nhắn tốt hơn!").setPositiveButton("Ok", new DialogInterface.OnClickListener() {
-            public void onClick(DialogInterface dialogInterface, int i) {
-                Intent setSmsAppIntent =
-                        new Intent(Telephony.Sms.Intents.ACTION_CHANGE_DEFAULT);
-                setSmsAppIntent.putExtra(Telephony.Sms.Intents.EXTRA_PACKAGE_NAME,
-                        getPackageName());
-                startActivityForResult(setSmsAppIntent, 202);
-            }
+        showAlertBox("Cài đặt mặc định!", "Để ứng dụng thành quản lý tin nhắn mặc định để quản lý tin nhắn tốt hơn!")
+                .setPositiveButton("Ok", (dialogInterface, i) -> {
+                    if (Build.VERSION.SDK_INT > Build.VERSION_CODES.P) {
+                        RoleManager roleManager = getSystemService(RoleManager.class);
+                        Intent setSmsAppIntent = roleManager.createRequestRoleIntent(RoleManager.ROLE_SMS);
+                        startActivityForResult(setSmsAppIntent, 202);
+                    } else {
+                        Intent setSmsAppIntent =
+                                new Intent(Telephony.Sms.Intents.ACTION_CHANGE_DEFAULT);
+                        setSmsAppIntent.putExtra(Telephony.Sms.Intents.EXTRA_PACKAGE_NAME,
+                                getPackageName());
+                        startActivityForResult(setSmsAppIntent, 202);
+                    }
+
         }).setNegativeButton("Cancel", (dialogInterface, i) -> dialogInterface.dismiss()).show().setCanceledOnTouchOutside(false);
         return false;
     }
