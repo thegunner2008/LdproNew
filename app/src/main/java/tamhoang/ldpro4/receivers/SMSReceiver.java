@@ -42,25 +42,6 @@ public class SMSReceiver extends BroadcastReceiver {
     String mSDT;
     SmsMessage[] messages = null;
     int soTN;
-
-    /* JADX WARNING: Code restructure failed: missing block: B:105:0x0479, code lost:
-        r0 = move-exception;
-     */
-    /* JADX WARNING: Code restructure failed: missing block: B:106:0x047a, code lost:
-        r2 = r0;
-     */
-    /* JADX WARNING: Code restructure failed: missing block: B:82:0x035d, code lost:
-        r28.db.QueryData("Update tbl_tinnhanS set phat_hien_loi = 'ko' WHERE id = " + r3.getInt(0));
-        r28.db.QueryData("Delete From tbl_soctS WHERE ngay_nhan = '" + r28.mNgayNhan + "' AND so_dienthoai = '" + r28.mSDT + "' AND so_tin_nhan = " + r28.soTN + " AND type_kh = 1");
-     */
-    /* JADX WARNING: Exception block dominator not found, dom blocks: [B:71:0x023d, B:94:0x03cf] */
-    /* JADX WARNING: Failed to process nested try/catch */
-    /* JADX WARNING: Removed duplicated region for block: B:105:0x0479 A[ExcHandler: JSONException (r0v4 'e' org.json.JSONException A[CUSTOM_DECLARE]), Splitter:B:71:0x023d] */
-    /* JADX WARNING: Removed duplicated region for block: B:25:0x0108  */
-    /* JADX WARNING: Removed duplicated region for block: B:29:0x012a A[Catch:{ Exception -> 0x0130 }] */
-    /* JADX WARNING: Removed duplicated region for block: B:71:0x023d A[SYNTHETIC, Splitter:B:71:0x023d] */
-    /* JADX WARNING: Removed duplicated region for block: B:93:0x03cc A[ExcHandler: SQLException (e android.database.SQLException), Splitter:B:71:0x023d] */
-    /* JADX WARNING: Removed duplicated region for block: B:94:0x03cf A[SYNTHETIC, Splitter:B:94:0x03cf] */
     public void onReceive(Context context, Intent intent) {
         String trim;
         boolean Ktra;
@@ -177,17 +158,6 @@ public class SMSReceiver extends BroadcastReceiver {
                                                 }
                                             }
                                         } catch (JSONException e7) {
-                                            Ktra = Ktra2;
-                                            JSONException e8 = e7;
-                                            Log.d(SMSReceiver.class.getName(), e7.getMessage());
-                                            try {
-                                                e8.printStackTrace();
-                                                getTenKH.close();
-                                                return;
-                                            } catch (Exception e9) {
-                                                Log.d(SMSReceiver.class.getName(), e9.getMessage());
-                                                return;
-                                            }
                                         }
                                     } else {
                                         Ktra = Ktra2;
@@ -210,15 +180,6 @@ public class SMSReceiver extends BroadcastReceiver {
                 this.body = sms.getDisplayMessageBody().replace("'", "");
                 trim = sms.getDisplayOriginatingAddress().replace(" ", "").trim();
                 this.mSDT = trim;
-//                if (trim.startsWith("0")) {
-//                }
-//                try {
-//                    if (MainActivity.DSkhachhang.size() == 0) {
-//                    }
-//                } catch (Exception e12) {
-//                }
-//                if (MainActivity.DSkhachhang.indexOf(this.mSDT) > -1) {
-//                }
             } catch (Exception e13) {
                 Log.d(SMSReceiver.class.getName(), e13.getMessage());
             }
