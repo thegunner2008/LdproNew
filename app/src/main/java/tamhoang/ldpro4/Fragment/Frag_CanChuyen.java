@@ -8,6 +8,7 @@ import android.database.SQLException;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Looper;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -301,103 +302,75 @@ public class Frag_CanChuyen extends Fragment {
                 }
             }
         });
-        this.radio_bc.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
-            /* class tamhoang.ldpro4.Fragment.Frag_CanChuyen.AnonymousClass9 */
-
-            public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
-                if (Frag_CanChuyen.this.radio_bc.isChecked()) {
-                    Frag_CanChuyen.this.DangXuat = "the_loai = 'bc'";
-                    Frag_CanChuyen.this.layout.setVisibility(View.GONE);
-                    Frag_CanChuyen.this.ln_xi.setVisibility(View.GONE);
-                    Frag_CanChuyen.this.li_loaide.setVisibility(View.GONE);
-                    Frag_CanChuyen.this.xem_RecycView();
-                }
-            }
-        });
-        this.check_x2.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
-            /* class tamhoang.ldpro4.Fragment.Frag_CanChuyen.AnonymousClass10 */
-
-            public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
-                if (Frag_CanChuyen.this.check_x2.isChecked()) {
-                    Frag_CanChuyen.this.DangXuat = "the_loai = 'xi'";
-                    Frag_CanChuyen.this.lay_x2 = "length(so_chon) = 5 ";
-                    Frag_CanChuyen.this.check_xn.setChecked(false);
-                } else {
-                    Frag_CanChuyen.this.lay_x2 = "";
-                }
+        this.radio_bc.setOnCheckedChangeListener((buttonView, isChecked) -> {
+            if (Frag_CanChuyen.this.radio_bc.isChecked()) {
+                Frag_CanChuyen.this.DangXuat = "the_loai = 'bc'";
+                Frag_CanChuyen.this.layout.setVisibility(View.GONE);
+                Frag_CanChuyen.this.ln_xi.setVisibility(View.GONE);
+                Frag_CanChuyen.this.li_loaide.setVisibility(View.GONE);
                 Frag_CanChuyen.this.xem_RecycView();
             }
         });
-        this.check_x3.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
-            /* class tamhoang.ldpro4.Fragment.Frag_CanChuyen.AnonymousClass11 */
-
-            public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
-                if (Frag_CanChuyen.this.check_x3.isChecked()) {
-                    Frag_CanChuyen.this.DangXuat = "the_loai = 'xi'";
-                    Frag_CanChuyen.this.lay_x3 = "OR length(so_chon) = 8 ";
-                    Frag_CanChuyen.this.check_xn.setChecked(false);
-                } else {
-                    Frag_CanChuyen.this.lay_x3 = "";
-                }
+        this.check_x2.setOnCheckedChangeListener((buttonView, isChecked) -> {
+            if (Frag_CanChuyen.this.check_x2.isChecked()) {
+                Frag_CanChuyen.this.DangXuat = "the_loai = 'xi'";
+                Frag_CanChuyen.this.lay_x2 = "length(so_chon) = 5 ";
+                Frag_CanChuyen.this.check_xn.setChecked(false);
+            } else {
+                Frag_CanChuyen.this.lay_x2 = "";
+            }
+            Frag_CanChuyen.this.xem_RecycView();
+        });
+        this.check_x3.setOnCheckedChangeListener((buttonView, isChecked) -> {
+            if (Frag_CanChuyen.this.check_x3.isChecked()) {
+                Frag_CanChuyen.this.DangXuat = "the_loai = 'xi'";
+                Frag_CanChuyen.this.lay_x3 = "OR length(so_chon) = 8 ";
+                Frag_CanChuyen.this.check_xn.setChecked(false);
+            } else {
+                Frag_CanChuyen.this.lay_x3 = "";
+            }
+            Frag_CanChuyen.this.xem_RecycView();
+        });
+        this.check_x4.setOnCheckedChangeListener((buttonView, isChecked) -> {
+            if (Frag_CanChuyen.this.check_x4.isChecked()) {
+                Frag_CanChuyen.this.DangXuat = "the_loai = 'xi'";
+                Frag_CanChuyen.this.lay_x4 = "OR length(so_chon) = 11 ";
+                Frag_CanChuyen.this.check_xn.setChecked(false);
+            } else {
+                Frag_CanChuyen.this.lay_x4 = "";
+            }
+            Frag_CanChuyen.this.xem_RecycView();
+        });
+        this.check_xn.setOnClickListener(v -> {
+            if (Frag_CanChuyen.this.check_xn.isChecked()) {
+                Frag_CanChuyen.this.DangXuat = "the_loai = 'xn'";
+                Frag_CanChuyen.this.check_x2.setChecked(false);
+                Frag_CanChuyen.this.check_x3.setChecked(false);
+                Frag_CanChuyen.this.check_x4.setChecked(false);
                 Frag_CanChuyen.this.xem_RecycView();
             }
         });
-        this.check_x4.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
-            /* class tamhoang.ldpro4.Fragment.Frag_CanChuyen.AnonymousClass12 */
-
-            public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
-                if (Frag_CanChuyen.this.check_x4.isChecked()) {
-                    Frag_CanChuyen.this.DangXuat = "the_loai = 'xi'";
-                    Frag_CanChuyen.this.lay_x4 = "OR length(so_chon) = 11 ";
-                    Frag_CanChuyen.this.check_xn.setChecked(false);
-                } else {
-                    Frag_CanChuyen.this.lay_x4 = "";
-                }
-                Frag_CanChuyen.this.xem_RecycView();
-            }
-        });
-        this.check_xn.setOnClickListener(new View.OnClickListener() {
-            /* class tamhoang.ldpro4.Fragment.Frag_CanChuyen.AnonymousClass13 */
-
-            public void onClick(View v) {
-                if (Frag_CanChuyen.this.check_xn.isChecked()) {
-                    Frag_CanChuyen.this.DangXuat = "the_loai = 'xn'";
-                    Frag_CanChuyen.this.check_x2.setChecked(false);
-                    Frag_CanChuyen.this.check_x3.setChecked(false);
-                    Frag_CanChuyen.this.check_x4.setChecked(false);
-                    Frag_CanChuyen.this.xem_RecycView();
-                }
-            }
-        });
-        this.btn_Xuatso.setOnClickListener(new View.OnClickListener() {
-            /* class tamhoang.ldpro4.Fragment.Frag_CanChuyen.AnonymousClass14 */
-
-            public void onClick(View v) {
-                if (Congthuc.isNumeric(Frag_CanChuyen.this.edt_tien.getText().toString().replaceAll("%", "").replaceAll("n", "").replaceAll("k", "").replaceAll("d", "").replaceAll(">", "").replaceAll("\\.", "")) || Frag_CanChuyen.this.edt_tien.getText().toString().length() == 0) {
-                    Frag_CanChuyen.this.btn_click();
-                } else {
-                    Toast.makeText(Frag_CanChuyen.this.getActivity(), "Kiểm tra lại tiền!", Toast.LENGTH_LONG).show();
-                }
+        this.btn_Xuatso.setOnClickListener(v -> {
+            if (Congthuc.isNumeric(Frag_CanChuyen.this.edt_tien.getText().toString().replaceAll("%", "").replaceAll("n", "").replaceAll("k", "").replaceAll("d", "").replaceAll(">", "").replaceAll("\\.", "")) || Frag_CanChuyen.this.edt_tien.getText().toString().length() == 0) {
+                Frag_CanChuyen.this.btn_click();
+            } else {
+                Toast.makeText(Frag_CanChuyen.this.getActivity(), "Kiểm tra lại tiền!", Toast.LENGTH_LONG).show();
             }
         });
         this.lay_x2 = "length(so_chon) = 5 ";
         this.lay_x3 = "OR length(so_chon) = 8 ";
         this.lay_x4 = "OR length(so_chon) = 11 ";
-        this.no_rp_number.setOnItemClickListener(new AdapterView.OnItemClickListener() {
-            /* class tamhoang.ldpro4.Fragment.Frag_CanChuyen.AnonymousClass15 */
-
-            @Override // android.widget.AdapterView.OnItemClickListener
-            public void onItemClick(AdapterView<?> adapterView, View view, int position, long id) {
-                try {
-                    new MainActivity();
-                    Cursor c = Frag_CanChuyen.this.db.GetData("Select ten_kh, sum(diem_quydoi) From tbl_soctS WHERE so_chon = '" + Frag_CanChuyen.this.mSo.get(position) + "' AND ngay_nhan = '" + MainActivity.Get_date() + "' AND type_kh = 1 AND " + Frag_CanChuyen.this.DangXuat + " GROUP BY so_dienthoai");
-                    String s1 = "";
-                    while (c.moveToNext()) {
-                        s1 = s1 + c.getString(0) + ": " + c.getString(1) + "\n";
-                    }
-                    Toast.makeText(Frag_CanChuyen.this.getActivity(), s1, Toast.LENGTH_LONG).show();
-                } catch (SQLException e) {
+        this.no_rp_number.setOnItemClickListener((adapterView, view, position, id) -> {
+            try {
+                new MainActivity();
+                Cursor c = Frag_CanChuyen.this.db.GetData("Select ten_kh, sum(diem_quydoi) From tbl_soctS WHERE so_chon = '" + Frag_CanChuyen.this.mSo.get(position) + "' AND ngay_nhan = '" + MainActivity.Get_date() + "' AND type_kh = 1 AND " + Frag_CanChuyen.this.DangXuat + " GROUP BY so_dienthoai");
+                String s1 = "";
+                while (c.moveToNext()) {
+                    s1 = s1 + c.getString(0) + ": " + c.getString(1) + "\n";
                 }
+                Toast.makeText(Frag_CanChuyen.this.getActivity(), s1, Toast.LENGTH_LONG).show();
+            } catch (SQLException e) {
+                System.out.println(e);
             }
         });
         try {

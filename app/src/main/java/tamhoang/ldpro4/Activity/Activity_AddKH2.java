@@ -517,9 +517,9 @@ public class Activity_AddKH2 extends BaseToolBarActivity {
 
     public void showDialog2() {
         JSONException e;
-        Dialog dialog = new Dialog(this);
+        Dialog dialog = new Dialog(this,android.R.style.Theme_Black_NoTitleBar_Fullscreen);
         dialog.setContentView(R.layout.frag_khongmax);
-        dialog.getWindow().setLayout(-1, -2);
+//        dialog.getWindow().setLayout(-1, -2);
         Button btnThemdanDe = (Button) dialog.findViewById(R.id.btn_KhongDe);
         Button btnXoaDanDe = (Button) dialog.findViewById(R.id.btn_XoaDe);
         Button btnThemdanLo = (Button) dialog.findViewById(R.id.btn_KhongLo);
@@ -542,55 +542,51 @@ public class Activity_AddKH2 extends BaseToolBarActivity {
         } catch (JSONException e2) {
             e = e2;
         }
-        btnThemdanDe.setOnClickListener(new View.OnClickListener() {
-            /* class tamhoang.ldpro4.Activity.Activity_AddKH2.AnonymousClass19 */
-
-            public void onClick(View v) {
-                boolean ktra = true;
-                String str = "de " + edt_NhapDanDe.getText().toString();
-                int i = 1;
-                if (str.length() > 7) {
-                    try {
-                        str = Congthuc.NhanTinNhan(Congthuc.convertKhongDau(str)).replace("de dit db:", "de:");
-                        if (str.indexOf("Không hiểu") > -1) {
-                            Toast.makeText(Activity_AddKH2.this, str, Toast.LENGTH_LONG).show();
-                            ktra = false;
-                        }
-                    } catch (Exception e) {
-                        Toast.makeText(Activity_AddKH2.this, "Thêm bị lỗi, hãy sửa lại", Toast.LENGTH_LONG).show();
+        btnThemdanDe.setOnClickListener(v -> {
+            boolean ktra = true;
+            String str = "de " + edt_NhapDanDe.getText().toString();
+            int i = 1;
+            if (str.length() > 7) {
+                try {
+                    str = Congthuc.NhanTinNhan(Congthuc.convertKhongDau(str)).replace("de dit db:", "de:");
+                    if (str.indexOf("Không hiểu") > -1) {
+                        Toast.makeText(Activity_AddKH2.this, str, Toast.LENGTH_LONG).show();
                         ktra = false;
                     }
+                } catch (Exception e1) {
+                    Toast.makeText(Activity_AddKH2.this, "Thêm bị lỗi, hãy sửa lại", Toast.LENGTH_LONG).show();
+                    ktra = false;
                 }
-                if (ktra) {
-                    try {
-                        if (str.length() > 7) {
-                            Activity_AddKH2.this.json_KhongMax.put("danDe", edt_NhapDanDe.getText().toString().replaceAll("\n", " "));
-                            JSONObject json_sole = new JSONObject();
-                            while (true) {
-                                String str1 = str.substring(0, str.indexOf("\n") + i);
-                                String str6 = str.substring(str1.indexOf(":") + i, str1.indexOf("\n") + i);
-                                String[] str2 = str6.substring(0, str6.indexOf(",x")).split(",");
-                                String str3 = str1.substring(str1.indexOf(",x") + 2, str1.indexOf("\n"));
-                                for (String So_chon : str2) {
-                                    if (!json_sole.has(So_chon)) {
-                                        json_sole.put(So_chon, str3);
-                                    } else if (Integer.parseInt(str3) < json_sole.getInt(So_chon)) {
-                                        json_sole.put(So_chon, str3);
-                                    }
+            }
+            if (ktra) {
+                try {
+                    if (str.length() > 7) {
+                        Activity_AddKH2.this.json_KhongMax.put("danDe", edt_NhapDanDe.getText().toString().replaceAll("\n", " "));
+                        JSONObject json_sole = new JSONObject();
+                        while (true) {
+                            String str1 = str.substring(0, str.indexOf("\n") + i);
+                            String str6 = str.substring(str1.indexOf(":") + i, str1.indexOf("\n") + i);
+                            String[] str2 = str6.substring(0, str6.indexOf(",x")).split(",");
+                            String str3 = str1.substring(str1.indexOf(",x") + 2, str1.indexOf("\n"));
+                            for (String So_chon : str2) {
+                                if (!json_sole.has(So_chon)) {
+                                    json_sole.put(So_chon, str3);
+                                } else if (Integer.parseInt(str3) < json_sole.getInt(So_chon)) {
+                                    json_sole.put(So_chon, str3);
                                 }
-                                str = str.replaceAll(str1, "");
-                                if (str.length() <= 0) {
-                                    break;
-                                }
-                                i = 1;
                             }
-                            Activity_AddKH2.this.json_KhongMax.put("soDe", json_sole.toString());
+                            str = str.replaceAll(str1, "");
+                            if (str.length() <= 0) {
+                                break;
+                            }
+                            i = 1;
                         }
-                    } catch (JSONException e2) {
-                        e2.printStackTrace();
+                        Activity_AddKH2.this.json_KhongMax.put("soDe", json_sole.toString());
                     }
-                    Activity_AddKH2.this.UPdate();
+                } catch (JSONException e2) {
+                    e2.printStackTrace();
                 }
+                Activity_AddKH2.this.UPdate();
             }
         });
         btnXoaDanDe.setOnClickListener(new View.OnClickListener() {

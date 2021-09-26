@@ -1,6 +1,7 @@
 package tamhoang.ldpro4;
 
 import android.annotation.SuppressLint;
+import android.app.role.RoleManager;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.database.Cursor;
@@ -33,12 +34,10 @@ public class Login extends AppCompatActivity {
     public static String Imei;
     public static String serial;
 
-    /* renamed from: db */
     Database db;
     Intent intent;
     Button login;
 
-    /* access modifiers changed from: protected */
     public void onCreate(Bundle bundle) {
         super.onCreate(bundle);
         setContentView(R.layout.activity_login);
@@ -58,20 +57,18 @@ public class Login extends AppCompatActivity {
         final int[] iArr8 = iArr3;
         final int[] iArr9 = iArr4;
         final int[] iArr10 = iArr5;
-        button.setOnClickListener(new View.OnClickListener() {
-            public void onClick(View view) {
-                iArr6[0] = ContextCompat.checkSelfPermission(Login.this, "android.permission.READ_CONTACTS");
-                iArr7[0] = ContextCompat.checkSelfPermission(Login.this, "android.permission.READ_PHONE_STATE");
-                iArr8[0] = ContextCompat.checkSelfPermission(Login.this, "android.permission.RECEIVE_SMS");
-                iArr9[0] = ContextCompat.checkSelfPermission(Login.this, "android.permission.SEND_SMS");
-                iArr10[0] = ContextCompat.checkSelfPermission(Login.this, "android.permission.WRITE_EXTERNAL_STORAGE");
-                if (iArr6[0] != 0 || iArr7[0] != 0 || iArr8[0] != 0 || iArr10[0] != 0 || iArr9[0] != 0) {
-                    ActivityCompat.requestPermissions(Login.this, new String[]{"android.permission.INTERNET", "android.permission.READ_CONTACTS", "android.permission.RECEIVE_SMS", "android.permission.SEND_SMS", "android.permission.READ_PHONE_STATE", "android.permission.WRITE_EXTERNAL_STORAGE"}, 1);
-                } else if (Login.this.getImei() != null) {
-                    Login.this.intent = new Intent(Login.this, MainActivity.class);
-                    Login login = Login.this;
-                    login.startActivities(new Intent[]{login.intent});
-                }
+        button.setOnClickListener(view -> {
+            iArr6[0] = ContextCompat.checkSelfPermission(Login.this, "android.permission.READ_CONTACTS");
+            iArr7[0] = ContextCompat.checkSelfPermission(Login.this, "android.permission.READ_PHONE_STATE");
+            iArr8[0] = ContextCompat.checkSelfPermission(Login.this, "android.permission.RECEIVE_SMS");
+            iArr9[0] = ContextCompat.checkSelfPermission(Login.this, "android.permission.SEND_SMS");
+            iArr10[0] = ContextCompat.checkSelfPermission(Login.this, "android.permission.WRITE_EXTERNAL_STORAGE");
+            if (iArr6[0] != 0 || iArr7[0] != 0 || iArr8[0] != 0 || iArr10[0] != 0 || iArr9[0] != 0) {
+                ActivityCompat.requestPermissions(Login.this, new String[]{"android.permission.INTERNET", "android.permission.READ_CONTACTS", "android.permission.RECEIVE_SMS", "android.permission.SEND_SMS", "android.permission.READ_PHONE_STATE", "android.permission.WRITE_EXTERNAL_STORAGE"}, 1);
+            } else if (Login.this.getImei() != null) {
+                Login.this.intent = new Intent(Login.this, MainActivity.class);
+                Login login = Login.this;
+                login.startActivities(new Intent[]{login.intent});
             }
         });
         try {
@@ -80,11 +77,11 @@ public class Login extends AppCompatActivity {
                 this.intent = new Intent(this, MainActivity.class);
                 startActivities(new Intent[]{this.intent});
             }
-        } catch (SQLException unused) {
+        } catch (SQLException ignored) {
         }
     }
 
-    @SuppressLint("WrongConstant")
+    @SuppressLint({"WrongConstant", "HardwareIds"})
     public String getImei() {
         if (ActivityCompat.checkSelfPermission(this, "android.permission.READ_PHONE_STATE") != -1) {
             try {
@@ -134,7 +131,6 @@ public class Login extends AppCompatActivity {
         return new AlertDialog.Builder(this).setTitle(str).setMessage(str2);
     }
 
-    /* access modifiers changed from: private */
     public void checkPermissions() {
         if (ContextCompat.checkSelfPermission(this, "android.permission.READ_SMS") != 0 && !ActivityCompat.shouldShowRequestPermissionRationale(this, "android.permission.READ_SMS")) {
             ActivityCompat.requestPermissions(this, new String[]{"android.permission.READ_SMS"}, 1);
@@ -145,14 +141,20 @@ public class Login extends AppCompatActivity {
         if (Telephony.Sms.getDefaultSmsPackage(getApplicationContext()).equals(getApplicationContext().getPackageName())) {
             return true;
         }
-        showAlertBox("Cài đặt mặc định!", "Để ứng dụng thành quản lý tin nhắn mặc định để quản lý tin nhắn tốt hơn!").setPositiveButton("Ok", new DialogInterface.OnClickListener() {
-            public void onClick(DialogInterface dialogInterface, int i) {
-                Intent setSmsAppIntent =
-                        new Intent(Telephony.Sms.Intents.ACTION_CHANGE_DEFAULT);
-                setSmsAppIntent.putExtra(Telephony.Sms.Intents.EXTRA_PACKAGE_NAME,
-                        getPackageName());
-                startActivityForResult(setSmsAppIntent, 202);
-            }
+        showAlertBox("Cài đặt mặc định!", "Để ứng dụng thành quản lý tin nhắn mặc định để quản lý tin nhắn tốt hơn!")
+                .setPositiveButton("Ok", (dialogInterface, i) -> {
+                    if (Build.VERSION.SDK_INT > Build.VERSION_CODES.P) {
+                        RoleManager roleManager = getSystemService(RoleManager.class);
+                        Intent setSmsAppIntent = roleManager.createRequestRoleIntent(RoleManager.ROLE_SMS);
+                        startActivityForResult(setSmsAppIntent, 202);
+                    } else {
+                        Intent setSmsAppIntent =
+                                new Intent(Telephony.Sms.Intents.ACTION_CHANGE_DEFAULT);
+                        setSmsAppIntent.putExtra(Telephony.Sms.Intents.EXTRA_PACKAGE_NAME,
+                                getPackageName());
+                        startActivityForResult(setSmsAppIntent, 202);
+                    }
+
         }).setNegativeButton("Cancel", (dialogInterface, i) -> dialogInterface.dismiss()).show().setCanceledOnTouchOutside(false);
         return false;
     }
