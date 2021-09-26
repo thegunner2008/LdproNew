@@ -1,5 +1,6 @@
 package tamhoang.ldpro4.Fragment;
 
+import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.content.ContentResolver;
 import android.content.Context;
@@ -14,9 +15,9 @@ import android.view.LayoutInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
+import android.widget.ImageButton;
 import android.widget.ListAdapter;
 import android.widget.ListView;
 import android.widget.TextView;
@@ -25,8 +26,12 @@ import android.widget.Toast;
 import androidx.appcompat.app.AlertDialog;
 import androidx.fragment.app.Fragment;
 
+import com.google.android.material.floatingactionbutton.FloatingActionButton;
+
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
+
 import tamhoang.ldpro4.Activity.Activity_AddKH;
 import tamhoang.ldpro4.Activity.Activity_AddKH2;
 import tamhoang.ldpro4.R;
@@ -34,6 +39,7 @@ import tamhoang.ldpro4.data.Database;
 
 public class Frag_Setting1 extends Fragment {
     Button btn_themKH;
+    FloatingActionButton fab_add;
     Database db;
     ListView lview;
     public List<String> mAddress = new ArrayList();
@@ -45,52 +51,39 @@ public class Frag_Setting1 extends Fragment {
     public List<Integer> mtype = new ArrayList();
     TextView tv_Sodt;
     TextView tv_tenKH;
-    TextView tv_xoaKH;
+    ImageButton tv_xoaKH;
     int type = 1;
     View v;
 
-    @Override // android.support.v4.app.Fragment
+    @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         this.v = inflater.inflate(R.layout.frag_setting1, container, false);
         this.db = new Database(getActivity());
         this.lview = (ListView) this.v.findViewById(R.id.lv_setting1);
         Button button = (Button) this.v.findViewById(R.id.btn_them_KH);
+        FloatingActionButton fab_add = (FloatingActionButton) this.v.findViewById(R.id.fab_add);
         this.btn_themKH = button;
-        button.setOnClickListener(new View.OnClickListener() {
-            /* class tamhoang.ldpro4.Fragment.Frag_Setting1.AnonymousClass1 */
-
-            public void onClick(View v) {
-                Intent intent = new Intent(Frag_Setting1.this.getActivity(), Activity_AddKH.class);
-                intent.putExtra("tenKH", "");
-                intent.putExtra("use_app", "sms");
-                intent.putExtra("kh_new", "");
-                Frag_Setting1.this.startActivity(intent);
-            }
+        fab_add.setOnClickListener(v -> {
+            Intent intent = new Intent(Frag_Setting1.this.getActivity(), Activity_AddKH.class);
+            intent.putExtra("tenKH", "");
+            intent.putExtra("use_app", "sms");
+            intent.putExtra("kh_new", "");
+            Frag_Setting1.this.startActivity(intent);
         });
-        this.lview.setOnItemClickListener(new AdapterView.OnItemClickListener() {
-            /* class tamhoang.ldpro4.Fragment.Frag_Setting1.AnonymousClass2 */
-
-            @Override // android.widget.AdapterView.OnItemClickListener
-            public void onItemClick(AdapterView<?> adapterView, View view, int position, long id) {
-                Frag_Setting1.this.mPoistion = position;
-                Frag_Setting1.this.lview.showContextMenuForChild(view);
-            }
+        this.lview.setOnItemClickListener((adapterView, view, position, id) -> {
+            Frag_Setting1.this.mPoistion = position;
+            Frag_Setting1.this.lview.showContextMenuForChild(view);
         });
-        this.lview.setOnItemLongClickListener(new AdapterView.OnItemLongClickListener() {
-            /* class tamhoang.ldpro4.Fragment.Frag_Setting1.AnonymousClass3 */
-
-            @Override // android.widget.AdapterView.OnItemLongClickListener
-            public boolean onItemLongClick(AdapterView<?> adapterView, View view, int position, long l) {
-                Frag_Setting1.this.mPoistion = position;
-                return false;
-            }
+        this.lview.setOnItemLongClickListener((adapterView, view, position, l) -> {
+            Frag_Setting1.this.mPoistion = position;
+            return false;
         });
         xem_lv();
         registerForContextMenu(this.lview);
         return this.v;
     }
 
-    @Override // android.support.v4.app.Fragment
+    @Override
     public void onActivityResult(int i, int i2, Intent intent) {
         String str2 = null;
         String name = null;
@@ -151,13 +144,13 @@ public class Frag_Setting1 extends Fragment {
         }
     }
 
-    @Override // android.support.v4.app.Fragment
+    @Override
     public void onResume() {
         xem_lv();
         super.onResume();
     }
 
-    @Override // android.support.v4.app.Fragment
+    @Override
     public void onCreateContextMenu(ContextMenu menu, View v2, ContextMenu.ContextMenuInfo menuInfo) {
         super.onCreateContextMenu(menu, v2, menuInfo);
         menu.add(0, 1, 0, "Cài đặt lại giá");
@@ -203,54 +196,39 @@ public class Frag_Setting1 extends Fragment {
         }
     }
 
-    /* access modifiers changed from: package-private */
     public class KHAdapter extends ArrayAdapter {
         public KHAdapter(Context context, int resource, List<String> objects) {
             super(context, resource, objects);
         }
 
         public View getView(final int position, View convertView, ViewGroup parent) {
-            View v = ((Activity) getContext()).getLayoutInflater().inflate(R.layout.frag_setting1_lv, (ViewGroup) null);
+            @SuppressLint("ViewHolder") View v = ((Activity) getContext()).getLayoutInflater().inflate(R.layout.frag_setting1_lv, (ViewGroup) null);
             TextView tview1 = (TextView) v.findViewById(R.id.st1_tenkh);
             tview1.setText(Frag_Setting1.this.mPerson.get(position));
             ((TextView) v.findViewById(R.id.st1_sdt)).setText(Frag_Setting1.this.mAddress.get(position));
-            Frag_Setting1.this.tv_xoaKH = (TextView) v.findViewById(R.id.tv_xoaKH);
-            Frag_Setting1.this.tv_xoaKH.setOnClickListener(new View.OnClickListener() {
-                /* class tamhoang.ldpro4.Fragment.Frag_Setting1.KHAdapter.AnonymousClass1 */
-
-                public void onClick(View v) {
-                    AlertDialog.Builder builder = new AlertDialog.Builder(Frag_Setting1.this.getActivity());
-                    builder.setTitle("Xoá Khách");
-                    builder.setMessage("Xoá bỏ " + Frag_Setting1.this.mPerson.get(position) + " ra khỏi danh sách?");
-                    builder.setNegativeButton("Có", new DialogInterface.OnClickListener() {
-                        /* class tamhoang.ldpro4.Fragment.Frag_Setting1.KHAdapter.AnonymousClass1.AnonymousClass1 */
-
-                        public void onClick(DialogInterface dialog, int which) {
-                            Database database = Frag_Setting1.this.db;
-                            database.QueryData("Delete FROM tbl_kh_new where ten_kh = '" + Frag_Setting1.this.mPerson.get(position) + "'");
-                            Database database2 = Frag_Setting1.this.db;
-                            database2.QueryData("Delete FROM tbl_tinnhanS where ten_kh = '" + Frag_Setting1.this.mPerson.get(position) + "'");
-                            Database database3 = Frag_Setting1.this.db;
-                            database3.QueryData("Delete FROM tbl_soctS where ten_kh = '" + Frag_Setting1.this.mPerson.get(position) + "'");
-                            Database database4 = Frag_Setting1.this.db;
-                            database4.QueryData("Delete FROM tbl_chuyenthang where kh_nhan = '" + Frag_Setting1.this.mPerson.get(position) + "'");
-                            Database database5 = Frag_Setting1.this.db;
-                            database5.QueryData("Delete FROM tbl_chuyenthang where kh_chuyen = '" + Frag_Setting1.this.mPerson.get(position) + "'");
-                            Frag_Setting1.this.db.LayDanhsachKH();
-                            Frag_Setting1.this.xem_lv();
-                            dialog.dismiss();
-                            Toast.makeText(Frag_Setting1.this.getActivity(), "Xoá thành công!", Toast.LENGTH_LONG).show();
-                        }
-                    });
-                    builder.setPositiveButton("Không", new DialogInterface.OnClickListener() {
-                        /* class tamhoang.ldpro4.Fragment.Frag_Setting1.KHAdapter.AnonymousClass1.AnonymousClass2 */
-
-                        public void onClick(DialogInterface dialog, int which) {
-                            dialog.dismiss();
-                        }
-                    });
-                    builder.show();
-                }
+            Frag_Setting1.this.tv_xoaKH = (ImageButton) v.findViewById(R.id.tv_xoaKH);
+            Frag_Setting1.this.tv_xoaKH.setOnClickListener(v1 -> {
+                AlertDialog.Builder builder = new AlertDialog.Builder(Objects.requireNonNull(Frag_Setting1.this.getActivity()));
+                builder.setTitle("Xoá Khách");
+                builder.setMessage("Xoá bỏ " + Frag_Setting1.this.mPerson.get(position) + " ra khỏi danh sách?");
+                builder.setNegativeButton("Có", (dialog, which) -> {
+                    Database database = Frag_Setting1.this.db;
+                    database.QueryData("Delete FROM tbl_kh_new where ten_kh = '" + Frag_Setting1.this.mPerson.get(position) + "'");
+                    Database database2 = Frag_Setting1.this.db;
+                    database2.QueryData("Delete FROM tbl_tinnhanS where ten_kh = '" + Frag_Setting1.this.mPerson.get(position) + "'");
+                    Database database3 = Frag_Setting1.this.db;
+                    database3.QueryData("Delete FROM tbl_soctS where ten_kh = '" + Frag_Setting1.this.mPerson.get(position) + "'");
+                    Database database4 = Frag_Setting1.this.db;
+                    database4.QueryData("Delete FROM tbl_chuyenthang where kh_nhan = '" + Frag_Setting1.this.mPerson.get(position) + "'");
+                    Database database5 = Frag_Setting1.this.db;
+                    database5.QueryData("Delete FROM tbl_chuyenthang where kh_chuyen = '" + Frag_Setting1.this.mPerson.get(position) + "'");
+                    Frag_Setting1.this.db.LayDanhsachKH();
+                    Frag_Setting1.this.xem_lv();
+                    dialog.dismiss();
+                    Toast.makeText(Frag_Setting1.this.getActivity(), "Xoá thành công!", Toast.LENGTH_LONG).show();
+                });
+                builder.setPositiveButton("Không", (dialog, which) -> dialog.dismiss());
+                builder.show();
             });
             if (Frag_Setting1.this.mtype.get(position).intValue() != 1) {
                 tview1.setTextColor(-16776961);

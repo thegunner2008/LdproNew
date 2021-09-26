@@ -24,8 +24,9 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_weight="1"
+            android:background="@color/colorAccent"
             android:text="Cài đặt thông báo"
-            android:textColor="@color/red"
+            android:textColor="@color/white"
             android:textSize="14dp" />
 
         <Button
@@ -33,8 +34,9 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_weight="1"
+            android:background="@color/colorAccent"
             android:text="Login Telegram"
-            android:textColor="@color/red"
+            android:textColor="@color/white"
             android:visibility="gone" />
     </LinearLayout>
 </RelativeLayout>

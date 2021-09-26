@@ -39,14 +39,14 @@
                 android:textSize="14dp" />
         </LinearLayout>
 
-        <TextView
+        <ImageButton
             android:id="@+id/tv_xoaKH"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:padding="10dp"
-            android:text="Xoá"
-            android:textColor="@color/red"
-            android:textSize="14dp"
-            android:textStyle="bold" />
+            android:layout_width="@dimen/dimen_24dp"
+            android:src="@drawable/ic_baseline_delete_24"
+            android:layout_gravity="center_vertical|end"
+            android:layout_marginRight="@dimen/dimen_12dp"
+            android:background="@color/mtrl_btn_transparent_bg_color"
+            android:layout_height="@dimen/dimen_24dp"
+            app:tint="@color/colorAccent" />
     </LinearLayout>
 </LinearLayout>
