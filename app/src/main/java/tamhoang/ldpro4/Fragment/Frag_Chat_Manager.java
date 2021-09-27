@@ -365,16 +365,16 @@ public class Frag_Chat_Manager extends Fragment {
             holder.TenKH = view2.findViewById(R.id.tv_KhachHang);
             holder.ndChat = view2.findViewById(R.id.tv_NoiDung);
             if (Frag_Chat_Manager.this.mApp.get(position).contains("WA")) {
-                holder.imageView.setBackgroundResource(R.drawable.whatsapp);
+                holder.imageView.setBackgroundResource(R.drawable.ic_perm_phone_msg);
             } else if (Frag_Chat_Manager.this.mApp.get(position).contains("VI")) {
-                holder.imageView.setBackgroundResource(R.drawable.viicon);
+                holder.imageView.setBackgroundResource(R.drawable.ic_phone);
             } else if (Frag_Chat_Manager.this.mApp.get(position).contains("ZL")) {
-                holder.imageView.setBackgroundResource(R.drawable.zaloicon);
+                holder.imageView.setBackgroundResource(R.drawable.ic_zalo);
             } else if (Frag_Chat_Manager.this.mApp.get(position).contains("TL")) {
-                holder.imageView.setBackgroundResource(R.drawable.tele);
+                holder.imageView.setBackgroundResource(R.drawable.outline_telegram_20);
                 holder.tv_delete.setVisibility(View.GONE);
             } else if (Frag_Chat_Manager.this.mApp.get(position).contains("sms")) {
-                holder.imageView.setBackgroundResource(R.drawable.sms1);
+                holder.imageView.setBackgroundResource(R.drawable.ic_sms);
                 holder.add_contacts.setVisibility(View.GONE);
                 holder.tv_delete.setVisibility(View.GONE);
             }

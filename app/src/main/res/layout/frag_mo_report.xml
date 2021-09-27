@@ -24,6 +24,7 @@
 
                 <TabWidget
                     android:id="@android:id/tabs"
+                    android:layout_marginBottom="@dimen/dimen_6dp"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content" />
             </HorizontalScrollView>
