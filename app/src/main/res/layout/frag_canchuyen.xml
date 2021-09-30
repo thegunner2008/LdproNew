@@ -1,7 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:aapt="http://schemas.android.com/aapt"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:background="@color/white"
@@ -150,6 +148,7 @@
                     android:layout_height="wrap_content"
                     android:background="@drawable/edit_background"
                     android:hint="Xuất hết"
+                    android:padding="@dimen/dimen_6dp"
                     android:textAlignment="center"
                     android:textColor="@color/blue"
                     android:textSize="16dp"
@@ -208,15 +207,22 @@
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:orientation="vertical">
+                android:gravity="center"
+                android:layout_marginTop="@dimen/dimen_10dp"
+                android:layout_marginBottom="@dimen/dimen_10dp"
+                android:orientation="horizontal">
 
                 <Button
                     android:id="@+id/btn_Xuatso"
-                    android:layout_width="match_parent"
+                    android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:minWidth="0dp"
-                    android:minHeight="0dp"
+                    android:background="@drawable/bg_button"
+                    android:paddingTop="@dimen/dimen_2dp"
+                    android:paddingBottom="@dimen/dimen_2dp"
+                    android:paddingLeft="@dimen/dimen_20dp"
+                    android:paddingRight="@dimen/dimen_20dp"
                     android:text="Xuất số"
+                    android:textColor="@color/white"
                     android:textSize="16dp" />
             </LinearLayout>
         </LinearLayout>

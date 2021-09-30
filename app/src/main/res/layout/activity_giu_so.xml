@@ -36,6 +36,7 @@
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:background="@color/colorPrimary"
+                        android:padding="@dimen/dimen_6dp"
                         android:text="Giữ Đề + Lô:"
                         android:textColor="@color/white"
                         android:textStyle="bold" />
@@ -115,10 +116,13 @@
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:layout_weight="1"
+                        android:background="@drawable/bg_button"
                         android:minWidth="0dp"
                         android:minHeight="0dp"
+                        android:padding="@dimen/dimen_6dp"
+                        android:layout_marginEnd="@dimen/dimen_14dp"
                         android:text="Lưu/Sửa dàn giữ"
-                        android:textColor="@color/red"
+                        android:textColor="@color/white"
                         android:textSize="15dp" />
 
                     <Button
@@ -127,8 +131,10 @@
                         android:layout_height="wrap_content"
                         android:minWidth="0dp"
                         android:minHeight="0dp"
+                        android:background="@drawable/bg_button"
+                        android:padding="@dimen/dimen_6dp"
                         android:text="Xoá giữ"
-                        android:textColor="@color/red"
+                        android:textColor="@color/white"
                         android:textSize="15dp" />
                 </LinearLayout>
 
@@ -143,6 +149,7 @@
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:background="@color/colorPrimary"
+                        android:padding="@dimen/dimen_6dp"
                         android:text="Giữ Xiên, 3 càng:"
                         android:textColor="@color/white"
                         android:textStyle="bold" />
@@ -161,37 +168,40 @@
                                 android:layout_width="match_parent"
                                 android:layout_height="wrap_content"
                                 android:orientation="horizontal"
-                                android:padding="5dp">
+                                android:padding="@dimen/dimen_6dp">
 
                                 <TextView
-                                    android:layout_width="80dp"
-                                    android:layout_height="wrap_content"
-                                    android:paddingTop="5dp"
+                                    android:layout_width="0dp"
+                                    android:layout_height="match_parent"
+                                    android:layout_weight="1"
+                                    android:padding="@dimen/dimen_6dp"
                                     android:text="Giữ xiên 2:"
-                                    android:textColor="@color/colorAccent"
+                                    android:textColor="@color/black"
                                     android:textSize="14dp"
                                     android:textStyle="bold" />
 
                                 <EditText
                                     android:id="@+id/giuxien2"
-                                    android:layout_width="116dp"
-                                    android:layout_height="wrap_content"
+                                    android:layout_width="0dp"
+                                    android:layout_height="match_parent"
+                                    android:layout_weight="2"
                                     android:background="@drawable/edit_background"
                                     android:hint="0"
                                     android:inputType="number"
-                                    android:paddingTop="5dp"
+                                    android:padding="@dimen/dimen_6dp"
                                     android:textAlignment="viewEnd"
                                     android:textColor="@color/colorAccent"
                                     android:textSize="14dp"
                                     android:textStyle="bold" />
 
                                 <TextView
-                                    android:layout_width="60dp"
-                                    android:layout_height="wrap_content"
-                                    android:paddingTop="5dp"
+                                    android:layout_width="0dp"
+                                    android:layout_height="match_parent"
+                                    android:layout_weight="1"
+                                    android:padding="@dimen/dimen_6dp"
                                     android:text="nghìn"
                                     android:textAlignment="center"
-                                    android:textColor="@color/colorAccent"
+                                    android:textColor="@color/black"
                                     android:textSize="14dp"
                                     android:textStyle="bold" />
                             </LinearLayout>
@@ -200,37 +210,40 @@
                                 android:layout_width="match_parent"
                                 android:layout_height="wrap_content"
                                 android:orientation="horizontal"
-                                android:padding="5dp">
+                                android:padding="@dimen/dimen_6dp">
 
                                 <TextView
-                                    android:layout_width="80dp"
-                                    android:layout_height="wrap_content"
-                                    android:paddingTop="5dp"
+                                    android:layout_width="0dp"
+                                    android:layout_height="match_parent"
+                                    android:layout_weight="1"
+                                    android:padding="@dimen/dimen_6dp"
                                     android:text="Giữ xiên 3:"
-                                    android:textColor="@color/colorAccent"
+                                    android:textColor="@color/black"
                                     android:textSize="14dp"
                                     android:textStyle="bold" />
 
                                 <EditText
                                     android:id="@+id/giuxien3"
-                                    android:layout_width="116dp"
-                                    android:layout_height="wrap_content"
+                                    android:layout_width="0dp"
+                                    android:layout_height="match_parent"
+                                    android:layout_weight="2"
                                     android:background="@drawable/edit_background"
                                     android:hint="0"
                                     android:inputType="number"
-                                    android:paddingTop="5dp"
+                                    android:padding="@dimen/dimen_6dp"
                                     android:textAlignment="viewEnd"
                                     android:textColor="@color/colorAccent"
                                     android:textSize="14dp"
                                     android:textStyle="bold" />
 
                                 <TextView
-                                    android:layout_width="60dp"
-                                    android:layout_height="wrap_content"
-                                    android:paddingTop="5dp"
+                                    android:layout_width="0dp"
+                                    android:layout_height="match_parent"
+                                    android:layout_weight="1"
+                                    android:padding="@dimen/dimen_6dp"
                                     android:text="nghìn"
                                     android:textAlignment="center"
-                                    android:textColor="@color/colorAccent"
+                                    android:textColor="@color/black"
                                     android:textSize="14dp"
                                     android:textStyle="bold" />
                             </LinearLayout>
@@ -239,37 +252,40 @@
                                 android:layout_width="match_parent"
                                 android:layout_height="wrap_content"
                                 android:orientation="horizontal"
-                                android:padding="5dp">
+                                android:padding="6dp">
 
                                 <TextView
-                                    android:layout_width="80dp"
-                                    android:layout_height="wrap_content"
-                                    android:paddingTop="5dp"
+                                    android:layout_width="0dp"
+                                    android:layout_height="match_parent"
+                                    android:layout_weight="1"
+                                    android:padding="@dimen/dimen_6dp"
                                     android:text="Giữ xiên 4:"
-                                    android:textColor="@color/colorAccent"
+                                    android:textColor="@color/black"
                                     android:textSize="14dp"
                                     android:textStyle="bold" />
 
                                 <EditText
                                     android:id="@+id/giuxien4"
-                                    android:layout_width="116dp"
-                                    android:layout_height="wrap_content"
+                                    android:layout_width="0dp"
+                                    android:layout_height="match_parent"
+                                    android:layout_weight="2"
                                     android:background="@drawable/edit_background"
                                     android:hint="0"
                                     android:inputType="number"
-                                    android:paddingTop="5dp"
+                                    android:padding="@dimen/dimen_6dp"
                                     android:textAlignment="viewEnd"
                                     android:textColor="@color/colorAccent"
                                     android:textSize="14dp"
                                     android:textStyle="bold" />
 
                                 <TextView
-                                    android:layout_width="60dp"
-                                    android:layout_height="wrap_content"
-                                    android:paddingTop="5dp"
+                                    android:layout_width="0dp"
+                                    android:layout_height="match_parent"
+                                    android:layout_weight="1"
+                                    android:padding="@dimen/dimen_6dp"
                                     android:text="nghìn"
                                     android:textAlignment="center"
-                                    android:textColor="@color/colorAccent"
+                                    android:textColor="@color/black"
                                     android:textSize="14dp"
                                     android:textStyle="bold" />
                             </LinearLayout>
@@ -278,37 +294,40 @@
                                 android:layout_width="match_parent"
                                 android:layout_height="wrap_content"
                                 android:orientation="horizontal"
-                                android:padding="5dp">
+                                android:padding="@dimen/dimen_6dp">
 
                                 <TextView
-                                    android:layout_width="80dp"
-                                    android:layout_height="wrap_content"
-                                    android:paddingTop="5dp"
+                                    android:layout_width="0dp"
+                                    android:layout_height="match_parent"
+                                    android:layout_weight="1"
+                                    android:padding="@dimen/dimen_6dp"
                                     android:text="Giữ 3 Càng:"
-                                    android:textColor="@color/colorAccent"
+                                    android:textColor="@color/black"
                                     android:textSize="14dp"
                                     android:textStyle="bold" />
 
                                 <EditText
                                     android:id="@+id/giu3cang"
-                                    android:layout_width="116dp"
-                                    android:layout_height="wrap_content"
+                                    android:layout_width="0dp"
+                                    android:layout_height="match_parent"
+                                    android:layout_weight="2"
                                     android:background="@drawable/edit_background"
                                     android:hint="0"
                                     android:inputType="number"
-                                    android:paddingTop="5dp"
+                                    android:padding="@dimen/dimen_6dp"
                                     android:textAlignment="viewEnd"
                                     android:textColor="@color/colorAccent"
                                     android:textSize="14dp"
                                     android:textStyle="bold" />
 
                                 <TextView
-                                    android:layout_width="60dp"
-                                    android:layout_height="wrap_content"
-                                    android:paddingTop="5dp"
+                                    android:layout_width="0dp"
+                                    android:layout_height="match_parent"
+                                    android:layout_weight="1"
+                                    android:padding="@dimen/dimen_6dp"
                                     android:text="nghìn"
                                     android:textAlignment="center"
-                                    android:textColor="@color/colorAccent"
+                                    android:textColor="@color/black"
                                     android:textSize="14dp"
                                     android:textStyle="bold" />
                             </LinearLayout>
@@ -326,10 +345,13 @@
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:layout_weight="1"
+                        android:background="@drawable/bg_button"
+                        android:padding="@dimen/dimen_6dp"
+                        android:layout_marginEnd="@dimen/dimen_14dp"
                         android:minWidth="0dp"
                         android:minHeight="0dp"
                         android:text="Lưu/Sửa xiên + càng"
-                        android:textColor="@color/red"
+                        android:textColor="@color/white"
                         android:textSize="15dp" />
 
                     <Button
@@ -337,9 +359,11 @@
                         android:layout_width="100dp"
                         android:layout_height="wrap_content"
                         android:minWidth="0dp"
+                        android:background="@drawable/bg_button"
+                        android:padding="@dimen/dimen_6dp"
                         android:minHeight="0dp"
                         android:text="Xoá giữ"
-                        android:textColor="@color/red"
+                        android:textColor="@color/white"
                         android:textSize="15dp" />
                 </LinearLayout>
             </LinearLayout>

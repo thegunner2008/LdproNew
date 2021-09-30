@@ -77,15 +77,14 @@
                         android:id="@+id/btn_them_trang"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:layout_marginTop="-7dp"
-                        android:layout_marginBottom="-7dp"
+                        android:background="@drawable/bg_button"
                         android:drawableLeft="@mipmap/add_contact"
-                        android:minWidth="0dp"
-                        android:minHeight="0dp"
+                        android:drawableEnd="6dp"
+                        android:drawableStart="6dp"
                         android:padding="3dp"
                         android:text="Kiểm tra tài khoản"
                         android:textAlignment="textStart"
-                        android:textColor="@color/blue"
+                        android:textColor="@color/white"
                         android:textSize="14dp" />
                 </LinearLayout>
             </LinearLayout>

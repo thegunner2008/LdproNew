@@ -120,7 +120,6 @@ public class Frag_Chaytrang extends Fragment {
     RadioButton radio_xi3;
     RadioButton radio_xi4;
     private Runnable runnable = new Runnable() {
-        /* class tamhoang.ldpro4.Fragment.Frag_Chaytrang.AnonymousClass20 */
 
         public void run() {
             boolean Running = true;
@@ -141,11 +140,11 @@ public class Frag_Chaytrang extends Fragment {
                     Running = false;
                     Frag_Chaytrang.this.btn_Xuatso.setEnabled(false);
                     Frag_Chaytrang.this.btn_Xuatso.setText("Hết giờ");
-                    Frag_Chaytrang.this.btn_Xuatso.setTextColor(-7829368);
+//                    Frag_Chaytrang.this.btn_Xuatso.setTextColor(-7829368);
                 } else if (date.before(gioBatdau)) {
                     Frag_Chaytrang.this.btn_Xuatso.setEnabled(false);
                     Frag_Chaytrang.this.btn_Xuatso.setText("Chưa mở");
-                    Frag_Chaytrang.this.btn_Xuatso.setTextColor(-7829368);
+//                    Frag_Chaytrang.this.btn_Xuatso.setTextColor(-7829368);
                     Running = false;
                 }
                 if (Frag_Chaytrang.this.LoLive && Frag_Chaytrang.this.radio_lo.isChecked()) {

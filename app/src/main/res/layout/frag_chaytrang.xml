@@ -191,6 +191,7 @@
                     android:layout_height="wrap_content"
                     android:background="@drawable/edit_background"
                     android:hint="Xuất hết"
+                    android:padding="@dimen/dimen_6dp"
                     android:inputType="number"
                     android:textAlignment="center"
                     android:textColor="@color/blue"
@@ -200,6 +201,8 @@
 
             <Spinner
                 android:id="@+id/spr_trang"
+                android:padding="@dimen/dimen_4dp"
+                android:layout_marginBottom="@dimen/dimen_10dp"
                 android:layout_width="match_parent"
                 android:layout_height="30dp"
                 android:background="@drawable/sprinter_background" />
@@ -218,18 +221,20 @@
 
             <LinearLayout
                 android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:orientation="horizontal">
+                android:layout_height="wrap_content">
 
                 <Button
                     android:id="@+id/btn_Xuatso"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_weight="1"
+                    android:background="@drawable/bg_button"
                     android:minWidth="0dp"
                     android:minHeight="0dp"
+                    android:padding="@dimen/dimen_6dp"
                     android:text="Vào trang"
-                    android:textColor="@color/blue"
+                    android:layout_marginEnd="@dimen/dimen_14dp"
+                    android:textColor="@color/white"
                     android:textSize="16dp"
                     android:textStyle="bold" />
 
@@ -237,10 +242,13 @@
                     android:id="@+id/btn_MaXuat"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
+                    android:layout_weight="0.5"
                     android:minWidth="0dp"
                     android:minHeight="0dp"
                     android:text="Đã chạy"
-                    android:textColor="@color/red"
+                    android:padding="@dimen/dimen_6dp"
+                    android:background="@drawable/bg_button"
+                    android:textColor="@color/white"
                     android:textSize="16dp"
                     android:textStyle="bold" />
             </LinearLayout>
