@@ -2,16 +2,18 @@
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:orientation="vertical"
     android:background="@color/white"
+    android:orientation="vertical"
     android:weightSum="1">
 
     <TextView
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:padding="5dp"
+        android:background="@color/colorAccent"
+        android:gravity="center"
+        android:padding="6dp"
         android:text="Hãy chọn trang web để tải kết quả!"
-        android:textColor="@color/red"
+        android:textColor="@color/white"
         android:textSize="14dp"
         android:textStyle="bold" />
 
@@ -115,9 +117,10 @@
         android:id="@+id/btn_tt"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:minWidth="0dp"
-        android:minHeight="0dp"
+        android:layout_marginBottom="@dimen/dimen_10dp"
+        android:background="@drawable/bg_button"
         android:text="Tính tiền thủ công"
+        android:textColor="@color/white"
         android:textSize="14dp" />
 
     <TextView
@@ -133,9 +136,10 @@
         android:id="@+id/btn_Delete"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:minWidth="0dp"
-        android:minHeight="0dp"
+        android:layout_marginBottom="@dimen/dimen_10dp"
+        android:background="@drawable/bg_button"
         android:text="Xoá cơ sở dữ liệu"
+        android:textColor="@color/white"
         android:textSize="14dp" />
 
     <ScrollView

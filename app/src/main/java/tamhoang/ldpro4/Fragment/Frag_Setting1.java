@@ -15,6 +15,7 @@ import android.view.LayoutInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.ImageButton;
@@ -39,7 +40,6 @@ import tamhoang.ldpro4.data.Database;
 
 public class Frag_Setting1 extends Fragment {
     Button btn_themKH;
-    FloatingActionButton fab_add;
     Database db;
     ListView lview;
     public List<String> mAddress = new ArrayList();
@@ -70,13 +70,19 @@ public class Frag_Setting1 extends Fragment {
             intent.putExtra("kh_new", "");
             Frag_Setting1.this.startActivity(intent);
         });
-        this.lview.setOnItemClickListener((adapterView, view, position, id) -> {
-            Frag_Setting1.this.mPoistion = position;
-            Frag_Setting1.this.lview.showContextMenuForChild(view);
+        this.lview.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+            @Override
+            public void onItemClick(AdapterView<?> adapterView, View view, int position, long id) {
+                Frag_Setting1.this.mPoistion = position;
+                Frag_Setting1.this.lview.showContextMenuForChild(view);
+            }
         });
-        this.lview.setOnItemLongClickListener((adapterView, view, position, l) -> {
-            Frag_Setting1.this.mPoistion = position;
-            return false;
+        this.lview.setOnItemLongClickListener(new AdapterView.OnItemLongClickListener() {
+            @Override
+            public boolean onItemLongClick(AdapterView<?> adapterView, View view, int position, long l) {
+                Frag_Setting1.this.mPoistion = position;
+                return false;
+            }
         });
         xem_lv();
         registerForContextMenu(this.lview);
@@ -201,11 +207,23 @@ public class Frag_Setting1 extends Fragment {
             super(context, resource, objects);
         }
 
-        public View getView(final int position, View convertView, ViewGroup parent) {
-            @SuppressLint("ViewHolder") View v = ((Activity) getContext()).getLayoutInflater().inflate(R.layout.frag_setting1_lv, (ViewGroup) null);
+        public View getView(int position, View convertView, ViewGroup parent) {
+            @SuppressLint("ViewHolder")
+            View v = ((Activity) getContext()).getLayoutInflater().inflate(R.layout.frag_setting1_lv, (ViewGroup) null);
             TextView tview1 = (TextView) v.findViewById(R.id.st1_tenkh);
             tview1.setText(Frag_Setting1.this.mPerson.get(position));
             ((TextView) v.findViewById(R.id.st1_sdt)).setText(Frag_Setting1.this.mAddress.get(position));
+
+            v.setOnClickListener(view -> {
+                Frag_Setting1.this.mPoistion = position;
+                Frag_Setting1.this.lview.showContextMenuForChild(view);
+            });
+
+            v.setOnLongClickListener(view -> {
+                Frag_Setting1.this.mPoistion = position;
+                return false;
+            });
+
             Frag_Setting1.this.tv_xoaKH = (ImageButton) v.findViewById(R.id.tv_xoaKH);
             Frag_Setting1.this.tv_xoaKH.setOnClickListener(v1 -> {
                 AlertDialog.Builder builder = new AlertDialog.Builder(Objects.requireNonNull(Frag_Setting1.this.getActivity()));

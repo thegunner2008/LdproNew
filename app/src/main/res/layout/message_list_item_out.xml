@@ -11,13 +11,13 @@
         android:layout_alignParentRight="true"
         android:padding="10dp"
         android:text="Hey! How&apos;s it going?"
-        android:textColor="@color/white"
+        android:textColor="#fff"
         android:textSize="14dp"
         app:angle="8dp"
         app:arrowLocation="right"
         app:arrowPosition="14dp"
         app:arrowWidth="8dp"
-        app:bubbleColor="@color/colorPrimary" />
+        app:bubbleColor="#4B4B4B" />
 
     <TextView
         android:id="@+id/status_out"

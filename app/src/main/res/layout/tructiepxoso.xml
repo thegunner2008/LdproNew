@@ -2,6 +2,7 @@
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:aapt="http://schemas.android.com/aapt"
     xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:orientation="vertical"
@@ -15,9 +16,10 @@
         android:checked="true"
         android:enabled="false"
         android:text="Tính tiền  trực tiếp từ 18h15 đến 18h30"
-        android:textColor="@color/red"
-        android:textSize="16dp"
-        android:textStyle="bold" />
+        android:textColor="@color/black"
+        android:textSize="@dimen/dimen_16sp"
+        android:textStyle="bold"
+        tools:ignore="UseSwitchCompatOrMaterialXml" />
 
     <WebView
         android:id="@+id/fragment_main_webview"
@@ -46,8 +48,8 @@
                 android:layout_weight="1"
                 android:checked="true"
                 android:text="Xem Lô"
-                android:textColor="@color/red"
-                android:textSize="14dp"
+                android:textColor="@color/black"
+                android:textSize="@dimen/dimen_14sp"
                 android:textStyle="bold" />
 
             <RadioButton
@@ -56,8 +58,8 @@
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
                 android:text="Xem Xiên"
-                android:textColor="@color/red"
-                android:textSize="14dp"
+                android:textColor="@color/black"
+                android:textSize="@dimen/dimen_14sp"
                 android:textStyle="bold" />
         </RadioGroup>
     </LinearLayout>
