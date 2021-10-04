@@ -79,8 +79,6 @@
                         android:layout_height="wrap_content"
                         android:background="@drawable/bg_button"
                         android:drawableLeft="@mipmap/add_contact"
-                        android:drawableEnd="6dp"
-                        android:drawableStart="6dp"
                         android:padding="3dp"
                         android:text="Kiểm tra tài khoản"
                         android:textAlignment="textStart"

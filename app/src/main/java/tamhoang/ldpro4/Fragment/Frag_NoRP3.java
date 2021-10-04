@@ -81,7 +81,6 @@ public class Frag_NoRP3 extends Fragment {
                         AlertDialog.Builder bui = new AlertDialog.Builder(Frag_NoRP3.this.getActivity());
                         bui.setTitle("Xoá tin nhắn này?");
                         bui.setPositiveButton("YES", new DialogInterface.OnClickListener() {
-                            /* class tamhoang.ldpro4.Fragment.Frag_NoRP3.AnonymousClass1.AnonymousClass1.AnonymousClass1 */
 
                             public void onClick(DialogInterface dialog, int which) {
                                 Database database = Frag_NoRP3.this.db;
@@ -151,7 +150,7 @@ public class Frag_NoRP3 extends Fragment {
                 Frag_NoRP3.this.lv_report_sms();
             }
 
-            @Override // android.widget.AdapterView.OnItemSelectedListener
+            @Override
             public void onNothingSelected(AdapterView<?> adapterView) {
             }
         });

@@ -66,7 +66,7 @@ public class Database extends SQLiteOpenHelper {
     public void Update_TinNhanGoc(int id, int type_kh) throws Throwable {
         Cursor c = GetData("Select * From tbl_tinnhanS WHERE id = " + id);
         c.moveToFirst();
-        if (c.getString(11).indexOf("ok") > -1) {
+        if (c.getString(11).contains("ok")) {
             Cursor c1 = GetData("Select nd_phantich FROM tbl_tinnhanS WHERE id = " + id);
             c1.moveToFirst();
             String str = c1.getString(0);
@@ -91,18 +91,18 @@ public class Database extends SQLiteOpenHelper {
             }
             String str3 = Congthuc.fixTinNhan1(str2);
             QueryData("Update tbl_tinnhanS set nd_phantich = '" + str3 + "', nd_sua = '" + str3 + "' WHERE id = " + id);
-            if (str3.indexOf("bo") > -1 && str3.indexOf("bor") == -1) {
+            if (str3.contains("bo") && !str3.contains("bor")) {
                 for (int j = str3.indexOf("bo") + 3; j < str3.length(); j++) {
                     if (str3.substring(j, j + 1).indexOf(" ") == -1 && !Congthuc.isNumeric(str3.substring(j, j + 1))) {
                         Loi = "Không hiểu " + str3.substring(str3.indexOf("bo"));
                     }
                 }
             }
-            if (str3.indexOf("Không hiểu") > -1) {
+            if (str3.contains("Không hiểu")) {
                 QueryData("Update tbl_tinnhanS set nd_phantich = '" + str3 + "', nd_sua = '" + str3 + "',  phat_hien_loi ='" + Loi + "' Where id = " + id);
                 createNotification(str3, this.mcontext);
             } else {
-                NhanTinNhan(Integer.valueOf(id), type_kh);
+                NhanTinNhan(id, type_kh);
                 c = GetData("Select * From tbl_tinnhanS WHERE id = " + id);
                 c.moveToFirst();
                 String _xulytin = c.getString(11);
@@ -111,9 +111,8 @@ public class Database extends SQLiteOpenHelper {
                 } else {
                     NhapSoChiTiet(id);
                 }
-                if (!(c == null || c.isClosed())) {
+                if (!c.isClosed()) {
                     c.close();
-                    return;
                 }
             }
         }
@@ -178,7 +177,7 @@ public class Database extends SQLiteOpenHelper {
         String str13;
         String str14;
         String theodoi;
-        int Dem_error;
+        int Dem_error = 0;
         StringBuilder TinGoc3;
         String TinXuly;
         int i2;
@@ -242,12 +241,7 @@ public class Database extends SQLiteOpenHelper {
         String dayso3 = null;
         String dayso4 = null;
         String str42 = null;
-        Exception e2;
-        Exception e3;
         String str43;
-        boolean ktra;
-        int i5;
-        String soxien3;
         String so_tin4;
         Database database3 = this;
         database3.mang = (String[][]) Array.newInstance(String.class, 1000, 6);
@@ -349,7 +343,7 @@ public class Database extends SQLiteOpenHelper {
         getSoTN.moveToFirst();
         int soTN = getSoTN.getInt(0) + 1;
         str4 = "Không hiểu";
-        if (str55.indexOf(str4) > -1) {
+        if (str55.contains(str4)) {
             so_tin2 = so_tin;
             cursor = cursor2;
             so_tin3 = str2;
@@ -717,8 +711,12 @@ public class Database extends SQLiteOpenHelper {
                                         database2.BaoLoiTien(k);
                                         if (database2.mang[k][4] != null) {
                                             String ketquaDaySo = database2.mang[k][4].trim();
-                                            if (ketquaDaySo.charAt(ketquaDaySo.length() - 1) == ',') {
-                                                database2.mang[k][4] = ketquaDaySo.substring(0, ketquaDaySo.length() - 1);
+                                            if (ketquaDaySo.contains("Không hiểu")) {
+                                                Dem_error++;
+                                            }else {
+                                                if (ketquaDaySo.charAt(ketquaDaySo.length() - 1) == ',') {
+                                                    database2.mang[k][4] = ketquaDaySo.substring(0, ketquaDaySo.length() - 1);
+                                                }
                                             }
                                         }
                                     }
@@ -801,7 +799,6 @@ public class Database extends SQLiteOpenHelper {
                 theodoi = str27;
                 str12 = null;
             }
-            Dem_error = 0;
             TinGoc3 = new StringBuilder();
             TinXuly = "";
             String rWError322 = "";
@@ -1149,7 +1146,7 @@ public class Database extends SQLiteOpenHelper {
                 if (TinXuly4 != null) {
                     database.QueryData("Update tbl_tinnhanS set so_tin_nhan = " + soTN + ",  nd_phantich='" + TinXuly4 + "', phan_tich = '" + jsonDan.toString() + "', phat_hien_loi ='ok' Where id =" + id);
                 }
-            } else if (so_tin2 == str_Err4) {
+            } else if (so_tin2.equals(str_Err4)) {
                 database.QueryData("Update tbl_tinnhanS set nd_phantich='" + TinGoc3 + "', phat_hien_loi = '" + rWError322 + "'  Where id =" + id);
             } else {
                 database.QueryData("Update tbl_tinnhanS set so_tin_nhan = " + so_tin2 + ", nd_phantich='" + TinGoc3 + "', phat_hien_loi = '" + rWError322 + "'  Where id =" + id);
@@ -2058,8 +2055,8 @@ public class Database extends SQLiteOpenHelper {
                 strArr5[4] = sb.toString();
                 i = 4;
             }
-        } else if (this.mang[rw][1].indexOf("lo") > -1) {
-            if (this.mang[rw][2].indexOf("lo") <= -1 || this.mang[rw][2].trim().indexOf("lo") <= 0) {
+        } else if (this.mang[rw][1].contains("lo")) {
+            if (!this.mang[rw][2].contains("lo") || this.mang[rw][2].trim().indexOf("lo") <= 0) {
                 String[][] strArr7 = this.mang;
                 strArr7[rw][4] = strArr7[rw][2].replaceFirst("lo :", "");
                 String[][] strArr8 = this.mang;
@@ -2078,8 +2075,8 @@ public class Database extends SQLiteOpenHelper {
                 strArr11[4] = sb2.toString();
                 i = 4;
             }
-        } else if (this.mang[rw][1].indexOf("de dau db") > -1) {
-            if (this.mang[rw][2].indexOf("dea") <= -1 || this.mang[rw][2].trim().indexOf("dea") <= 0) {
+        } else if (this.mang[rw][1].contains("de dau db")) {
+            if (!this.mang[rw][2].contains("dea") || this.mang[rw][2].trim().indexOf("dea") <= 0) {
                 String[][] strArr13 = this.mang;
                 strArr13[rw][4] = strArr13[rw][2].replaceFirst("dea :", "");
                 String[][] strArr14 = this.mang;
