@@ -481,7 +481,7 @@ public class Database extends SQLiteOpenHelper {
                         str29 = str7;
                     } else if (dtien.indexOf("dit") > -1) {
                         str29 = str7;
-                    } else if (dtien.indexOf("tong") > -1) {
+                    } else if (dtien.contains("tong")) {
                         str29 = str7;
                     } else if (dtien.indexOf("cham") > -1) {
                         str29 = str7;
@@ -621,12 +621,12 @@ public class Database extends SQLiteOpenHelper {
                                     i32 = i33;
                                     str41 = str29;
                                     k2 = k4;
-                                } else if (str39.indexOf("hc") > -1) {
+                                } else if (str39.contains("hc")) {
                                     database2.mang[k][1] = "hai cua";
                                     i32 = i33;
                                     str41 = str29;
                                     k2 = k4;
-                                } else if (str39.indexOf(so_tin3) > -1) {
+                                } else if (str39.contains(so_tin3)) {
                                     database2.mang[k][1] = so_tin3;
                                     i32 = i33;
                                     str41 = str29;
@@ -2539,78 +2539,78 @@ public class Database extends SQLiteOpenHelper {
                     }
                     String[] ArrXien6 = this.mang[rw][c2].split(" ");
                     int i11 = 0;
-//                    while (i11 < ArrXien6.length) {
-//                        String ss3 = Congthuc.XulySo(ArrXien6[i11]);
-//                        if (ss3.length() >= 8 && ss3.length() <= 12) {
-//                            if (ss3.indexOf("Không hiểu") <= -1) {
-//                                if (this.mang[rw][1] != "xq" || ss3.length() >= 8) {
-//                                    String[] danlayS4 = ss3.split(",");
-//                                    int i46 = 0;
-//                                    while (i46 < danlayS4.length) {
-//                                        if (danlayS4[i46].length() == 2 && Congthuc.isNumeric(danlayS4[i46])) {
-//                                            Danxi2 = Danxi;
-//                                        } else if (this.mang[rw][4].length() > 4) {
-//                                            String[] strArr79 = this.mang[rw];
-//                                            StringBuilder sb13 = new StringBuilder();
-//                                            sb13.append("Không hiểu ");
-//                                            Danxi2 = Danxi;
-//                                            sb13.append(this.mang[rw][2]);
-//                                            strArr79[4] = sb13.toString();
-//                                        } else {
-//                                            Danxi2 = Danxi;
-//                                            this.mang[rw][4] = "Không hiểu " + this.mang[rw][0];
-//                                        }
-//                                        i46++;
-//                                        Danxienghep = Danxienghep;
-//                                        Danxi = Danxi2;
-//                                    }
-//                                } else {
-//                                    this.mang[rw][4] = "Không hiểu " + this.mang[rw][0];
-//                                }
-//                                i11++;
-//                                Danxienghep = Danxienghep;
-//                                Danxi = Danxi;
-//                            }
-//                        }
-//                        if (ArrXien6[i11].length() > 8) {
-//                            c3 = 4;
-//                            this.mang[rw][4] = "Không hiểu " + this.mang[rw][2];
-//                        } else {
-//                            c3 = 4;
-//                            this.mang[rw][4] = "Không hiểu " + this.mang[rw][0];
-//                        }
-//                        if (this.mang[rw][c3].indexOf("Không hiểu") == -1) {
-//                            this.mang[rw][c3] = "";
-//                            int i12 = 0;
-//                            String soxien3 = "";
-//                            while (true) {
-//                                if (i12 >= ArrXien6.length) {
-//                                    break;
-//                                }
-//                                try {
-//                                    soxien3 = Congthuc.XulySo(ArrXien6[i12]);
-//                                } catch (Exception e3) {
-//                                    this.mang[rw][4] = "Không hiểu " + ArrXien6[i12];
-//                                }
-//                                if (soxien3.indexOf("Không hiểu") != -1) {
-//                                    break;
-//                                }
-//                                boolean check3 = false;
-//                                for (String str3 : soxien3.split(",")) {
-//                                    if (soxien3.length() - soxien3.replaceAll(str3, "").length() > 2) {
-//                                        check3 = true;
-//                                    }
-//                                }
-//                                if (soxien3.length() < 5 || soxien3.length() > 12 || check3) {
-//                                    this.mang[rw][4] = "Không hiểu " + this.mang[rw][2];
-//                                } else {
-//                                    this.mang[rw][4] = this.mang[rw][4] + Congthuc.sortXien(soxien3) + " ";
-//                                    i12++;
-//                                }
-//                            }
-//                        }
-//                        i = 4;
-//                    }
+                    while (i11 < ArrXien6.length) {
+                        String ss3 = Congthuc.XulySo(ArrXien6[i11]);
+                        if (ss3.length() >= 8 && ss3.length() <= 12) {
+                            if (ss3.indexOf("Không hiểu") <= -1) {
+                                if (this.mang[rw][1] != "xq" || ss3.length() >= 8) {
+                                    String[] danlayS4 = ss3.split(",");
+                                    int i46 = 0;
+                                    while (i46 < danlayS4.length) {
+                                        if (danlayS4[i46].length() == 2 && Congthuc.isNumeric(danlayS4[i46])) {
+                                            Danxi2 = Danxi;
+                                        } else if (this.mang[rw][4].length() > 4) {
+                                            String[] strArr79 = this.mang[rw];
+                                            StringBuilder sb13 = new StringBuilder();
+                                            sb13.append("Không hiểu ");
+                                            Danxi2 = Danxi;
+                                            sb13.append(this.mang[rw][2]);
+                                            strArr79[4] = sb13.toString();
+                                        } else {
+                                            Danxi2 = Danxi;
+                                            this.mang[rw][4] = "Không hiểu " + this.mang[rw][0];
+                                        }
+                                        i46++;
+                                        Danxienghep = Danxienghep;
+                                        Danxi = Danxi2;
+                                    }
+                                } else {
+                                    this.mang[rw][4] = "Không hiểu " + this.mang[rw][0];
+                                }
+                                i11++;
+                                Danxienghep = Danxienghep;
+                                Danxi = Danxi;
+                            }
+                        }
+                        if (ArrXien6[i11].length() > 8) {
+                            c3 = 4;
+                            this.mang[rw][4] = "Không hiểu " + this.mang[rw][2];
+                        } else {
+                            c3 = 4;
+                            this.mang[rw][4] = "Không hiểu " + this.mang[rw][0];
+                        }
+                        if (this.mang[rw][c3].indexOf("Không hiểu") == -1) {
+                            this.mang[rw][c3] = "";
+                            int i12 = 0;
+                            String soxien3 = "";
+                            while (true) {
+                                if (i12 >= ArrXien6.length) {
+                                    break;
+                                }
+                                try {
+                                    soxien3 = Congthuc.XulySo(ArrXien6[i12]);
+                                } catch (Exception e3) {
+                                    this.mang[rw][4] = "Không hiểu " + ArrXien6[i12];
+                                }
+                                if (soxien3.indexOf("Không hiểu") != -1) {
+                                    break;
+                                }
+                                boolean check3 = false;
+                                for (String str3 : soxien3.split(",")) {
+                                    if (soxien3.length() - soxien3.replaceAll(str3, "").length() > 2) {
+                                        check3 = true;
+                                    }
+                                }
+                                if (soxien3.length() < 5 || soxien3.length() > 12 || check3) {
+                                    this.mang[rw][4] = "Không hiểu " + this.mang[rw][2];
+                                } else {
+                                    this.mang[rw][4] = this.mang[rw][4] + Congthuc.sortXien(soxien3) + " ";
+                                    i12++;
+                                }
+                            }
+                        }
+                        i = 4;
+                    }
                     c3 = 4;
                     if (this.mang[rw][c3].indexOf("Không hiểu") == -1) {
                     }
@@ -5137,8 +5137,8 @@ public class Database extends SQLiteOpenHelper {
                         int l2 = str1.indexOf("\n") + 1;
                         int k2 = k + l2;
                         if (str1.indexOf("de dau db") > -1) {
-                            String[] str25 = str1.substring(10, str1.indexOf(",x")).split(",");
-                            String str32 = str1.substring(str1.indexOf(",x") + 2, str1.indexOf("\n"));
+                            String[] str25 = str1.substring(10, str1.indexOf("x")).split(",");
+                            String str32 = str1.substring(str1.indexOf("x") + 2, str1.indexOf("\n"));
                             StringBuilder sb4 = new StringBuilder();
                             sb4.append(Laydan);
                             l = l2;
@@ -5156,7 +5156,7 @@ public class Database extends SQLiteOpenHelper {
                             l = l2;
                             i1 = i13;
                             if (str1.indexOf("de dit db") > -1) {
-                                String str4 = str1.substring(10, str1.indexOf(",x"));
+                                String str4 = str1.substring(10, str1.indexOf("x"));
                                 String[] str26 = str4.split(",");
                                 String str33 = str1.substring(str1.indexOf(",x") + 2, str1.indexOf("\n"));
                                 String Laydan3 = Laydan + "de dit db:";
@@ -5168,7 +5168,7 @@ public class Database extends SQLiteOpenHelper {
                                 }
                                 Laydan = Laydan3 + "x" + str33 + "\n";
                             } else if (str1.indexOf("de 8") > -1) {
-                                String str42 = str1.substring(5, str1.indexOf(",x"));
+                                String str42 = str1.substring(5, str1.indexOf("x"));
                                 String[] str27 = str42.split(",");
                                 String str34 = str1.substring(str1.indexOf(",x") + 2, str1.indexOf("\n"));
                                 String Laydan4 = Laydan + "de 8:";
@@ -5180,7 +5180,7 @@ public class Database extends SQLiteOpenHelper {
                                 }
                                 Laydan = Laydan4 + "x" + str34 + "\n";
                             } else if (str1.indexOf("de dau nhat") > -1) {
-                                String str43 = str1.substring(12, str1.indexOf(",x"));
+                                String str43 = str1.substring(12, str1.indexOf("x"));
                                 String[] str28 = str43.split(",");
                                 String str35 = str1.substring(str1.indexOf(",x") + 2, str1.indexOf("\n"));
                                 String Laydan5 = Laydan + "de dau nhat:";
@@ -5192,7 +5192,7 @@ public class Database extends SQLiteOpenHelper {
                                 }
                                 Laydan = Laydan5 + "x" + str35 + "\n";
                             } else if (str1.indexOf("de dit nhat") > -1) {
-                                String str44 = str1.substring(12, str1.indexOf(",x"));
+                                String str44 = str1.substring(12, str1.indexOf("x"));
                                 String[] str29 = str44.split(",");
                                 String str36 = str1.substring(str1.indexOf(",x") + 2, str1.indexOf("\n"));
                                 String Laydan6 = Laydan + "de dit nhat:";
@@ -5216,7 +5216,7 @@ public class Database extends SQLiteOpenHelper {
                                 }
                                 Laydan = Laydan7 + "x" + str37 + "\n";
                             } else if (str1.indexOf("bc") > -1) {
-                                String str46 = str1.substring(3, str1.indexOf(",x"));
+                                String str46 = str1.substring(3, str1.indexOf("x"));
                                 String[] str211 = str46.split(",");
                                 String str38 = str1.substring(str1.indexOf(",x") + 2, str1.indexOf("\n"));
                                 String Laydan8 = Laydan + "bc:";
@@ -5228,7 +5228,7 @@ public class Database extends SQLiteOpenHelper {
                                 }
                                 Laydan = Laydan8 + "x" + str38 + "\n";
                             } else if (str1.indexOf("lo dau") > -1) {
-                                String str47 = str1.substring(7, str1.indexOf(",x"));
+                                String str47 = str1.substring(7, str1.indexOf("x"));
                                 String[] str212 = str47.split(",");
                                 String str39 = str1.substring(str1.indexOf(",x") + 2, str1.indexOf("\n"));
                                 String Laydan9 = Laydan + "lo dau:";
@@ -5240,7 +5240,7 @@ public class Database extends SQLiteOpenHelper {
                                 }
                                 Laydan = Laydan9 + "x" + str39 + "\n";
                             } else if (str1.indexOf("lo") > -1) {
-                                String str48 = str1.substring(3, str1.indexOf(",x"));
+                                String str48 = str1.substring(3, str1.indexOf("x"));
                                 String[] str213 = str48.split(",");
                                 String str310 = str1.substring(str1.indexOf(",x") + 2, str1.indexOf("\n"));
                                 String Laydan10 = Laydan + "lo:";
@@ -5269,8 +5269,8 @@ public class Database extends SQLiteOpenHelper {
                                 }
                                 Laydan = check4 ? Laydan + str1.substring(0, str1.indexOf("\n")) + "*\n" : Laydan + str1;
                             } else if (str1.indexOf("xi") > -1) {
-                                String str410 = str1.substring(3, str1.indexOf(",x"));
-                                str1.substring(str1.indexOf(",x") + 2, str1.indexOf("\n"));
+                                String str410 = str1.substring(3, str1.lastIndexOf("x"));
+                                str1.substring(str1.indexOf(",x") + 2, str1.lastIndexOf("\n"));
                                 String[] str215 = str410.split(",");
                                 boolean check5 = true;
                                 int j14 = 0;
@@ -5295,7 +5295,7 @@ public class Database extends SQLiteOpenHelper {
                                 }
                                 Laydan = check6 ? Laydan + str1.substring(0, str1.indexOf("\n")) + "*\n" : Laydan + str1;
                             } else if (str1.indexOf("xq dau") > -1) {
-                                String str412 = str1.substring(7, str1.indexOf(",x"));
+                                String str412 = str1.substring(7, str1.lastIndexOf("x"));
                                 String[] str217 = str412.split(",");
                                 String str311 = str1.substring(str1.indexOf(",x") + 2, str1.indexOf("\n"));
                                 String Laydan11 = Laydan + "xq dau:";

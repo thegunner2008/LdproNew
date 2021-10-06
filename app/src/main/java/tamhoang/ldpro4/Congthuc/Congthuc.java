@@ -592,7 +592,7 @@ public class Congthuc {
         if (str2.contains("Không hiểu")) {
             return str2;
         }
-        if (!str2.substring(0, 5).contains("de") && !str2.substring(0, 5).contains("lo") && !str2.substring(0, 5).contains("hc") && str2.substring(0, 5).indexOf("xi") == -1 && str2.substring(0, 5).indexOf("xq") == -1 && str2.substring(0, 5).indexOf("xn") == -1 && str2.substring(0, 5).indexOf("bc") == -1 && str2.substring(0, 5).indexOf("xg") == -1) {
+        if (!str2.substring(0, 5).contains("de") && !str2.substring(0, 5).contains("lo") && !str2.substring(0, 5).contains("hc") && !str2.substring(0, 5).contains("xi") && !str2.substring(0, 5).contains("xq") && !str2.substring(0, 5).contains("xn") && !str2.substring(0, 5).contains("bc") && !str2.substring(0, 5).contains("xg")) {
             return "Không hiểu dạng";
         }
         String str3 = str2 + "      ";
@@ -1206,36 +1206,6 @@ public class Congthuc {
         return "ldpro" + NoiDung + "</font>";
     }
 
-    /* JADX INFO: Multiple debug info for r5v3 int: [D('str2' java.lang.String), D('DemVonglap' int)] */
-    /* JADX INFO: Multiple debug info for r26v23 'str_Dau'  java.lang.String: [D('i1' int), D('str_Dau' java.lang.String)] */
-    /* JADX INFO: Multiple debug info for r25v29 java.lang.String: [D('i1' int), D('str_Dau' java.lang.String)] */
-    /* JADX WARNING: Code restructure failed: missing block: B:17:0x010b, code lost:
-        r7 = r26;
-     */
-    /* JADX WARNING: Code restructure failed: missing block: B:332:0x0ae1, code lost:
-        return "Không hiểu " + r3.substring(r4, r4);
-     */
-    /* JADX WARNING: Code restructure failed: missing block: B:335:0x0aff, code lost:
-        return "Không hiểu " + r3.substring(r3.indexOf(r8[r9]), r4);
-     */
-    /* JADX WARNING: Code restructure failed: missing block: B:378:0x0c44, code lost:
-        if (isNumeric(r8[r9]) != false) goto L_0x0c5a;
-     */
-    /* JADX WARNING: Code restructure failed: missing block: B:380:0x0c59, code lost:
-        return "Không hiểu " + r3.substring(r7, r7);
-     */
-    /* JADX WARNING: Code restructure failed: missing block: B:382:0x0c73, code lost:
-        return "Không hiểu " + r3.substring(r3.indexOf(r8[r9]), r7);
-     */
-    /* JADX WARNING: Code restructure failed: missing block: B:468:0x0ec1, code lost:
-        if (r10.indexOf(r0 + r11) > -1) goto L_0x0ec3;
-     */
-    /* JADX WARNING: Code restructure failed: missing block: B:53:0x0220, code lost:
-        return "Không hiểu " + r37;
-     */
-    /* JADX WARNING: Code restructure failed: missing block: B:553:0x1141, code lost:
-        if (r10.indexOf(r0 + r11) > -1) goto L_0x1143;
-     */
     public static String XulySo(String str) {
         String str_Dit = "";
         String str_Tong;
@@ -1288,7 +1258,7 @@ public class Congthuc {
         String ndung18;
         String str15;
         String str16 = str.replaceAll("tong ko chia", "ko chia 3").replaceAll("tong chia 3 du 1", "chia 3 du 1").replaceAll("tong chia 3 du 2", "chia 3 du 2");
-        if (str16.indexOf("tong 10") > -1) {
+        if (str16.contains("tong 10")) {
             return "Không hiểu tong 10";
         }
         String str17 = ", ";

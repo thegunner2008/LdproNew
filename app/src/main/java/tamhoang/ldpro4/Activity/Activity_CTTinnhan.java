@@ -46,7 +46,7 @@ public class Activity_CTTinnhan extends BaseToolBarActivity {
         String str4;
         TextView tview52;
         JSONObject jsonDang = null;
-        String str5 = "loa";
+        String str5 = "lo";
         String str6 = "deb";
         String str7 = "xn";
         String str8 = "det";
@@ -69,22 +69,14 @@ public class Activity_CTTinnhan extends BaseToolBarActivity {
                 jsonDang2.put("diem_an", ct_tin.getDouble(2));
                 jsonDang2.put("tong_tien", ct_tin.getDouble(3));
                 jsonDang2.put("ket_qua", ct_tin.getDouble(4));
-                try {
-                    json4.put(ct_tin.getString(0), jsonDang2.toString());
-                    json4 = json4;
-                    str6 = str6;
-                    Str = Str;
-                    cursor2 = cursor2;
-                    str5 = str5;
-                    str7 = str7;
-                    str8 = str8;
-                } catch (JSONException e2) {
-                    e = e2;
-                    cursor = cursor2;
-                    e.printStackTrace();
-                    cursor.close();
-                    ct_tin.close();
-                }
+                json4.put(ct_tin.getString(0), jsonDang2.toString());
+                json4 = json4;
+                str6 = str6;
+                Str = Str;
+                cursor = cursor2;
+                str5 = str5;
+                str7 = str7;
+                str8 = str8;
             } catch (JSONException e3) {
                 e = e3;
                 cursor = cursor2;
@@ -301,51 +293,7 @@ public class Activity_CTTinnhan extends BaseToolBarActivity {
                         tview12.setText(decimalFormat.format(mTongTien));
                         tview13 = (TextView) findViewById(R.id.tv_no_ThangThua);
                         tview13.setText(decimalFormat.format(mKetQua));
-                        tview5 = (TextView) findViewById(R.id.tv_no_rp_nd);
-                        cursor = cursor2;
 
-                        tview5.setText(cursor.getString(8));
-                        ((TextView) findViewById(R.id.tv_no_KH)).setText(cursor.getString(4));
-                        ((TextView) findViewById(R.id.tv_no_TinNhan)).setText(cursor.getString(7));
-                        ((TextView) findViewById(R.id.tv_no_TG_nhan)).setText(cursor.getString(2));
-                        tview1 = (TextView) findViewById(R.id.tv_ndpt);
-                        str3 = cursor.getString(10);
-                        Spannable wordtoSpan = new SpannableString(str3);
-                        int i1 = 0;
-                        while (i1 < str3.length() - 1) {
-                            if (str3.substring(i1, i1 + 2).indexOf("*") > -1) {
-                                int i2 = i1;
-                                while (true) {
-                                    if (i2 <= 0) {
-                                        str4 = str3;
-                                        tview52 = tview5;
-                                        break;
-                                    }
-                                    tview52 = tview5;
-                                    if (str3.substring(i2, i2 + 1).indexOf(",") > -1) {
-                                        str4 = str3;
-                                        break;
-                                    } else if (str3.substring(i2, i2 + 1).indexOf(":") > -1) {
-                                        str4 = str3;
-                                        break;
-                                    } else {
-                                        wordtoSpan.setSpan(new ForegroundColorSpan((int) SupportMenu.CATEGORY_MASK), i2, i1 + 1, 33);
-                                        i2--;
-                                        tview5 = tview52;
-                                        str3 = str3;
-                                    }
-                                }
-                            } else {
-                                str4 = str3;
-                                tview52 = tview5;
-                            }
-                            i1++;
-                            tview13 = tview13;
-                            tview12 = tview12;
-                            tview5 = tview52;
-                            str3 = str4;
-                        }
-                        tview1.setText(wordtoSpan);
                     } else {
                         mKetQua = mKetQua2;
                     }
@@ -359,8 +307,48 @@ public class Activity_CTTinnhan extends BaseToolBarActivity {
             } else {
                 json3 = json2;
             }
-
-
+            cursor = cursor2;
+            tview5 = (TextView) findViewById(R.id.tv_no_rp_nd);
+            tview1 = (TextView) findViewById(R.id.tv_ndpt);
+            tview5.setText(cursor.getString(8));
+            str3 = cursor.getString(10);
+            ((TextView) findViewById(R.id.tv_no_KH)).setText(cursor.getString(4));
+            ((TextView) findViewById(R.id.tv_no_TinNhan)).setText(cursor.getString(7));
+            ((TextView) findViewById(R.id.tv_no_TG_nhan)).setText(cursor.getString(2));
+            Spannable wordtoSpan = new SpannableString(str3);
+            int i1 = 0;
+            while (i1 < str3.length() - 1) {
+                if (str3.substring(i1, i1 + 2).contains("*")) {
+                    int i2 = i1;
+                    while (true) {
+                        if (i2 <= 0) {
+                            str4 = str3;
+                            tview52 = tview5;
+                            break;
+                        }
+                        tview52 = tview5;
+                        if (str3.substring(i2, i2 + 1).contains(",")) {
+                            str4 = str3;
+                            break;
+                        } else if (str3.substring(i2, i2 + 1).contains(":")) {
+                            str4 = str3;
+                            break;
+                        } else {
+                            wordtoSpan.setSpan(new ForegroundColorSpan((int) SupportMenu.CATEGORY_MASK), i2, i1 + 1, 33);
+                            i2--;
+                            tview5 = tview52;
+                            str3 = str3;
+                        }
+                    }
+                } else {
+                    str4 = str3;
+                    tview52 = tview5;
+                }
+                i1++;
+                tview5 = tview52;
+                str3 = str4;
+            }
+            tview1.setText(wordtoSpan);
         } catch (JSONException e15) {
             cursor = cursor2;
             e = e15;
@@ -368,7 +356,7 @@ public class Activity_CTTinnhan extends BaseToolBarActivity {
             cursor.close();
             ct_tin.close();
         }
-        cursor.close();
+        cursor2.close();
         ct_tin.close();
     }
 }

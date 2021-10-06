@@ -220,11 +220,11 @@ public class Frag_MoRP1 extends Fragment {
         public View getView(int position, View convertView, ViewGroup parent) {
             View v = ((Activity) getContext()).getLayoutInflater().inflate(R.layout.frag_morp1_lv, (ViewGroup) null);
             TextView tview1 = (TextView) v.findViewById(R.id.tv_KhachHang);
-            tview1.setText((Integer) Frag_MoRP1.this.mKhachHang.get(position));
+            tview1.setText((String) Frag_MoRP1.this.mKhachHang.get(position));
             TextView tview3 = (TextView) v.findViewById(R.id.tv_nocu);
-            tview3.setText((Integer) Frag_MoRP1.this.mNocu.get(position));
+            tview3.setText((String) Frag_MoRP1.this.mNocu.get(position));
             TextView tview4 = (TextView) v.findViewById(R.id.tv_phatsinh);
-            tview4.setText((Integer) Frag_MoRP1.this.mPhatSinh.get(position));
+            tview4.setText((String) Frag_MoRP1.this.mPhatSinh.get(position));
             TextView tview5 = (TextView) v.findViewById(R.id.tv_tienton);
             tview5.setText(Frag_MoRP1.this.mSoCuoi.get(position));
             if (!Frag_MoRP1.this.mtype.get(position).contains("1")) {

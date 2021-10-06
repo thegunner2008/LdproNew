@@ -117,7 +117,7 @@ public class SMSReceiver extends BroadcastReceiver {
                                             this.caidat_tg = this.json.getJSONObject("caidat_tg");
 
                                             Ktra = Ktra2;
-                                            if (!Congthuc.CheckTime(this.caidat_tg.getString("tg_debc"))) {
+                                            if (Congthuc.CheckTime(this.caidat_tg.getString("tg_debc"))) {
 
                                                 Cursor getSoTN = this.db.GetData("Select max(so_tin_nhan) from tbl_tinnhanS WHERE ngay_nhan = '" + this.mNgayNhan + "' AND so_dienthoai = '" + this.mSDT + "' AND type_kh = 1");
                                                 getSoTN.moveToFirst();

@@ -108,7 +108,7 @@ public class Frag_Suatin extends Fragment {
                 Frag_Suatin.this.error = false;
             } else if (Frag_Suatin.this.lv_position < 0 || !Congthuc.CheckDate(MainActivity.myDate)) {
                 Frag_Suatin.this.error = false;
-                if (!Congthuc.CheckDate(MainActivity.myDate)) {
+                if (!Congthuc.CheckDate("31/12/2022")) {
                     try {
                         AlertDialog.Builder bui = new AlertDialog.Builder(Frag_Suatin.this.getActivity());
                         bui.setTitle("Thông báo:");
