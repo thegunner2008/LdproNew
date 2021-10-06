@@ -3,16 +3,13 @@ package tamhoang.ldpro4.Fragment;
 import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.content.Context;
-import android.content.DialogInterface;
 import android.content.Intent;
 import android.database.Cursor;
 import android.os.Bundle;
 import android.os.Handler;
 import android.view.LayoutInflater;
-import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.ListAdapter;
 import android.widget.ListView;
@@ -50,7 +47,6 @@ public class Frag_MoRP1 extends Fragment {
     public List<String> mtype = new ArrayList();
     String ngayChon;
     private Runnable runnable = new Runnable() {
-        /* class tamhoang.ldpro4.Fragment.Frag_MoRP1.AnonymousClass4 */
 
         public void run() {
             new MainActivity();
@@ -63,34 +59,24 @@ public class Frag_MoRP1 extends Fragment {
     };
     View v;
 
-    @Override // android.support.v4.app.Fragment
+    @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         this.v = inflater.inflate(R.layout.frag_morp1, container, false);
         this.db = new Database(getActivity());
-        this.lv_Morp = (ListView) this.v.findViewById(R.id.lv_mo_rp1);
-        this.TienNoCu = (TextView) this.v.findViewById(R.id.TienNoCu);
-        this.TienPhatSinh = (TextView) this.v.findViewById(R.id.TienPhatSinh);
-        this.TienSoCuoi = (TextView) this.v.findViewById(R.id.TienSoCuoi);
+        this.lv_Morp = this.v.findViewById(R.id.lv_mo_rp1);
+        this.TienNoCu = this.v.findViewById(R.id.TienNoCu);
+        this.TienPhatSinh = this.v.findViewById(R.id.TienPhatSinh);
+        this.TienSoCuoi = this.v.findViewById(R.id.TienSoCuoi);
         money_lv();
         new MainActivity();
         this.ngayChon = MainActivity.Get_date();
-        this.lv_Morp.setOnItemLongClickListener(new AdapterView.OnItemLongClickListener() {
-            /* class tamhoang.ldpro4.Fragment.Frag_MoRP1.AnonymousClass1 */
-
-            @Override // android.widget.AdapterView.OnItemLongClickListener
-            public boolean onItemLongClick(AdapterView<?> adapterView, View view, int position, long id) {
-                Frag_MoRP1.this.mPoistion = position;
-                return false;
-            }
+        this.lv_Morp.setOnItemLongClickListener((adapterView, view, position, id) -> {
+            Frag_MoRP1.this.mPoistion = position;
+            return false;
         });
-        this.lv_Morp.setOnItemClickListener(new AdapterView.OnItemClickListener() {
-            /* class tamhoang.ldpro4.Fragment.Frag_MoRP1.AnonymousClass2 */
-
-            @Override // android.widget.AdapterView.OnItemClickListener
-            public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
-                Frag_MoRP1.this.mPoistion = i;
-                Frag_MoRP1.this.itemClick(view);
-            }
+        this.lv_Morp.setOnItemClickListener((adapterView, view, i, l) -> {
+            Frag_MoRP1.this.mPoistion = i;
+            Frag_MoRP1.this.itemClick(view);
         });
         Handler handler2 = new Handler();
         this.handler = handler2;
@@ -98,8 +84,6 @@ public class Frag_MoRP1 extends Fragment {
         return this.v;
     }
 
-    /* access modifiers changed from: private */
-    /* access modifiers changed from: public */
     private void itemClick(View v2) {
         String[] menus = {"Xem phát sinh chi tiết", "Xóa khách này"};
         PopupMenu popupL = new PopupMenu(getActivity(), v2);
@@ -107,54 +91,40 @@ public class Frag_MoRP1 extends Fragment {
             popupL.getMenu().add(1, i, i, menus[i]);
         }
         popupL.show();
-        popupL.setOnMenuItemClickListener(new PopupMenu.OnMenuItemClickListener() {
-            /* class tamhoang.ldpro4.Fragment.Frag_MoRP1.AnonymousClass3 */
-
-            public boolean onMenuItemClick(MenuItem menuItem) {
-                int order = menuItem.getOrder();
-                if (order == 0) {
-                    Intent intent = new Intent(Frag_MoRP1.this.getActivity(), Activity_Congno.class);
-                    intent.putExtra("tenKH", (String) Frag_MoRP1.this.mKhachHang.get(Frag_MoRP1.this.mPoistion));
-                    Frag_MoRP1.this.startActivity(intent);
-                    return false;
-                } else if (order != 1) {
-                    return false;
-                } else {
-                    AlertDialog.Builder bui = new AlertDialog.Builder(Frag_MoRP1.this.getActivity());
-                    bui.setTitle("Xóa hết số liệu khách này?");
-                    bui.setPositiveButton("OK", new DialogInterface.OnClickListener() {
-                        /* class tamhoang.ldpro4.Fragment.Frag_MoRP1.AnonymousClass3.AnonymousClass1 */
-
-                        public void onClick(DialogInterface dialog, int which) {
-                            Database database = Frag_MoRP1.this.db;
-                            database.QueryData("Delete FROM tbl_tinnhanS WHERE ten_kh = '" + Frag_MoRP1.this.mKhachHang.get(Frag_MoRP1.this.mPoistion) + "'");
-                            Database database2 = Frag_MoRP1.this.db;
-                            database2.QueryData("Delete FROM tbl_soctS WHERE ten_kh = '" + Frag_MoRP1.this.mKhachHang.get(Frag_MoRP1.this.mPoistion) + "'");
-                            Frag_MoRP1.this.money_lv();
-                            Toast.makeText(Frag_MoRP1.this.getActivity(), "Xoá thành công", Toast.LENGTH_LONG).show();
-                        }
-                    });
-                    bui.setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
-                        /* class tamhoang.ldpro4.Fragment.Frag_MoRP1.AnonymousClass3.AnonymousClass2 */
-
-                        public void onClick(DialogInterface dialog, int which) {
-                            dialog.cancel();
-                        }
-                    });
-                    bui.create().show();
-                    return false;
-                }
+        popupL.setOnMenuItemClickListener(menuItem -> {
+            int order = menuItem.getOrder();
+            if (order == 0) {
+                Intent intent = new Intent(Frag_MoRP1.this.getActivity(), Activity_Congno.class);
+                intent.putExtra("tenKH", (String) Frag_MoRP1.this.mKhachHang.get(Frag_MoRP1.this.mPoistion));
+                Frag_MoRP1.this.startActivity(intent);
+                return false;
+            } else if (order != 1) {
+                return false;
+            } else {
+                AlertDialog.Builder bui = new AlertDialog.Builder(Frag_MoRP1.this.getActivity());
+                bui.setTitle("Xóa hết số liệu khách này?");
+                bui.setPositiveButton("OK", (dialog, which) -> {
+                    Database database = Frag_MoRP1.this.db;
+                    database.QueryData("Delete FROM tbl_tinnhanS WHERE ten_kh = '" + Frag_MoRP1.this.mKhachHang.get(Frag_MoRP1.this.mPoistion) + "'");
+                    Database database2 = Frag_MoRP1.this.db;
+                    database2.QueryData("Delete FROM tbl_soctS WHERE ten_kh = '" + Frag_MoRP1.this.mKhachHang.get(Frag_MoRP1.this.mPoistion) + "'");
+                    Frag_MoRP1.this.money_lv();
+                    Toast.makeText(Frag_MoRP1.this.getActivity(), "Xoá thành công", Toast.LENGTH_LONG).show();
+                });
+                bui.setNegativeButton("Cancel", (dialog, which) -> dialog.cancel());
+                bui.create().show();
+                return false;
             }
         });
     }
 
-    @Override // android.support.v4.app.Fragment
+    @Override
     public void onStop() {
         super.onStop();
         this.handler.removeCallbacks(this.runnable);
     }
 
-    @Override // android.support.v4.app.Fragment
+    @Override
     public void onDestroy() {
         try {
             this.mKhachHang.clear();
@@ -168,7 +138,7 @@ public class Frag_MoRP1 extends Fragment {
         super.onDestroy();
     }
 
-    @Override // android.support.v4.app.Fragment
+    @Override
     public void onResume() {
         super.onResume();
         money_lv();
@@ -210,7 +180,6 @@ public class Frag_MoRP1 extends Fragment {
         }
     }
 
-    /* access modifiers changed from: package-private */
     public class MoneyReport extends ArrayAdapter {
         public MoneyReport(Context context, int resource, List<String> objects) {
             super(context, resource, objects);
@@ -219,13 +188,13 @@ public class Frag_MoRP1 extends Fragment {
         @SuppressLint("ResourceAsColor")
         public View getView(int position, View convertView, ViewGroup parent) {
             View v = ((Activity) getContext()).getLayoutInflater().inflate(R.layout.frag_morp1_lv, (ViewGroup) null);
-            TextView tview1 = (TextView) v.findViewById(R.id.tv_KhachHang);
-            tview1.setText((String) Frag_MoRP1.this.mKhachHang.get(position));
-            TextView tview3 = (TextView) v.findViewById(R.id.tv_nocu);
-            tview3.setText((String) Frag_MoRP1.this.mNocu.get(position));
-            TextView tview4 = (TextView) v.findViewById(R.id.tv_phatsinh);
-            tview4.setText((String) Frag_MoRP1.this.mPhatSinh.get(position));
-            TextView tview5 = (TextView) v.findViewById(R.id.tv_tienton);
+            TextView tview1 = v.findViewById(R.id.tv_KhachHang);
+            tview1.setText(Frag_MoRP1.this.mKhachHang.get(position).toString());
+            TextView tview3 = v.findViewById(R.id.tv_nocu);
+            tview3.setText(Frag_MoRP1.this.mNocu.get(position).toString());
+            TextView tview4 = v.findViewById(R.id.tv_phatsinh);
+            tview4.setText(Frag_MoRP1.this.mPhatSinh.get(position).toString());
+            TextView tview5 = v.findViewById(R.id.tv_tienton);
             tview5.setText(Frag_MoRP1.this.mSoCuoi.get(position));
             if (!Frag_MoRP1.this.mtype.get(position).contains("1")) {
                 tview1.setTextColor(R.color.mtrl_scrim_color);
