@@ -11,16 +11,18 @@ import android.database.DatabaseUtils;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
 import android.os.Build;
-import android.os.Environment;
 import android.os.Handler;
 import android.os.Looper;
 import android.telephony.SmsManager;
+import android.util.Log;
 
 import androidx.core.app.NotificationCompat;
 import androidx.core.app.TaskStackBuilder;
 import androidx.core.internal.view.SupportMenu;
 
-import java.io.File;
+import org.json.JSONException;
+import org.json.JSONObject;
+
 import java.lang.reflect.Array;
 import java.text.DecimalFormat;
 import java.text.SimpleDateFormat;
@@ -32,9 +34,6 @@ import java.util.Date;
 import java.util.Iterator;
 import java.util.List;
 import java.util.TimeZone;
-
-import org.json.JSONException;
-import org.json.JSONObject;
 
 import tamhoang.ldpro4.Congthuc.Congthuc;
 import tamhoang.ldpro4.MainActivity;
@@ -2496,7 +2495,7 @@ public class Database extends SQLiteOpenHelper {
                         for (int i45 = 1; i45 < Danxi.length; i45++) {
                             if (Danxi[i45].length() > 4) {
                                 Danxienghep5 = Danxienghep5 + Congthuc.XulySo(Danxi[i45]) + " ";
-                                if (Congthuc.XulySo(Danxi[i45]).indexOf("Không hiểu") > -1) {
+                                if (Congthuc.XulySo(Danxi[i45]).contains("Không hiểu")) {
                                     this.mang[rw][4] = "Không hiểu " + Danxi[i45];
                                 }
                             }
@@ -2505,7 +2504,7 @@ public class Database extends SQLiteOpenHelper {
                         Danxienghep = Danxienghep5;
                         c = 4;
                     } else {
-                        if (this.mang[rw][2].indexOf("xqa") > -1) {
+                        if (this.mang[rw][2].contains("xqa")) {
                             String[][] strArr75 = this.mang;
                             c = 4;
                             strArr75[rw][4] = strArr75[rw][2].replaceFirst("xqa", "");
@@ -2572,48 +2571,54 @@ public class Database extends SQLiteOpenHelper {
                                 Danxi = Danxi;
                             }
                         }
-                        if (ArrXien6[i11].length() > 8) {
-                            c3 = 4;
-                            this.mang[rw][4] = "Không hiểu " + this.mang[rw][2];
-                        } else {
-                            c3 = 4;
-                            this.mang[rw][4] = "Không hiểu " + this.mang[rw][0];
-                        }
-                        if (this.mang[rw][c3].indexOf("Không hiểu") == -1) {
-                            this.mang[rw][c3] = "";
-                            int i12 = 0;
-                            String soxien3 = "";
-                            while (true) {
-                                if (i12 >= ArrXien6.length) {
-                                    break;
-                                }
-                                try {
-                                    soxien3 = Congthuc.XulySo(ArrXien6[i12]);
-                                } catch (Exception e3) {
-                                    this.mang[rw][4] = "Không hiểu " + ArrXien6[i12];
-                                }
-                                if (soxien3.indexOf("Không hiểu") != -1) {
-                                    break;
-                                }
-                                boolean check3 = false;
-                                for (String str3 : soxien3.split(",")) {
-                                    if (soxien3.length() - soxien3.replaceAll(str3, "").length() > 2) {
-                                        check3 = true;
+                        try {
+                            if (ArrXien6[i11].length() > 8) {
+                                c3 = 4;
+                                this.mang[rw][4] = "Không hiểu " + this.mang[rw][2];
+                            } else {
+                                c3 = 4;
+                                this.mang[rw][4] = "Không hiểu " + this.mang[rw][0];
+                            }
+                            if (!this.mang[rw][c3].contains("Không hiểu")) {
+                                this.mang[rw][c3] = "";
+                                int i12 = 0;
+                                String soxien3 = "";
+                                while (true) {
+                                    if (i12 >= ArrXien6.length) {
+                                        break;
+                                    }
+                                    try {
+                                        soxien3 = Congthuc.XulySo(ArrXien6[i12]);
+                                    } catch (Exception e3) {
+                                        this.mang[rw][4] = "Không hiểu " + ArrXien6[i12];
+                                    }
+                                    if (soxien3.contains("Không hiểu")) {
+                                        break;
+                                    }
+                                    boolean check3 = false;
+                                    for (String str3 : soxien3.split(",")) {
+                                        if (soxien3.length() - soxien3.replaceAll(str3, "").length() > 2) {
+                                            check3 = true;
+                                        }
+                                    }
+                                    if (soxien3.length() < 5 || soxien3.length() > 12 || check3) {
+                                        this.mang[rw][4] = "Không hiểu " + this.mang[rw][2];
+                                    } else {
+                                        this.mang[rw][4] = this.mang[rw][4] + Congthuc.sortXien(soxien3) + " ";
+                                        i12++;
                                     }
                                 }
-                                if (soxien3.length() < 5 || soxien3.length() > 12 || check3) {
-                                    this.mang[rw][4] = "Không hiểu " + this.mang[rw][2];
-                                } else {
-                                    this.mang[rw][4] = this.mang[rw][4] + Congthuc.sortXien(soxien3) + " ";
-                                    i12++;
-                                }
                             }
+                        }catch (Throwable throwable){
+                            Log.e("Class: Database, Func: XulyMang, Line: 2585", throwable.getMessage());
                         }
+
+
                         i = 4;
                     }
                     c3 = 4;
-                    if (this.mang[rw][c3].indexOf("Không hiểu") == -1) {
-                    }
+//                    if (this.mang[rw][c3].indexOf("Không hiểu") == -1) {
+//                    }
                 } else {
                     String[] strArr80 = this.mang[rw];
                     StringBuilder sb14 = new StringBuilder();
@@ -2623,37 +2628,36 @@ public class Database extends SQLiteOpenHelper {
                     strArr80[4] = sb14.toString();
                 }
                 i = 4;
-            } else if (this.mang[rw][1].indexOf("xg") <= -1) {
+            } else if (!this.mang[rw][1].contains("xg")) {
                 i = 4;
-            } else if (this.mang[rw][2].indexOf("xg") <= -1 || this.mang[rw][2].trim().indexOf("xg") <= 0) {
-                if (this.mang[rw][1].indexOf("xg 2") > -1) {
+            } else if (!this.mang[rw][2].contains("xg") || this.mang[rw][2].trim().indexOf("xg") <= 0) {
+                if (this.mang[rw][1].contains("xg 2")) {
                     String[][] strArr82 = this.mang;
                     strArr82[rw][4] = strArr82[rw][2].replaceFirst("xg 2 ", "");
-                } else if (this.mang[rw][1].indexOf("xg 3") > -1) {
+                } else if (this.mang[rw][1].contains("xg 3")) {
                     String[][] strArr83 = this.mang;
                     strArr83[rw][4] = strArr83[rw][2].replaceFirst("xg 3 ", "");
-                } else if (this.mang[rw][1].indexOf("xg 4") > -1) {
+                } else if (this.mang[rw][1].contains("xg 4")) {
                     String[][] strArr84 = this.mang;
                     strArr84[rw][4] = strArr84[rw][2].replaceFirst("xg 4 ", "");
                 }
                 ArrayList<String> listXienGhep = null;
-                String XienGhep2 = "";
+                StringBuilder XienGhep2 = new StringBuilder();
                 String[][] strArr85 = this.mang;
                 strArr85[rw][4] = Congthuc.XulySo(strArr85[rw][4]);
-                if (this.mang[rw][4].indexOf("Không hiểu") == -1) {
-                    if (this.mang[rw][1].indexOf("xg 2") > -1) {
+                if (!this.mang[rw][4].contains("Không hiểu")) {
+                    if (this.mang[rw][1].contains("xg 2")) {
                         listXienGhep = Congthuc.XulyXienGhep(this.mang[rw][4], 2);
-                    } else if (this.mang[rw][1].indexOf("xg 3") > -1) {
+                    } else if (this.mang[rw][1].contains("xg 3")) {
                         listXienGhep = Congthuc.XulyXienGhep(this.mang[rw][4], 3);
-                    } else if (this.mang[rw][1].indexOf("xg 4") > -1) {
+                    } else if (this.mang[rw][1].contains("xg 4")) {
                         listXienGhep = Congthuc.XulyXienGhep(this.mang[rw][4], 4);
                     }
-                    Iterator<String> it2 = listXienGhep.iterator();
-                    while (it2.hasNext()) {
-                        XienGhep2 = XienGhep2 + it2.next() + " ";
+                    for (String s : listXienGhep) {
+                        XienGhep2.append(s).append(" ");
                     }
                     i = 4;
-                    this.mang[rw][4] = XienGhep2;
+                    this.mang[rw][4] = XienGhep2.toString();
                 } else {
                     i = 4;
                 }
@@ -2666,7 +2670,7 @@ public class Database extends SQLiteOpenHelper {
                 strArr86[4] = sb15.toString();
                 i = 4;
             }
-        } else if (this.mang[rw][2].indexOf("bc") <= -1 || this.mang[rw][2].trim().indexOf("bc") <= 0) {
+        } else if (!this.mang[rw][2].contains("bc") || this.mang[rw][2].trim().indexOf("bc") <= 0) {
             String[][] strArr88 = this.mang;
             i = 4;
             strArr88[rw][4] = strArr88[rw][2].replaceFirst("bc :", "");
@@ -2688,13 +2692,13 @@ public class Database extends SQLiteOpenHelper {
         String[][] strArr94 = this.mang;
         if (strArr94[rw][i] == null) {
             strArr94[rw][4] = "Không hiểu " + this.mang[rw][0].substring(0, 5);
-        } else if (strArr94[rw][4].trim().length() == 10 && this.mang[rw][4].indexOf("Không hiểu") > -1) {
+        } else if (strArr94[rw][4].trim().length() == 10 && this.mang[rw][4].contains("Không hiểu")) {
             this.mang[rw][4] = "Không hiểu " + this.mang[rw][0];
         }
     }
 
     private void BaoLoiDan(int rw) {
-        if (this.mang[rw][4].indexOf("Không hiểu") > -1) {
+        if (this.mang[rw][4].contains("Không hiểu")) {
             String[][] strArr = this.mang;
             strArr[rw][0] = Congthuc.ToMauError(strArr[rw][4].substring(11), this.mang[rw][0]);
         }
@@ -2703,9 +2707,9 @@ public class Database extends SQLiteOpenHelper {
     private void BaoLoiTien(int rw) {
         try {
             this.mang[rw][5] = Congthuc.XulyTien(this.mang[rw][3]);
-            if (this.mang[rw][5].indexOf("Không hiểu") > -1 && this.mang[rw][5].trim().length() < 13) {
+            if (this.mang[rw][5].contains("Không hiểu") && this.mang[rw][5].trim().length() < 13) {
                 this.mang[rw][0] = Congthuc.ToMauError(this.mang[rw][5].substring(11), this.mang[rw][0]);
-            } else if (this.mang[rw][5].indexOf("Không hiểu") > -1 && this.mang[rw][5].trim().length() > 12) {
+            } else if (this.mang[rw][5].contains("Không hiểu") && this.mang[rw][5].trim().length() > 12) {
                 this.mang[rw][0] = Congthuc.ToMauError(this.mang[rw][3], this.mang[rw][0]);
             }
         } catch (Exception e) {
