@@ -2540,7 +2540,7 @@ public class Database extends SQLiteOpenHelper {
                     int i11 = 0;
                     while (i11 < ArrXien6.length) {
                         String ss3 = Congthuc.XulySo(ArrXien6[i11]);
-                        if (ss3.length() >= 8 && ss3.length() <= 12) {
+                        if (ss3.length() >= 8 && ss3.length() <= 48) {
                             if (ss3.indexOf("Không hiểu") <= -1) {
                                 if (this.mang[rw][1] != "xq" || ss3.length() >= 8) {
                                     String[] danlayS4 = ss3.split(",");
@@ -2579,8 +2579,8 @@ public class Database extends SQLiteOpenHelper {
                                 c3 = 4;
                                 this.mang[rw][4] = "Không hiểu " + this.mang[rw][0];
                             }
-                            if (!this.mang[rw][c3].contains("Không hiểu")) {
-                                this.mang[rw][c3] = "";
+                            if (!this.mang[rw][4].contains("Không hiểu")) {
+                                this.mang[rw][4] = "";
                                 int i12 = 0;
                                 String soxien3 = "";
                                 while (true) {
@@ -2612,8 +2612,6 @@ public class Database extends SQLiteOpenHelper {
                         }catch (Throwable throwable){
                             Log.e("Class: Database, Func: XulyMang, Line: 2585", throwable.getMessage());
                         }
-
-
                         i = 4;
                     }
                     c3 = 4;
