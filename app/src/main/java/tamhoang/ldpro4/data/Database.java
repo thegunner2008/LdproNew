@@ -2480,7 +2480,7 @@ public class Database extends SQLiteOpenHelper {
                     i = 4;
                 }
             } else if (this.mang[rw][1].contains("xq")) {
-                if (!this.mang[rw][2].contains("xq") || this.mang[rw][2].trim().indexOf("xq") <= 0) {
+                if (this.mang[rw][2].contains("xq") || this.mang[rw][2].trim().indexOf("xq") <= 0) {
                     if (this.mang[rw][2].contains("xqa")) {
                         String[] Danxi4 = this.mang[rw][2].split("xqa");
                         this.mang[rw][1] = "xq dau";
@@ -2529,18 +2529,18 @@ public class Database extends SQLiteOpenHelper {
 //                            s13++;
 //                        }
 //                    }
-                    if (ktra3 || ArrXien5.length >= 8) {
-                        c2 = 4;
-                    } else {
-                        String[][] strArr78 = this.mang;
-                        c2 = 4;
-                        strArr78[rw][4] = Congthuc.XulySo(strArr78[rw][4]);
-                    }
-                    String[] ArrXien6 = this.mang[rw][c2].split(" ");
+//                    if (ktra3 || ArrXien5.length >= 8) {
+//                        c2 = 4;
+//                    } else {
+//                        String[][] strArr78 = this.mang;
+//                        c2 = 4;
+//                        strArr78[rw][4] = Congthuc.XulySo(strArr78[rw][4]);
+//                    }
+                    String[] ArrXien6 = this.mang[rw][4].split(" ");
                     int i11 = 0;
                     while (i11 < ArrXien6.length) {
                         String ss3 = Congthuc.XulySo(ArrXien6[i11]);
-                        if (ss3.length() >= 8 && ss3.length() <= 48) {
+                        if (ss3.length() >= 8 && ss3.length() <= 12) {
                             if (ss3.indexOf("Không hiểu") <= -1) {
                                 if (this.mang[rw][1] != "xq" || ss3.length() >= 8) {
                                     String[] danlayS4 = ss3.split(",");
@@ -2572,13 +2572,13 @@ public class Database extends SQLiteOpenHelper {
                             }
                         }
                         try {
-                            if (ArrXien6[i11].length() > 8) {
-                                c3 = 4;
-                                this.mang[rw][4] = "Không hiểu " + this.mang[rw][2];
-                            } else {
-                                c3 = 4;
-                                this.mang[rw][4] = "Không hiểu " + this.mang[rw][0];
-                            }
+//                            if (ArrXien6[i11].length() > 8) {
+//                                c3 = 4;
+//                                this.mang[rw][4] = "Không hiểu " + this.mang[rw][2];
+//                            } else {
+//                                c3 = 4;
+//                                this.mang[rw][4] = "Không hiểu " + this.mang[rw][0];
+//                            }
                             if (!this.mang[rw][4].contains("Không hiểu")) {
                                 this.mang[rw][4] = "";
                                 int i12 = 0;
