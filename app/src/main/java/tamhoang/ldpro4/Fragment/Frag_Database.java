@@ -186,7 +186,7 @@ public class Frag_Database extends Fragment {
                         } else if (!Congthuc.isNumeric(cursor.getString(i2))) {
                             break;
                         } else {
-                            i2++;
+                             i2++;
                         }
                     } catch (Exception e) {
                         FragmentActivity activity = Frag_Database.this.getActivity();

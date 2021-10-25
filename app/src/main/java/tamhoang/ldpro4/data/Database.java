@@ -3209,13 +3209,6 @@ public class Database extends SQLiteOpenHelper {
         return xuatDan2;
     }
 
-    /* JADX WARNING: Removed duplicated region for block: B:110:0x0385  */
-    /* JADX WARNING: Removed duplicated region for block: B:130:0x051e  */
-    /* JADX WARNING: Removed duplicated region for block: B:133:0x0552  */
-    /* JADX WARNING: Removed duplicated region for block: B:145:0x0610  */
-    /* JADX WARNING: Removed duplicated region for block: B:14:0x0115 A[Catch:{ JSONException -> 0x0309 }] */
-    /* JADX WARNING: Removed duplicated region for block: B:158:0x06e6  */
-    /* JADX WARNING: Removed duplicated region for block: B:161:0x06ef  */
     public String Tin_Chottien(String TenKH) throws JSONException {
         String str;
         Cursor CongNo_Nhan;
