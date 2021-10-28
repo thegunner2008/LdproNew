@@ -452,9 +452,9 @@ public class Frag_CanChuyen extends Fragment {
                                         this.xuatDan = "Xien:\n";
                                         int i = this.min;
                                         while (i < this.mSo.size()) {
-                                            if (this.edt_tien.getText().toString().indexOf("%") > -1) {
+                                            if (this.edt_tien.getText().toString().contains("%")) {
                                                 MaxTien3 = (Integer.parseInt(this.mTienTon.get(i).replace(".", "")) / mLamtron) * mLamtron;
-                                            } else if (this.edt_tien.getText().toString().indexOf(">") > -1) {
+                                            } else if (this.edt_tien.getText().toString().contains(">")) {
                                                 MaxTien3 = (Integer.parseInt(this.mTienTon.get(i).replace(".", "")) / mLamtron) * mLamtron;
                                             } else if (TienChuyen == 0) {
                                                 MaxTien3 = (Integer.parseInt(this.mTienTon.get(i).replace(".", "")) / mLamtron) * mLamtron;
@@ -463,7 +463,7 @@ public class Frag_CanChuyen extends Fragment {
                                             } else {
                                                 MaxTien3 = (Integer.parseInt(this.mTienTon.get(i).replace(".", "")) / mLamtron) * mLamtron;
                                             }
-                                            if (this.edt_tien.getText().toString().indexOf("%") > -1) {
+                                            if (this.edt_tien.getText().toString().contains("%")) {
                                                 if (MaxTien3 > 0) {
                                                     try {
                                                         if (MainActivity.jSon_Setting.getInt("chuyen_xien") > 0) {
@@ -475,7 +475,7 @@ public class Frag_CanChuyen extends Fragment {
                                                         e2.printStackTrace();
                                                     }
                                                 }
-                                            } else if (this.edt_tien.getText().toString().indexOf(">") > -1) {
+                                            } else if (this.edt_tien.getText().toString().contains(">")) {
                                                 if (MaxTien3 > TienChuyen) {
                                                     try {
                                                         if (MainActivity.jSon_Setting.getInt("chuyen_xien") > 0) {
@@ -487,7 +487,7 @@ public class Frag_CanChuyen extends Fragment {
                                                         e3.printStackTrace();
                                                     }
                                                 }
-                                            } else if (this.edt_tien.getText().toString().indexOf(">") == -1 && this.edt_tien.getText().toString().indexOf("%") == -1 && MaxTien3 > 0) {
+                                            } else if (!this.edt_tien.getText().toString().contains(">") && !this.edt_tien.getText().toString().contains("%") && MaxTien3 > 0) {
                                                 try {
                                                     if (MainActivity.jSon_Setting.getInt("chuyen_xien") > 0) {
                                                         this.xuatDan += this.mSo.get(i) + "x" + (MaxTien3 / 10) + "d ";
@@ -509,9 +509,9 @@ public class Frag_CanChuyen extends Fragment {
                                         while (i2 < this.mSo.size()) {
                                             if (TienChuyen == 0) {
                                                 MaxTien2 = (Integer.parseInt(this.mTienTon.get(i2).replace(".", "")) / mLamtron) * mLamtron;
-                                            } else if (this.edt_tien.getText().toString().indexOf("%") > -1) {
+                                            } else if (this.edt_tien.getText().toString().contains("%")) {
                                                 MaxTien2 = (((Integer.parseInt(this.mTienTon.get(i2).replace(".", "")) * TienChuyen) / mLamtron) / 100) * mLamtron;
-                                            } else if (this.edt_tien.getText().toString().indexOf(">") > -1) {
+                                            } else if (this.edt_tien.getText().toString().contains(">")) {
                                                 MaxTien2 = ((Integer.parseInt(this.mTienTon.get(i2).replace(".", "")) - TienChuyen) / mLamtron) * mLamtron;
                                             } else if (Integer.parseInt(this.mTienTon.get(i2).replace(".", "")) > TienChuyen) {
                                                 MaxTien2 = (TienChuyen / mLamtron) * mLamtron;
@@ -762,9 +762,9 @@ public class Frag_CanChuyen extends Fragment {
         dialog.getWindow().setLayout(-1, -2);
         final String Chuyendi = this.xuatDan.replaceAll(",x", "x");
         this.Dachuyen = false;
-        Spinner sprin_tenkhach = (Spinner) dialog.findViewById(R.id.sprin_tenkhach);
-        final EditText edt_XuatDan = (EditText) dialog.findViewById(R.id.edt_XuatDan);
-        Button btn_chuyendi = (Button) dialog.findViewById(R.id.btn_chuyendi);
+        Spinner sprin_tenkhach = dialog.findViewById(R.id.sprin_tenkhach);
+        final EditText edt_XuatDan = dialog.findViewById(R.id.edt_XuatDan);
+        Button btn_chuyendi = dialog.findViewById(R.id.btn_chuyendi);
         edt_XuatDan.setText("");
         edt_XuatDan.setText(this.xuatDan.replaceAll(",x", "x"));
         try {
@@ -792,7 +792,7 @@ public class Frag_CanChuyen extends Fragment {
             if (!cur.isClosed()) {
                 cur.close();
             }
-            sprin_tenkhach.setAdapter((SpinnerAdapter) new ArrayAdapter<>(getActivity(), (int) R.layout.spinner_item, this.mContact));
+            sprin_tenkhach.setAdapter(new ArrayAdapter<>(getActivity(), R.layout.spinner_item, this.mContact));
         } catch (SQLException e) {
             System.out.println("Quangbx: " + e);
         }
