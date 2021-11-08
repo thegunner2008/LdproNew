@@ -22,7 +22,6 @@ import android.widget.ListAdapter;
 import android.widget.ListView;
 import android.widget.RadioButton;
 import android.widget.Spinner;
-import android.widget.SpinnerAdapter;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -803,13 +802,17 @@ public class Frag_CanChuyen extends Fragment {
                 Frag_CanChuyen.this.mSpiner = position;
                 try {
                     Frag_CanChuyen.this.jsonKhongmax = new JSONObject(Frag_CanChuyen.this.mKhongMax.get(Frag_CanChuyen.this.mSpiner));
-                    if (Frag_CanChuyen.this.radio_deb.isChecked() && Frag_CanChuyen.this.radio_de.isChecked() && Frag_CanChuyen.this.jsonKhongmax.getString("danDe").length() > 0) {
+                    if (Frag_CanChuyen.this.radio_deb.isChecked() && Frag_CanChuyen.this.radio_de.isChecked()
+                            && Frag_CanChuyen.this.jsonKhongmax.getString("danDe").length() > 0) {
                         edt_XuatDan.setText(Frag_CanChuyen.this.TaoTinDe(Frag_CanChuyen.this.mContact.get(Frag_CanChuyen.this.mSpiner)));
                     } else if (Frag_CanChuyen.this.radio_lo.isChecked() && Frag_CanChuyen.this.jsonKhongmax.getString("danLo").length() > 0) {
                         edt_XuatDan.setText(Frag_CanChuyen.this.TaoTinLo(Frag_CanChuyen.this.mContact.get(Frag_CanChuyen.this.mSpiner)));
-                    } else if (Frag_CanChuyen.this.radio_xi.isChecked() && (Frag_CanChuyen.this.jsonKhongmax.getInt("xien2") > 0 || Frag_CanChuyen.this.jsonKhongmax.getInt("xien3") > 0 || Frag_CanChuyen.this.jsonKhongmax.getInt("xien4") > 0)) {
+                    } else if (Frag_CanChuyen.this.radio_xi.isChecked() && (Frag_CanChuyen.this.jsonKhongmax.getInt("xien2") > 0
+                            || Frag_CanChuyen.this.jsonKhongmax.getInt("xien3") > 0
+                            || Frag_CanChuyen.this.jsonKhongmax.getInt("xien4") > 0)) {
                         edt_XuatDan.setText(Frag_CanChuyen.this.TaoTinXi(Frag_CanChuyen.this.mContact.get(Frag_CanChuyen.this.mSpiner)));
-                    } else if (!Frag_CanChuyen.this.radio_bc.isChecked() || Frag_CanChuyen.this.jsonKhongmax.getInt("cang") <= 0) {
+                    } else if (!Frag_CanChuyen.this.radio_bc.isChecked()
+                            || Frag_CanChuyen.this.jsonKhongmax.getInt("cang") <= 0) {
                         edt_XuatDan.setText(Chuyendi);
                     } else {
                         edt_XuatDan.setText(Frag_CanChuyen.this.TaoTinCang(Frag_CanChuyen.this.mContact.get(Frag_CanChuyen.this.mSpiner)));
