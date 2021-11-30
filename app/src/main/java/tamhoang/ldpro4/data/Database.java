@@ -2884,6 +2884,8 @@ public class Database extends SQLiteOpenHelper {
                     } else {
                         mDiemquydoi = mDiem;
                     }
+                } else {
+                    mDiemquydoi = mDiem;
                 }
                 cursor_ktra2 = c;
                 if (cursor_ktra2.getInt(3) == 1) {
@@ -4250,7 +4252,8 @@ public class Database extends SQLiteOpenHelper {
                 QueryData(sb72222.toString());
             } else {
                 //mGionhan522 = ok_TIN;
-                str4 = "Ok Tin ";
+                str4 = "Ok Tin \n";
+                SendSMS(getTinNhan.getString(5), str4 +getTinNhan.getString(10));
                 str3 = "sms";
                 tinNhan = "' AND so_tin_nhan = ";
                 str5 = "' AND so_dienthoai = '";
@@ -4854,29 +4857,32 @@ public class Database extends SQLiteOpenHelper {
                 c12.moveToFirst();
                 int sotin4 = c12.getInt(0) + 1;
                 try {
-                    if (cur.getString(3).contains("ZL")) {
-                        my_app = "ZL";
-                    } else if (cur.getString(3).contains("VB")) {
-                        my_app = "VB";
-                    } else if (cur.getString(3).contains("WA")) {
-                        my_app = "WA";
-                    } else if (!(!cur.getString(3).contains(str9))) {
-                        my_app = "TL";
-                    } else {
+//                    if (cur.getString(3).contains("ZL")) {
+//                        my_app = "ZL";
+//                    } else if (cur.getString(3).contains("VB")) {
+//                        my_app = "VB";
+//                    } else if (cur.getString(3).contains("WA")) {
+//                        my_app = "WA";
+//                    } else if (!(!cur.getString(3).contains(str9))) {
+//                        my_app = "TL";
+//                    } else {
                         my_app = "sms";
-                    }
+//                    }
                     QueryData("Insert Into tbl_tinnhanS values (null, '" + getTinNhan.getString(1) + "', '" + getTinNhan.getString(2) + "',2, '" + cur.getString(3) + "', '" + cur.getString(4) + "', '" + my_app + "', " + sotin4 + ", '" + getTinNhan.getString(8) + "', null, '" + getTinNhan.getString(10) + "', 'ko',0,0,1, null)");
-                    if (my_app.indexOf(str10) > -1) {
+
+                    if (my_app.contains(str10)) {
                         SendSMS(cur.getString(4), "Tin " + sotin4 + ":\n" + getTinNhan.getString(8));
                     } else if (getTinNhan.getString(6).indexOf(str9) > -1) {
                         final String tinNhan14 = "Tin " + sotin4 + ":\n" + getTinNhan.getString(8);
-                        new Handler(Looper.getMainLooper()).post(new Runnable() {
-
-                            public void run() {
-//                            new MainActivity();
-//                            MainActivity.sendMessage(cur.getLong(4), tinNhan14);
-                            }
-                        });
+//                        new Handler(Looper.getMainLooper()).post(new Runnable() {
+//
+//                            public void run() {
+//                                new MainActivity();
+//                                MainActivity.sendMessage(cur.getLong(4), tinNhan14);
+//                            }
+//                        });
+                        new MainActivity();
+                        MainActivity.sendMessage(cur.getLong(4), tinNhan14);
                     } else {
                         String tinNhan15 = "Tin " + sotin4 + ":\n" + getTinNhan.getString(8);
                         new NotificationReader().NotificationWearReader(cur.getString(4), tinNhan15);
