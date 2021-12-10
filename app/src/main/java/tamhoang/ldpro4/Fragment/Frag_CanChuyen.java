@@ -619,8 +619,10 @@ public class Frag_CanChuyen extends Fragment {
                 case "the_loai = 'ded'":
                     this.xuatDan = this.db.XuatDanTon2("ded", this.edt_tien.getText().toString(), this.min, this.max);
                     break;
-                default:
+                case "the_loai = 'lo'":
                     this.xuatDan = this.db.XuatDanTon2("lo", this.edt_tien.getText().toString(), this.min, this.max);
+                    break;
+                default:
                     break;
             }
             Dialog();
