@@ -99,201 +99,93 @@ public class Frag_Chat_Manager extends Fragment {
 
     @Override
     public void onResume() {
-        try {
-            getSMS();
-        } catch (Throwable throwable) {
-            throwable.printStackTrace();
-        }
+        getSMS();
         XemListview();
         super.onResume();
     }
 
-    private void getSMS() throws Throwable {
-        SQLiteException e;
-        JSONException e2;
-        ParseException e3;
+    private void getSMS() {// thay the data sms trong Chat_database = content://sms
         SQLiteDatabase database;
-        DatabaseUtils.InsertHelper ih;
-        Throwable th;
-        Exception e4;
-        Long millis;
-        StringBuilder sb;
-        String str;
-        String str2;
-        String str3;
-        String str4;
-        String str5;
-        Frag_Chat_Manager frag_Chat_Manager = this;
-        String str6 = "'";
-        String str7 = "";
-        String str8 = " ";
-        MainActivity mainActivity = new MainActivity();
         String mDate = MainActivity.Get_date();
         if (ContextCompat.checkSelfPermission(Objects.requireNonNull(getActivity()), "android.permission.READ_SMS") == 0) {
             try {
                 Date dateStart = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss").parse(mDate + "T00:00:00");
                 String filter = "date>=" + dateStart.getTime();
-                frag_Chat_Manager.db.QueryData("DELETE FROM Chat_database WHERE ngay_nhan = '" + mDate + "' AND use_app = 'sms'");
-                Cursor cur1 = frag_Chat_Manager.db.GetData("Select * From tbl_kh_new");
+                db.QueryData("DELETE FROM Chat_database WHERE ngay_nhan = '" + mDate + "' AND use_app = 'sms'");
+                Cursor cur = db.GetData("Select * From tbl_kh_new");
                 JSONObject json = new JSONObject();
-                while (cur1.moveToNext()) {
+                while (cur.moveToNext()) {
                     try {
                         JSONObject json_kh = new JSONObject();
-                        json_kh.put("type_kh", cur1.getString(3));
-                        json_kh.put("ten_kh", cur1.getString(0));
-                        json_kh.put("sdt", cur1.getString(1));
+                        json_kh.put("type_kh", cur.getString(3));
+                        json_kh.put("ten_kh", cur.getString(0));
+                        json_kh.put("sdt", cur.getString(1));
                         json_kh.put("so_tn", 0);
-                        json.put(cur1.getString(1), json_kh);
-                    } catch (SQLiteException e5) {
-                        e = e5;
+                        json.put(cur.getString(1), json_kh);
+                    } catch (SQLiteException | JSONException e) {
                         e.printStackTrace();
-                    } catch (JSONException e6) {
-                        e2 = e6;
-                        e2.printStackTrace();
                     }
                 }
-                cur1.close();
-                String str9 = "ten_kh";
+                cur.close();
                 Uri message = Uri.parse("content://sms");
                 ContentResolver cr = getActivity().getContentResolver();
-                String str10 = "type_kh";
                 Cursor c = cr.query(message, null, filter, null, "date ASC");
                 getActivity().startManagingCursor(c);
                 int totalSMS = c.getCount();
                 if (c.moveToFirst()) {
-                    SQLiteDatabase database2 = frag_Chat_Manager.db.getWritableDatabase();
-                    DatabaseUtils.InsertHelper ih2 = new DatabaseUtils.InsertHelper(database2, "Chat_database");
+                    database = db.getWritableDatabase();
+                    DatabaseUtils.InsertHelper ih = new DatabaseUtils.InsertHelper(database, "Chat_database");
                     try {
-                        database2.beginTransaction();
+                        database.beginTransaction();
                         int i = 0;
-                        DatabaseUtils.InsertHelper ih3 = ih2;
                         while (i < totalSMS) {
-                            try {
-                                millis = Long.valueOf(c.getLong(c.getColumnIndexOrThrow("date")));
+                            long millis = c.getLong(c.getColumnIndexOrThrow("date"));
 
-                                sb = new StringBuilder();
-                                database = database2;
+                            String mGioNhan = ((Object) DateFormat.format("HH:mm:ss", new Date(millis))).toString();
+                            String mSDT = c.getString(c.getColumnIndexOrThrow("address")).replaceAll(" ", "");
+                            String body = c.getString(c.getColumnIndexOrThrow("body")).replaceAll("'", " ").replaceAll("\"", " ");
+                            String typeKT = c.getString(c.getColumnIndexOrThrow("type"));
+                            if (mSDT.startsWith("0"))
+                                mSDT = "+84" + mSDT.substring(1);
 
-                                sb.append((Object) DateFormat.format("HH:mm:ss", new Date(millis.longValue())));
-                                sb.append(str7);
-                                String mGioNhan = sb.toString();
-                                String mSDT2 = c.getString(c.getColumnIndexOrThrow("address")).replaceAll(str8, str7);
-                                String body = c.getString(c.getColumnIndexOrThrow("body")).replaceAll(str6, str8).replaceAll("\"", str8);
-                                String typeKT = c.getString(c.getColumnIndexOrThrow("type"));
-                                if (mSDT2.startsWith("0")) {
-                                    StringBuilder sb2 = new StringBuilder();
-                                    str2 = str7;
-                                    sb2.append("+84");
-                                    str = str8;
-                                    sb2.append(mSDT2.substring(1));
-                                    mSDT2 = sb2.toString();
-                                } else {
-                                    str2 = str7;
-                                    str = str8;
-                                }
-                                frag_Chat_Manager.db.QueryData("Update tbl_tinnhanS set gio_nhan ='" + mGioNhan + "' WHERE nd_goc = '" + body + "' AND so_dienthoai = '" + mSDT2 + "' AND ngay_nhan = '" + mDate + str6);
-                                if (json.has(mSDT2)) {
-                                    JSONObject Gia_khach = json.getJSONObject(mSDT2);
-                                    Gia_khach.put("so_tn", Gia_khach.getInt("so_tn") + 1);
-                                    Gia_khach.put(body, body);
-                                    ih2.prepareForInsert();
-                                    ih3 = ih2;
-                                    ih3.bind(ih3.getColumnIndex("ngay_nhan"), mDate);
-                                    ih3.bind(ih3.getColumnIndex("gio_nhan"), mGioNhan);
-                                    str3 = str6;
-                                    ih3.bind(ih3.getColumnIndex(str10), typeKT);
-                                    str5 = str9;
-                                    str4 = str10;
-                                    ih3.bind(ih3.getColumnIndex(str5), Gia_khach.getString(str5));
-                                    ih3.bind(ih3.getColumnIndex("so_dienthoai"), mSDT2);
-                                    ih3.bind(ih3.getColumnIndex("use_app"), "sms");
-                                    ih3.bind(ih3.getColumnIndex("nd_goc"), body);
-                                    ih3.bind(ih3.getColumnIndex("del_sms"), 1);
-                                    ih3.execute();
-                                    json.put(mSDT2, Gia_khach);
-                                } else {
-                                    ih3 = ih2;
-                                    str3 = str6;
-                                    str5 = str9;
-                                    str4 = str10;
-                                }
-                                c.moveToNext();
-                                i++;
-                                frag_Chat_Manager = this;
-                                ih2 = ih3;
-                                cur1 = cur1;
-                                cr = cr;
-                                message = message;
-                                ih3 = ih3;
-                                database2 = database;
-                                str7 = str2;
-                                str8 = str;
-                                str9 = str5;
-                                str6 = str3;
-                                str10 = str4;
-                            } catch (Exception e8) {
-                                e4 = e8;
-                                database = database2;
-                                ih = ih2;
-                                try {
-                                    e4.printStackTrace();
-                                    database.endTransaction();
-                                    ih.close();
-                                    database.close();
-                                } catch (Throwable th2) {
-                                    th = th2;
-                                    database.endTransaction();
-                                    ih.close();
-                                    database.close();
-                                    throw th;
-                                }
-                            } catch (Throwable th3) {
-                                th = th3;
-                                database = database2;
-                                ih = ih2;
-                                database.endTransaction();
-                                ih.close();
-                                database.close();
-                                throw th;
+                            db.QueryData("Update tbl_tinnhanS set gio_nhan ='" + mGioNhan + "' WHERE nd_goc = '" + body + "' AND so_dienthoai = '" + mSDT + "' AND ngay_nhan = '" + mDate + "'");
+                            if (json.has(mSDT)) {
+                                JSONObject Gia_khach = json.getJSONObject(mSDT);
+                                Gia_khach.put("so_tn", Gia_khach.getInt("so_tn") + 1);
+                                Gia_khach.put(body, body);
+                                ih.prepareForInsert();
+                                ih.bind(ih.getColumnIndex("ngay_nhan"), mDate);
+                                ih.bind(ih.getColumnIndex("gio_nhan"), mGioNhan);
+                                ih.bind(ih.getColumnIndex("type_kh"), typeKT);
+                                ih.bind(ih.getColumnIndex("ten_kh"), Gia_khach.getString("ten_kh"));
+                                ih.bind(ih.getColumnIndex("so_dienthoai"), mSDT);
+                                ih.bind(ih.getColumnIndex("use_app"), "sms");
+                                ih.bind(ih.getColumnIndex("nd_goc"), body);
+                                ih.bind(ih.getColumnIndex("del_sms"), 1);
+                                ih.execute();
+                                json.put(mSDT, Gia_khach);
                             }
+                            c.moveToNext();
+                            i++;
                         }
-                        database = database2;
                         database.setTransactionSuccessful();
                         database.endTransaction();
-                        ih2.close();
-                    } catch (Exception e14) {
-                        e4 = e14;
-                        database = database2;
-                        ih = ih2;
-                        e4.printStackTrace();
+                        ih.close();
+                    } catch (Exception e) {
+                        e.printStackTrace();
                         database.endTransaction();
                         ih.close();
                         database.close();
-                    } catch (Throwable th8) {
-                        th = th8;
-                        database = database2;
-                        ih = ih2;
-                        database.endTransaction();
-                        ih.close();
-                        database.close();
-                        throw th;
                     }
                     database.close();
                 }
-            } catch (SQLiteException e15) {
-                e = e15;
+            } catch (SQLiteException | ParseException  e) {
                 e.printStackTrace();
-            } catch (JSONException e16) {
-                e2 = e16;
-                e2.printStackTrace();
-            } catch (ParseException e17) {
-                e3 = e17;
-                e3.printStackTrace();
             }
         }
     }
 
-    private void XemListview() {
+    private void XemListview() {//lay data trong Chat_database (chi lay moi khach hang 1 row) hien thi ra listviewKH
         this.mTenKH.clear();
         this.mNoiDung.clear();
         this.mApp.clear();
@@ -305,7 +197,11 @@ public class Frag_Chat_Manager extends Fragment {
         Cursor cursor = database.GetData("SELECT * FROM Chat_database WHERE ngay_nhan = '" + mDate + "' ORDER BY Gio_nhan DESC, ID DESC");
         if (cursor != null) {
             while (cursor.moveToNext()) {
-                if ((MainActivity.arr_TenKH.indexOf(cursor.getString(4)) > -1 || cursor.getString(6).indexOf("sms") > -1 || cursor.getString(6).indexOf("TL") > -1) && !jsonObject.has(cursor.getString(4))) {
+                String ten_kh = cursor.getString(4);
+                String use_app = cursor.getString(6);
+
+                if ((MainActivity.arr_TenKH.contains(ten_kh) || use_app.contains("sms") || use_app.contains("ZL") || use_app.contains("TL")|| use_app.contains("VB"))
+                        && !jsonObject.has(ten_kh)) {
                     try {
                         jsonObject.put(cursor.getString(4), "OK");
                         this.mTenKH.add(cursor.getString(4));

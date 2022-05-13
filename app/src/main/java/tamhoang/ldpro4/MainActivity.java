@@ -919,7 +919,7 @@ public class MainActivity extends AppCompatActivity {
         }).setNegativeButton("Không", (DialogInterface.OnClickListener) null).show();
     }
 
-    public static String Get_date() {
+    public static String Get_date() {//"yyyy-mm-dd"
         if (mDay < 10 && mMonth + 1 < 10) {
             return mYear + "-0" + (mMonth + 1) + "-0" + mDay;
         } else if (mDay < 10) {
@@ -931,19 +931,7 @@ public class MainActivity extends AppCompatActivity {
         }
     }
 
-    public static String Get_ngay() {
-        if (mDay < 10 && mMonth + 1 < 10) {
-            return "0" + mDay + "/0" + (mMonth + 1) + "/" + mYear;
-        } else if (mDay < 10) {
-            return "0" + mDay + "/" + (mMonth + 1) + "/" + mYear;
-        } else if (mMonth + 1 < 10) {
-            return mDay + "/0" + (mMonth + 1) + "/" + mYear;
-        } else {
-            return mDay + "/" + (mMonth + 1) + "/" + mYear;
-        }
-    }
-
-    public static String Get_ngay_new() {
+    public static String Get_ngay() {//"dd/mm/yyyy"
         if (mDay < 10 && mMonth + 1 < 10) {
             return "0" + mDay + "/0" + (mMonth + 1) + "/" + mYear;
         } else if (mDay < 10) {
