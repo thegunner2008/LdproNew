@@ -46,6 +46,7 @@ import tamhoang.ldpro4.MainActivity;
 import tamhoang.ldpro4.NotificationReader;
 import tamhoang.ldpro4.R;
 import tamhoang.ldpro4.RangeSeekBar;
+import tamhoang.ldpro4.data.BriteDb;
 import tamhoang.ldpro4.data.Database;
 
 public class Frag_CanChuyen extends Fragment {
@@ -95,10 +96,10 @@ public class Frag_CanChuyen extends Fragment {
         public void run() {
             new MainActivity();
             if (MainActivity.sms) {
-                Frag_CanChuyen.this.xemlv();
+                xemlv();
                 MainActivity.sms = false;
             }
-            Frag_CanChuyen.this.handler.postDelayed(this, 1000);
+            handler.postDelayed(this, 1000);
         }
     };
     String sapxep;
@@ -143,38 +144,38 @@ public class Frag_CanChuyen extends Fragment {
         this.layout = linearLayout3;
         linearLayout3.addView(this.rangeSeekBar);
         this.rangeSeekBar.setOnRangeSeekBarChangeListener((rangeSeekBar, minValue, maxValue) -> {
-            Frag_CanChuyen.this.min = minValue.intValue();
-            Frag_CanChuyen.this.max = maxValue.intValue();
+            min = minValue.intValue();
+            max = maxValue.intValue();
         });
         this.radio_de.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
             /* class tamhoang.ldpro4.Fragment.Frag_CanChuyen.AnonymousClass2 */
 
             public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
-                if (Frag_CanChuyen.this.radio_de.isChecked()) {
-                    Frag_CanChuyen.this.layout.setVisibility(View.VISIBLE);
+                if (radio_de.isChecked()) {
+                    layout.setVisibility(View.VISIBLE);
                     new MainActivity();
                     String mDate = MainActivity.Get_date();
                     try {
-                        Database database = Frag_CanChuyen.this.db;
+                        Database database = db;
                         Cursor cursor = database.GetData("Select sum((the_loai = 'dea')* diem) as de_a\n,sum((the_loai = 'deb')* diem) as de_b\n,sum((the_loai = 'det')* diem) as de_t\n,sum((the_loai = 'dec')* diem) as de_c\n,sum((the_loai = 'ded')* diem) as de_d\nFrom tbl_soctS \nWhere ngay_nhan = '" + mDate + "'");
                         if (!cursor.moveToFirst() || cursor == null) {
-                            Frag_CanChuyen.this.DangXuat = "(the_loai = 'deb' or the_loai = 'det')";
+                            DangXuat = "(the_loai = 'deb' or the_loai = 'det')";
                             return;
                         }
                         int[] dem = new int[5];
                         if (cursor.getDouble(0) > 0.0d) {
                             dem[0] = 1;
-                            Frag_CanChuyen.this.radio_dea.setEnabled(true);
+                            radio_dea.setEnabled(true);
                         } else {
                             dem[0] = 0;
-                            Frag_CanChuyen.this.radio_dea.setEnabled(false);
+                            radio_dea.setEnabled(false);
                         }
                         if (cursor.getDouble(1) > 0.0d) {
                             dem[1] = 1;
-                            Frag_CanChuyen.this.radio_deb.setEnabled(true);
+                            radio_deb.setEnabled(true);
                         } else {
                             dem[1] = 0;
-                            Frag_CanChuyen.this.radio_deb.setEnabled(false);
+                            radio_deb.setEnabled(false);
                         }
                         if (cursor.getDouble(2) > 0.0d) {
                             dem[2] = 1;
@@ -183,42 +184,42 @@ public class Frag_CanChuyen extends Fragment {
                         }
                         if (cursor.getDouble(3) > 0.0d) {
                             dem[3] = 1;
-                            Frag_CanChuyen.this.radio_dec.setEnabled(true);
+                            radio_dec.setEnabled(true);
                         } else {
                             dem[3] = 0;
-                            Frag_CanChuyen.this.radio_dec.setEnabled(false);
+                            radio_dec.setEnabled(false);
                         }
                         if (cursor.getDouble(4) > 0.0d) {
                             dem[4] = 1;
-                            Frag_CanChuyen.this.radio_ded.setEnabled(true);
+                            radio_ded.setEnabled(true);
                         } else {
                             dem[4] = 0;
-                            Frag_CanChuyen.this.radio_ded.setEnabled(false);
+                            radio_ded.setEnabled(false);
                         }
                         if (dem[0] == 0 && ((dem[1] == 1 || dem[2] == 1) && dem[3] == 0 && dem[4] == 0)) {
-                            Frag_CanChuyen.this.DangXuat = "(the_loai = 'deb' or the_loai = 'det')";
-                            Frag_CanChuyen.this.ln_xi.setVisibility(View.GONE);
-                            Frag_CanChuyen.this.li_loaide.setVisibility(View.GONE);
-                            Frag_CanChuyen.this.radio_deb.setChecked(true);
-                            Frag_CanChuyen.this.xem_RecycView();
+                            DangXuat = "(the_loai = 'deb' or the_loai = 'det')";
+                            ln_xi.setVisibility(View.GONE);
+                            li_loaide.setVisibility(View.GONE);
+                            radio_deb.setChecked(true);
+                            xem_RecycView();
                         } else if (dem[0] == 0 && dem[1] == 0 && dem[2] == 0 && dem[3] == 0 && dem[4] == 0) {
-                            Frag_CanChuyen.this.DangXuat = "(the_loai = 'deb' or the_loai = 'det')";
-                            Frag_CanChuyen.this.ln_xi.setVisibility(View.GONE);
-                            Frag_CanChuyen.this.li_loaide.setVisibility(View.GONE);
-                            Frag_CanChuyen.this.radio_deb.setChecked(true);
-                            Frag_CanChuyen.this.xem_RecycView();
+                            DangXuat = "(the_loai = 'deb' or the_loai = 'det')";
+                            ln_xi.setVisibility(View.GONE);
+                            li_loaide.setVisibility(View.GONE);
+                            radio_deb.setChecked(true);
+                            xem_RecycView();
                         } else {
-                            Frag_CanChuyen.this.DangXuat = "(the_loai = 'deb' or the_loai = 'det')";
-                            Frag_CanChuyen.this.ln_xi.setVisibility(View.GONE);
-                            Frag_CanChuyen.this.li_loaide.setVisibility(View.VISIBLE);
-                            Frag_CanChuyen.this.radio_deb.setChecked(true);
-                            Frag_CanChuyen.this.xem_RecycView();
+                            DangXuat = "(the_loai = 'deb' or the_loai = 'det')";
+                            ln_xi.setVisibility(View.GONE);
+                            li_loaide.setVisibility(View.VISIBLE);
+                            radio_deb.setChecked(true);
+                            xem_RecycView();
                         }
                         if (!cursor.isClosed() && cursor != null && !cursor.isClosed()) {
                             cursor.close();
                         }
                     } catch (SQLException e) {
-                        Frag_CanChuyen.this.DangXuat = "(the_loai = 'deb' or the_loai = 'det')";
+                        DangXuat = "(the_loai = 'deb' or the_loai = 'det')";
                     }
                 }
             }
@@ -227,10 +228,10 @@ public class Frag_CanChuyen extends Fragment {
             /* class tamhoang.ldpro4.Fragment.Frag_CanChuyen.AnonymousClass3 */
 
             public void onCheckedChanged(CompoundButton compoundButton, boolean b) {
-                if (Frag_CanChuyen.this.radio_dea.isChecked()) {
-                    Frag_CanChuyen.this.DangXuat = "the_loai = 'dea'";
-                    Frag_CanChuyen.this.ln_xi.setVisibility(View.GONE);
-                    Frag_CanChuyen.this.xem_RecycView();
+                if (radio_dea.isChecked()) {
+                    DangXuat = "the_loai = 'dea'";
+                    ln_xi.setVisibility(View.GONE);
+                    xem_RecycView();
                 }
             }
         });
@@ -238,10 +239,10 @@ public class Frag_CanChuyen extends Fragment {
             /* class tamhoang.ldpro4.Fragment.Frag_CanChuyen.AnonymousClass4 */
 
             public void onCheckedChanged(CompoundButton compoundButton, boolean b) {
-                if (Frag_CanChuyen.this.radio_deb.isChecked()) {
-                    Frag_CanChuyen.this.DangXuat = "(the_loai = 'deb' or the_loai = 'det')";
-                    Frag_CanChuyen.this.ln_xi.setVisibility(View.GONE);
-                    Frag_CanChuyen.this.xem_RecycView();
+                if (radio_deb.isChecked()) {
+                    DangXuat = "(the_loai = 'deb' or the_loai = 'det')";
+                    ln_xi.setVisibility(View.GONE);
+                    xem_RecycView();
                 }
             }
         });
@@ -249,10 +250,10 @@ public class Frag_CanChuyen extends Fragment {
             /* class tamhoang.ldpro4.Fragment.Frag_CanChuyen.AnonymousClass5 */
 
             public void onCheckedChanged(CompoundButton compoundButton, boolean b) {
-                if (Frag_CanChuyen.this.radio_dec.isChecked()) {
-                    Frag_CanChuyen.this.DangXuat = "the_loai = 'dec'";
-                    Frag_CanChuyen.this.ln_xi.setVisibility(View.GONE);
-                    Frag_CanChuyen.this.xem_RecycView();
+                if (radio_dec.isChecked()) {
+                    DangXuat = "the_loai = 'dec'";
+                    ln_xi.setVisibility(View.GONE);
+                    xem_RecycView();
                 }
             }
         });
@@ -260,10 +261,10 @@ public class Frag_CanChuyen extends Fragment {
             /* class tamhoang.ldpro4.Fragment.Frag_CanChuyen.AnonymousClass6 */
 
             public void onCheckedChanged(CompoundButton compoundButton, boolean b) {
-                if (Frag_CanChuyen.this.radio_ded.isChecked()) {
-                    Frag_CanChuyen.this.DangXuat = "the_loai = 'ded'";
-                    Frag_CanChuyen.this.ln_xi.setVisibility(View.GONE);
-                    Frag_CanChuyen.this.xem_RecycView();
+                if (radio_ded.isChecked()) {
+                    DangXuat = "the_loai = 'ded'";
+                    ln_xi.setVisibility(View.GONE);
+                    xem_RecycView();
                 }
             }
         });
@@ -271,12 +272,12 @@ public class Frag_CanChuyen extends Fragment {
             /* class tamhoang.ldpro4.Fragment.Frag_CanChuyen.AnonymousClass7 */
 
             public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
-                if (Frag_CanChuyen.this.radio_lo.isChecked()) {
-                    Frag_CanChuyen.this.DangXuat = "the_loai = 'lo'";
-                    Frag_CanChuyen.this.ln_xi.setVisibility(View.GONE);
-                    Frag_CanChuyen.this.li_loaide.setVisibility(View.GONE);
-                    Frag_CanChuyen.this.layout.setVisibility(View.GONE);
-                    Frag_CanChuyen.this.xem_RecycView();
+                if (radio_lo.isChecked()) {
+                    DangXuat = "the_loai = 'lo'";
+                    ln_xi.setVisibility(View.GONE);
+                    li_loaide.setVisibility(View.GONE);
+                    layout.setVisibility(View.GONE);
+                    xem_RecycView();
                 }
             }
         });
@@ -284,77 +285,78 @@ public class Frag_CanChuyen extends Fragment {
             /* class tamhoang.ldpro4.Fragment.Frag_CanChuyen.AnonymousClass8 */
 
             public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
-                if (Frag_CanChuyen.this.radio_xi.isChecked()) {
+                if (radio_xi.isChecked()) {
                     new MainActivity();
-                    Frag_CanChuyen.this.DangXuat = "the_loai = 'xi'";
-                    Frag_CanChuyen.this.layout.setVisibility(View.GONE);
-                    Frag_CanChuyen.this.ln_xi.setVisibility(View.VISIBLE);
-                    Frag_CanChuyen.this.li_loaide.setVisibility(View.GONE);
+                    DangXuat = "the_loai = 'xi'";
+                    layout.setVisibility(View.GONE);
+                    ln_xi.setVisibility(View.VISIBLE);
+                    li_loaide.setVisibility(View.GONE);
                     try {
-                        Database database = Frag_CanChuyen.this.db;
+                        Database database = db;
                         Cursor cursor = database.GetData("Select count(id) From tbl_soctS WHERE the_loai = 'xn' AND ngay_nhan = '" + MainActivity.Get_date() + "'");
                         if (cursor.moveToFirst() && cursor.getInt(0) > 0) {
-                            Frag_CanChuyen.this.check_xn.setVisibility(View.VISIBLE);
+                            check_xn.setVisibility(View.VISIBLE);
                         }
-                        Frag_CanChuyen.this.xem_RecycView();
+                        xem_RecycView();
                     } catch (SQLException e) {
                     }
                 }
             }
         });
         this.radio_bc.setOnCheckedChangeListener((buttonView, isChecked) -> {
-            if (Frag_CanChuyen.this.radio_bc.isChecked()) {
-                Frag_CanChuyen.this.DangXuat = "the_loai = 'bc'";
-                Frag_CanChuyen.this.layout.setVisibility(View.GONE);
-                Frag_CanChuyen.this.ln_xi.setVisibility(View.GONE);
-                Frag_CanChuyen.this.li_loaide.setVisibility(View.GONE);
-                Frag_CanChuyen.this.xem_RecycView();
+            if (radio_bc.isChecked()) {
+                DangXuat = "the_loai = 'bc'";
+                layout.setVisibility(View.GONE);
+                ln_xi.setVisibility(View.GONE);
+                li_loaide.setVisibility(View.GONE);
+                xem_RecycView();
             }
         });
         this.check_x2.setOnCheckedChangeListener((buttonView, isChecked) -> {
-            if (Frag_CanChuyen.this.check_x2.isChecked()) {
-                Frag_CanChuyen.this.DangXuat = "the_loai = 'xi'";
-                Frag_CanChuyen.this.lay_x2 = "length(so_chon) = 5 ";
-                Frag_CanChuyen.this.check_xn.setChecked(false);
+            if (check_x2.isChecked()) {
+                DangXuat = "the_loai = 'xi'";
+                lay_x2 = "length(so_chon) = 5 ";
+                check_xn.setChecked(false);
             } else {
-                Frag_CanChuyen.this.lay_x2 = "";
+                lay_x2 = "";
             }
-            Frag_CanChuyen.this.xem_RecycView();
+            xem_RecycView();
         });
         this.check_x3.setOnCheckedChangeListener((buttonView, isChecked) -> {
-            if (Frag_CanChuyen.this.check_x3.isChecked()) {
-                Frag_CanChuyen.this.DangXuat = "the_loai = 'xi'";
-                Frag_CanChuyen.this.lay_x3 = "OR length(so_chon) = 8 ";
-                Frag_CanChuyen.this.check_xn.setChecked(false);
+            if (check_x3.isChecked()) {
+                DangXuat = "the_loai = 'xi'";
+                lay_x3 = "OR length(so_chon) = 8 ";
+                check_xn.setChecked(false);
             } else {
-                Frag_CanChuyen.this.lay_x3 = "";
+                lay_x3 = "";
             }
-            Frag_CanChuyen.this.xem_RecycView();
+            xem_RecycView();
         });
         this.check_x4.setOnCheckedChangeListener((buttonView, isChecked) -> {
-            if (Frag_CanChuyen.this.check_x4.isChecked()) {
-                Frag_CanChuyen.this.DangXuat = "the_loai = 'xi'";
-                Frag_CanChuyen.this.lay_x4 = "OR length(so_chon) = 11 ";
-                Frag_CanChuyen.this.check_xn.setChecked(false);
+            if (check_x4.isChecked()) {
+                DangXuat = "the_loai = 'xi'";
+                lay_x4 = "OR length(so_chon) = 11 ";
+                check_xn.setChecked(false);
             } else {
-                Frag_CanChuyen.this.lay_x4 = "";
+                lay_x4 = "";
             }
-            Frag_CanChuyen.this.xem_RecycView();
+            xem_RecycView();
         });
         this.check_xn.setOnClickListener(v -> {
-            if (Frag_CanChuyen.this.check_xn.isChecked()) {
-                Frag_CanChuyen.this.DangXuat = "the_loai = 'xn'";
-                Frag_CanChuyen.this.check_x2.setChecked(false);
-                Frag_CanChuyen.this.check_x3.setChecked(false);
-                Frag_CanChuyen.this.check_x4.setChecked(false);
-                Frag_CanChuyen.this.xem_RecycView();
+            if (check_xn.isChecked()) {
+                DangXuat = "the_loai = 'xn'";
+                check_x2.setChecked(false);
+                check_x3.setChecked(false);
+                check_x4.setChecked(false);
+                xem_RecycView();
             }
         });
         this.btn_Xuatso.setOnClickListener(v -> {
-            if (Congthuc.isNumeric(Frag_CanChuyen.this.edt_tien.getText().toString().replaceAll("%", "").replaceAll("n", "").replaceAll("k", "").replaceAll("d", "").replaceAll(">", "").replaceAll("\\.", "")) || Frag_CanChuyen.this.edt_tien.getText().toString().length() == 0) {
-                Frag_CanChuyen.this.btn_click();
+            if (Congthuc.isNumeric(edt_tien.getText().toString().replaceAll("%", "").replaceAll("n", "").replaceAll("k", "")
+                    .replaceAll("d", "").replaceAll(">", "").replaceAll("\\.", "")) || edt_tien.getText().toString().length() == 0) {
+                btn_click();
             } else {
-                Toast.makeText(Frag_CanChuyen.this.getActivity(), "Kiểm tra lại tiền!", Toast.LENGTH_LONG).show();
+                Toast.makeText(getActivity(), "Kiểm tra lại tiền!", Toast.LENGTH_LONG).show();
             }
         });
         this.lay_x2 = "length(so_chon) = 5 ";
@@ -363,12 +365,13 @@ public class Frag_CanChuyen extends Fragment {
         this.no_rp_number.setOnItemClickListener((adapterView, view, position, id) -> {
             try {
                 new MainActivity();
-                Cursor c = Frag_CanChuyen.this.db.GetData("Select ten_kh, sum(diem_quydoi) From tbl_soctS WHERE so_chon = '" + Frag_CanChuyen.this.mSo.get(position) + "' AND ngay_nhan = '" + MainActivity.Get_date() + "' AND type_kh = 1 AND " + Frag_CanChuyen.this.DangXuat + " GROUP BY so_dienthoai");
+                Cursor c = db.GetData("Select ten_kh, sum(diem_quydoi) From tbl_soctS WHERE so_chon = '" + mSo.get(position) 
+                        + "' AND ngay_nhan = '" + MainActivity.Get_date() + "' AND type_kh = 1 AND " + DangXuat + " GROUP BY so_dienthoai");
                 String s1 = "";
                 while (c.moveToNext()) {
                     s1 = s1 + c.getString(0) + ": " + c.getString(1) + "\n";
                 }
-                Toast.makeText(Frag_CanChuyen.this.getActivity(), s1, Toast.LENGTH_LONG).show();
+                Toast.makeText(getActivity(), s1, Toast.LENGTH_LONG).show();
             } catch (SQLException e) {
                 System.out.println(e);
             }
@@ -402,11 +405,8 @@ public class Frag_CanChuyen extends Fragment {
 
     public void btn_click() {
         int TienChuyen;
-        String str;
-        String str2;
         int MaxTien;
         int MaxTien2;
-        String mDate;
         int MaxTien3;
         this.xuatDan = "";
         new MainActivity();
@@ -442,11 +442,10 @@ public class Frag_CanChuyen extends Fragment {
                     } else {
                         TienChuyen = 0;
                     }
-                    str = this.DangXuat;
 //                    if (str == "(the_loai = 'deb' or the_loai = 'det')") {
 //                        if (!str.equals("the_loai = 'lo'") && !str.equals("the_loai = 'dea'") && !str.equals("the_loai = 'dec'")) {
 //                            if (!str.equals("the_loai = 'ded'")) {
-                                switch (str) {
+                                switch (DangXuat) {
                                     case "the_loai = 'xi'":
                                         this.xuatDan = "Xien:\n";
                                         int i = this.min;
@@ -498,7 +497,6 @@ public class Frag_CanChuyen extends Fragment {
                                                 }
                                             }
                                             i++;
-                                            hourFormat = hourFormat;
                                         }
                                         break;
                                     case "the_loai = 'bc'":
@@ -518,24 +516,15 @@ public class Frag_CanChuyen extends Fragment {
                                                 MaxTien2 = (Integer.parseInt(this.mTienTon.get(i2).replace(".", "")) / mLamtron) * mLamtron;
                                             }
                                             if (MaxTien2 <= 0) {
-                                                mDate = mDate2;
+
                                             } else if (tien > MaxTien2) {
-                                                StringBuilder sb = new StringBuilder();
-                                                mDate = mDate2;
-                                                sb.append(this.xuatDan);
-                                                sb.append("x");
-                                                sb.append(tien);
-                                                sb.append("n ");
-                                                this.xuatDan = sb.toString();
-                                                this.xuatDan += this.mSo.get(i2) + ",";
+                                                this.xuatDan += "x" + tien + "n " + this.mSo.get(i2) + ",";
                                                 tien = MaxTien2;
                                             } else {
-                                                mDate = mDate2;
                                                 this.xuatDan += this.mSo.get(i2) + ",";
                                                 tien = MaxTien2;
                                             }
                                             i2++;
-                                            mDate2 = mDate;
                                         }
                                         if (this.xuatDan.length() > 4) {
                                             this.xuatDan += "x" + tien + "n";
@@ -614,8 +603,7 @@ public class Frag_CanChuyen extends Fragment {
 //                            }
 //                        }
 //                    }
-                    str2 = this.DangXuat;
-                    switch (str2) {
+                    switch (DangXuat) {
                         case "(the_loai = 'deb' or the_loai = 'det')":
                             this.xuatDan = this.db.XuatDanTon2("deb", this.edt_tien.getText().toString(), this.min, this.max);
                             break;
@@ -646,7 +634,6 @@ public class Frag_CanChuyen extends Fragment {
     public String TaoTinDe(String ten_kh) {
         Throwable th;
         String str = "Se_chuyen";
-        double maxDang = 0.0d;
         JSONObject jSon = new JSONObject();
         MainActivity mainActivity = new MainActivity();
         String mDate = MainActivity.Get_date();
@@ -704,7 +691,6 @@ public class Frag_CanChuyen extends Fragment {
     public String TaoTinCang(String ten_kh) throws Throwable {
         Throwable th;
         String str = "Se_chuyen";
-        double maxDang = 0.0d;
         JSONObject jSon = new JSONObject();
         MainActivity mainActivity = new MainActivity();
         String mDate = MainActivity.Get_date();
@@ -799,23 +785,23 @@ public class Frag_CanChuyen extends Fragment {
 
             @Override
             public void onItemSelected(AdapterView<?> adapterView, View view, int position, long id) {
-                Frag_CanChuyen.this.mSpiner = position;
+                mSpiner = position;
                 try {
-                    Frag_CanChuyen.this.jsonKhongmax = new JSONObject(Frag_CanChuyen.this.mKhongMax.get(Frag_CanChuyen.this.mSpiner));
-                    if (Frag_CanChuyen.this.radio_deb.isChecked() && Frag_CanChuyen.this.radio_de.isChecked()
-                            && Frag_CanChuyen.this.jsonKhongmax.getString("danDe").length() > 0) {
-                        edt_XuatDan.setText(Frag_CanChuyen.this.TaoTinDe(Frag_CanChuyen.this.mContact.get(Frag_CanChuyen.this.mSpiner)));
-                    } else if (Frag_CanChuyen.this.radio_lo.isChecked() && Frag_CanChuyen.this.jsonKhongmax.getString("danLo").length() > 0) {
-                        edt_XuatDan.setText(Frag_CanChuyen.this.TaoTinLo(Frag_CanChuyen.this.mContact.get(Frag_CanChuyen.this.mSpiner)));
-                    } else if (Frag_CanChuyen.this.radio_xi.isChecked() && (Frag_CanChuyen.this.jsonKhongmax.getInt("xien2") > 0
-                            || Frag_CanChuyen.this.jsonKhongmax.getInt("xien3") > 0
-                            || Frag_CanChuyen.this.jsonKhongmax.getInt("xien4") > 0)) {
-                        edt_XuatDan.setText(Frag_CanChuyen.this.TaoTinXi(Frag_CanChuyen.this.mContact.get(Frag_CanChuyen.this.mSpiner)));
-                    } else if (!Frag_CanChuyen.this.radio_bc.isChecked()
-                            || Frag_CanChuyen.this.jsonKhongmax.getInt("cang") <= 0) {
+                    jsonKhongmax = new JSONObject(mKhongMax.get(mSpiner));
+                    if (radio_deb.isChecked() && radio_de.isChecked()
+                            && jsonKhongmax.getString("danDe").length() > 0) {
+                        edt_XuatDan.setText(TaoTinDe(mContact.get(mSpiner)));
+                    } else if (radio_lo.isChecked() && jsonKhongmax.getString("danLo").length() > 0) {
+                        edt_XuatDan.setText(TaoTinLo(mContact.get(mSpiner)));
+                    } else if (radio_xi.isChecked() && (jsonKhongmax.getInt("xien2") > 0
+                            || jsonKhongmax.getInt("xien3") > 0
+                            || jsonKhongmax.getInt("xien4") > 0)) {
+                        edt_XuatDan.setText(TaoTinXi(mContact.get(mSpiner)));
+                    } else if (!radio_bc.isChecked()
+                            || jsonKhongmax.getInt("cang") <= 0) {
                         edt_XuatDan.setText(Chuyendi);
                     } else {
-                        edt_XuatDan.setText(Frag_CanChuyen.this.TaoTinCang(Frag_CanChuyen.this.mContact.get(Frag_CanChuyen.this.mSpiner)));
+                        edt_XuatDan.setText(TaoTinCang(mContact.get(mSpiner)));
                     }
                 } catch (JSONException e) {
                     e.printStackTrace();
@@ -855,33 +841,29 @@ public class Frag_CanChuyen extends Fragment {
                 dodai = 2000;
             }
             String str3 = "";
-            if (Frag_CanChuyen.this.mMobile.size() <= 0 || edt_XuatDan.getText().toString().length() <= 0 || Frag_CanChuyen.this.Dachuyen) {
+            if (mMobile.size() <= 0 || edt_XuatDan.getText().toString().length() <= 0 || Dachuyen) {
                 str = str3;
                 if (edt_XuatDan.getText().toString().length() != 0) {
-                    if (Frag_CanChuyen.this.Dachuyen) {
+                    if (Dachuyen) {
                         dialog.cancel();
                     } else {
-                        Toast.makeText(Frag_CanChuyen.this.getActivity(), "Chưa có chủ để chuyển tin!", Toast.LENGTH_LONG).show();
+                        Toast.makeText(getActivity(), "Chưa có chủ để chuyển tin!", Toast.LENGTH_LONG).show();
                     }
                 }
             } else {
-                Frag_CanChuyen.this.Dachuyen = true;
+                Dachuyen = true;
                 String TinNhan = edt_XuatDan.getText().toString().replaceAll("'", " ").trim();
                 edt_XuatDan.setText(str3);
                 dialog.dismiss();
                 if (TinNhan.trim().length() < dodai) {
-                    Cursor getSoTN = Frag_CanChuyen.this.db.GetData("Select max(so_tin_nhan) from tbl_tinnhanS WHERE ngay_nhan = '" + mDate + "' AND so_dienthoai = '" + Frag_CanChuyen.this.mMobile.get(Frag_CanChuyen.this.mSpiner) + "' AND type_kh = 2");
-                    getSoTN.moveToFirst();
-                    Frag_CanChuyen.this.Xulytin(getSoTN.getInt(0) + 1, TinNhan.replaceAll("'", " ").trim(), 1);
-                    if (getSoTN != null) {
-                        getSoTN.close();
-                    }
+                    int maxSoTn = BriteDb.INSTANCE.getMaxSoTinNhan(mDate, 2, "so_dienthoai = '"+ mMobile.get(mSpiner) +"'");
+
+                    Xulytin(maxSoTn + 1, TinNhan.replaceAll("'", " ").trim(), 1);
                     str = str3;
                 } else {
-                    String TienChiTiet = "Select max(so_tin_nhan) from tbl_tinnhanS WHERE ngay_nhan = '" + mDate + "' AND so_dienthoai = '" + Frag_CanChuyen.this.mMobile.get(Frag_CanChuyen.this.mSpiner) + "' AND type_kh = 2";
-                    Cursor getSoTN2 = Frag_CanChuyen.this.db.GetData(TienChiTiet);
-                    getSoTN2.moveToFirst();
-                    int SotinNhan = getSoTN2.getInt(0) + 1;
+                    int maxSoTn = BriteDb.INSTANCE.getMaxSoTinNhan(mDate, 2, "so_dienthoai = '"+ mMobile.get(mSpiner) +"'");
+
+                    int SotinNhan = maxSoTn + 1;
                     String DangGi = "";
                     String[] Chitiet = null;
                     if (TinNhan.substring(0, 3).contains("De")) {
@@ -930,7 +912,7 @@ public class Frag_CanChuyen extends Fragment {
                                         if (j > 0) {
                                             ndung2 = ndung2 + TienChiTiet2;
                                         }
-                                        Frag_CanChuyen.this.Xulytin(SotinNhan, ndung2, 1);
+                                        Xulytin(SotinNhan, ndung2, 1);
                                         SotinNhan++;
                                         if (j >= str_so.length - 1) {
                                             ndung = new StringBuilder(DangGi + "\n" + str_so[j] + "," + TienChiTiet2 + " ");
@@ -949,7 +931,6 @@ public class Frag_CanChuyen extends Fragment {
                             k++;
                             mDate = mDate;
                             NganDai = NganDai;
-                            TienChiTiet = TienChiTiet;
                             TinNhan = TinNhan;
                             str3 = str3;
                         }
@@ -962,25 +943,24 @@ public class Frag_CanChuyen extends Fragment {
                             } else if (ndung.length() + s.length() < dodai) {
                                 ndung.append(s).append(" ");
                             } else {
-                                Frag_CanChuyen.this.Xulytin(SotinNhan, ndung.toString(), 1);
+                                Xulytin(SotinNhan, ndung.toString(), 1);
                                 SotinNhan++;
                                 ndung = new StringBuilder(DangGi + "\n" + s + " ");
                             }
                         }
                     }
                     if (ndung.length() > 0) {
-                        Frag_CanChuyen.this.Xulytin(SotinNhan, ndung.toString(), 1);
+                        Xulytin(SotinNhan, ndung.toString(), 1);
                     }
-                    getSoTN2.close();
                 }
-                Toast.makeText(Frag_CanChuyen.this.getActivity(), "Đã chuyển tin!", Toast.LENGTH_LONG).show();
+                Toast.makeText(getActivity(), "Đã chuyển tin!", Toast.LENGTH_LONG).show();
             }
-            Frag_CanChuyen.this.xemlv();
-            Frag_CanChuyen.this.min = 0;
-            Frag_CanChuyen.this.max = 100;
-            Frag_CanChuyen.this.rangeSeekBar.setSelectedMinValue(0);
-            Frag_CanChuyen.this.rangeSeekBar.setSelectedMaxValue(100);
-            Frag_CanChuyen.this.edt_tien.setText(str);
+            xemlv();
+            min = 0;
+            max = 100;
+            rangeSeekBar.setSelectedMinValue(0);
+            rangeSeekBar.setSelectedMaxValue(100);
+            edt_tien.setText(str);
         });
         dialog.getWindow().setLayout(-1, -2);
         dialog.setCancelable(true);
@@ -1023,7 +1003,7 @@ public class Frag_CanChuyen extends Fragment {
                         if (Chuyen == 1) {
                             try {
                                 if (cur1.getString(2).contains("TL")) {
-                                    new Handler(Looper.getMainLooper()).post(() -> MainActivity.sendMessage(Long.parseLong(Frag_CanChuyen.this.mMobile.get(Frag_CanChuyen.this.mSpiner)), NoiDungTin));
+                                    new Handler(Looper.getMainLooper()).post(() -> MainActivity.sendMessage(Long.parseLong(mMobile.get(mSpiner)), NoiDungTin));
                                     this.db.QueryData("Insert into Chat_database Values( null,'" + mDate + "', '" + mGionhan + "', 2, '" + this.mContact.get(this.mSpiner) + "', '" + this.mMobile.get(this.mSpiner) + "', '" + cur1.getString(2) + "','" + NoiDungTin + "',1)");
                                 }
                             } catch (Exception e) {
@@ -1079,61 +1059,73 @@ public class Frag_CanChuyen extends Fragment {
         String Noi;
         new MainActivity();
         String mDate = MainActivity.Get_date();
-        String str = null;
+        String query = null;
         this.mSo.clear();
         this.mTienNhan.clear();
         this.mTienOm.clear();
         this.mTienchuyen.clear();
         this.mTienTon.clear();
         this.mNhay.clear();
-        String str2 = this.DangXuat;
-        if (str2.equals("(the_loai = 'deb' or the_loai = 'det')")) {
-            str = "Select tbl_soctS.So_chon\n, Sum((tbl_soctS.type_kh = 1) * (100-tbl_soctS.diem_khachgiu)*diem_quydoi/100) as diem\n, so_om.Om_deB + sum(tbl_soctS.diem_dly_giu*tbl_soctS.diem_quydoi/100) as So_Om\n, Sum((tbl_soctS.type_kh =2) * tbl_soctS.diem_quydoi) as chuyen\n, Sum((tbl_soctS.type_kh =1) * (100-tbl_soctS.diem_khachgiu-tbl_soctS.diem_dly_giu)*diem_quydoi/100) - Sum((tbl_soctS.type_kh =2) * tbl_soctS.diem_quydoi) - so_om.Om_deB as ton\n, so_nhay  From so_om Left Join tbl_soctS On tbl_soctS.so_chon = so_om.So\n Where tbl_soctS.ngay_nhan='" + mDate + "' AND (tbl_soctS.the_loai='deb' OR tbl_soctS.the_loai='det') GROUP by so_om.So Order by " + this.sapxep;
-        } else if (str2.equals("the_loai = 'lo'")) {
-            str = "Select tbl_soctS.So_chon\n, Sum((tbl_soctS.type_kh = 1) * (100-tbl_soctS.diem_khachgiu)*diem_quydoi/100) as diem\n, so_om.Om_Lo + sum(tbl_soctS.diem_dly_giu*tbl_soctS.diem_quydoi/100) as So_Om\n, Sum((tbl_soctS.type_kh =2) * tbl_soctS.diem_quydoi) as chuyen\n, Sum((tbl_soctS.type_kh =1) * (100-tbl_soctS.diem_khachgiu-tbl_soctS.diem_dly_giu)*diem_quydoi/100) - Sum((tbl_soctS.type_kh =2) * tbl_soctS.diem_quydoi) - so_om.Om_Lo as ton\n, so_nhay  From so_om Left Join tbl_soctS On tbl_soctS.so_chon = so_om.So \n Where tbl_soctS.ngay_nhan='" + mDate + "' AND tbl_soctS.the_loai='lo' \n GROUP by so_om.So Order by " + this.sapxep;
-        } else if (str2.equals("the_loai = 'dea'")) {
-            str = "Select tbl_soctS.So_chon\n, Sum((tbl_soctS.type_kh = 1) * (100-tbl_soctS.diem_khachgiu)*diem_quydoi/100) as diem\n, so_om.Om_DeA + sum(tbl_soctS.diem_dly_giu*tbl_soctS.diem_quydoi/100) as So_Om\n, Sum((tbl_soctS.type_kh =2) * tbl_soctS.diem_quydoi) as chuyen\n, Sum((tbl_soctS.type_kh =1) * (100-tbl_soctS.diem_khachgiu-tbl_soctS.diem_dly_giu)*diem_quydoi/100) - Sum((tbl_soctS.type_kh =2) * tbl_soctS.diem_quydoi) - so_om.Om_DeA as ton\n, so_nhay  From so_om Left Join tbl_soctS On tbl_soctS.so_chon = so_om.So \n Where tbl_soctS.ngay_nhan='" + mDate + "' AND tbl_soctS.the_loai='dea' GROUP by so_chon Order by " + this.sapxep;
-        } else if (str2.equals("the_loai = 'dec'")) {
-            str = "Select tbl_soctS.So_chon\n, Sum((tbl_soctS.type_kh = 1) * (100-tbl_soctS.diem_khachgiu)*diem_quydoi/100) as diem\n, so_om.Om_DeC + sum(tbl_soctS.diem_dly_giu*tbl_soctS.diem_quydoi/100) as So_Om\n, Sum((tbl_soctS.type_kh =2) * tbl_soctS.diem_quydoi) as chuyen\n, Sum((tbl_soctS.type_kh =1) * (100-tbl_soctS.diem_khachgiu-tbl_soctS.diem_dly_giu)*diem_quydoi/100) - Sum((tbl_soctS.type_kh =2) * tbl_soctS.diem_quydoi) - so_om.Om_DeC as ton\n, so_nhay  From so_om Left Join tbl_soctS On tbl_soctS.so_chon = so_om.So \n Where tbl_soctS.ngay_nhan='" + mDate + "' AND tbl_soctS.the_loai='dec' GROUP by so_chon Order by " + this.sapxep;
-        } else if (str2.equals("the_loai = 'ded'")) {
-            str = "Select tbl_soctS.So_chon\n, Sum((tbl_soctS.type_kh = 1) * (100-tbl_soctS.diem_khachgiu)*diem_quydoi/100) as diem\n, so_om.Om_DeD + sum(tbl_soctS.diem_dly_giu*tbl_soctS.diem_quydoi/100) as So_Om\n, Sum((tbl_soctS.type_kh =2) * tbl_soctS.diem_quydoi) as chuyen\n, Sum((tbl_soctS.type_kh =1) * (100-tbl_soctS.diem_khachgiu-tbl_soctS.diem_dly_giu)*diem_quydoi/100) - Sum((tbl_soctS.type_kh =2) * tbl_soctS.diem_quydoi) - so_om.Om_DeD as ton\n, so_nhay  From so_om Left Join tbl_soctS On tbl_soctS.so_chon = so_om.So \n Where tbl_soctS.ngay_nhan='" + mDate + "' AND tbl_soctS.the_loai='ded' GROUP by so_chon Order by " + this.sapxep;
-        } else if (str2.equals("the_loai = 'xi'")) {
-            if (this.lay_x2.equals("") && this.lay_x3.equals("") && this.lay_x4.equals("")) {
-                Noi = "";
-            } else {
-                Noi = (" And (" + this.lay_x2 + this.lay_x3 + this.lay_x4 + ")").replaceAll("\\(OR", "(");
-            }
-            Cursor c1 = this.db.GetData("Select * From So_om WHERE ID = 1");
-            c1.moveToFirst();
-            str = "SELECT so_chon, sum((type_kh =1)*(100-diem_khachgiu)*diem_quydoi)/100 AS diem, ((length(so_chon) = 5) * " + c1.getString(7) + " +(length(so_chon) = 8) * " + c1.getString(8) + " +(length(so_chon) = 11) * " + c1.getString(9) + " + sum(diem_dly_giu*diem_quydoi/100)) AS Om, SUm((type_kh =2)*diem) as chuyen , SUm((type_kh =1)*(100-diem_khachgiu-diem_dly_giu)*diem_quydoi/100)-SUm((type_kh =2)*diem) -  ((length(so_chon) = 5) * " + c1.getString(7) + " +(length(so_chon) = 8) * " + c1.getString(8) + " +(length(so_chon) = 11) * " + c1.getString(9) + ") AS ton, so_nhay   From tbl_soctS Where ngay_nhan='" + mDate + "' AND the_loai='xi'" + Noi + "  GROUP by so_chon Order by ton DESC, diem DESC";
-            if (!c1.isClosed()) {
-                c1.close();
-            }
-        } else if (str2.equals("the_loai = 'bc'")) {
-            Cursor c12 = this.db.GetData("Select * From So_om WHERE ID = 1");
-            c12.moveToFirst();
-            if (c12.getInt(10) == 1) {
-                this.db.QueryData("Update so_om set om_bc=0 WHERE id = 1");
-                c12 = this.db.GetData("Select * From So_om WHERE ID = 1");
+        switch (DangXuat) {
+            case "(the_loai = 'deb' or the_loai = 'det')":
+                query = "Select tbl_soctS.So_chon\n, Sum((tbl_soctS.type_kh = 1) * (100-tbl_soctS.diem_khachgiu)*diem_quydoi/100) as diem\n, so_om.Om_deB + sum(tbl_soctS.diem_dly_giu*tbl_soctS.diem_quydoi/100) as So_Om\n, Sum((tbl_soctS.type_kh =2) * tbl_soctS.diem_quydoi) as chuyen\n, Sum((tbl_soctS.type_kh =1) * (100-tbl_soctS.diem_khachgiu-tbl_soctS.diem_dly_giu)*diem_quydoi/100) - Sum((tbl_soctS.type_kh =2) * tbl_soctS.diem_quydoi) - so_om.Om_deB as ton\n, so_nhay  From so_om Left Join tbl_soctS On tbl_soctS.so_chon = so_om.So\n Where tbl_soctS.ngay_nhan='" + mDate + "' AND (tbl_soctS.the_loai='deb' OR tbl_soctS.the_loai='det') GROUP by so_om.So Order by " + this.sapxep;
+                break;
+            case "the_loai = 'lo'":
+                query = "Select tbl_soctS.So_chon\n, Sum((tbl_soctS.type_kh = 1) * (100-tbl_soctS.diem_khachgiu)*diem_quydoi/100) as diem\n, so_om.Om_Lo + sum(tbl_soctS.diem_dly_giu*tbl_soctS.diem_quydoi/100) as So_Om\n, Sum((tbl_soctS.type_kh =2) * tbl_soctS.diem_quydoi) as chuyen\n, Sum((tbl_soctS.type_kh =1) * (100-tbl_soctS.diem_khachgiu-tbl_soctS.diem_dly_giu)*diem_quydoi/100) - Sum((tbl_soctS.type_kh =2) * tbl_soctS.diem_quydoi) - so_om.Om_Lo as ton\n, so_nhay  From so_om Left Join tbl_soctS On tbl_soctS.so_chon = so_om.So \n Where tbl_soctS.ngay_nhan='" + mDate + "' AND tbl_soctS.the_loai='lo' \n GROUP by so_om.So Order by " + this.sapxep;
+                break;
+            case "the_loai = 'dea'":
+                query = "Select tbl_soctS.So_chon\n, Sum((tbl_soctS.type_kh = 1) * (100-tbl_soctS.diem_khachgiu)*diem_quydoi/100) as diem\n, so_om.Om_DeA + sum(tbl_soctS.diem_dly_giu*tbl_soctS.diem_quydoi/100) as So_Om\n, Sum((tbl_soctS.type_kh =2) * tbl_soctS.diem_quydoi) as chuyen\n, Sum((tbl_soctS.type_kh =1) * (100-tbl_soctS.diem_khachgiu-tbl_soctS.diem_dly_giu)*diem_quydoi/100) - Sum((tbl_soctS.type_kh =2) * tbl_soctS.diem_quydoi) - so_om.Om_DeA as ton\n, so_nhay  From so_om Left Join tbl_soctS On tbl_soctS.so_chon = so_om.So \n Where tbl_soctS.ngay_nhan='" + mDate + "' AND tbl_soctS.the_loai='dea' GROUP by so_chon Order by " + this.sapxep;
+                break;
+            case "the_loai = 'dec'":
+                query = "Select tbl_soctS.So_chon\n, Sum((tbl_soctS.type_kh = 1) * (100-tbl_soctS.diem_khachgiu)*diem_quydoi/100) as diem\n, so_om.Om_DeC + sum(tbl_soctS.diem_dly_giu*tbl_soctS.diem_quydoi/100) as So_Om\n, Sum((tbl_soctS.type_kh =2) * tbl_soctS.diem_quydoi) as chuyen\n, Sum((tbl_soctS.type_kh =1) * (100-tbl_soctS.diem_khachgiu-tbl_soctS.diem_dly_giu)*diem_quydoi/100) - Sum((tbl_soctS.type_kh =2) * tbl_soctS.diem_quydoi) - so_om.Om_DeC as ton\n, so_nhay  From so_om Left Join tbl_soctS On tbl_soctS.so_chon = so_om.So \n Where tbl_soctS.ngay_nhan='" + mDate + "' AND tbl_soctS.the_loai='dec' GROUP by so_chon Order by " + this.sapxep;
+                break;
+            case "the_loai = 'ded'":
+                query = "Select tbl_soctS.So_chon\n, Sum((tbl_soctS.type_kh = 1) * (100-tbl_soctS.diem_khachgiu)*diem_quydoi/100) as diem\n, so_om.Om_DeD + sum(tbl_soctS.diem_dly_giu*tbl_soctS.diem_quydoi/100) as So_Om\n, Sum((tbl_soctS.type_kh =2) * tbl_soctS.diem_quydoi) as chuyen\n, Sum((tbl_soctS.type_kh =1) * (100-tbl_soctS.diem_khachgiu-tbl_soctS.diem_dly_giu)*diem_quydoi/100) - Sum((tbl_soctS.type_kh =2) * tbl_soctS.diem_quydoi) - so_om.Om_DeD as ton\n, so_nhay  From so_om Left Join tbl_soctS On tbl_soctS.so_chon = so_om.So \n Where tbl_soctS.ngay_nhan='" + mDate + "' AND tbl_soctS.the_loai='ded' GROUP by so_chon Order by " + this.sapxep;
+                break;
+            case "the_loai = 'xi'":
+                if (this.lay_x2.equals("") && this.lay_x3.equals("") && this.lay_x4.equals(""))
+                    Noi = "";
+                else
+                    Noi = (" And (" + this.lay_x2 + this.lay_x3 + this.lay_x4 + ")").replaceAll("\\(OR", "(");
+
+                Cursor c1 = this.db.GetData("Select * From So_om WHERE ID = 1");
+                c1.moveToFirst();
+                query = "SELECT so_chon, sum((type_kh =1)*(100-diem_khachgiu)*diem_quydoi)/100 AS diem, ((length(so_chon) = 5) * " + c1.getString(7) + " +(length(so_chon) = 8) * " + c1.getString(8) + " +(length(so_chon) = 11) * " + c1.getString(9) + " + sum(diem_dly_giu*diem_quydoi/100)) AS Om, SUm((type_kh =2)*diem) as chuyen , SUm((type_kh =1)*(100-diem_khachgiu-diem_dly_giu)*diem_quydoi/100)-SUm((type_kh =2)*diem) -  ((length(so_chon) = 5) * " + c1.getString(7) + " +(length(so_chon) = 8) * " + c1.getString(8) + " +(length(so_chon) = 11) * " + c1.getString(9) + ") AS ton, so_nhay   From tbl_soctS Where ngay_nhan='" + mDate + "' AND the_loai='xi'" + Noi + "  GROUP by so_chon Order by ton DESC, diem DESC";
+                if (!c1.isClosed()) c1.close();
+
+                break;
+            case "the_loai = 'bc'":
+                Cursor c12 = this.db.GetData("Select * From So_om WHERE ID = 1");
                 c12.moveToFirst();
-            }
-            str = "SELECT so_chon, sum((type_kh = 1)*(100-diem_khachgiu)*diem_quydoi/100) AS diem, " + c12.getString(10) + " + sum(diem_dly_giu*diem_quydoi)/100 AS Om, SUm((type_kh = 2)*diem) as Chuyen, sum((type_kh =1)*(100-diem_khachgiu-diem_dly_giu)*diem_quydoi/100) - sum((type_kh =2)*diem) -" + c12.getString(10) + " AS ton, so_nhay   From tbl_soctS Where ngay_nhan='" + mDate + "' AND the_loai='bc' GROUP by so_chon Order by ton DESC, diem DESC";
-            if (!c12.isClosed()) {
-                c12.close();
-            }
-        } else if (str2.equals("the_loai = 'xn'")) {
-            str = "SELECT so_chon, sum((type_kh =1)*(diem_quydoi)) AS diem, sum(tbl_soctS.diem_dly_giu) AS Om, SUm((type_kh =2)*diem) as chuyen , SUm((type_kh =1)*diem_ton-(type_kh =2)*diem_ton) AS ton, so_nhay   From tbl_soctS Where ngay_nhan='" + mDate + "' AND the_loai='xn' GROUP by so_chon Order by ton DESC, diem DESC";
+                if (c12.getInt(10) == 1) {
+                    this.db.QueryData("Update so_om set om_bc=0 WHERE id = 1");
+                    c12 = this.db.GetData("Select * From So_om WHERE ID = 1");
+                    c12.moveToFirst();
+                }
+                query = "SELECT so_chon, sum((type_kh = 1)*(100-diem_khachgiu)*diem_quydoi/100) AS diem, " + c12.getString(10) + " + sum(diem_dly_giu*diem_quydoi)/100 AS Om, SUm((type_kh = 2)*diem) as Chuyen, sum((type_kh =1)*(100-diem_khachgiu-diem_dly_giu)*diem_quydoi/100) - sum((type_kh =2)*diem) -" + c12.getString(10) + " AS ton, so_nhay   From tbl_soctS Where ngay_nhan='" + mDate + "' AND the_loai='bc' GROUP by so_chon Order by ton DESC, diem DESC";
+                if (!c12.isClosed()) {
+                    c12.close();
+                }
+                break;
+            case "the_loai = 'xn'":
+                query = "SELECT so_chon, sum((type_kh =1)*(diem_quydoi)) AS diem, sum(tbl_soctS.diem_dly_giu) AS Om, SUm((type_kh =2)*diem) as chuyen " +
+                        ", SUm((type_kh =1)*diem_ton-(type_kh =2)*diem_ton) AS ton, so_nhay From tbl_soctS " +
+                        "Where ngay_nhan='" + mDate + "' AND the_loai='xn' GROUP by so_chon Order by ton DESC, diem DESC";
+                break;
         }
-        Cursor cursor = this.db.GetData(str);
+        Cursor cursor = this.db.GetData(query);
         DecimalFormat decimalFormat = new DecimalFormat("###,###");
         if (cursor != null) {
             while (cursor.moveToNext()) {
-                this.mSo.add(cursor.getString(0));
-                this.mTienNhan.add(decimalFormat.format((long) cursor.getInt(1)));
-                this.mTienOm.add(decimalFormat.format((long) cursor.getInt(2)));
-                this.mTienchuyen.add(decimalFormat.format((long) cursor.getInt(3)));
-                this.mTienTon.add(decimalFormat.format((long) cursor.getInt(4)));
-                this.mNhay.add(cursor.getInt(5));
+                this.mSo.add(cursor.getString(0));//tbl_soctS.So_chon
+
+                this.mTienNhan.add(decimalFormat.format(cursor.getInt(1)));//Sum((tbl_soctS.type_kh = 1) * (100-tbl_soctS.diem_khachgiu)*diem_quydoi/100) as diem
+                this.mTienOm.add(decimalFormat.format(cursor.getInt(2)));//so_om.Om_deB + sum(tbl_soctS.diem_dly_giu*tbl_soctS.diem_quydoi/100) as So_Om
+                this.mTienchuyen.add(decimalFormat.format(cursor.getInt(3)));//Sum((tbl_soctS.type_kh =2) * tbl_soctS.diem_quydoi) as chuyen
+                this.mTienTon.add(decimalFormat.format(cursor.getInt(4)));//Sum((tbl_soctS.type_kh =1) * (100-tbl_soctS.diem_khachgiu-tbl_soctS.diem_dly_giu)*diem_quydoi/100) - Sum((tbl_soctS.type_kh =2) * tbl_soctS.diem_quydoi) - so_om.Om_deB as ton
+                this.mNhay.add(cursor.getInt(5));//so_nhay  From so_om Left Join tbl_soctS On tbl_soctS.so_chon = so_om.So
+
+                //Where tbl_soctS.ngay_nhan='" + mDate + "' AND (tbl_soctS.the_loai='deb' OR tbl_soctS.the_loai='det') GROUP by so_om.So Order by " + this.sapxep;
             }
             if (!cursor.isClosed()) {
                 cursor.close();
@@ -1150,15 +1142,14 @@ public class Frag_CanChuyen extends Fragment {
         }
 
         class ViewHolder {
-            TextView tview1;
-            TextView tview2;
-            TextView tview4;
-            TextView tview5;
-            TextView tview7;
-            TextView tview8;
+            TextView tv_diemChuyen;
+            TextView stt;
+            TextView tv_diemTon;
+            TextView Tv_so;
+            TextView tv_diemNhan;
+            TextView tv_diemOm;
 
-            ViewHolder() {
-            }
+            ViewHolder() {}
         }
 
         @SuppressLint("SetTextI18n")
@@ -1167,60 +1158,52 @@ public class Frag_CanChuyen extends Fragment {
             ViewHolder holder = new ViewHolder();
             if (view == null) {
                 view = inflater.inflate(R.layout.frag_canchuyen_lv, (ViewGroup) null);
-                holder.tview5 = (TextView) view.findViewById(R.id.Tv_so);
-                holder.tview7 = (TextView) view.findViewById(R.id.tv_diemNhan);
-                holder.tview8 = (TextView) view.findViewById(R.id.tv_diemOm);
-                holder.tview1 = (TextView) view.findViewById(R.id.tv_diemChuyen);
-                holder.tview4 = (TextView) view.findViewById(R.id.tv_diemTon);
-                holder.tview2 = (TextView) view.findViewById(R.id.stt);
+                holder.Tv_so = (TextView) view.findViewById(R.id.Tv_so);
+                holder.tv_diemNhan = (TextView) view.findViewById(R.id.tv_diemNhan);
+                holder.tv_diemOm = (TextView) view.findViewById(R.id.tv_diemOm);
+                holder.tv_diemChuyen = (TextView) view.findViewById(R.id.tv_diemChuyen);
+                holder.tv_diemTon = (TextView) view.findViewById(R.id.tv_diemTon);
+                holder.stt = (TextView) view.findViewById(R.id.stt);
                 view.setTag(holder);
             } else {
                 holder = (ViewHolder) view.getTag();
             }
-            if (Frag_CanChuyen.this.mNhay.get(position) > 0) {
-                holder.tview5.setTextColor(SupportMenu.CATEGORY_MASK);
-                holder.tview7.setTextColor(SupportMenu.CATEGORY_MASK);
-                holder.tview8.setTextColor(SupportMenu.CATEGORY_MASK);
-                holder.tview1.setTextColor(SupportMenu.CATEGORY_MASK);
-                holder.tview4.setTextColor(SupportMenu.CATEGORY_MASK);
-                if (Frag_CanChuyen.this.mNhay.get(position) == 1) {
-                    TextView textView = holder.tview5;
-                    textView.setText(Frag_CanChuyen.this.mSo.get(position) + "*");
-                } else if (Frag_CanChuyen.this.mNhay.get(position) == 2) {
-                    TextView textView2 = holder.tview5;
-                    textView2.setText(Frag_CanChuyen.this.mSo.get(position) + "**");
-                } else if (Frag_CanChuyen.this.mNhay.get(position) == 3) {
-                    TextView textView3 = holder.tview5;
-                    textView3.setText(Frag_CanChuyen.this.mSo.get(position) + "***");
-                } else if (Frag_CanChuyen.this.mNhay.get(position) == 4) {
-                    TextView textView4 = holder.tview5;
-                    textView4.setText(Frag_CanChuyen.this.mSo.get(position) + "****");
-                } else if (Frag_CanChuyen.this.mNhay.get(position) == 5) {
-                    TextView textView5 = holder.tview5;
-                    textView5.setText(Frag_CanChuyen.this.mSo.get(position) + "*****");
-                } else if (Frag_CanChuyen.this.mNhay.get(position) == 6) {
-                    TextView textView6 = holder.tview5;
-                    textView6.setText(Frag_CanChuyen.this.mSo.get(position) + "******");
-                }
-                holder.tview7.setText(Frag_CanChuyen.this.mTienNhan.get(position));
-                holder.tview8.setText(Frag_CanChuyen.this.mTienOm.get(position));
-                holder.tview1.setText(Frag_CanChuyen.this.mTienchuyen.get(position));
-                holder.tview4.setText(Frag_CanChuyen.this.mTienTon.get(position));
-                TextView textView7 = holder.tview2;
-                textView7.setText((position + 1) + "");
+            if (mNhay.get(position) > 0) {
+                holder.Tv_so.setTextColor(SupportMenu.CATEGORY_MASK);
+                holder.tv_diemNhan.setTextColor(SupportMenu.CATEGORY_MASK);
+                holder.tv_diemOm.setTextColor(SupportMenu.CATEGORY_MASK);
+                holder.tv_diemChuyen.setTextColor(SupportMenu.CATEGORY_MASK);
+                holder.tv_diemTon.setTextColor(SupportMenu.CATEGORY_MASK);
+                if (mNhay.get(position) == 1)
+                    holder.Tv_so.setText(mSo.get(position) + "*");
+                else if (mNhay.get(position) == 2)
+                    holder.Tv_so.setText(mSo.get(position) + "**");
+                else if (mNhay.get(position) == 3)
+                    holder.Tv_so.setText(mSo.get(position) + "***");
+                else if (mNhay.get(position) == 4)
+                    holder.Tv_so.setText(mSo.get(position) + "****");
+                else if (mNhay.get(position) == 5)
+                    holder.Tv_so.setText(mSo.get(position) + "*****");
+                else if (mNhay.get(position) == 6)
+                    holder.Tv_so.setText(mSo.get(position) + "******");
+
+                holder.tv_diemNhan.setText(mTienNhan.get(position));
+                holder.tv_diemOm.setText(mTienOm.get(position));
+                holder.tv_diemChuyen.setText(mTienchuyen.get(position));
+                holder.tv_diemTon.setText(mTienTon.get(position));
+                holder.stt.setText((position + 1) + "");
             } else {
-                holder.tview5.setTextColor(ViewCompat.MEASURED_STATE_MASK);
-                holder.tview7.setTextColor(ViewCompat.MEASURED_STATE_MASK);
-                holder.tview8.setTextColor(ViewCompat.MEASURED_STATE_MASK);
-                holder.tview1.setTextColor(ViewCompat.MEASURED_STATE_MASK);
-                holder.tview4.setTextColor(ViewCompat.MEASURED_STATE_MASK);
-                holder.tview5.setText(Frag_CanChuyen.this.mSo.get(position));
-                holder.tview7.setText(Frag_CanChuyen.this.mTienNhan.get(position));
-                holder.tview8.setText(Frag_CanChuyen.this.mTienOm.get(position));
-                holder.tview1.setText(Frag_CanChuyen.this.mTienchuyen.get(position));
-                holder.tview4.setText(Frag_CanChuyen.this.mTienTon.get(position));
-                TextView textView8 = holder.tview2;
-                textView8.setText((position + 1) + "");
+                holder.Tv_so.setTextColor(ViewCompat.MEASURED_STATE_MASK);
+                holder.tv_diemNhan.setTextColor(ViewCompat.MEASURED_STATE_MASK);
+                holder.tv_diemOm.setTextColor(ViewCompat.MEASURED_STATE_MASK);
+                holder.tv_diemChuyen.setTextColor(ViewCompat.MEASURED_STATE_MASK);
+                holder.tv_diemTon.setTextColor(ViewCompat.MEASURED_STATE_MASK);
+                holder.Tv_so.setText(mSo.get(position));
+                holder.tv_diemNhan.setText(mTienNhan.get(position));
+                holder.tv_diemOm.setText(mTienOm.get(position));
+                holder.tv_diemChuyen.setText(mTienchuyen.get(position));
+                holder.tv_diemTon.setText(mTienTon.get(position));
+                holder.stt.setText((position + 1) + "");
             }
             return view;
         }

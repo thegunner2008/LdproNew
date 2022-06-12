@@ -26,6 +26,7 @@ import org.json.JSONObject;
 import tamhoang.ldpro4.Congthuc.Congthuc;
 import tamhoang.ldpro4.MainActivity;
 import tamhoang.ldpro4.R;
+import tamhoang.ldpro4.data.BriteDb;
 import tamhoang.ldpro4.data.Database;
 import tamhoang.ldpro4.services.SaveSmsService;
 
@@ -119,10 +120,10 @@ public class SMSReceiver extends BroadcastReceiver {
                                             Ktra = Ktra2;
                                             if (Congthuc.CheckTime(this.caidat_tg.getString("tg_debc"))) {
 
-                                                Cursor getSoTN = this.db.GetData("Select max(so_tin_nhan) from tbl_tinnhanS WHERE ngay_nhan = '" + this.mNgayNhan + "' AND so_dienthoai = '" + this.mSDT + "' AND type_kh = 1");
-                                                getSoTN.moveToFirst();
+                                                int maxSoTn = BriteDb.INSTANCE.getMaxSoTinNhan(mNgayNhan, 1, "so_dienthoai = '"+ mSDT +"'");
+
                                                 this.Ten_KH = getTenKH.getString(0);
-                                                this.soTN = getSoTN.getInt(0) + 1;
+                                                this.soTN = maxSoTn + 1;
                                                 this.db.QueryData(!this.body.contains("Tra lai") ? "Insert Into tbl_tinnhanS values (null, '" + this.mNgayNhan + "', '" + this.mGionhan + "',1, '" + this.Ten_KH + "', '" + getTenKH.getString(1) + "','sms', " + this.soTN + ", '" + this.body + "',null,'" + this.body + "', 'ko',0,1,1, null)" : "Insert Into tbl_tinnhanS values (null, '" + this.mNgayNhan + "', '" + this.mGionhan + "',1, '" + this.Ten_KH + "', '" + getTenKH.getString(1) + "','sms', " + this.soTN + ", '" + this.body + "',null,'" + this.body + "', 'ko',0,0,0, null)");
                                                 if (Congthuc.CheckDate(MainActivity.myDate)) {
                                                     Cursor c = this.db.GetData("Select * from tbl_tinnhanS WHERE ngay_nhan = '" + this.mNgayNhan + "' AND so_dienthoai = '" + this.mSDT + "' AND so_tin_nhan = " + this.soTN + " AND type_kh = 1");
@@ -133,18 +134,12 @@ public class SMSReceiver extends BroadcastReceiver {
                                                     }
                                                     c.close();
                                                 }
-                                                if (getSoTN != null && !getSoTN.isClosed()) {
-                                                    getSoTN.close();
-                                                }
                                             } else {
-                                                Cursor getSoTN2 = this.db.GetData("Select max(so_tin_nhan) from tbl_tinnhanS WHERE ngay_nhan = '" + this.mNgayNhan + "' AND so_dienthoai = '" + this.mSDT + "' AND type_kh = 1");
-                                                getSoTN2.moveToFirst();
+                                                int maxSoTn = BriteDb.INSTANCE.getMaxSoTinNhan(mNgayNhan, 1, "so_dienthoai = '" + mSDT +"'");
+
                                                 this.Ten_KH = getTenKH.getString(0);
-                                                this.soTN = getSoTN2.getInt(0) + 1;
+                                                this.soTN = maxSoTn + 1;
                                                 this.db.QueryData("Insert Into tbl_tinnhanS values (null, '" + this.mNgayNhan + "', '" + this.mGionhan + "',1, '" + this.Ten_KH + "', '" + getTenKH.getString(1) + "','sms', " + this.soTN + ", '" + this.body + "',null,'" + this.body + "', 'Hết giờ nhận số!',0,1,1, null)");
-                                                if (!getSoTN2.isClosed()) {
-                                                    getSoTN2.close();
-                                                }
                                                 if (!Congthuc.CheckTime("18:30") && MainActivity.jSon_Setting.getInt("tin_qua_gio") == 1) {
                                                     this.db.SendSMS(getTenKH.getString(1), "Hết giờ nhận!");
                                                 }

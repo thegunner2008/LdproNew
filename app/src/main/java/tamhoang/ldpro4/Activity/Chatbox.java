@@ -1,27 +1,24 @@
 package tamhoang.ldpro4.Activity;
 
 import android.annotation.SuppressLint;
-import android.app.Activity;
 import android.content.ClipData;
 import android.content.ClipboardManager;
 import android.content.Context;
-import android.content.DialogInterface;
 import android.content.Intent;
 import android.database.Cursor;
 import android.os.Bundle;
 import android.os.Handler;
 import android.text.SpannableString;
 import android.text.style.StyleSpan;
+import android.util.Log;
 import android.view.ContextMenu;
 import android.view.LayoutInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.EditText;
 import android.widget.ImageView;
-import android.widget.ListAdapter;
 import android.widget.ListView;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -41,10 +38,12 @@ import tamhoang.ldpro4.Congthuc.Congthuc;
 import tamhoang.ldpro4.MainActivity;
 import tamhoang.ldpro4.NotificationReader;
 import tamhoang.ldpro4.R;
+import tamhoang.ldpro4.data.BriteDb;
 import tamhoang.ldpro4.data.Database;
+import tamhoang.ldpro4.data.model.KhachHang;
+import tamhoang.ldpro4.data.model.TinNhanS;
 
 public class Chatbox extends BaseToolBarActivity {
-    boolean Running = true;
     JSONObject TinXuly = new JSONObject();
     String app_use;
     Database db;
@@ -64,10 +63,10 @@ public class Chatbox extends BaseToolBarActivity {
     private final Runnable runnable = new Runnable() {
         public void run() {
             if (MainActivity.sms) {
-                Chatbox.this.Xem_lv();
+                Xem_lv();
                 MainActivity.sms = false;
             }
-            Chatbox.this.handler.postDelayed(this, 1000);
+            handler.postDelayed(this, 1000);
         }
     };
     ImageView send;
@@ -87,8 +86,6 @@ public class Chatbox extends BaseToolBarActivity {
         this.listView = findViewById(R.id.Listview);
         this.send = findViewById(R.id.send);
         this.messageS = findViewById(R.id.messageS);
-        new MainActivity();
-        MainActivity.Get_date();
         this.TinXuly = new JSONObject();
         this.db = new Database(this);
         Intent intent = getIntent();
@@ -96,10 +93,9 @@ public class Chatbox extends BaseToolBarActivity {
         this.so_dienthoai = intent.getStringExtra("so_dienthoai");
         this.app_use = intent.getStringExtra("app");
         this.send.setOnClickListener(view -> {
-            Exception e;
-            String Mess = Chatbox.this.messageS.getText().toString();
+            String mess = messageS.getText().toString();
             try {
-                if (Mess.replace(" ", "").length() > 0) {
+                if (mess.replace(" ", "").length() > 0) {
                     Calendar calendar = Calendar.getInstance();
                     calendar.setTime(new Date());
                     SimpleDateFormat dmyFormat = new SimpleDateFormat("yyyy-MM-dd");
@@ -110,88 +106,72 @@ public class Chatbox extends BaseToolBarActivity {
                     String mGionhan = hourFormat.format(calendar.getTime());
                     if (Chatbox.this.app_use.contains("TL")) {
                         try {
-                            String SSS = Chatbox.this.messageS.getText().toString();
                             new MainActivity();
-                            MainActivity.sendMessage(Long.parseLong(Chatbox.this.so_dienthoai), SSS);
-                            Chatbox.this.GuiTinTrucTiep(mNgayNhan, mGionhan, Chatbox.this.ten_kh, SSS);
-                            Chatbox.this.messageS.setText("");
-                        } catch (Exception e2) {
-                            e = e2;
+                            MainActivity.sendMessage(Long.parseLong(so_dienthoai), mess);
+                            GuiTinTrucTiep(mNgayNhan, mGionhan, ten_kh, mess);
+                            messageS.setText("");
+                        } catch (Exception e) {
                             e.printStackTrace();
                         }
-                    } else if (Chatbox.this.app_use.indexOf("sms") == -1) {
-                        new NotificationReader().NotificationWearReader(Chatbox.this.ten_kh, Mess);
-                        String SSS2 = Chatbox.this.messageS.getText().toString();
-                        Chatbox.this.db.QueryData("Insert into Chat_database Values( null,'" + mNgayNhan + "', '" + mGionhan + "', 2, '" + Chatbox.this.ten_kh + "', '" + Chatbox.this.so_dienthoai + "', '" + Chatbox.this.app_use + "','" + SSS2 + "',1)");
-                        Chatbox.this.messageS.setText("");
-                        Chatbox.this.GuiTinTrucTiep(mNgayNhan, mGionhan, Chatbox.this.ten_kh, SSS2);
+                    } else if (!app_use.contains("sms")) {
+                        new NotificationReader().NotificationWearReader(ten_kh, mess);
+                        db.QueryData("Insert into Chat_database Values( null,'" + mNgayNhan + "', '" + mGionhan + "', 2, '" + ten_kh + "', '" + so_dienthoai + "', '" + app_use + "','" + mess + "',1)");
+                        messageS.setText("");
+                        GuiTinTrucTiep(mNgayNhan, mGionhan, ten_kh, mess);
                         MainActivity.sms = true;
-                        Chatbox.this.Xem_lv();
+                        Xem_lv();
                     } else {
-                        String SSS3 = Chatbox.this.messageS.getText().toString();
-                        Database database = Chatbox.this.db;
-                        StringBuilder sb = new StringBuilder();
                         try {
-                            sb.append("Select * From tbl_kh_new Where ten_kh = '");
-                            sb.append(Chatbox.this.ten_kh);
-                            sb.append("'");
-                            Cursor c = database.GetData(sb.toString());
+                            Cursor c = db.GetData("Select * From tbl_kh_new Where ten_kh = '" + ten_kh + "'");
                             c.moveToFirst();
-                            Chatbox.this.db.SendSMS(c.getString(1), SSS3);
-                            Chatbox.this.db.QueryData("Insert into Chat_database Values( null,'" + mNgayNhan + "', '" + mGionhan + "', 2, '" + Chatbox.this.ten_kh + "', '" + Chatbox.this.so_dienthoai + "', '" + Chatbox.this.app_use + "','" + SSS3 + "',1)");
-                            Chatbox.this.messageS.setText("");
-                            Chatbox.this.GuiTinTrucTiep(mNgayNhan, mGionhan, Chatbox.this.ten_kh, SSS3);
+                            db.SendSMS(c.getString(1), mess);
+                            db.QueryData("Insert into Chat_database Values( null,'" + mNgayNhan + "', '" + mGionhan + "', 2, '" + ten_kh + "', '" + so_dienthoai + "', '" + app_use + "','" + mess + "',1)");
+                            messageS.setText("");
+                            GuiTinTrucTiep(mNgayNhan, mGionhan, ten_kh, mess);
                             MainActivity.sms = true;
-                            Chatbox.this.Xem_lv();
+                            Xem_lv();
                             c.close();
-                        } catch (Exception e3) {
-                            e = e3;
+                        } catch (Exception e) {
+                           e.printStackTrace();
                         }
                     }
                 }
-            } catch (Exception e4) {
-                e = e4;
+            } catch (Exception e) {
                 e.printStackTrace();
             }
         });
         this.listView.setOnItemLongClickListener((adapterView, view, i, l) -> {
-            Chatbox.this.position = i;
+            position = i;
             return false;
         });
-        Handler handler2 = new Handler();
-        this.handler = handler2;
-        handler2.postDelayed(this.runnable, 1000);
+        handler = new Handler();
+        handler.postDelayed(this.runnable, 1000);
         registerForContextMenu(this.listView);
         Xem_lv();
     }
 
     public void GuiTinTrucTiep(String Ngay_gui, String Gio_gui, String Ten_kh, String mText) {
-        Database database = this.db;
-        Cursor cursor = database.GetData("Select * From tbl_kh_new Where ten_kh = '" + Ten_kh + "'");
-        cursor.moveToFirst();
-        if (cursor.getCount() > 0) {
-            if (cursor.getInt(3) > 1) {
-                Cursor getSoTN = this.db.GetData("Select max(so_tin_nhan) from tbl_tinnhanS WHERE ngay_nhan = '" + Ngay_gui + "' AND ten_kh = '" + Ten_kh + "' AND type_kh = 2");
-                getSoTN.moveToFirst();
-                this.db.QueryData("Insert Into tbl_tinnhanS values (null, '" + Ngay_gui + "', '" + Gio_gui + "', 2, '" + Ten_kh + "', '" + cursor.getString(1) + "', '" + cursor.getString(2) + "', " + (getSoTN.getInt(0) + 1) + ", '" + mText.replaceAll("'", " ").trim() + "', '" + mText.replaceAll("'", " ").trim() + "', '" + mText.replaceAll("'", " ").trim() + "', 'ko',0, 0, 0, null)");
-                Database database2 = this.db;
-                StringBuilder sb = new StringBuilder();
-                sb.append("Select id From tbl_tinnhanS WHERE ngay_nhan = '");
-                sb.append(Ngay_gui);
-                sb.append("' AND ten_kh = '");
-                sb.append(Ten_kh);
-                sb.append("' AND so_tin_nhan = ");
-                sb.append(getSoTN.getInt(0) + 1);
-                sb.append(" And type_kh = 2");
-                Cursor c = database2.GetData(sb.toString());
-                c.moveToFirst();
+//        Cursor cursor = db.GetData("Select * From tbl_kh_new Where ten_kh = '" + Ten_kh + "'");
+//        cursor.moveToFirst();
+        KhachHang khachHang = BriteDb.INSTANCE.selectKhachHang(Ten_kh);
+        if (khachHang != null) {
+            if (khachHang.getType_kh() > 1) {
+                int maxSoTn = BriteDb.INSTANCE.getMaxSoTinNhan(Ngay_gui, khachHang.getType_kh(), "ten_kh = '"+ Ten_kh +"'");
+                String ndTinNhan = mText.replaceAll("'", " ").trim();
+                TinNhanS tinNhanS = new TinNhanS(null, Ngay_gui, Gio_gui, 2, Ten_kh, khachHang.getSdt(), khachHang.getUse_app(),
+                        maxSoTn + 1, ndTinNhan, ndTinNhan, ndTinNhan, "ko", 0, 0, 0, null);
+
+                BriteDb.INSTANCE.insertTinNhanS(tinNhanS);
+
+                TinNhanS tinNhanS2 = BriteDb.INSTANCE.selectTinNhanS(Ngay_gui, Ten_kh, maxSoTn + 1, 2);
                 if (Congthuc.CheckDate(MainActivity.myDate)) {
                     try {
-                        this.db.Update_TinNhanGoc(c.getInt(0), cursor.getInt(3));
+                        db.Update_TinNhanGoc(tinNhanS2.getID(), khachHang.getType_kh());
                     } catch (Exception e) {
-                        Database database3 = this.db;
-                        database3.QueryData("Update tbl_tinnhanS set phat_hien_loi = 'ko' WHERE id = " + c.getInt(0));
-                        this.db.QueryData("Delete From tbl_soctS WHERE ngay_nhan = '" + Ngay_gui + "' AND ten_kh = '" + Ten_kh + "' AND so_tin_nhan = " + (getSoTN.getInt(0) + 1) + " And type_kh = 2");
+                        Log.e(TAG, "GuiTinTrucTiep: er"+ e );
+
+                        db.QueryData("Update tbl_tinnhanS set phat_hien_loi = 'ko' WHERE id = " + tinNhanS2.getID());
+                        db.QueryData("Delete From tbl_soctS WHERE ngay_nhan = '" + Ngay_gui + "' AND ten_kh = '" + Ten_kh + "' AND so_tin_nhan = " + (maxSoTn + 1) + " And type_kh = 2");
                         Toast.makeText(this, "Đã xảy ra lỗi!", Toast.LENGTH_LONG).show();
                     } catch (Throwable throwable) {
                         throwable.printStackTrace();
@@ -215,7 +195,6 @@ public class Chatbox extends BaseToolBarActivity {
                 }
             }
         }
-        cursor.close();
     }
 
     @Override
@@ -243,7 +222,9 @@ public class Chatbox extends BaseToolBarActivity {
         new MainActivity();
         String mDate = MainActivity.Get_date();
         Database database = this.db;
-        Cursor cursor = database.GetData("Select chat_database.*, tbl_tinnhanS.phat_hien_loi, tbl_tinnhanS.id, tbl_tinnhanS.so_tin_nhan From chat_database \nLEFT JOIN tbl_tinnhanS ON chat_database.ngay_nhan = tbl_tinnhanS.ngay_nhan AND chat_database.gio_nhan = tbl_tinnhanS.gio_nhan AND chat_database.ten_kh = tbl_tinnhanS.ten_kh AND chat_database.nd_goc = tbl_tinnhanS.nd_goc\nWhere chat_database.ten_kh = '" + this.ten_kh + "'  AND chat_database.ngay_nhan = '" + mDate + "' AND chat_database.del_sms = 1 ORDER by gio_nhan");
+        Cursor cursor = database.GetData("Select chat_database.*, tbl_tinnhanS.phat_hien_loi, tbl_tinnhanS.id, tbl_tinnhanS.so_tin_nhan From chat_database \nLEFT JOIN tbl_tinnhanS " +
+                "ON chat_database.ngay_nhan = tbl_tinnhanS.ngay_nhan AND chat_database.gio_nhan = tbl_tinnhanS.gio_nhan AND chat_database.ten_kh = tbl_tinnhanS.ten_kh " +
+                "AND chat_database.nd_goc = tbl_tinnhanS.nd_goc\nWhere chat_database.ten_kh = '" + this.ten_kh + "'  AND chat_database.ngay_nhan = '" + mDate + "' AND chat_database.del_sms = 1 ORDER by gio_nhan");
         if (cursor != null && cursor.getCount() > 0) {
             while (cursor.moveToNext()) {
                 this.mID.add(cursor.getString(0));
@@ -307,26 +288,26 @@ public class Chatbox extends BaseToolBarActivity {
             AlertDialog.Builder bui = new AlertDialog.Builder(this);
             bui.setTitle("Xóa tin này");
             bui.setPositiveButton("YES", (dialog, which) -> {
-                if (Chatbox.this.mXulytin.get(Chatbox.this.position).length() > 0) {
-                    Database database = Chatbox.this.db;
-                    Cursor cursor = database.GetData("Select * From tbl_tinnhanS where ID = " + Chatbox.this.mID_TinNhan.get(Chatbox.this.position));
+                if (mXulytin.get(position).length() > 0) {
+                    Database database = db;
+                    Cursor cursor = database.GetData("Select * From tbl_tinnhanS where ID = " + mID_TinNhan.get(position));
                     cursor.moveToFirst();
-                    Database database2 = Chatbox.this.db;
+                    Database database2 = db;
                     database2.QueryData("DELETE FROM tbl_tinnhanS WHERE ngay_nhan = '" + cursor.getString(1) + "' AND ten_kh = '" + cursor.getString(4) + "' AND so_tin_nhan = " + cursor.getString(7) + " AND type_kh = " + cursor.getString(3));
-                    Database database3 = Chatbox.this.db;
+                    Database database3 = db;
                     database3.QueryData("DELETE FROM tbl_soctS WHERE ngay_nhan = '" + cursor.getString(1) + "' AND ten_kh = '" + cursor.getString(4) + "' AND so_tin_nhan = " + cursor.getString(7) + " AND type_kh = " + cursor.getString(3));
-                    Database database4 = Chatbox.this.db;
+                    Database database4 = db;
                     StringBuilder sb = new StringBuilder();
                     sb.append("Update chat_database set del_sms = 0 WHERE ID = ");
-                    sb.append(Chatbox.this.mID.get(Chatbox.this.position));
+                    sb.append(mID.get(position));
                     database4.QueryData(sb.toString());
-                    Chatbox.this.Xem_lv();
+                    Xem_lv();
                     Toast.makeText(Chatbox.this, "Đã xóa!", Toast.LENGTH_LONG).show();
                     return;
                 }
-                Database database5 = Chatbox.this.db;
-                database5.QueryData("Update chat_database set del_sms = 0 WHERE ID = " + Chatbox.this.mID.get(Chatbox.this.position));
-                Chatbox.this.Xem_lv();
+                Database database5 = db;
+                database5.QueryData("Update chat_database set del_sms = 0 WHERE ID = " + mID.get(position));
+                Xem_lv();
             });
             bui.setNegativeButton("No", (dialog, which) -> dialog.cancel());
             bui.create().show();
@@ -340,29 +321,29 @@ public class Chatbox extends BaseToolBarActivity {
         }
 
         public View getView(int position, View convertView, ViewGroup parent) {
-            if (Chatbox.this.type_kh.get(position).contains("2")) {
+            if (type_kh.get(position).contains("2")) {
                 convertView = LayoutInflater.from(getContext()).inflate(R.layout.message_list_item_out, null);
                 TextView textV1 = convertView.findViewById(R.id.body_out);
-                if (Chatbox.this.mXulytin.get(position).indexOf("ok") == 0) {
-                    SpannableString spanString = new SpannableString(Chatbox.this.nd_goc.get(position));
+                if (mXulytin.get(position).indexOf("ok") == 0) {
+                    SpannableString spanString = new SpannableString(nd_goc.get(position));
                     spanString.setSpan(new StyleSpan(1), 0, spanString.length(), 0);
                     textV1.setText(spanString);
                 } else {
-                    textV1.setText(Chatbox.this.nd_goc.get(position));
+                    textV1.setText(nd_goc.get(position));
                 }
-                ((TextView) convertView.findViewById(R.id.status_out)).setText(Chatbox.this.gio_nhan.get(position));
+                ((TextView) convertView.findViewById(R.id.status_out)).setText(gio_nhan.get(position));
             }
-            if (Chatbox.this.type_kh.get(position).contains("1")) {
+            if (type_kh.get(position).contains("1")) {
                 convertView = LayoutInflater.from(getContext()).inflate(R.layout.message_list_item_in, null);
                 TextView tview1 = convertView.findViewById(R.id.body_in);
-                if (Chatbox.this.mXulytin.get(position).indexOf("ok") == 0) {
-                    SpannableString spanString2 = new SpannableString(Chatbox.this.nd_goc.get(position));
+                if (mXulytin.get(position).indexOf("ok") == 0) {
+                    SpannableString spanString2 = new SpannableString(nd_goc.get(position));
                     spanString2.setSpan(new StyleSpan(1), 0, spanString2.length(), 0);
                     tview1.setText(spanString2);
                 } else {
-                    tview1.setText(Chatbox.this.nd_goc.get(position));
+                    tview1.setText(nd_goc.get(position));
                 }
-                ((TextView) convertView.findViewById(R.id.status_in)).setText(Chatbox.this.gio_nhan.get(position));
+                ((TextView) convertView.findViewById(R.id.status_in)).setText(gio_nhan.get(position));
             }
             return convertView;
         }

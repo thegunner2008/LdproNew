@@ -65,14 +65,12 @@ public class Activity_AddKH2 extends BaseToolBarActivity {
     SeekBar xi_dly;
     SeekBar xi_khach;
 
-    /* access modifiers changed from: protected */
-    @Override // tamhoang.ldpro4.Congthuc.BaseToolBarActivity
+    @Override
     public int getLayoutId() {
         return R.layout.activity_add_kh2;
     }
 
-    /* access modifiers changed from: protected */
-    @Override // tamhoang.ldpro4.Congthuc.BaseToolBarActivity, android.support.v7.app.AppCompatActivity, android.support.v4.app.SupportActivity, android.support.v4.app.FragmentActivity
+    @Override
     public void onCreate(Bundle savedInstanceState) {
         String DanGiu;
         String DanGiu2;
@@ -144,120 +142,100 @@ public class Activity_AddKH2 extends BaseToolBarActivity {
                     DanGiu2 = DanGiu + "\n  Lô: " + this.json_KhongMax.getString("danLo");
                 }
                 this.tv_KhongMax.setText((((DanGiu2 + "\n  Xiên 2: " + this.json_KhongMax.getString("xien2")) + "\n  Xiên 3: " + this.json_KhongMax.getString("xien3")) + "\n  Xiên 4: " + this.json_KhongMax.getString("xien4")) + "\n  Càng: " + this.json_KhongMax.getString("cang"));
-                if (cursor != null && !cursor.isClosed()) {
-                    cursor.close();
-                }
+                if (!cursor.isClosed()) cursor.close();
+
             } catch (JSONException e2) {
                 e2.printStackTrace();
             }
         }
         this.sp_traloitn.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
-            /* class tamhoang.ldpro4.Activity.Activity_AddKH2.AnonymousClass1 */
-
-            @Override // android.widget.AdapterView.OnItemSelectedListener
+            @Override
             public void onItemSelected(AdapterView<?> adapterView, View view, int i, long l) {
                 try {
-                    Activity_AddKH2.this.caidat_tg.put("ok_tin", i);
+                    caidat_tg.put("ok_tin", i);
                 } catch (JSONException e) {
                     e.printStackTrace();
                 }
             }
-
-            @Override // android.widget.AdapterView.OnItemSelectedListener
+            @Override
             public void onNothingSelected(AdapterView<?> adapterView) {
             }
         });
+
         this.sp_nhanXien.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
-            /* class tamhoang.ldpro4.Activity.Activity_AddKH2.AnonymousClass2 */
-
-            @Override // android.widget.AdapterView.OnItemSelectedListener
+            @Override
             public void onItemSelected(AdapterView<?> adapterView, View view, int i, long l) {
                 try {
-                    Activity_AddKH2.this.caidat_tg.put("xien_nhan", i);
+                    caidat_tg.put("xien_nhan", i);
                 } catch (JSONException e) {
                     e.printStackTrace();
                 }
             }
-
-            @Override // android.widget.AdapterView.OnItemSelectedListener
+            @Override
             public void onNothingSelected(AdapterView<?> adapterView) {
             }
         });
+
         this.sp_Chot_sodu.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
-            /* class tamhoang.ldpro4.Activity.Activity_AddKH2.AnonymousClass3 */
-
-            @Override // android.widget.AdapterView.OnItemSelectedListener
+            @Override
             public void onItemSelected(AdapterView<?> adapterView, View view, int i, long l) {
                 try {
-                    Activity_AddKH2.this.caidat_tg.put("chot_sodu", i);
+                    caidat_tg.put("chot_sodu", i);
                 } catch (JSONException e) {
                     e.printStackTrace();
                 }
             }
-
-            @Override // android.widget.AdapterView.OnItemSelectedListener
-            public void onNothingSelected(AdapterView<?> adapterView) {
-            }
+            @Override
+            public void onNothingSelected(AdapterView<?> adapterView) {}
         });
+
         this.sp_khachde.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
-            /* class tamhoang.ldpro4.Activity.Activity_AddKH2.AnonymousClass4 */
-
-            @Override // android.widget.AdapterView.OnItemSelectedListener
+            @Override
             public void onItemSelected(AdapterView<?> adapterView, View view, int i, long l) {
                 try {
-                    Activity_AddKH2.this.caidat_tg.put("khach_de", i);
-                } catch (JSONException e) {
-                }
+                    caidat_tg.put("khach_de", i);
+                } catch (JSONException e) {}
             }
-
-            @Override // android.widget.AdapterView.OnItemSelectedListener
-            public void onNothingSelected(AdapterView<?> adapterView) {
-            }
+            public void onNothingSelected(AdapterView<?> adapterView) { }
         });
+
         this.sp_hesode.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
-            /* class tamhoang.ldpro4.Activity.Activity_AddKH2.AnonymousClass5 */
-
-            @Override // android.widget.AdapterView.OnItemSelectedListener
+            @Override
             public void onItemSelected(AdapterView<?> adapterView, View view, int i, long l) {
                 try {
-                    Activity_AddKH2.this.caidat_tg.put("heso_de", i);
+                    caidat_tg.put("heso_de", i);
                 } catch (JSONException e) {
                     e.printStackTrace();
                 }
             }
-
-            @Override // android.widget.AdapterView.OnItemSelectedListener
-            public void onNothingSelected(AdapterView<?> adapterView) {
-            }
+            @Override
+            public void onNothingSelected(AdapterView<?> adapterView) { }
         });
-        this.sp_baoloidonvi.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
-            /* class tamhoang.ldpro4.Activity.Activity_AddKH2.AnonymousClass6 */
 
-            @Override // android.widget.AdapterView.OnItemSelectedListener
+        this.sp_baoloidonvi.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
+            @Override
             public void onItemSelected(AdapterView<?> adapterView, View view, int i, long l) {
                 try {
-                    Activity_AddKH2.this.caidat_tg.put("loi_donvi", i);
+                    caidat_tg.put("loi_donvi", i);
                 } catch (JSONException e) {
                     e.printStackTrace();
                 }
             }
-
-            @Override // android.widget.AdapterView.OnItemSelectedListener
-            public void onNothingSelected(AdapterView<?> adapterView) {
-            }
+            @Override
+            public void onNothingSelected(AdapterView<?> adapterView) { }
         });
         this.btn_exit.setOnClickListener(new View.OnClickListener() {
             /* class tamhoang.ldpro4.Activity.Activity_AddKH2.AnonymousClass7 */
 
             public void onClick(View view) {
                 try {
-                    Activity_AddKH2.this.json.put("caidat_tg", Activity_AddKH2.this.caidat_tg);
-                    Database database = Activity_AddKH2.this.db;
-                    database.QueryData("update tbl_kh_new set tbl_MB = '" + Activity_AddKH2.this.json.toString() + "', tbl_XS = '" + Activity_AddKH2.this.json_KhongMax.toString() + "' WHERE ten_kh = '" + Activity_AddKH2.this.message + "'");
+                    json.put("caidat_tg", caidat_tg);
+                    Database database = db;
+                    database.QueryData("update tbl_kh_new set tbl_MB = '" + json.toString() + "', tbl_XS = '" + json_KhongMax.toString() + "' WHERE ten_kh = '" + message + "'");
                 } catch (JSONException e) {
                     e.printStackTrace();
                 }
-                Activity_AddKH2.this.finish();
+                finish();
             }
         });
         this.de_khach.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
@@ -265,7 +243,7 @@ public class Activity_AddKH2 extends BaseToolBarActivity {
             int max;
 
             public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {
-                TextView textView = Activity_AddKH2.this.pt_giu_de_khach;
+                TextView textView = pt_giu_de_khach;
                 textView.setText((progress * 5) + "%");
                 this.max = progress * 5;
             }
@@ -275,7 +253,7 @@ public class Activity_AddKH2 extends BaseToolBarActivity {
 
             public void onStopTrackingTouch(SeekBar seekBar) {
                 try {
-                    Activity_AddKH2.this.caidat_tg.put("khgiu_de", this.max);
+                    caidat_tg.put("khgiu_de", this.max);
                 } catch (JSONException e) {
                     e.printStackTrace();
                 }
@@ -288,7 +266,7 @@ public class Activity_AddKH2 extends BaseToolBarActivity {
             int max;
 
             public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {
-                TextView textView = Activity_AddKH2.this.pt_giu_lo_khach;
+                TextView textView = pt_giu_lo_khach;
                 textView.setText((progress * 5) + "%");
                 this.max = progress * 5;
             }
@@ -298,7 +276,7 @@ public class Activity_AddKH2 extends BaseToolBarActivity {
 
             public void onStopTrackingTouch(SeekBar seekBar) {
                 try {
-                    Activity_AddKH2.this.caidat_tg.put("khgiu_lo", this.max);
+                    caidat_tg.put("khgiu_lo", this.max);
                 } catch (JSONException e) {
                     e.printStackTrace();
                 }
@@ -311,7 +289,7 @@ public class Activity_AddKH2 extends BaseToolBarActivity {
             int max;
 
             public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {
-                TextView textView = Activity_AddKH2.this.pt_giu_xi_khach;
+                TextView textView = pt_giu_xi_khach;
                 textView.setText((progress * 5) + "%");
                 this.max = progress * 5;
             }
@@ -321,7 +299,7 @@ public class Activity_AddKH2 extends BaseToolBarActivity {
 
             public void onStopTrackingTouch(SeekBar seekBar) {
                 try {
-                    Activity_AddKH2.this.caidat_tg.put("khgiu_xi", this.max);
+                    caidat_tg.put("khgiu_xi", this.max);
                 } catch (JSONException e) {
                     e.printStackTrace();
                 }
@@ -334,7 +312,7 @@ public class Activity_AddKH2 extends BaseToolBarActivity {
             int max;
 
             public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {
-                TextView textView = Activity_AddKH2.this.pt_giu_bc_khach;
+                TextView textView = pt_giu_bc_khach;
                 textView.setText((progress * 5) + "%");
                 this.max = progress * 5;
             }
@@ -344,7 +322,7 @@ public class Activity_AddKH2 extends BaseToolBarActivity {
 
             public void onStopTrackingTouch(SeekBar seekBar) {
                 try {
-                    Activity_AddKH2.this.caidat_tg.put("khgiu_bc", this.max);
+                    caidat_tg.put("khgiu_bc", this.max);
                 } catch (JSONException e) {
                     e.printStackTrace();
                 }
@@ -357,7 +335,7 @@ public class Activity_AddKH2 extends BaseToolBarActivity {
             int max;
 
             public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {
-                TextView textView = Activity_AddKH2.this.pt_giu_de_dly;
+                TextView textView = pt_giu_de_dly;
                 textView.setText((progress * 5) + "%");
                 this.max = progress * 5;
             }
@@ -367,7 +345,7 @@ public class Activity_AddKH2 extends BaseToolBarActivity {
 
             public void onStopTrackingTouch(SeekBar seekBar) {
                 try {
-                    Activity_AddKH2.this.caidat_tg.put("dlgiu_de", this.max);
+                    caidat_tg.put("dlgiu_de", this.max);
                 } catch (JSONException e) {
                     e.printStackTrace();
                 }
@@ -380,7 +358,7 @@ public class Activity_AddKH2 extends BaseToolBarActivity {
             int max;
 
             public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {
-                TextView textView = Activity_AddKH2.this.pt_giu_lo_dly;
+                TextView textView = pt_giu_lo_dly;
                 textView.setText((progress * 5) + "%");
                 this.max = progress * 5;
             }
@@ -390,7 +368,7 @@ public class Activity_AddKH2 extends BaseToolBarActivity {
 
             public void onStopTrackingTouch(SeekBar seekBar) {
                 try {
-                    Activity_AddKH2.this.caidat_tg.put("dlgiu_lo", this.max);
+                    caidat_tg.put("dlgiu_lo", this.max);
                 } catch (JSONException e) {
                     e.printStackTrace();
                 }
@@ -403,7 +381,7 @@ public class Activity_AddKH2 extends BaseToolBarActivity {
             int max;
 
             public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {
-                TextView textView = Activity_AddKH2.this.pt_giu_xi_dly;
+                TextView textView = pt_giu_xi_dly;
                 textView.setText((progress * 5) + "%");
                 this.max = progress * 5;
             }
@@ -413,7 +391,7 @@ public class Activity_AddKH2 extends BaseToolBarActivity {
 
             public void onStopTrackingTouch(SeekBar seekBar) {
                 try {
-                    Activity_AddKH2.this.caidat_tg.put("dlgiu_xi", this.max);
+                    caidat_tg.put("dlgiu_xi", this.max);
                 } catch (JSONException e) {
                     e.printStackTrace();
                 }
@@ -426,7 +404,7 @@ public class Activity_AddKH2 extends BaseToolBarActivity {
             int max;
 
             public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {
-                TextView textView = Activity_AddKH2.this.pt_giu_bc_dly;
+                TextView textView = pt_giu_bc_dly;
                 textView.setText((progress * 5) + "%");
                 this.max = progress * 5;
             }
@@ -436,7 +414,7 @@ public class Activity_AddKH2 extends BaseToolBarActivity {
 
             public void onStopTrackingTouch(SeekBar seekBar) {
                 try {
-                    Activity_AddKH2.this.caidat_tg.put("dlgiu_bc", this.max);
+                    caidat_tg.put("dlgiu_bc", this.max);
                 } catch (JSONException e) {
                     e.printStackTrace();
                 }
@@ -454,18 +432,18 @@ public class Activity_AddKH2 extends BaseToolBarActivity {
 
                     public void onTimeSet(TimePicker timePicker, int selectedHour, int selectedMinute) {
                         if (selectedMinute < 10) {
-                            TextView textView = Activity_AddKH2.this.tv_Lo_xien;
+                            TextView textView = tv_Lo_xien;
                             textView.setText(selectedHour + ":0" + selectedMinute);
                             Activity_AddKH2 activity_AddKH2 = Activity_AddKH2.this;
                             Toast.makeText(activity_AddKH2, "Đặt không nhận lô, xiên sau: " + selectedHour + ":0" + selectedMinute, Toast.LENGTH_LONG).show();
                         } else {
-                            TextView textView2 = Activity_AddKH2.this.tv_Lo_xien;
+                            TextView textView2 = tv_Lo_xien;
                             textView2.setText(selectedHour + ":" + selectedMinute);
                             Activity_AddKH2 activity_AddKH22 = Activity_AddKH2.this;
                             Toast.makeText(activity_AddKH22, "Đặt không nhận lô, xiên sau: " + selectedHour + ":" + selectedMinute, Toast.LENGTH_LONG).show();
                         }
                         try {
-                            Activity_AddKH2.this.caidat_tg.put("tg_loxien", Activity_AddKH2.this.tv_Lo_xien.getText().toString());
+                            caidat_tg.put("tg_loxien", tv_Lo_xien.getText().toString());
                         } catch (JSONException e) {
                             e.printStackTrace();
                         }
@@ -485,18 +463,18 @@ public class Activity_AddKH2 extends BaseToolBarActivity {
 
                     public void onTimeSet(TimePicker timePicker, int selectedHour, int selectedMinute) {
                         if (selectedMinute < 10) {
-                            TextView textView = Activity_AddKH2.this.tv_de_cang;
+                            TextView textView = tv_de_cang;
                             textView.setText(selectedHour + ":0" + selectedMinute);
                             Activity_AddKH2 activity_AddKH2 = Activity_AddKH2.this;
                             Toast.makeText(activity_AddKH2, "Đặt không nhận đề/càng sau: " + selectedHour + ":0" + selectedMinute, Toast.LENGTH_LONG).show();
                         } else {
-                            TextView textView2 = Activity_AddKH2.this.tv_de_cang;
+                            TextView textView2 = tv_de_cang;
                             textView2.setText(selectedHour + ":" + selectedMinute);
                             Activity_AddKH2 activity_AddKH22 = Activity_AddKH2.this;
                             Toast.makeText(activity_AddKH22, "Đặt không nhận đề/càng sau: " + selectedHour + ":" + selectedMinute, Toast.LENGTH_LONG).show();
                         }
                         try {
-                            Activity_AddKH2.this.caidat_tg.put("tg_debc", Activity_AddKH2.this.tv_de_cang.getText().toString());
+                            caidat_tg.put("tg_debc", tv_de_cang.getText().toString());
                         } catch (JSONException e) {
                             e.printStackTrace();
                         }
@@ -510,7 +488,7 @@ public class Activity_AddKH2 extends BaseToolBarActivity {
             /* class tamhoang.ldpro4.Activity.Activity_AddKH2.AnonymousClass18 */
 
             public void onClick(View v) {
-                Activity_AddKH2.this.showDialog2();
+                showDialog2();
             }
         });
     }
@@ -561,7 +539,7 @@ public class Activity_AddKH2 extends BaseToolBarActivity {
             if (ktra) {
                 try {
                     if (str.length() > 7) {
-                        Activity_AddKH2.this.json_KhongMax.put("danDe", edt_NhapDanDe.getText().toString().replaceAll("\n", " "));
+                        json_KhongMax.put("danDe", edt_NhapDanDe.getText().toString().replaceAll("\n", " "));
                         JSONObject json_sole = new JSONObject();
                         while (true) {
                             String str1 = str.substring(0, str.indexOf("\n") + i);
@@ -581,12 +559,12 @@ public class Activity_AddKH2 extends BaseToolBarActivity {
                             }
                             i = 1;
                         }
-                        Activity_AddKH2.this.json_KhongMax.put("soDe", json_sole.toString());
+                        json_KhongMax.put("soDe", json_sole.toString());
                     }
                 } catch (JSONException e2) {
                     e2.printStackTrace();
                 }
-                Activity_AddKH2.this.UPdate();
+                UPdate();
             }
         });
         btnXoaDanDe.setOnClickListener(new View.OnClickListener() {
@@ -594,16 +572,16 @@ public class Activity_AddKH2 extends BaseToolBarActivity {
 
             public void onClick(View v) {
                 try {
-                    Activity_AddKH2.this.json_KhongMax.put("danDe", "");
-                    Activity_AddKH2.this.json_KhongMax.put("soDe", new JSONObject().toString());
+                    json_KhongMax.put("danDe", "");
+                    json_KhongMax.put("soDe", new JSONObject().toString());
                     edt_NhapDanDe.setText("");
                 } catch (JSONException e) {
                     e.printStackTrace();
                 } catch (Throwable th) {
-                    Activity_AddKH2.this.UPdate();
+                    UPdate();
                     throw th;
                 }
-                Activity_AddKH2.this.UPdate();
+                UPdate();
             }
         });
         btnThemdanLo.setOnClickListener(new View.OnClickListener() {
@@ -628,7 +606,7 @@ public class Activity_AddKH2 extends BaseToolBarActivity {
                 if (ktra) {
                     try {
                         if (str.length() > 7) {
-                            Activity_AddKH2.this.json_KhongMax.put("danLo", edt_NhapDanLo.getText().toString().replaceAll("\n", " "));
+                            json_KhongMax.put("danLo", edt_NhapDanLo.getText().toString().replaceAll("\n", " "));
                             JSONObject json_sole = new JSONObject();
                             while (true) {
                                 String str1 = str.substring(0, str.indexOf("\n") + i);
@@ -648,12 +626,12 @@ public class Activity_AddKH2 extends BaseToolBarActivity {
                                 }
                                 i = 1;
                             }
-                            Activity_AddKH2.this.json_KhongMax.put("soLo", json_sole.toString());
+                            json_KhongMax.put("soLo", json_sole.toString());
                         }
                     } catch (JSONException e2) {
                         e2.printStackTrace();
                     }
-                    Activity_AddKH2.this.UPdate();
+                    UPdate();
                 }
             }
         });
@@ -662,16 +640,16 @@ public class Activity_AddKH2 extends BaseToolBarActivity {
 
             public void onClick(View v) {
                 try {
-                    Activity_AddKH2.this.json_KhongMax.put("danLo", "");
-                    Activity_AddKH2.this.json_KhongMax.put("soLo", new JSONObject().toString());
+                    json_KhongMax.put("danLo", "");
+                    json_KhongMax.put("soLo", new JSONObject().toString());
                     edt_NhapDanLo.setText("");
                 } catch (JSONException e) {
                     e.printStackTrace();
                 } catch (Throwable th) {
-                    Activity_AddKH2.this.UPdate();
+                    UPdate();
                     throw th;
                 }
-                Activity_AddKH2.this.UPdate();
+                UPdate();
             }
         });
         btnThemXien.setOnClickListener(new View.OnClickListener() {
@@ -679,17 +657,17 @@ public class Activity_AddKH2 extends BaseToolBarActivity {
 
             public void onClick(View v) {
                 try {
-                    Activity_AddKH2.this.json_KhongMax.put("xien2", giuxien2.getText().toString());
-                    Activity_AddKH2.this.json_KhongMax.put("xien3", giuxien3.getText().toString());
-                    Activity_AddKH2.this.json_KhongMax.put("xien4", giuxien4.getText().toString());
-                    Activity_AddKH2.this.json_KhongMax.put("cang", giu3cang.getText().toString());
+                    json_KhongMax.put("xien2", giuxien2.getText().toString());
+                    json_KhongMax.put("xien3", giuxien3.getText().toString());
+                    json_KhongMax.put("xien4", giuxien4.getText().toString());
+                    json_KhongMax.put("cang", giu3cang.getText().toString());
                 } catch (JSONException e) {
                     e.printStackTrace();
                 } catch (Throwable th) {
-                    Activity_AddKH2.this.UPdate();
+                    UPdate();
                     throw th;
                 }
-                Activity_AddKH2.this.UPdate();
+                UPdate();
             }
         });
         btnXoaXien.setOnClickListener(new View.OnClickListener() {
@@ -697,10 +675,10 @@ public class Activity_AddKH2 extends BaseToolBarActivity {
 
             public void onClick(View v) {
                 try {
-                    Activity_AddKH2.this.json_KhongMax.put("xien2", 0);
-                    Activity_AddKH2.this.json_KhongMax.put("xien3", 0);
-                    Activity_AddKH2.this.json_KhongMax.put("xien4", 0);
-                    Activity_AddKH2.this.json_KhongMax.put("cang", 0);
+                    json_KhongMax.put("xien2", 0);
+                    json_KhongMax.put("xien3", 0);
+                    json_KhongMax.put("xien4", 0);
+                    json_KhongMax.put("cang", 0);
                     giuxien2.setText("0");
                     giuxien3.setText("0");
                     giuxien4.setText("0");
@@ -708,10 +686,10 @@ public class Activity_AddKH2 extends BaseToolBarActivity {
                 } catch (JSONException e) {
                     e.printStackTrace();
                 } catch (Throwable th) {
-                    Activity_AddKH2.this.UPdate();
+                    UPdate();
                     throw th;
                 }
-                Activity_AddKH2.this.UPdate();
+                UPdate();
             }
         });
         dialog.setCancelable(true);

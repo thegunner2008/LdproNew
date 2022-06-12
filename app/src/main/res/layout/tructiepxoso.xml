@@ -9,6 +9,32 @@
     android:background="@color/white"
     android:weightSum="1">
 
+    <RadioGroup
+        android:orientation="horizontal"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_margin="20dp">
+
+        <RadioButton android:textSize="14sp"
+            android:textStyle="bold"
+            android:textColor="@color/red"
+            android:id="@+id/rdb_XsoMe"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:checked="true"
+            android:text="Xổ số me"
+            android:layout_weight="1"/>
+
+        <RadioButton android:textSize="14sp"
+            android:textStyle="bold"
+            android:textColor="@color/red"
+            android:id="@+id/rdb_ThienPhu"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Thiên phú"
+            android:layout_weight="1"/>
+    </RadioGroup>
+
     <Switch
         android:id="@+id/Switch1"
         android:layout_width="match_parent"

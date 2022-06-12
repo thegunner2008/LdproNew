@@ -1,5 +1,7 @@
 package tamhoang.ldpro4.Fragment;
 
+import static android.content.ContentValues.TAG;
+
 import android.annotation.SuppressLint;
 import android.app.AlertDialog;
 import android.content.ComponentName;
@@ -16,6 +18,7 @@ import android.os.Bundle;
 import android.os.Handler;
 import android.provider.Settings;
 import android.text.format.DateFormat;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -46,6 +49,7 @@ import tamhoang.ldpro4.MainActivity;
 import tamhoang.ldpro4.NotificationReader;
 import tamhoang.ldpro4.R;
 import tamhoang.ldpro4.data.Database;
+import tamhoang.ldpro4.data.model.Chat;
 
 public class Frag_Chat_Manager extends Fragment {
     boolean Running = true;
@@ -61,10 +65,10 @@ public class Frag_Chat_Manager extends Fragment {
     private final Runnable runnable = new Runnable() {
         public void run() {
             if (MainActivity.sms) {
-                Frag_Chat_Manager.this.XemListview();
+                XemListview();
                 MainActivity.sms = false;
             }
-            Frag_Chat_Manager.this.handler.postDelayed(this, 1000);
+            handler.postDelayed(this, 1000);
         }
     };
     public View v;
@@ -76,13 +80,13 @@ public class Frag_Chat_Manager extends Fragment {
         this.btn_Thongbao = this.v.findViewById(R.id.btn_Thongbao);
         this.btn_login = this.v.findViewById(R.id.btn_login);
         this.listviewKH = this.v.findViewById(R.id.listviewKH);
-        this.btn_Thongbao.setOnClickListener(v -> Frag_Chat_Manager.this.startActivity(new Intent("android.settings.ACTION_NOTIFICATION_LISTENER_SETTINGS")));
+        this.btn_Thongbao.setOnClickListener(v -> startActivity(new Intent("android.settings.ACTION_NOTIFICATION_LISTENER_SETTINGS")));
         this.listviewKH.setOnItemClickListener((adapterView, view, i, l) -> {
-            Intent intent = new Intent(Frag_Chat_Manager.this.getActivity(), Chatbox.class);
-            intent.putExtra("tenKH", Frag_Chat_Manager.this.mTenKH.get(i));
-            intent.putExtra("so_dienthoai", Frag_Chat_Manager.this.mSDT.get(i));
-            intent.putExtra("app", Frag_Chat_Manager.this.mApp.get(i));
-            Frag_Chat_Manager.this.startActivity(intent);
+            Intent intent = new Intent(getActivity(), Chatbox.class);
+            intent.putExtra("tenKH", mTenKH.get(i));
+            intent.putExtra("so_dienthoai", mSDT.get(i));
+            intent.putExtra("app", mApp.get(i));
+            startActivity(intent);
         });
         notificationPermission();
         Handler handler2 = new Handler();
@@ -186,28 +190,26 @@ public class Frag_Chat_Manager extends Fragment {
     }
 
     private void XemListview() {//lay data trong Chat_database (chi lay moi khach hang 1 row) hien thi ra listviewKH
-        this.mTenKH.clear();
-        this.mNoiDung.clear();
-        this.mApp.clear();
-        this.mSDT.clear();
-        new MainActivity();
+        mTenKH.clear();
+        mNoiDung.clear();
+        mApp.clear();
+        mSDT.clear();
         String mDate = MainActivity.Get_date();
         JSONObject jsonObject = new JSONObject();
-        Database database = this.db;
-        Cursor cursor = database.GetData("SELECT * FROM Chat_database WHERE ngay_nhan = '" + mDate + "' ORDER BY Gio_nhan DESC, ID DESC");
+        Cursor cursor = db.GetData("SELECT * FROM Chat_database WHERE ngay_nhan = '" + mDate + "' ORDER BY Gio_nhan DESC, ID DESC");
         if (cursor != null) {
             while (cursor.moveToNext()) {
                 String ten_kh = cursor.getString(4);
                 String use_app = cursor.getString(6);
-
+                
                 if ((MainActivity.arr_TenKH.contains(ten_kh) || use_app.contains("sms") || use_app.contains("ZL") || use_app.contains("TL")|| use_app.contains("VB"))
                         && !jsonObject.has(ten_kh)) {
                     try {
-                        jsonObject.put(cursor.getString(4), "OK");
-                        this.mTenKH.add(cursor.getString(4));
-                        this.mSDT.add(cursor.getString(5));
-                        this.mApp.add(cursor.getString(6));
-                        this.mNoiDung.add(cursor.getString(7));
+                        jsonObject.put(ten_kh, "OK");
+                        mTenKH.add(cursor.getString(4));
+                        mSDT.add(cursor.getString(5));
+                        mApp.add(cursor.getString(6));
+                        mNoiDung.add(cursor.getString(7));
                     } catch (JSONException e) {
                         e.printStackTrace();
                     }
@@ -260,16 +262,16 @@ public class Frag_Chat_Manager extends Fragment {
             holder.imageView = view2.findViewById(R.id.imv_app);
             holder.TenKH = view2.findViewById(R.id.tv_KhachHang);
             holder.ndChat = view2.findViewById(R.id.tv_NoiDung);
-            if (Frag_Chat_Manager.this.mApp.get(position).contains("WA")) {
+            if (mApp.get(position).contains("WA")) {
                 holder.imageView.setBackgroundResource(R.drawable.ic_perm_phone_msg);
-            } else if (Frag_Chat_Manager.this.mApp.get(position).contains("VI")) {
+            } else if (mApp.get(position).contains("VI")) {
                 holder.imageView.setBackgroundResource(R.drawable.ic_phone);
-            } else if (Frag_Chat_Manager.this.mApp.get(position).contains("ZL")) {
+            } else if (mApp.get(position).contains("ZL")) {
                 holder.imageView.setBackgroundResource(R.drawable.ic_zalo);
-            } else if (Frag_Chat_Manager.this.mApp.get(position).contains("TL")) {
+            } else if (mApp.get(position).contains("TL")) {
                 holder.imageView.setBackgroundResource(R.drawable.outline_telegram_20);
                 holder.tv_delete.setVisibility(View.GONE);
-            } else if (Frag_Chat_Manager.this.mApp.get(position).contains("sms")) {
+            } else if (mApp.get(position).contains("sms")) {
                 holder.imageView.setBackgroundResource(R.drawable.ic_sms);
                 holder.add_contacts.setVisibility(View.GONE);
                 holder.tv_delete.setVisibility(View.GONE);
@@ -277,32 +279,34 @@ public class Frag_Chat_Manager extends Fragment {
             holder.add_contacts.setFocusable(false);
             holder.add_contacts.setFocusableInTouchMode(false);
             holder.add_contacts.setOnClickListener(view1 -> {
-                Intent intent = new Intent(Frag_Chat_Manager.this.getActivity(), Activity_AddKH.class);
-                intent.putExtra("tenKH", Frag_Chat_Manager.this.mTenKH.get(position));
-                intent.putExtra("so_dienthoai", Frag_Chat_Manager.this.mSDT.get(position));
-                intent.putExtra("use_app", Frag_Chat_Manager.this.mApp.get(position));
-                Frag_Chat_Manager.this.startActivity(intent);
+                Intent intent = new Intent(getActivity(), Activity_AddKH.class);
+                intent.putExtra("tenKH", mTenKH.get(position));
+                intent.putExtra("so_dienthoai", mSDT.get(position));
+                intent.putExtra("use_app", mApp.get(position));
+                startActivity(intent);
             });
-            if (MainActivity.DSkhachhang.contains(Frag_Chat_Manager.this.mTenKH.get(position))) {
+            if (MainActivity.DSkhachhang.contains(mTenKH.get(position))) {
                 holder.add_contacts.setVisibility(View.GONE);
             }
             holder.tv_delete.setOnClickListener(v -> {
-                AlertDialog.Builder builder = new AlertDialog.Builder(Frag_Chat_Manager.this.getActivity());
+                AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
                 builder.setTitle("Xoá Khách");
                 builder.setMessage("Sẽ xóa hết dữ liệu chat từ khách này, không thể khôi phục và không thể tải lại tin nhắn!");
                 builder.setNegativeButton("Có", (dialog, which) -> {
-                    int TTkhachhang = MainActivity.arr_TenKH.indexOf(Frag_Chat_Manager.this.mTenKH.get(position));
-                    MainActivity.arr_TenKH.remove(TTkhachhang);
-                    MainActivity.contactslist.remove(TTkhachhang);
-                    Frag_Chat_Manager.this.XemListview();
+                    int TTkhachhang = MainActivity.arr_TenKH.indexOf(mTenKH.get(position));
+                    if (TTkhachhang >= 0) {
+                        MainActivity.arr_TenKH.remove(TTkhachhang);
+                        MainActivity.contactslist.remove(TTkhachhang);
+                    }
+                    XemListview();
                     dialog.dismiss();
-                    Toast.makeText(Frag_Chat_Manager.this.getActivity(), "Đã xóa!", 1).show();
+                    Toast.makeText(getActivity(), "Đã xóa!", 1).show();
                 });
                 builder.setPositiveButton("Không", (dialog, which) -> dialog.dismiss());
                 builder.show();
             });
-            holder.TenKH.setText(Frag_Chat_Manager.this.mTenKH.get(position));
-            holder.ndChat.setText(Frag_Chat_Manager.this.mNoiDung.get(position));
+            holder.TenKH.setText(mTenKH.get(position));
+            holder.ndChat.setText(mNoiDung.get(position));
             return view2;
         }
     }
@@ -315,7 +319,7 @@ public class Frag_Chat_Manager extends Fragment {
         if (!enabled) {
             showAlertBox("Truy cập thông báo!", "Hãy cho phép phần mềm được truy cập thông báo của điện thoại để kích hoạt chức năng nhắn tin.").setPositiveButton("Ok", new DialogInterface.OnClickListener() {
                 public void onClick(DialogInterface dialogInterface, int i) {
-                    Frag_Chat_Manager.this.getActivity().startActivity(new Intent("android.settings.ACTION_NOTIFICATION_LISTENER_SETTINGS"));
+                    getActivity().startActivity(new Intent("android.settings.ACTION_NOTIFICATION_LISTENER_SETTINGS"));
                 }
             }).setNegativeButton("Cancel", (dialogInterface, i) -> dialogInterface.dismiss()).show().setCanceledOnTouchOutside(false);
         }

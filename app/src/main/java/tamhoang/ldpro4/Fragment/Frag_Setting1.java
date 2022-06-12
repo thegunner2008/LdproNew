@@ -46,13 +46,11 @@ public class Frag_Setting1 extends Fragment {
     public List<String> mAppuse = new ArrayList();
     public List<String> mDate = new ArrayList();
     public List<String> mPerson = new ArrayList();
-    int mPoint;
     int mPoistion = 0;
     public List<Integer> mtype = new ArrayList();
     TextView tv_Sodt;
     TextView tv_tenKH;
     ImageButton tv_xoaKH;
-    int type = 1;
     View v;
 
     @Override
@@ -64,25 +62,19 @@ public class Frag_Setting1 extends Fragment {
         FloatingActionButton fab_add = (FloatingActionButton) this.v.findViewById(R.id.fab_add);
         this.btn_themKH = button;
         fab_add.setOnClickListener(v -> {
-            Intent intent = new Intent(Frag_Setting1.this.getActivity(), Activity_AddKH.class);
+            Intent intent = new Intent(getActivity(), Activity_AddKH.class);
             intent.putExtra("tenKH", "");
             intent.putExtra("use_app", "sms");
             intent.putExtra("kh_new", "");
-            Frag_Setting1.this.startActivity(intent);
+            startActivity(intent);
         });
-        this.lview.setOnItemClickListener(new AdapterView.OnItemClickListener() {
-            @Override
-            public void onItemClick(AdapterView<?> adapterView, View view, int position, long id) {
-                Frag_Setting1.this.mPoistion = position;
-                Frag_Setting1.this.lview.showContextMenuForChild(view);
-            }
+        this.lview.setOnItemClickListener((adapterView, view, position, id) -> {
+            mPoistion = position;
+            lview.showContextMenuForChild(view);
         });
-        this.lview.setOnItemLongClickListener(new AdapterView.OnItemLongClickListener() {
-            @Override
-            public boolean onItemLongClick(AdapterView<?> adapterView, View view, int position, long l) {
-                Frag_Setting1.this.mPoistion = position;
-                return false;
-            }
+        this.lview.setOnItemLongClickListener((adapterView, view, position, l) -> {
+            mPoistion = position;
+            return false;
         });
         xem_lv();
         registerForContextMenu(this.lview);
@@ -190,12 +182,10 @@ public class Frag_Setting1 extends Fragment {
             while (cursor.moveToNext()) {
                 this.mPerson.add(cursor.getString(0));
                 this.mAddress.add(cursor.getString(1));
-                this.mtype.add(Integer.valueOf(cursor.getInt(3)));
+                this.mtype.add(cursor.getInt(3));
                 this.mAppuse.add(cursor.getString(2));
             }
-            if (cursor != null && !cursor.isClosed()) {
-                cursor.close();
-            }
+            if (!cursor.isClosed()) cursor.close();
         }
         if (getActivity() != null) {
             this.lview.setAdapter((ListAdapter) new KHAdapter(getActivity(), R.layout.frag_setting1_lv, this.mPerson));
@@ -211,44 +201,39 @@ public class Frag_Setting1 extends Fragment {
             @SuppressLint("ViewHolder")
             View v = ((Activity) getContext()).getLayoutInflater().inflate(R.layout.frag_setting1_lv, (ViewGroup) null);
             TextView tview1 = (TextView) v.findViewById(R.id.st1_tenkh);
-            tview1.setText(Frag_Setting1.this.mPerson.get(position));
-            ((TextView) v.findViewById(R.id.st1_sdt)).setText(Frag_Setting1.this.mAddress.get(position));
+            tview1.setText(mPerson.get(position));
+            ((TextView) v.findViewById(R.id.st1_sdt)).setText(mAddress.get(position));
 
             v.setOnClickListener(view -> {
-                Frag_Setting1.this.mPoistion = position;
-                Frag_Setting1.this.lview.showContextMenuForChild(view);
+                mPoistion = position;
+                lview.showContextMenuForChild(view);
             });
 
             v.setOnLongClickListener(view -> {
-                Frag_Setting1.this.mPoistion = position;
+                mPoistion = position;
                 return false;
             });
 
-            Frag_Setting1.this.tv_xoaKH = (ImageButton) v.findViewById(R.id.tv_xoaKH);
-            Frag_Setting1.this.tv_xoaKH.setOnClickListener(v1 -> {
-                AlertDialog.Builder builder = new AlertDialog.Builder(Objects.requireNonNull(Frag_Setting1.this.getActivity()));
+            tv_xoaKH = (ImageButton) v.findViewById(R.id.tv_xoaKH);
+            tv_xoaKH.setOnClickListener(v1 -> {
+                AlertDialog.Builder builder = new AlertDialog.Builder(Objects.requireNonNull(getActivity()));
                 builder.setTitle("Xoá Khách");
-                builder.setMessage("Xoá bỏ " + Frag_Setting1.this.mPerson.get(position) + " ra khỏi danh sách?");
+                builder.setMessage("Xoá bỏ " + mPerson.get(position) + " ra khỏi danh sách?");
                 builder.setNegativeButton("Có", (dialog, which) -> {
-                    Database database = Frag_Setting1.this.db;
-                    database.QueryData("Delete FROM tbl_kh_new where ten_kh = '" + Frag_Setting1.this.mPerson.get(position) + "'");
-                    Database database2 = Frag_Setting1.this.db;
-                    database2.QueryData("Delete FROM tbl_tinnhanS where ten_kh = '" + Frag_Setting1.this.mPerson.get(position) + "'");
-                    Database database3 = Frag_Setting1.this.db;
-                    database3.QueryData("Delete FROM tbl_soctS where ten_kh = '" + Frag_Setting1.this.mPerson.get(position) + "'");
-                    Database database4 = Frag_Setting1.this.db;
-                    database4.QueryData("Delete FROM tbl_chuyenthang where kh_nhan = '" + Frag_Setting1.this.mPerson.get(position) + "'");
-                    Database database5 = Frag_Setting1.this.db;
-                    database5.QueryData("Delete FROM tbl_chuyenthang where kh_chuyen = '" + Frag_Setting1.this.mPerson.get(position) + "'");
-                    Frag_Setting1.this.db.LayDanhsachKH();
-                    Frag_Setting1.this.xem_lv();
+                    db.QueryData("Delete FROM tbl_kh_new where ten_kh = '" + mPerson.get(position) + "'");
+                    db.QueryData("Delete FROM tbl_tinnhanS where ten_kh = '" + mPerson.get(position) + "'");
+                    db.QueryData("Delete FROM tbl_soctS where ten_kh = '" + mPerson.get(position) + "'");
+                    db.QueryData("Delete FROM tbl_chuyenthang where kh_nhan = '" + mPerson.get(position) + "'");
+                    db.QueryData("Delete FROM tbl_chuyenthang where kh_chuyen = '" + mPerson.get(position) + "'");
+                    db.LayDanhsachKH();
+                    xem_lv();
                     dialog.dismiss();
-                    Toast.makeText(Frag_Setting1.this.getActivity(), "Xoá thành công!", Toast.LENGTH_LONG).show();
+                    Toast.makeText(getActivity(), "Xoá thành công!", Toast.LENGTH_LONG).show();
                 });
                 builder.setPositiveButton("Không", (dialog, which) -> dialog.dismiss());
                 builder.show();
             });
-            if (Frag_Setting1.this.mtype.get(position).intValue() != 1) {
+            if (mtype.get(position) != 1) {
                 tview1.setTextColor(-16776961);
             }
             return v;

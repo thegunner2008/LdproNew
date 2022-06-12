@@ -8,7 +8,8 @@ import androidx.appcompat.widget.Toolbar;
 import tamhoang.ldpro4.R;
 
 public abstract class BaseToolBarActivity extends AppCompatActivity {
-    protected final String TAG = getClass().getSimpleName();
+    protected final String TAG_TITLE = getClass().getSimpleName();
+    protected final String TAG = "ContentValues";
     protected Toolbar toolbar;
 
     /* access modifiers changed from: protected */
@@ -19,7 +20,7 @@ public abstract class BaseToolBarActivity extends AppCompatActivity {
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(getLayoutId());
-        setTitle(this.TAG);
+        setTitle(TAG_TITLE);
         Toolbar toolbar2 = findViewById(R.id.toolbar);
         this.toolbar = toolbar2;
         setSupportActionBar(toolbar2);

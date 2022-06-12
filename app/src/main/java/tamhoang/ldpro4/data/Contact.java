@@ -50,4 +50,11 @@ public class Contact {
     public void setRemoteExtras(Bundle remoteExtras2) {
         this.remoteExtras = remoteExtras2;
     }
+
+    @Override
+    public String toString() {
+        return "Contact{" +
+                ", name='" + name + '\'' +
+                '}';
+    }
 }

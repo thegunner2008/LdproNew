@@ -64,6 +64,7 @@ import okhttp3.ResponseBody;
 import tamhoang.ldpro4.Congthuc.Congthuc;
 import tamhoang.ldpro4.MainActivity;
 import tamhoang.ldpro4.R;
+import tamhoang.ldpro4.data.BriteDb;
 import tamhoang.ldpro4.data.Database;
 
 public class Frag_Chaytrang extends Fragment {
@@ -131,38 +132,38 @@ public class Frag_Chaytrang extends Fragment {
                 Calendar calendar = Calendar.getInstance();
                 calendar.setTimeInMillis(Frag_Chaytrang.Curent_date_time * 1000);
                 Date date = Frag_Chaytrang.parseDate(calendar.get(11) + ":" + calendar.get(12));
-                if (date.after(gioLoxien) && date.before(gioKetthuc) && !Frag_Chaytrang.this.LoLive) {
-                    Frag_Chaytrang.this.radio_xi.setEnabled(false);
-                    Frag_Chaytrang.this.radio_lo.setText("Lô Live");
-                    Frag_Chaytrang.this.LoLive = true;
+                if (date.after(gioLoxien) && date.before(gioKetthuc) && !LoLive) {
+                    radio_xi.setEnabled(false);
+                    radio_lo.setText("Lô Live");
+                    LoLive = true;
                 } else if (date.after(gioKetthuc)) {
-                    Frag_Chaytrang.this.handler.removeCallbacks(Frag_Chaytrang.this.runnable);
+                    handler.removeCallbacks(runnable);
                     Running = false;
-                    Frag_Chaytrang.this.btn_Xuatso.setEnabled(false);
-                    Frag_Chaytrang.this.btn_Xuatso.setText("Hết giờ");
-//                    Frag_Chaytrang.this.btn_Xuatso.setTextColor(-7829368);
+                    btn_Xuatso.setEnabled(false);
+                    btn_Xuatso.setText("Hết giờ");
+//                    btn_Xuatso.setTextColor(-7829368);
                 } else if (date.before(gioBatdau)) {
-                    Frag_Chaytrang.this.btn_Xuatso.setEnabled(false);
-                    Frag_Chaytrang.this.btn_Xuatso.setText("Chưa mở");
-//                    Frag_Chaytrang.this.btn_Xuatso.setTextColor(-7829368);
+                    btn_Xuatso.setEnabled(false);
+                    btn_Xuatso.setText("Chưa mở");
+//                    btn_Xuatso.setTextColor(-7829368);
                     Running = false;
                 }
-                if (Frag_Chaytrang.this.LoLive && Frag_Chaytrang.this.radio_lo.isChecked()) {
-                    Frag_Chaytrang.this.Dem++;
-                    if (Frag_Chaytrang.this.Dem >= 4) {
-                        Frag_Chaytrang.this.Dem = 0;
-                        Frag_Chaytrang.this.Laygia();
+                if (LoLive && radio_lo.isChecked()) {
+                    Dem++;
+                    if (Dem >= 4) {
+                        Dem = 0;
+                        Laygia();
                     }
                 }
                 if (Running) {
-                    Frag_Chaytrang.this.btn_Xuatso.setText("Chạy trang (" + formatter.format(calendar.getTime()) + ")");
+                    btn_Xuatso.setText("Chạy trang (" + formatter.format(calendar.getTime()) + ")");
                 }
             } else {
                 Frag_Chaytrang.Curent_date_time = new Timestamp(System.currentTimeMillis()).getTime() / 1000;
             }
             if (Running) {
                 Frag_Chaytrang.Curent_date_time++;
-                Frag_Chaytrang.this.handler.postDelayed(this, 1000);
+                handler.postDelayed(this, 1000);
             }
         }
     };
@@ -179,91 +180,85 @@ public class Frag_Chaytrang extends Fragment {
         this.db = new Database(getActivity());
         new MainActivity();
         this.ToDay = MainActivity.Get_date();
-        this.radio_de.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
-            /* class tamhoang.ldpro4.Fragment.Frag_Chaytrang.AnonymousClass1 */
-
-            @SuppressLint("WrongConstant")
-            public void onCheckedChanged(CompoundButton compoundButton, boolean b) {
-                if (Frag_Chaytrang.this.radio_de.isChecked()) {
-                    Frag_Chaytrang.this.li_loaide.setVisibility(0);
-                    try {
-                        Database database = Frag_Chaytrang.this.db;
-                        Cursor cursor = database.GetData("Select sum((the_loai = 'dea')* diem) as de_a\n,sum((the_loai = 'deb')* diem) as de_b\n,sum((the_loai = 'det')* diem) as de_t\n,sum((the_loai = 'dec')* diem) as de_c\n,sum((the_loai = 'ded')* diem) as de_d\nFrom tbl_soctS \nWhere ngay_nhan = '" + Frag_Chaytrang.this.ToDay + "'");
-                        if (!cursor.moveToFirst() || cursor == null) {
-                            Frag_Chaytrang.this.DangXuat = "(the_loai = 'deb' or the_loai = 'det')";
-                            Frag_Chaytrang.this.GameType = 0;
-                            if (MainActivity.MyToken.length() > 0) {
-                                Frag_Chaytrang.this.Laygia();
-                                return;
-                            }
+        this.radio_de.setOnCheckedChangeListener((compoundButton, b) -> {
+            if (radio_de.isChecked()) {
+                li_loaide.setVisibility(VISIBLE);
+                try {
+                    Cursor cursor = db.GetData("Select sum((the_loai = 'dea')* diem) as de_a\n,sum((the_loai = 'deb')* diem) as de_b\n,sum((the_loai = 'det')* diem) as de_t\n,sum((the_loai = 'dec')* diem) as de_c\n,sum((the_loai = 'ded')* diem) as de_d\nFrom tbl_soctS \nWhere ngay_nhan = '" + ToDay + "'");
+                    if (!cursor.moveToFirst() || cursor == null) {
+                        DangXuat = "(the_loai = 'deb' or the_loai = 'det')";
+                        GameType = 0;
+                        if (MainActivity.MyToken.length() > 0) {
+                            Laygia();
                             return;
                         }
-                        int[] dem = new int[5];
-                        if (cursor.getDouble(0) > 0.0d) {
-                            dem[0] = 1;
-                            Frag_Chaytrang.this.radio_dea.setEnabled(true);
-                        } else {
-                            dem[0] = 0;
-                            Frag_Chaytrang.this.radio_dea.setEnabled(false);
-                        }
-                        if (cursor.getDouble(1) > 0.0d) {
-                            dem[1] = 1;
-                            Frag_Chaytrang.this.radio_deb.setEnabled(true);
-                        } else {
-                            dem[1] = 0;
-                            Frag_Chaytrang.this.radio_deb.setEnabled(false);
-                        }
-                        if (cursor.getDouble(2) > 0.0d) {
-                            dem[2] = 1;
-                        } else {
-                            dem[2] = 0;
-                        }
-                        if (cursor.getDouble(3) > 0.0d) {
-                            dem[3] = 1;
-                            Frag_Chaytrang.this.radio_dec.setEnabled(true);
-                        } else {
-                            dem[3] = 0;
-                            Frag_Chaytrang.this.radio_dec.setEnabled(false);
-                        }
-                        if (cursor.getDouble(4) > 0.0d) {
-                            dem[4] = 1;
-                            Frag_Chaytrang.this.radio_ded.setEnabled(true);
-                        } else {
-                            dem[4] = 0;
-                            Frag_Chaytrang.this.radio_ded.setEnabled(false);
-                        }
-                        if (dem[0] == 0 && ((dem[1] == 1 || dem[2] == 1) && dem[3] == 0 && dem[4] == 0)) {
-                            Frag_Chaytrang.this.DangXuat = "(the_loai = 'deb' or the_loai = 'det')";
-                            Frag_Chaytrang.this.li_loaixi.setVisibility(View.GONE);
-                            Frag_Chaytrang.this.li_loaide.setVisibility(View.GONE);
-                            Frag_Chaytrang.this.radio_deb.setChecked(true);
-                            Frag_Chaytrang.this.xem_RecycView();
-                        } else if (dem[0] == 0 && dem[1] == 0 && dem[2] == 0 && dem[3] == 0 && dem[4] == 0) {
-                            Frag_Chaytrang.this.DangXuat = "(the_loai = 'deb' or the_loai = 'det')";
-                            Frag_Chaytrang.this.li_loaixi.setVisibility(View.GONE);
-                            Frag_Chaytrang.this.li_loaide.setVisibility(View.GONE);
-                            Frag_Chaytrang.this.radio_deb.setChecked(true);
-                            Frag_Chaytrang.this.xem_RecycView();
-                        } else {
-                            Frag_Chaytrang.this.DangXuat = "(the_loai = 'deb' or the_loai = 'det')";
-                            Frag_Chaytrang.this.li_loaixi.setVisibility(View.GONE);
-                            Frag_Chaytrang.this.li_loaide.setVisibility(View.GONE);
-                            Frag_Chaytrang.this.radio_deb.setChecked(true);
-                            Frag_Chaytrang.this.xem_RecycView();
-                        }
-                        if (!cursor.isClosed() && cursor != null && !cursor.isClosed()) {
-                            cursor.close();
-                        }
-                        Frag_Chaytrang.this.GameType = 0;
-                        if (MainActivity.MyToken.length() > 0) {
-                            Frag_Chaytrang.this.Laygia();
-                        }
-                    } catch (SQLException e) {
-                        Frag_Chaytrang.this.DangXuat = "(the_loai = 'deb' or the_loai = 'det')";
-                        Frag_Chaytrang.this.GameType = 0;
-                        if (MainActivity.MyToken.length() > 0) {
-                            Frag_Chaytrang.this.Laygia();
-                        }
+                        return;
+                    }
+                    int[] dem = new int[5];
+                    if (cursor.getDouble(0) > 0.0d) {
+                        dem[0] = 1;
+                        radio_dea.setEnabled(true);
+                    } else {
+                        dem[0] = 0;
+                        radio_dea.setEnabled(false);
+                    }
+                    if (cursor.getDouble(1) > 0.0d) {
+                        dem[1] = 1;
+                        radio_deb.setEnabled(true);
+                    } else {
+                        dem[1] = 0;
+                        radio_deb.setEnabled(false);
+                    }
+                    if (cursor.getDouble(2) > 0.0d) {
+                        dem[2] = 1;
+                    } else {
+                        dem[2] = 0;
+                    }
+                    if (cursor.getDouble(3) > 0.0d) {
+                        dem[3] = 1;
+                        radio_dec.setEnabled(true);
+                    } else {
+                        dem[3] = 0;
+                        radio_dec.setEnabled(false);
+                    }
+                    if (cursor.getDouble(4) > 0.0d) {
+                        dem[4] = 1;
+                        radio_ded.setEnabled(true);
+                    } else {
+                        dem[4] = 0;
+                        radio_ded.setEnabled(false);
+                    }
+                    if (dem[0] == 0 && ((dem[1] == 1 || dem[2] == 1) && dem[3] == 0 && dem[4] == 0)) {
+                        DangXuat = "(the_loai = 'deb' or the_loai = 'det')";
+                        li_loaixi.setVisibility(View.GONE);
+                        li_loaide.setVisibility(View.GONE);
+                        radio_deb.setChecked(true);
+                        xem_RecycView();
+                    } else if (dem[0] == 0 && dem[1] == 0 && dem[2] == 0 && dem[3] == 0 && dem[4] == 0) {
+                        DangXuat = "(the_loai = 'deb' or the_loai = 'det')";
+                        li_loaixi.setVisibility(View.GONE);
+                        li_loaide.setVisibility(View.GONE);
+                        radio_deb.setChecked(true);
+                        xem_RecycView();
+                    } else {
+                        DangXuat = "(the_loai = 'deb' or the_loai = 'det')";
+                        li_loaixi.setVisibility(View.GONE);
+                        li_loaide.setVisibility(View.GONE);
+                        radio_deb.setChecked(true);
+                        xem_RecycView();
+                    }
+                    if (!cursor.isClosed() && cursor != null && !cursor.isClosed()) {
+                        cursor.close();
+                    }
+                    GameType = 0;
+                    if (MainActivity.MyToken.length() > 0) {
+                        Laygia();
+                    }
+                } catch (SQLException e) {
+                    DangXuat = "(the_loai = 'deb' or the_loai = 'det')";
+                    GameType = 0;
+                    if (MainActivity.MyToken.length() > 0) {
+                        Laygia();
                     }
                 }
             }
@@ -273,11 +268,11 @@ public class Frag_Chaytrang extends Fragment {
 
             @SuppressLint("WrongConstant")
             public void onCheckedChanged(CompoundButton compoundButton, boolean b) {
-                if (Frag_Chaytrang.this.radio_dea.isChecked()) {
-                    Frag_Chaytrang.this.DangXuat = "the_loai = 'dea'";
-                    Frag_Chaytrang.this.li_loaixi.setVisibility(View.GONE);
-                    Frag_Chaytrang.this.GameType = 21;
-                    Frag_Chaytrang.this.Laygia();
+                if (radio_dea.isChecked()) {
+                    DangXuat = "the_loai = 'dea'";
+                    li_loaixi.setVisibility(View.GONE);
+                    GameType = 21;
+                    Laygia();
                 }
             }
         });
@@ -303,139 +298,106 @@ public class Frag_Chaytrang extends Fragment {
         } catch (Exception e) {
             Toast.makeText(getActivity(), "Đang copy dữ liệu bản mới!", Toast.LENGTH_SHORT).show();
         }
-        this.radio_deb.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
-            /* class tamhoang.ldpro4.Fragment.Frag_Chaytrang.AnonymousClass3 */
-
-            public void onCheckedChanged(CompoundButton compoundButton, boolean b) {
-                if (Frag_Chaytrang.this.radio_deb.isChecked()) {
-                    Frag_Chaytrang.this.DangXuat = "(the_loai = 'deb' or the_loai = 'det')";
-                    Frag_Chaytrang.this.li_loaixi.setVisibility(View.GONE);
-                    Frag_Chaytrang.this.GameType = 0;
-                    if (MainActivity.MyToken.length() > 0) {
-                        Frag_Chaytrang.this.Laygia();
-                    }
+        this.radio_deb.setOnCheckedChangeListener((compoundButton, b) -> {
+            if (radio_deb.isChecked()) {
+                DangXuat = "(the_loai = 'deb' or the_loai = 'det')";
+                li_loaixi.setVisibility(View.GONE);
+                GameType = 0;
+                if (MainActivity.MyToken.length() > 0) {
+                    Laygia();
                 }
             }
         });
-        this.radio_dec.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
-            /* class tamhoang.ldpro4.Fragment.Frag_Chaytrang.AnonymousClass4 */
-
-            public void onCheckedChanged(CompoundButton compoundButton, boolean b) {
-                if (Frag_Chaytrang.this.radio_dec.isChecked()) {
-                    Frag_Chaytrang.this.DangXuat = "the_loai = 'dec'";
-                    Frag_Chaytrang.this.li_loaixi.setVisibility(View.GONE);
-                    Frag_Chaytrang.this.GameType = 23;
-                    if (MainActivity.MyToken.length() > 0) {
-                        Frag_Chaytrang.this.Laygia();
-                    }
+        this.radio_dec.setOnCheckedChangeListener((compoundButton, b) -> {
+            if (radio_dec.isChecked()) {
+                DangXuat = "the_loai = 'dec'";
+                li_loaixi.setVisibility(View.GONE);
+                GameType = 23;
+                if (MainActivity.MyToken.length() > 0) {
+                    Laygia();
                 }
             }
         });
-        this.radio_ded.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
-            /* class tamhoang.ldpro4.Fragment.Frag_Chaytrang.AnonymousClass5 */
-
-            public void onCheckedChanged(CompoundButton compoundButton, boolean b) {
-                if (Frag_Chaytrang.this.radio_ded.isChecked()) {
-                    Frag_Chaytrang.this.DangXuat = "the_loai = 'ded'";
-                    Frag_Chaytrang.this.li_loaixi.setVisibility(View.GONE);
-                    Frag_Chaytrang.this.GameType = 22;
-                    if (MainActivity.MyToken.length() > 0) {
-                        Frag_Chaytrang.this.Laygia();
-                    }
+        this.radio_ded.setOnCheckedChangeListener((compoundButton, b) -> {
+            if (radio_ded.isChecked()) {
+                DangXuat = "the_loai = 'ded'";
+                li_loaixi.setVisibility(View.GONE);
+                GameType = 22;
+                if (MainActivity.MyToken.length() > 0) {
+                    Laygia();
                 }
             }
         });
-        this.radio_lo.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
-            /* class tamhoang.ldpro4.Fragment.Frag_Chaytrang.AnonymousClass6 */
-
-            public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
-                if (Frag_Chaytrang.this.radio_lo.isChecked()) {
-                    Frag_Chaytrang.this.DangXuat = "the_loai = 'lo'";
-                    Frag_Chaytrang.this.li_loaixi.setVisibility(View.GONE);
-                    Frag_Chaytrang.this.li_loaide.setVisibility(View.GONE);
-                    if (!Frag_Chaytrang.this.LoLive) {
-                        Frag_Chaytrang.this.GameType = 1;
-                    } else {
-                        Frag_Chaytrang.this.GameType = 20;
-                    }
-                    if (MainActivity.MyToken.length() > 0) {
-                        Frag_Chaytrang.this.Laygia();
-                    }
+        this.radio_lo.setOnCheckedChangeListener((buttonView, isChecked) -> {
+            if (radio_lo.isChecked()) {
+                DangXuat = "the_loai = 'lo'";
+                li_loaixi.setVisibility(View.GONE);
+                li_loaide.setVisibility(View.GONE);
+                if (!LoLive) {
+                    GameType = 1;
+                } else {
+                    GameType = 20;
+                }
+                if (MainActivity.MyToken.length() > 0) {
+                    Laygia();
                 }
             }
         });
-        this.radio_xi.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
-            /* class tamhoang.ldpro4.Fragment.Frag_Chaytrang.AnonymousClass7 */
-
-            public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
-                if (Frag_Chaytrang.this.radio_xi.isChecked()) {
-                    Frag_Chaytrang.this.DangXuat = "the_loai = 'xi'";
-                    Frag_Chaytrang.this.li_loaixi.setVisibility(VISIBLE);
-                    Frag_Chaytrang.this.li_loaide.setVisibility(View.GONE);
-                    Frag_Chaytrang.this.radio_xi2.setChecked(true);
-                    Frag_Chaytrang.this.GameType = 2;
-                    if (MainActivity.MyToken.length() > 0) {
-                        Frag_Chaytrang.this.Laygia();
-                    }
+        this.radio_xi.setOnCheckedChangeListener((buttonView, isChecked) -> {
+            if (radio_xi.isChecked()) {
+                DangXuat = "the_loai = 'xi'";
+                li_loaixi.setVisibility(VISIBLE);
+                li_loaide.setVisibility(View.GONE);
+                radio_xi2.setChecked(true);
+                GameType = 2;
+                if (MainActivity.MyToken.length() > 0) {
+                    Laygia();
                 }
             }
         });
-        this.radio_xi2.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
-            /* class tamhoang.ldpro4.Fragment.Frag_Chaytrang.AnonymousClass8 */
-
-            public void onCheckedChanged(CompoundButton compoundButton, boolean b) {
-                if (Frag_Chaytrang.this.radio_xi2.isChecked()) {
-                    Frag_Chaytrang.this.DangXuat = "the_loai = 'xi'";
-                    Frag_Chaytrang.this.li_loaixi.setVisibility(VISIBLE);
-                    Frag_Chaytrang.this.li_loaide.setVisibility(View.GONE);
-                    Frag_Chaytrang.this.lay_xien = " length(so_chon) = 5 ";
-                    Frag_Chaytrang.this.GameType = 2;
-                    if (MainActivity.MyToken.length() > 0) {
-                        Frag_Chaytrang.this.Laygia();
-                    }
+        this.radio_xi2.setOnCheckedChangeListener((compoundButton, b) -> {
+            if (radio_xi2.isChecked()) {
+                DangXuat = "the_loai = 'xi'";
+                li_loaixi.setVisibility(VISIBLE);
+                li_loaide.setVisibility(View.GONE);
+                lay_xien = " length(so_chon) = 5 ";
+                GameType = 2;
+                if (MainActivity.MyToken.length() > 0) {
+                    Laygia();
                 }
             }
         });
-        this.radio_xi3.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
-            /* class tamhoang.ldpro4.Fragment.Frag_Chaytrang.AnonymousClass9 */
-
-            public void onCheckedChanged(CompoundButton compoundButton, boolean b) {
-                if (Frag_Chaytrang.this.radio_xi3.isChecked()) {
-                    Frag_Chaytrang.this.DangXuat = "the_loai = 'xi'";
-                    Frag_Chaytrang.this.li_loaixi.setVisibility(VISIBLE);
-                    Frag_Chaytrang.this.li_loaide.setVisibility(View.GONE);
-                    Frag_Chaytrang.this.lay_xien = " length(so_chon) = 8 ";
-                    Frag_Chaytrang.this.GameType = 3;
-                    if (MainActivity.MyToken.length() > 0) {
-                        Frag_Chaytrang.this.Laygia();
-                    }
+        this.radio_xi3.setOnCheckedChangeListener((compoundButton, b) -> {
+            if (radio_xi3.isChecked()) {
+                DangXuat = "the_loai = 'xi'";
+                li_loaixi.setVisibility(VISIBLE);
+                li_loaide.setVisibility(View.GONE);
+                lay_xien = " length(so_chon) = 8 ";
+                GameType = 3;
+                if (MainActivity.MyToken.length() > 0) {
+                    Laygia();
                 }
             }
         });
-        this.radio_xi4.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
-            /* class tamhoang.ldpro4.Fragment.Frag_Chaytrang.AnonymousClass10 */
-
-            public void onCheckedChanged(CompoundButton compoundButton, boolean b) {
-                if (Frag_Chaytrang.this.radio_xi4.isChecked()) {
-                    Frag_Chaytrang.this.DangXuat = "the_loai = 'xi'";
-                    Frag_Chaytrang.this.li_loaixi.setVisibility(VISIBLE);
-                    Frag_Chaytrang.this.li_loaide.setVisibility(View.GONE);
-                    Frag_Chaytrang.this.lay_xien = " length(so_chon) = 11 ";
-                    Frag_Chaytrang.this.GameType = 4;
-                    if (MainActivity.MyToken.length() > 0) {
-                        Frag_Chaytrang.this.Laygia();
-                    }
+        this.radio_xi4.setOnCheckedChangeListener((compoundButton, b) -> {
+            if (radio_xi4.isChecked()) {
+                DangXuat = "the_loai = 'xi'";
+                li_loaixi.setVisibility(VISIBLE);
+                li_loaide.setVisibility(View.GONE);
+                lay_xien = " length(so_chon) = 11 ";
+                GameType = 4;
+                if (MainActivity.MyToken.length() > 0) {
+                    Laygia();
                 }
             }
         });
         this.spr_trang.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
-            /* class tamhoang.ldpro4.Fragment.Frag_Chaytrang.AnonymousClass11 */
 
             @Override // android.widget.AdapterView.OnItemSelectedListener
             public void onItemSelected(AdapterView<?> adapterView, View view, int position, long id) {
-                Frag_Chaytrang.this.spin_pointion = position;
+                spin_pointion = position;
                 Frag_Chaytrang frag_Chaytrang = Frag_Chaytrang.this;
-                frag_Chaytrang.login(frag_Chaytrang.mwebsite.get(position), Frag_Chaytrang.this.mpassword.get(position));
+                frag_Chaytrang.login(frag_Chaytrang.mwebsite.get(position), mpassword.get(position));
             }
 
             @Override // android.widget.AdapterView.OnItemSelectedListener
@@ -445,84 +407,74 @@ public class Frag_Chaytrang extends Fragment {
         if (this.mwebsite.size() > 0) {
             login(this.mwebsite.get(this.spin_pointion), this.mpassword.get(this.spin_pointion));
         }
-        this.btn_Xuatso.setOnClickListener(new View.OnClickListener() {
-            /* class tamhoang.ldpro4.Fragment.Frag_Chaytrang.AnonymousClass12 */
-
-            public void onClick(View view) {
-                if (Frag_Chaytrang.this.spin_pointion == -1) {
-                    Toast.makeText(Frag_Chaytrang.this.getActivity(), "Không có trang để xuất", Toast.LENGTH_SHORT).show();
-                }
-                if (MainActivity.MyToken.length() > 0) {
-                    int i = Frag_Chaytrang.this.GameType;
-                    if (i != 0) {
-                        if (i != 1) {
-                            if (i == 2) {
-                                Frag_Chaytrang.this.the_loai = "xi2";
-                                Frag_Chaytrang.this.xuatDan = "Xi:";
-                                Frag_Chaytrang.this.donvi = "n ";
-                                Frag_Chaytrang.this.Dieukien = "the_loai = 'xi' AND length(so_chon) = 5";
-                                Frag_Chaytrang.this.TaoTinXi();
-                            } else if (i == 3) {
-                                Frag_Chaytrang.this.the_loai = "xi3";
-                                Frag_Chaytrang.this.xuatDan = "Xi:";
-                                Frag_Chaytrang.this.donvi = "n ";
-                                Frag_Chaytrang.this.Dieukien = "the_loai = 'xi' AND length(so_chon) = 8";
-                                Frag_Chaytrang.this.TaoTinXi();
-                            } else if (i != 4) {
-                                switch (i) {
-                                    case 21:
-                                        Frag_Chaytrang.this.the_loai = "dea";
-                                        Frag_Chaytrang.this.xuatDan = "De dau:";
-                                        Frag_Chaytrang.this.donvi = "n ";
-                                        Frag_Chaytrang.this.Dieukien = "the_loai = 'dea'";
-                                        Frag_Chaytrang.this.TaoTinDe();
-                                        break;
-                                    case 22:
-                                        Frag_Chaytrang.this.the_loai = "ded";
-                                        Frag_Chaytrang.this.xuatDan = "De giai 1:";
-                                        Frag_Chaytrang.this.donvi = "n ";
-                                        Frag_Chaytrang.this.Dieukien = "the_loai = 'ded'";
-                                        Frag_Chaytrang.this.TaoTinDe();
-                                        break;
-                                    case 23:
-                                        Frag_Chaytrang.this.the_loai = "dec";
-                                        Frag_Chaytrang.this.xuatDan = "De dau giai 1:";
-                                        Frag_Chaytrang.this.donvi = "n ";
-                                        Frag_Chaytrang.this.Dieukien = "the_loai = 'dec'";
-                                        Frag_Chaytrang.this.TaoTinDe();
-                                        break;
-                                }
-                            } else {
-                                Frag_Chaytrang.this.the_loai = "xi4";
-                                Frag_Chaytrang.this.xuatDan = "Xi:";
-                                Frag_Chaytrang.this.donvi = "n ";
-                                Frag_Chaytrang.this.Dieukien = "the_loai = 'xi' AND length(so_chon) = 11";
-                                Frag_Chaytrang.this.TaoTinXi();
+        this.btn_Xuatso.setOnClickListener(view -> {
+            if (spin_pointion == -1) {
+                Toast.makeText(getActivity(), "Không có trang để xuất", Toast.LENGTH_SHORT).show();
+            }
+            if (MainActivity.MyToken.length() > 0) {
+                int i = GameType;
+                if (i != 0) {
+                    if (i != 1) {
+                        if (i == 2) {
+                            the_loai = "xi2";
+                            xuatDan = "Xi:";
+                            donvi = "n ";
+                            Dieukien = "the_loai = 'xi' AND length(so_chon) = 5";
+                            TaoTinXi();
+                        } else if (i == 3) {
+                            the_loai = "xi3";
+                            xuatDan = "Xi:";
+                            donvi = "n ";
+                            Dieukien = "the_loai = 'xi' AND length(so_chon) = 8";
+                            TaoTinXi();
+                        } else if (i != 4) {
+                            switch (i) {
+                                case 21:
+                                    the_loai = "dea";
+                                    xuatDan = "De dau:";
+                                    donvi = "n ";
+                                    Dieukien = "the_loai = 'dea'";
+                                    TaoTinDe();
+                                    break;
+                                case 22:
+                                    the_loai = "ded";
+                                    xuatDan = "De giai 1:";
+                                    donvi = "n ";
+                                    Dieukien = "the_loai = 'ded'";
+                                    TaoTinDe();
+                                    break;
+                                case 23:
+                                    the_loai = "dec";
+                                    xuatDan = "De dau giai 1:";
+                                    donvi = "n ";
+                                    Dieukien = "the_loai = 'dec'";
+                                    TaoTinDe();
+                                    break;
                             }
+                        } else {
+                            the_loai = "xi4";
+                            xuatDan = "Xi:";
+                            donvi = "n ";
+                            Dieukien = "the_loai = 'xi' AND length(so_chon) = 11";
+                            TaoTinXi();
                         }
-                        Frag_Chaytrang.this.the_loai = "lo";
-                        Frag_Chaytrang.this.xuatDan = "Lo:";
-                        Frag_Chaytrang.this.donvi = "d ";
-                        Frag_Chaytrang.this.Dieukien = "the_loai = 'lo'";
-                        Frag_Chaytrang.this.TaoTinDe();
-                    } else {
-                        Frag_Chaytrang.this.the_loai = "deb";
-                        Frag_Chaytrang.this.xuatDan = "De:";
-                        Frag_Chaytrang.this.donvi = "n ";
-                        Frag_Chaytrang.this.Dieukien = "(the_loai = 'deb' or the_loai = 'det')";
-                        Frag_Chaytrang.this.TaoTinDe();
                     }
-                    Frag_Chaytrang.this.Dialog();
+                    the_loai = "lo";
+                    xuatDan = "Lo:";
+                    donvi = "d ";
+                    Dieukien = "the_loai = 'lo'";
+                    TaoTinDe();
+                } else {
+                    the_loai = "deb";
+                    xuatDan = "De:";
+                    donvi = "n ";
+                    Dieukien = "(the_loai = 'deb' or the_loai = 'det')";
+                    TaoTinDe();
                 }
+                Dialog();
             }
         });
-        this.btn_MaXuat.setOnClickListener(new View.OnClickListener() {
-            /* class tamhoang.ldpro4.Fragment.Frag_Chaytrang.AnonymousClass13 */
-
-            public void onClick(View view) {
-                Frag_Chaytrang.this.Dialog2();
-            }
-        });
+        this.btn_MaXuat.setOnClickListener(view -> Dialog2());
         Handler handler2 = new Handler();
         this.handler = handler2;
         handler2.postDelayed(this.runnable, 1000);
@@ -581,19 +533,15 @@ public class Frag_Chaytrang extends Fragment {
                 e2.printStackTrace();
             }
         }
-        Collections.sort(jsonValues, new Comparator<JSONObject>() {
-            /* class tamhoang.ldpro4.Fragment.Frag_Chaytrang.AnonymousClass14 */
-
-            public int compare(JSONObject a, JSONObject b) {
-                int valA = 0;
-                Integer valB = 0;
-                try {
-                    valA = Integer.valueOf(a.getInt("Se_chuyen"));
-                    valB = Integer.valueOf(b.getInt("Se_chuyen"));
-                } catch (JSONException e) {
-                }
-                return valB.compareTo(valA);
+        Collections.sort(jsonValues, (a, b) -> {
+            int valA = 0;
+            Integer valB = 0;
+            try {
+                valA = Integer.valueOf(a.getInt("Se_chuyen"));
+                valB = Integer.valueOf(b.getInt("Se_chuyen"));
+            } catch (JSONException e) {
             }
+            return valB.compareTo(valA);
         });
         int tien = 0;
         int i2 = 0;
@@ -718,23 +666,22 @@ public class Frag_Chaytrang extends Fragment {
                 }
 
                 public final void run() {
-                    Frag_Chaytrang.this.lambda$Dialog$0$Frag_Chaytrang(this.f$1, this.f$2, this.f$3, this.f$4);
+                    lambda$Dialog$0$Frag_Chaytrang(this.f$1, this.f$2, this.f$3, this.f$4);
                 }
             });
         }
         edt_XuatDan.setText("");
         edt_XuatDan.setText(this.xuatDan.replaceAll(",x", "x"));
         btn_chuyendi.setOnClickListener(new View.OnClickListener() {
-            /* class tamhoang.ldpro4.Fragment.Frag_Chaytrang.AnonymousClass18 */
 
             public void onClick(View view) {
                 String Kiermtra;
                 btn_chuyendi.setEnabled(false);
-                SQLiteDatabase database = Frag_Chaytrang.this.db.getWritableDatabase();
+                SQLiteDatabase database = db.getWritableDatabase();
                 DatabaseUtils.InsertHelper ih = new DatabaseUtils.InsertHelper(database, "tbl_soctS");
                 String Kiermtra2 = null;
                 try {
-                    Kiermtra2 = Frag_Chaytrang.this.KiemTraTruocKhiChayTrang(edt_XuatDan.getText().toString().replaceAll("'", " ").trim());
+                    Kiermtra2 = KiemTraTruocKhiChayTrang(edt_XuatDan.getText().toString().replaceAll("'", " ").trim());
                 } catch (JSONException e) {
                     try {
                         e.printStackTrace();
@@ -746,15 +693,15 @@ public class Frag_Chaytrang extends Fragment {
                     }
                 }
                 if (Kiermtra2 == "") {
-                    Kiermtra = Frag_Chaytrang.this.Laygia();
+                    Kiermtra = Laygia();
                 } else {
                     Kiermtra = Kiermtra2;
                 }
                 if (Kiermtra == "") {
-                    Frag_Chaytrang.this.jsonArray = new JSONArray();
+                    jsonArray = new JSONArray();
                     String Postjson = null;
                     try {
-                        Postjson = Frag_Chaytrang.this.CreateJson();
+                        Postjson = CreateJson();
                     } catch (JSONException e) {
                         e.printStackTrace();
                     }
@@ -805,14 +752,10 @@ public class Frag_Chaytrang extends Fragment {
                     try {
                     } catch (Exception e2) {
                         e = e2;
-                        new Handler(Looper.getMainLooper()).post(new Runnable() {
-                            /* class tamhoang.ldpro4.Fragment.Frag_Chaytrang.AnonymousClass18.AnonymousClass4 */
-
-                            public void run() {
-                                edt_XuatErr.setText("Kết nối kém, hãy xuất lại.");
-                                edt_XuatErr.setVisibility(VISIBLE);
-                                btn_chuyendi.setEnabled(true);
-                            }
+                        new Handler(Looper.getMainLooper()).post(() -> {
+                            edt_XuatErr.setText("Kết nối kém, hãy xuất lại.");
+                            edt_XuatErr.setVisibility(VISIBLE);
+                            btn_chuyendi.setEnabled(true);
                         });
                         e.printStackTrace();
                     }
@@ -822,72 +765,68 @@ public class Frag_Chaytrang extends Fragment {
                             String Str = str3.toString();
                             if (Str.startsWith("[")) {
                                 if (new JSONArray(Str).getJSONObject(0).has("Tx")) {
-                                    new Handler(Looper.getMainLooper()).post(new Runnable() {
-                                        /* class tamhoang.ldpro4.Fragment.Frag_Chaytrang.AnonymousClass18.AnonymousClass1 */
-
-                                        public void run() {
-                                            String str;
-                                            String str2 = "ngay_nhan";
-                                            String str3 = " ";
-                                            String str4 = "'";
-                                            try {
-                                                database.beginTransaction();
-                                                JSONObject Json = null;
-                                                int i = 0;
-                                                while (i < Frag_Chaytrang.this.jsonArray.length()) {
-                                                    Json = Frag_Chaytrang.this.jsonArray.getJSONObject(i);
-                                                    ih.prepareForInsert();
-                                                    ih.bind(ih.getColumnIndex("ID"), (byte[]) null);
-                                                    ih.bind(ih.getColumnIndex(str2), Json.getString(str2));
-                                                    ih.bind(ih.getColumnIndex("type_kh"), 2);
-                                                    ih.bind(ih.getColumnIndex("ten_kh"), Frag_Chaytrang.this.mwebsite.get(Frag_Chaytrang.this.spin_pointion));
-                                                    ih.bind(ih.getColumnIndex("so_dienthoai"), Frag_Chaytrang.this.mwebsite.get(Frag_Chaytrang.this.spin_pointion));
-                                                    ih.bind(ih.getColumnIndex("so_tin_nhan"), Json.getInt("so_tin_nhan"));
-                                                    DatabaseUtils.InsertHelper insertHelper = ih;
-                                                    int columnIndex = ih.getColumnIndex("the_loai");
-                                                    if (Frag_Chaytrang.this.the_loai.indexOf("xi") > -1) {
-                                                        str = "xi";
-                                                    } else {
-                                                        str = Frag_Chaytrang.this.the_loai;
-                                                    }
-                                                    insertHelper.bind(columnIndex, str);
-                                                    ih.bind(ih.getColumnIndex("so_chon"), Json.getString("so_chon"));
-                                                    ih.bind(ih.getColumnIndex("diem"), Json.getInt("diem"));
-                                                    ih.bind(ih.getColumnIndex("diem_quydoi"), Json.getInt("diem"));
-                                                    ih.bind(ih.getColumnIndex("diem_khachgiu"), 0);
-                                                    ih.bind(ih.getColumnIndex("diem_dly_giu"), 0);
-                                                    ih.bind(ih.getColumnIndex("diem_ton"), Json.getInt("diem"));
-                                                    ih.bind(ih.getColumnIndex("gia"), Json.getInt("gia"));
-                                                    ih.bind(ih.getColumnIndex("lan_an"), Json.getInt("lan_an"));
-                                                    ih.bind(ih.getColumnIndex("so_nhay"), 0);
-                                                    ih.bind(ih.getColumnIndex("tong_tien"), Json.getInt("tong_tien"));
-                                                    ih.bind(ih.getColumnIndex("ket_qua"), 0);
-                                                    ih.execute();
-                                                    i++;
-                                                    str2 = str2;
-                                                    str3 = str3;
-                                                    str4 = str4;
+                                    new Handler(Looper.getMainLooper()).post(() -> {
+                                        String str;
+                                        String str2 = "ngay_nhan";
+                                        String str31 = " ";
+                                        String str4 = "'";
+                                        try {
+                                            database.beginTransaction();
+                                            JSONObject Json = null;
+                                            int i = 0;
+                                            while (i < jsonArray.length()) {
+                                                Json = jsonArray.getJSONObject(i);
+                                                ih.prepareForInsert();
+                                                ih.bind(ih.getColumnIndex("ID"), (byte[]) null);
+                                                ih.bind(ih.getColumnIndex(str2), Json.getString(str2));
+                                                ih.bind(ih.getColumnIndex("type_kh"), 2);
+                                                ih.bind(ih.getColumnIndex("ten_kh"), mwebsite.get(spin_pointion));
+                                                ih.bind(ih.getColumnIndex("so_dienthoai"), mwebsite.get(spin_pointion));
+                                                ih.bind(ih.getColumnIndex("so_tin_nhan"), Json.getInt("so_tin_nhan"));
+                                                DatabaseUtils.InsertHelper insertHelper = ih;
+                                                int columnIndex = ih.getColumnIndex("the_loai");
+                                                if (the_loai.indexOf("xi") > -1) {
+                                                    str = "xi";
+                                                } else {
+                                                    str = the_loai;
                                                 }
-                                                database.setTransactionSuccessful();
-                                                database.endTransaction();
-                                                ih.close();
-                                                database.close();
-                                                Calendar calendar = Calendar.getInstance();
-                                                calendar.setTime(new Date());
-                                                SimpleDateFormat dmyFormat = new SimpleDateFormat("yyyy-MM-dd");
-                                                SimpleDateFormat hourFormat = new SimpleDateFormat("HH:mm:ss");
-                                                dmyFormat.setTimeZone(TimeZone.getDefault());
-                                                hourFormat.setTimeZone(TimeZone.getDefault());
-                                                String mNgayNhan = dmyFormat.format(calendar.getTime());
-                                                String mGionhan = hourFormat.format(calendar.getTime());
-                                                Frag_Chaytrang.this.db.QueryData("Insert Into tbl_tinnhanS values (null, '" + mNgayNhan + "', '" + mGionhan + "', " + 2 + ", '" + Frag_Chaytrang.this.mwebsite.get(Frag_Chaytrang.this.spin_pointion) + "', '" + Frag_Chaytrang.this.mwebsite.get(Frag_Chaytrang.this.spin_pointion) + "', 'ChayTrang', " + Json.getInt("so_tin_nhan") + ", '" + edt_XuatDan.getText().toString().replace(str4, str3).trim() + "', '" + edt_XuatDan.getText().toString().replace(str4, str3).trim() + "', '" + edt_XuatDan.getText().toString().replace(str4, str3).trim().toLowerCase() + "', 'ok',0, 0, 0, null)");
-                                            } catch (JSONException e) {
-                                                e.printStackTrace();
+                                                insertHelper.bind(columnIndex, str);
+                                                ih.bind(ih.getColumnIndex("so_chon"), Json.getString("so_chon"));
+                                                ih.bind(ih.getColumnIndex("diem"), Json.getInt("diem"));
+                                                ih.bind(ih.getColumnIndex("diem_quydoi"), Json.getInt("diem"));
+                                                ih.bind(ih.getColumnIndex("diem_khachgiu"), 0);
+                                                ih.bind(ih.getColumnIndex("diem_dly_giu"), 0);
+                                                ih.bind(ih.getColumnIndex("diem_ton"), Json.getInt("diem"));
+                                                ih.bind(ih.getColumnIndex("gia"), Json.getInt("gia"));
+                                                ih.bind(ih.getColumnIndex("lan_an"), Json.getInt("lan_an"));
+                                                ih.bind(ih.getColumnIndex("so_nhay"), 0);
+                                                ih.bind(ih.getColumnIndex("tong_tien"), Json.getInt("tong_tien"));
+                                                ih.bind(ih.getColumnIndex("ket_qua"), 0);
+                                                ih.execute();
+                                                i++;
+                                                str2 = str2;
+                                                str31 = str31;
+                                                str4 = str4;
                                             }
-                                            Frag_Chaytrang.this.xem_RecycView();
-                                            dialog.dismiss();
-                                            Toast.makeText(Frag_Chaytrang.this.getActivity(), "Đã chạy thành công!", Toast.LENGTH_SHORT).show();
+                                            database.setTransactionSuccessful();
+                                            database.endTransaction();
+                                            ih.close();
+                                            database.close();
+                                            Calendar calendar = Calendar.getInstance();
+                                            calendar.setTime(new Date());
+                                            SimpleDateFormat dmyFormat = new SimpleDateFormat("yyyy-MM-dd");
+                                            SimpleDateFormat hourFormat = new SimpleDateFormat("HH:mm:ss");
+                                            dmyFormat.setTimeZone(TimeZone.getDefault());
+                                            hourFormat.setTimeZone(TimeZone.getDefault());
+                                            String mNgayNhan = dmyFormat.format(calendar.getTime());
+                                            String mGionhan = hourFormat.format(calendar.getTime());
+                                            db.QueryData("Insert Into tbl_tinnhanS values (null, '" + mNgayNhan + "', '" + mGionhan + "', " + 2 + ", '" + mwebsite.get(spin_pointion) + "', '" + mwebsite.get(spin_pointion) + "', 'ChayTrang', " + Json.getInt("so_tin_nhan") + ", '" + edt_XuatDan.getText().toString().replace(str4, str31).trim() + "', '" + edt_XuatDan.getText().toString().replace(str4, str31).trim() + "', '" + edt_XuatDan.getText().toString().replace(str4, str31).trim().toLowerCase() + "', 'ok',0, 0, 0, null)");
+                                        } catch (JSONException e1) {
+                                            e1.printStackTrace();
                                         }
+                                        xem_RecycView();
+                                        dialog.dismiss();
+                                        Toast.makeText(getActivity(), "Đã chạy thành công!", Toast.LENGTH_SHORT).show();
                                     });
                                 } else {
                                     new Handler(Looper.getMainLooper()).post(new Runnable() {
@@ -913,14 +852,10 @@ public class Frag_Chaytrang extends Fragment {
                             });
                         } catch (Exception e3) {
                             e = e3;
-                            new Handler(Looper.getMainLooper()).post(new Runnable() {
-                                /* class tamhoang.ldpro4.Fragment.Frag_Chaytrang.AnonymousClass18.AnonymousClass4 */
-
-                                public void run() {
-                                    edt_XuatErr.setText("Kết nối kém, hãy xuất lại.");
-                                    edt_XuatErr.setVisibility(VISIBLE);
-                                    btn_chuyendi.setEnabled(true);
-                                }
+                            new Handler(Looper.getMainLooper()).post(() -> {
+                                edt_XuatErr.setText("Kết nối kém, hãy xuất lại.");
+                                edt_XuatErr.setVisibility(VISIBLE);
+                                btn_chuyendi.setEnabled(true);
                             });
                             e.printStackTrace();
                         }
@@ -971,10 +906,10 @@ public class Frag_Chaytrang extends Fragment {
                             public void run() {
                                 try {
                                     DecimalFormat decimalFormat = new DecimalFormat("###,###");
-                                    taikhoan.setText(Frag_Chaytrang.this.mwebsite.get(Frag_Chaytrang.this.spin_pointion));
+                                    taikhoan.setText(mwebsite.get(spin_pointion));
                                     CreditLimit.setText(decimalFormat.format(json.getDouble("CreditLimit")));
                                     Balance.setText(decimalFormat.format(json.getDouble("Balance")));
-                                    Frag_Chaytrang.this.myBalance = json.getDouble("Balance");
+                                    myBalance = json.getDouble("Balance");
                                 } catch (JSONException e) {
                                     e.printStackTrace();
                                 }
@@ -985,7 +920,7 @@ public class Frag_Chaytrang extends Fragment {
                             /* class tamhoang.ldpro4.Fragment.Frag_Chaytrang.AnonymousClass16 */
 
                             public void run() {
-                                Toast.makeText(Frag_Chaytrang.this.getActivity(), "Tài khoản đăng nhập lỗi!", Toast.LENGTH_SHORT).show();
+                                Toast.makeText(getActivity(), "Tài khoản đăng nhập lỗi!", Toast.LENGTH_SHORT).show();
                             }
                         });
                     }
@@ -1025,7 +960,7 @@ public class Frag_Chaytrang extends Fragment {
                     }
 
                     public final void run() {
-                        Frag_Chaytrang.this.lambda$Dialog2$1$Frag_Chaytrang(this.f$1, this.f$2, this.f$3);
+                        lambda$Dialog2$1$Frag_Chaytrang(this.f$1, this.f$2, this.f$3);
                     }
                 });
             }
@@ -1065,7 +1000,7 @@ public class Frag_Chaytrang extends Fragment {
                     public void run() {
                         ListView listView = lv_cacmachay;
                         Frag_Chaytrang frag_Chaytrang = Frag_Chaytrang.this;
-                        listView.setAdapter((ListAdapter) new Ma_da_chay(frag_Chaytrang.getActivity(), R.layout.frag_chaytrang_tinchay_lv, Frag_Chaytrang.this.NoiDung));
+                        listView.setAdapter((ListAdapter) new Ma_da_chay(frag_Chaytrang.getActivity(), R.layout.frag_chaytrang_tinchay_lv, NoiDung));
                     }
                 });
             }
@@ -1113,40 +1048,40 @@ public class Frag_Chaytrang extends Fragment {
                 public void onClick(View view) {
                 }
             });
-            if (Frag_Chaytrang.this.TheLoai.get(position).intValue() == 0) {
+            if (TheLoai.get(position).intValue() == 0) {
                 TextView textView = holder.tv_NoiDung;
-                textView.setText("Đề: " + Frag_Chaytrang.this.NoiDung.get(position));
-            } else if (Frag_Chaytrang.this.TheLoai.get(position).intValue() == 1) {
+                textView.setText("Đề: " + NoiDung.get(position));
+            } else if (TheLoai.get(position).intValue() == 1) {
                 TextView textView2 = holder.tv_NoiDung;
-                textView2.setText("Lô: " + Frag_Chaytrang.this.NoiDung.get(position));
-            } else if (Frag_Chaytrang.this.TheLoai.get(position).intValue() == 2) {
+                textView2.setText("Lô: " + NoiDung.get(position));
+            } else if (TheLoai.get(position).intValue() == 2) {
                 TextView textView3 = holder.tv_NoiDung;
-                textView3.setText("Xiên 2: " + Frag_Chaytrang.this.NoiDung.get(position));
-            } else if (Frag_Chaytrang.this.TheLoai.get(position).intValue() == 3) {
+                textView3.setText("Xiên 2: " + NoiDung.get(position));
+            } else if (TheLoai.get(position).intValue() == 3) {
                 TextView textView4 = holder.tv_NoiDung;
-                textView4.setText("Xiên 3: " + Frag_Chaytrang.this.NoiDung.get(position));
-            } else if (Frag_Chaytrang.this.TheLoai.get(position).intValue() == 4) {
+                textView4.setText("Xiên 3: " + NoiDung.get(position));
+            } else if (TheLoai.get(position).intValue() == 4) {
                 TextView textView5 = holder.tv_NoiDung;
-                textView5.setText("Xiên 4: " + Frag_Chaytrang.this.NoiDung.get(position));
-            } else if (Frag_Chaytrang.this.TheLoai.get(position).intValue() == 20) {
+                textView5.setText("Xiên 4: " + NoiDung.get(position));
+            } else if (TheLoai.get(position).intValue() == 20) {
                 TextView textView6 = holder.tv_NoiDung;
-                textView6.setText("Lô Live: " + Frag_Chaytrang.this.NoiDung.get(position));
-            } else if (Frag_Chaytrang.this.TheLoai.get(position).intValue() == 21) {
+                textView6.setText("Lô Live: " + NoiDung.get(position));
+            } else if (TheLoai.get(position).intValue() == 21) {
                 TextView textView7 = holder.tv_NoiDung;
-                textView7.setText("Đề đầu: " + Frag_Chaytrang.this.NoiDung.get(position));
-            } else if (Frag_Chaytrang.this.TheLoai.get(position).intValue() == 22) {
+                textView7.setText("Đề đầu: " + NoiDung.get(position));
+            } else if (TheLoai.get(position).intValue() == 22) {
                 TextView textView8 = holder.tv_NoiDung;
-                textView8.setText("Giải nhất: " + Frag_Chaytrang.this.NoiDung.get(position));
-            } else if (Frag_Chaytrang.this.TheLoai.get(position).intValue() == 23) {
+                textView8.setText("Giải nhất: " + NoiDung.get(position));
+            } else if (TheLoai.get(position).intValue() == 23) {
                 TextView textView9 = holder.tv_NoiDung;
-                textView9.setText("Đầu giải nhất: " + Frag_Chaytrang.this.NoiDung.get(position));
+                textView9.setText("Đầu giải nhất: " + NoiDung.get(position));
             }
             TextView textView10 = holder.tv_ThoiGian;
-            textView10.setText("Time: " + Frag_Chaytrang.this.ThoiGian.get(position));
+            textView10.setText("Time: " + ThoiGian.get(position));
             TextView textView11 = holder.tv_TienCuoc;
-            textView11.setText("Tổng: " + Frag_Chaytrang.this.TienCuoc.get(position));
-            holder.tv_SoTin.setText(Frag_Chaytrang.this.SoTin.get(position));
-            if (Frag_Chaytrang.this.HuyCuoc.get(position).intValue() == 0) {
+            textView11.setText("Tổng: " + TienCuoc.get(position));
+            holder.tv_SoTin.setText(SoTin.get(position));
+            if (HuyCuoc.get(position).intValue() == 0) {
                 holder.tv_HuyCuoc.setTextColor(-7829368);
                 holder.tv_HuyCuoc.setEnabled(false);
                 holder.tv_HuyCuoc.setText("Đã huỷ");
@@ -1504,9 +1439,9 @@ public class Frag_Chaytrang extends Fragment {
         SimpleDateFormat dmyFormat = new SimpleDateFormat("yyyy-MM-dd");
         dmyFormat.setTimeZone(TimeZone.getDefault());
         String mNgayNhan2 = dmyFormat.format(calendar.getTime());
-        Cursor cursor2 = this.db.GetData("Select max(so_tin_nhan) from tbl_tinnhans where ngay_nhan = '" + mNgayNhan2 + "' And ten_kh = '" + this.mwebsite.get(this.spin_pointion) + "'");
-        cursor2.moveToFirst();
-        int Sotinnhan = cursor2.getInt(0) + 1;
+        int maxSoTn = BriteDb.INSTANCE.getMaxSoTinNhan(mNgayNhan2, null, "ten_kh = '"+ mwebsite.get(this.spin_pointion) +"'");
+
+        int Sotinnhan = maxSoTn + 1;
         try {
             jsonObject2 = new JSONObject();
             try {
@@ -1536,7 +1471,6 @@ public class Frag_Chaytrang extends Fragment {
                                     JSONObject number = new JSONObject();
                                     JSONArray Numbers = new JSONArray();
                                     String[] MyNumber2 = key.split(str3);
-                                    cursor = cursor2;
                                     int length = MyNumber2.length;
                                     iter2 = iter;
                                     String SovaoTrang = "";
@@ -1615,13 +1549,11 @@ public class Frag_Chaytrang extends Fragment {
                                     str = str3;
                                     jsonObject = jsonObject2;
                                     mNgayNhan = mNgayNhan2;
-                                    cursor = cursor2;
                                     iter2 = iter;
                                 }
                                 calendar = calendar;
                                 jsonObject2 = jsonObject;
                                 dmyFormat = dmyFormat;
-                                cursor2 = cursor;
                                 iter = iter2;
                                 str3 = str;
                                 mNgayNhan2 = mNgayNhan;
@@ -1732,7 +1664,7 @@ public class Frag_Chaytrang extends Fragment {
                 }
 
                 public final void run() {
-                    Frag_Chaytrang.this.lambda$login$2$Frag_Chaytrang(this.f$1, this.f$2, this.f$3, this.f$4, this.f$5);
+                    lambda$login$2$Frag_Chaytrang(this.f$1, this.f$2, this.f$3, this.f$4, this.f$5);
                 }
             });
         }
@@ -1753,7 +1685,7 @@ public class Frag_Chaytrang extends Fragment {
                 /* class tamhoang.ldpro4.Fragment.Frag_Chaytrang.AnonymousClass21 */
 
                 public void run() {
-                    Toast.makeText(Frag_Chaytrang.this.getActivity(), "Đăng nhập thất bại.", Toast.LENGTH_SHORT).show();
+                    Toast.makeText(getActivity(), "Đăng nhập thất bại.", Toast.LENGTH_SHORT).show();
                     MainActivity.MyToken = "";
                 }
             });
@@ -1789,7 +1721,7 @@ public class Frag_Chaytrang extends Fragment {
                 }
 
                 public final void run() {
-                    Frag_Chaytrang.this.lambda$Laygia$3$Frag_Chaytrang(this.f$1, this.f$2, this.f$3);
+                    lambda$Laygia$3$Frag_Chaytrang(this.f$1, this.f$2, this.f$3);
                 }
             });
         }
@@ -1822,24 +1754,14 @@ public class Frag_Chaytrang extends Fragment {
                             i++;
                             JArray = JArray;
                         }
-                        new Handler(Looper.getMainLooper()).post(new Runnable() {
-                            /* class tamhoang.ldpro4.Fragment.Frag_Chaytrang.AnonymousClass24 */
-
-                            public void run() {
-                                Frag_Chaytrang.this.xem_RecycView();
-                            }
-                        });
+                        new Handler(Looper.getMainLooper()).post(() -> xem_RecycView());
                     } else {
                         JSONObject jsonObject2 = new JSONObject(body.string());
                         if (!jsonObject2.getBoolean("Active")) {
-                            new Handler(Looper.getMainLooper()).post(new Runnable() {
-                                /* class tamhoang.ldpro4.Fragment.Frag_Chaytrang.AnonymousClass22 */
-
-                                public void run() {
-                                    Frag_Chaytrang.this.btn_Xuatso.setText("Trang đã đóng");
-                                    Frag_Chaytrang.this.btn_Xuatso.setEnabled(false);
-                                    Frag_Chaytrang.this.handler.removeCallbacks(Frag_Chaytrang.this.runnable);
-                                }
+                            new Handler(Looper.getMainLooper()).post(() -> {
+                                btn_Xuatso.setText("Trang đã đóng");
+                                btn_Xuatso.setEnabled(false);
+                                handler.removeCallbacks(runnable);
                             });
                         }
                         this.Price = jsonObject2.getInt("Price");
@@ -1854,7 +1776,7 @@ public class Frag_Chaytrang extends Fragment {
                                 /* class tamhoang.ldpro4.Fragment.Frag_Chaytrang.AnonymousClass23 */
 
                                 public void run() {
-                                    Frag_Chaytrang.this.xem_RecycView();
+                                    xem_RecycView();
                                 }
                             });
                             this.PriceLive = this.Price;
@@ -2173,37 +2095,37 @@ public class Frag_Chaytrang extends Fragment {
             } else {
                 holder = (ViewHolder) view.getTag();
             }
-            if (Frag_Chaytrang.this.mNhay.get(position) > 0) {
+            if (mNhay.get(position) > 0) {
                 holder.tview5.setTextColor(SupportMenu.CATEGORY_MASK);
                 holder.tview7.setTextColor(SupportMenu.CATEGORY_MASK);
                 holder.tview8.setTextColor(SupportMenu.CATEGORY_MASK);
                 holder.tview1.setTextColor(SupportMenu.CATEGORY_MASK);
                 holder.tview4.setTextColor(SupportMenu.CATEGORY_MASK);
-                if (Frag_Chaytrang.this.mNhay.get(position) == 1) {
+                if (mNhay.get(position) == 1) {
                     TextView textView = holder.tview5;
-                    textView.setText(Frag_Chaytrang.this.mSo.get(position) + "*");
-                } else if (Frag_Chaytrang.this.mNhay.get(position) == 2) {
+                    textView.setText(mSo.get(position) + "*");
+                } else if (mNhay.get(position) == 2) {
                     TextView textView2 = holder.tview5;
-                    textView2.setText(Frag_Chaytrang.this.mSo.get(position) + "**");
-                } else if (Frag_Chaytrang.this.mNhay.get(position) == 3) {
+                    textView2.setText(mSo.get(position) + "**");
+                } else if (mNhay.get(position) == 3) {
                     TextView textView3 = holder.tview5;
-                    textView3.setText(Frag_Chaytrang.this.mSo.get(position) + "***");
-                } else if (Frag_Chaytrang.this.mNhay.get(position).intValue() == 4) {
+                    textView3.setText(mSo.get(position) + "***");
+                } else if (mNhay.get(position).intValue() == 4) {
                     TextView textView4 = holder.tview5;
-                    textView4.setText(Frag_Chaytrang.this.mSo.get(position) + "****");
-                } else if (Frag_Chaytrang.this.mNhay.get(position).intValue() == 5) {
+                    textView4.setText(mSo.get(position) + "****");
+                } else if (mNhay.get(position).intValue() == 5) {
                     TextView textView5 = holder.tview5;
-                    textView5.setText(Frag_Chaytrang.this.mSo.get(position) + "*****");
-                } else if (Frag_Chaytrang.this.mNhay.get(position).intValue() == 6) {
+                    textView5.setText(mSo.get(position) + "*****");
+                } else if (mNhay.get(position).intValue() == 6) {
                     TextView textView6 = holder.tview5;
-                    textView6.setText(Frag_Chaytrang.this.mSo.get(position) + "******");
+                    textView6.setText(mSo.get(position) + "******");
                 }
                 TextView textView7 = holder.tview2;
                 textView7.setText((position + 1) + "");
-                holder.tview7.setText(Frag_Chaytrang.this.mTienTon.get(position));
+                holder.tview7.setText(mTienTon.get(position));
                 holder.tview8.setText("0");
-                holder.tview1.setText(Frag_Chaytrang.this.mMax.get(position));
-                holder.tview4.setText(Frag_Chaytrang.this.mGia.get(position));
+                holder.tview1.setText(mMax.get(position));
+                holder.tview4.setText(mGia.get(position));
             } else {
                 holder.tview5.setTextColor(ViewCompat.MEASURED_STATE_MASK);
                 holder.tview7.setTextColor(ViewCompat.MEASURED_STATE_MASK);
@@ -2212,13 +2134,13 @@ public class Frag_Chaytrang extends Fragment {
                 holder.tview4.setTextColor(ViewCompat.MEASURED_STATE_MASK);
                 TextView textView8 = holder.tview2;
                 textView8.setText((position + 1) + "");
-                holder.tview5.setText(Frag_Chaytrang.this.mSo.get(position));
-                holder.tview7.setText(Frag_Chaytrang.this.mTienTon.get(position));
-                holder.tview8.setText(Frag_Chaytrang.this.mTienchuyen.get(position));
-                holder.tview1.setText(Frag_Chaytrang.this.mMax.get(position));
-                if (Frag_Chaytrang.this.mGia.size() > 0) {
-                    holder.tview4.setText(Frag_Chaytrang.this.mGia.get(position));
-                    if (Integer.parseInt(Frag_Chaytrang.this.mGia.get(position)) > Frag_Chaytrang.this.Price) {
+                holder.tview5.setText(mSo.get(position));
+                holder.tview7.setText(mTienTon.get(position));
+                holder.tview8.setText(mTienchuyen.get(position));
+                holder.tview1.setText(mMax.get(position));
+                if (mGia.size() > 0) {
+                    holder.tview4.setText(mGia.get(position));
+                    if (Integer.parseInt(mGia.get(position)) > Price) {
                         holder.tview4.setTextColor(SupportMenu.CATEGORY_MASK);
                     }
                 }

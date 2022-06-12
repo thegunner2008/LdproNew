@@ -377,19 +377,34 @@ public class Congthuc {
     }
 
     public static String Xuly_DauTN(String str) {
-        String str2 = str.replaceAll(" ̂ ", " ").replaceAll("tong k ", "tong ko ").replaceAll("tong 0 chia", "tong ko chia").replaceAll("botrung", "bor trung").replaceAll(" ̂", "");
-        for (int i = 0; i < MainActivity.formList.size(); i++) {
-            str2 = str2.replaceAll(Objects.requireNonNull(MainActivity.formList.get(i).get("datas")), MainActivity.formList.get(i).get("type")).replaceAll("  ", " ");
-        }
-        for (int i2 = 0; i2 < MainActivity.formArray.size(); i2++) {
-            str2 = str2.replaceAll(MainActivity.formArray.get(i2).get("str"),MainActivity.formArray.get(i2).get("repl_str")).replaceAll("  ", " ");
-        }
-        for (int i3 = 1; i3 < 10; i3++) {
-            str2 = str2.replaceAll("  ", " ");
-        }
-        String str3 = str2.replaceAll("xie n", "xi").replaceAll("le ch", "lech").replace("\n", " ").replace("\\.", ",").replaceAll(";,", ";").replaceAll("; ,", ";").replaceAll("; lo", "lo").replaceAll("va ", ";").replaceAll(";lo", "lo").replaceAll("; de", "de").replaceAll(";de", "de").replaceAll("; xi", "xi").replaceAll("dedau", "de dau").replaceAll("dedit", "de dit").replaceAll("decham", "de cham").replaceAll("dedinh", "de cham").replaceAll(";xn", "xn").replaceAll(";xi", "xi").replaceAll("; bc", "bc").replaceAll(";bc", "bc");
-        str3.replaceAll("bc", " bc ").replace("dan", " dan ").replace("cua", " trung ").replace("chia", " chia ").replace("dau", " dau ").replace("dit", " dit ").replace("tong", " tong ").replace("cham", " cham ").replace("boj", " boj ").replace("bor", " bor ").replace("dea", " dea ").replaceAll("deb", " deb ").replaceAll("dec", " dec ").replaceAll("ded", " ded ").replace("lo ", " lo ").replaceAll("xg", " xg ").replaceAll("xn", " xn ");
-        if (str3.indexOf("dea") == -1 && str3.indexOf("deb") == -1 && str3.indexOf("dec") == -1 && str3.indexOf("ded") == -1 && str3.indexOf("det") == -1 && str3.indexOf("de") > -1) {
+        String str2 = str.replaceAll(" ̂ ", " ").replaceAll("tong k ", "tong ko ")
+                .replaceAll("tong 0 chia", "tong ko chia").replaceAll("botrung", "bor trung").replaceAll(" ̂", "");
+        for (int i = 0; i < MainActivity.formList.size(); i++)
+            str2 = str2.replaceAll(Objects.requireNonNull(MainActivity.formList.get(i).get("datas")),
+                    Objects.requireNonNull(MainActivity.formList.get(i).get("type"))).replaceAll(" {2}", " ");
+
+        for (int i = 0; i < MainActivity.formArray.size(); i++)
+            str2 = str2.replaceAll(Objects.requireNonNull(MainActivity.formArray.get(i).get("str")),
+                    Objects.requireNonNull(MainActivity.formArray.get(i).get("repl_str"))).replaceAll(" {2}", " ");
+
+        for (int i3 = 1; i3 < 10; i3++)
+            str2 = str2.replaceAll(" {2}", " ");
+
+        String str3 = str2.replaceAll("xie n", "xi").replaceAll("le ch", "lech").replace("\n", " ")
+                .replace("\\.", ",").replaceAll(";,", ";").replaceAll("; ,", ";")
+                .replaceAll("; lo", "lo").replaceAll("va ", ";").replaceAll(";lo", "lo")
+                .replaceAll("; de", "de").replaceAll(";de", "de").replaceAll("; xi", "xi")
+                .replaceAll("dedau", "de dau").replaceAll("dedit", "de dit")
+                .replaceAll("decham", "de cham").replaceAll("dedinh", "de cham").replaceAll(";xn", "xn")
+                .replaceAll(";xi", "xi").replaceAll("; bc", "bc").replaceAll(";bc", "bc")
+
+                .replaceAll("bc", " bc ").replace("dan", " dan ").replace("cua", " trung ")
+                .replace("chia", " chia ").replace("dau", " dau ").replace("dit", " dit ")
+                .replace("tong", " tong ").replace("cham", " cham ").replace("boj", " boj ")
+                .replace("bor", " bor ").replace("dea", " dea ").replaceAll("deb", " deb ")
+                .replaceAll("dec", " dec ").replaceAll("ded", " ded ").replace("lo ", " lo ")
+                .replaceAll("xg", " xg ").replaceAll("xn", " xn ");
+        if (!str3.contains("dea") && !str3.contains("deb") && !str3.contains("dec") && !str3.contains("ded") && !str3.contains("det") && str3.contains("de")) {
             return str3.replaceAll("de", "deb ");
         }
         return str3;
@@ -412,7 +427,7 @@ public class Congthuc {
         }
         String str3 = str2 + " ";
         for (int i2 = 1; i2 < 10; i2++) {
-            str3 = str3.replaceAll("  ", " ");
+            str3 = str3.replaceAll(" {2}", " ");
         }
         if (str3.contains("(") && str3.contains(")")) {
             int i1 = -1;
@@ -589,10 +604,10 @@ public class Congthuc {
 
     public static String PhanTichTinNhan(String str) {
         String str2 = str.replace("  ", " ");
-        if (str2.contains("Không hiểu")) {
-            return str2;
-        }
-        if (!str2.substring(0, 5).contains("de") && !str2.substring(0, 5).contains("lo") && !str2.substring(0, 5).contains("hc") && !str2.substring(0, 5).contains("xi") && !str2.substring(0, 5).contains("xq") && !str2.substring(0, 5).contains("xn") && !str2.substring(0, 5).contains("bc") && !str2.substring(0, 5).contains("xg")) {
+        if (str2.contains("Không hiểu")) return str2;
+
+        if (!str2.substring(0, 5).contains("de") && !str2.substring(0, 5).contains("lo") && !str2.substring(0, 5).contains("hc") && !str2.substring(0, 5).contains("xi")
+                && !str2.substring(0, 5).contains("xq") && !str2.substring(0, 5).contains("xn") && !str2.substring(0, 5).contains("bc") && !str2.substring(0, 5).contains("xg")) {
             return "Không hiểu dạng";
         }
         String str3 = str2 + "      ";
@@ -610,10 +625,11 @@ public class Congthuc {
             I2++;
         }
         for (int i = 1; i < 10; i++) {
-            str3 = str3.replaceAll("  ", " ");
+            str3 = str3.replaceAll(" {2}", " ");
         }
         for (int i2 = 1; i2 < 4; i2++) {
-            str3 = str3.replaceAll("  ", " ").replaceAll(": x", " x").replaceAll(":x", " x").replaceAll("x x", "x").replaceAll("xx", "x").replaceAll(", x", " x").replaceAll(",x", " x").replaceAll("-x", " x").replaceAll("- x", " x");
+            str3 = str3.replaceAll(" {2}", " ").replaceAll(": x", " x").replaceAll(":x", " x").replaceAll("x x", "x")
+                    .replaceAll("xx", "x").replaceAll(", x", " x").replaceAll(",x", " x").replaceAll("-x", " x").replaceAll("- x", " x");
         }
         return str3;
     }
@@ -964,44 +980,45 @@ public class Congthuc {
         String sauloc = "";
         if (str.contains("bor trung")) {
             String[] ArrBT = str.split("bor trung ");
-            String[] strArr = new String[0];
             String DanBo = "";
             String DanTrung = "";
-            if (ArrBT[0].indexOf("bor trung") > -1) {
-                DanGoc = XulySo(ArrBT[0].replaceAll("bor trung", sauloc));
+            if (ArrBT[0].contains("bor trung")) {
+                DanGoc = XulySo(ArrBT[0].replaceAll("bor trung", ""));
             } else {
                 DanGoc = XulySo(ArrBT[0]);
             }
-            if (DanGoc.indexOf("Không hiểu") > -1) {
+            if (DanGoc.contains("Không hiểu")) {
                 return DanGoc;
             }
             String[] ArrBorTrung = DanGoc.split(",");
             if (ArrBT.length > 1) {
-                if (ArrBT[1].length() > 0 && ArrBT[1].indexOf("bor") > -1) {
-                    DanBo = XulySo(ArrBT[1].replaceAll("bor", sauloc));
-                    if (DanBo.indexOf("Không hiểu") > -1) {
+                if (ArrBT[1].length() > 0 && ArrBT[1].contains("bor")) {
+                    DanBo = XulySo(ArrBT[1].replaceAll("bor", ""));
+                    if (DanBo.contains("Không hiểu")) {
                         return DanBo;
                     }
-                } else if (ArrBT[1].length() > 0 && ArrBT[1].indexOf("trung") > -1) {
-                    DanTrung = XulySo(ArrBT[1].replaceAll("trung", sauloc));
-                    if (DanTrung.indexOf("Không hiểu") > -1) {
+                } else if (ArrBT[1].length() > 0 && ArrBT[1].contains("trung")) {
+                    DanTrung = XulySo(ArrBT[1].replaceAll("trung", ""));
+                    if (DanTrung.contains("Không hiểu")) {
                         return DanTrung;
                     }
                 }
             }
             String sauloc2 = "";
-            for (int k2 = 0; k2 < ArrBorTrung.length; k2++) {
+            for (String s : ArrBorTrung) {
                 try {
                     if (DanBo.length() == 0 && DanTrung.length() == 0) {
-                        if (sauloc2.indexOf(ArrBorTrung[k2]) == -1) {
-                            sauloc2 = sauloc2 + ArrBorTrung[k2] + ",";
+                        if (!sauloc2.contains(s)) {
+                            sauloc2 = sauloc2 + s + ",";
                         }
-                    } else if (DanBo.length() <= 0 || DanTrung.length() != 0) {
-                        if (DanBo.length() == 0 && DanTrung.length() > 0 && sauloc2.indexOf(ArrBorTrung[k2]) == -1 && DanTrung.indexOf(ArrBorTrung[k2]) > -1) {
-                            sauloc2 = sauloc2 + ArrBorTrung[k2] + ",";
+                    } else if (DanBo.length() <= 0) {
+                        if (!sauloc2.contains(s) && DanTrung.contains(s)) {
+                            sauloc2 = sauloc2 + s + ",";
                         }
-                    } else if (sauloc2.indexOf(ArrBorTrung[k2]) == -1 && DanBo.indexOf(ArrBorTrung[k2]) == -1) {
-                        sauloc2 = sauloc2 + ArrBorTrung[k2] + ",";
+                    } else {
+                        if (!sauloc2.contains(s) && !DanBo.contains(s)) {
+                            sauloc2 = sauloc2 + s + ",";
+                        }
                     }
                 } catch (Exception e) {
                     return "Không hiểu " + str;
@@ -1009,20 +1026,20 @@ public class Congthuc {
             }
             return sauloc2;
         }
-        if (!str.contains("trung") && str.indexOf("bor") <= -1) {
+        if (!str.contains("trung") && !str.contains("bor")) {
             try {
                 String mDanSo = XulySo(str);
-                if (mDanSo.indexOf("Không hiểu") > -1) {
+                if (mDanSo.contains("Không hiểu")) {
                     if (mDanSo.length() > 11) {
                         return mDanSo;
                     }
                     return "Không hiểu " + str;
                 }
-            } catch (Exception e2) {
+            } catch (Exception e) {
                 return "Không hiểu " + str;
             }
-        } else if (!str.contains("trung") || str.indexOf("bor") <= -1) {
-            if (!str.contains("truing") && str.indexOf("bor") > -1) {
+        } else if (!str.contains("trung") || !str.contains("bor")) {
+            if (!str.contains("trung") && str.contains("bor")) {
                 String[] ArrBor = str.split("bor");
                 List<String> mBor = new ArrayList<>();
                 for (String str2 : ArrBor) {
@@ -1034,13 +1051,13 @@ public class Congthuc {
                 }
                 try {
                     String[] ArrSoBor = mBor.get(0).split(",");
-                    for (int k22 = 0; k22 < ArrSoBor.length; k22++) {
+                    for (String s : ArrSoBor) {
                         int m_Dem = 0;
                         int k3 = 1;
                         while (true) {
                             if (k3 >= mBor.size()) {
                                 break;
-                            } else if (mBor.get(k3).indexOf(ArrSoBor[k22]) > -1) {
+                            } else if (mBor.get(k3).contains(s)) {
                                 break;
                             } else {
                                 m_Dem++;
@@ -1048,7 +1065,7 @@ public class Congthuc {
                             }
                         }
                         if (m_Dem == mBor.size() - 1) {
-                            sauloc = sauloc + ArrSoBor[k22] + ",";
+                            sauloc = sauloc + s + ",";
                         }
                     }
                     if (sauloc.length() > 0) {
@@ -1058,33 +1075,33 @@ public class Congthuc {
                 } catch (Exception e3) {
                     return "Không hiểu " + str;
                 }
-            } else if (str.indexOf("trung") > -1 && str.indexOf("bor") == -1) {
+            } else if (str.contains("trung") && !str.contains("bor")) {
                 String[] ArrTrung = str.split("trung");
                 List<String> mTrung = new ArrayList<>();
                 for (String str3 : ArrTrung) {
                     String ss2 = XulySo(str3);
-                    if (ss2.indexOf("Không hiểu") != -1) {
+                    if (ss2.contains("Không hiểu")) {
                         return ss2;
                     }
                     mTrung.add(ss2);
                 }
                 try {
                     String[] ArrSoTrung = mTrung.get(0).split(",");
-                    for (int k23 = 0; k23 < ArrSoTrung.length; k23++) {
+                    for (String s : ArrSoTrung) {
                         int m_Dem2 = 0;
                         int k32 = 1;
                         while (true) {
                             if (k32 >= mTrung.size()) {
                                 break;
                             }
-                            if (mTrung.get(k32).indexOf(ArrSoTrung[k23]) <= -1) {
+                            if (!mTrung.get(k32).contains(s)) {
                                 break;
                             }
                             m_Dem2++;
                             k32++;
                         }
                         if (m_Dem2 == mTrung.size() - 1) {
-                            sauloc = sauloc + ArrSoTrung[k23] + ",";
+                            sauloc = sauloc + s + ",";
                         }
                     }
                     return sauloc;
@@ -1096,7 +1113,7 @@ public class Congthuc {
             if (str.substring(0, str.indexOf("trung")).length() > 1) {
                 try {
                     String DanGoc2 = XulySo(str.substring(0, str.indexOf("trung")));
-                    if (DanGoc2.indexOf("Không hiểu") > -1) {
+                    if (DanGoc2.contains("Không hiểu")) {
                         if (DanGoc2.length() > 11) {
                             return DanGoc2;
                         }
@@ -1104,7 +1121,7 @@ public class Congthuc {
                     } else if (str.substring(str.indexOf("trung") + 5, str.indexOf("bor")).length() > 1) {
                         try {
                             String DanTrung2 = XulySo(str.substring(str.indexOf("trung") + 5, str.indexOf("bor")));
-                            if (DanTrung2.indexOf("Không hiểu") > -1) {
+                            if (DanTrung2.contains("Không hiểu")) {
                                 if (DanTrung2.length() > 11) {
                                     return DanTrung2;
                                 }
@@ -1112,12 +1129,12 @@ public class Congthuc {
                             } else if (str.substring(str.indexOf("bor") + 3).replaceAll("bor", sauloc).length() > 1) {
                                 try {
                                     String DanBo2 = XulySo(str.substring(str.indexOf("bor") + 3).replaceAll("bor", sauloc));
-                                    if (DanBo2.indexOf("Không hiểu") <= -1) {
+                                    if (!DanBo2.contains("Không hiểu")) {
                                         String[] danlayS = DanGoc2.split(",");
                                         String sauloc3 = "";
-                                        for (int i = 0; i < danlayS.length; i++) {
-                                            if (DanTrung2.indexOf(danlayS[i]) > -1 && DanBo2.indexOf(danlayS[i]) == -1) {
-                                                sauloc3 = sauloc3 + danlayS[i] + ",";
+                                        for (String danlay : danlayS) {
+                                            if (DanTrung2.contains(danlay) && !DanBo2.contains(danlay)) {
+                                                sauloc3 = sauloc3 + danlay + ",";
                                             }
                                         }
                                         return sauloc3;
@@ -1147,7 +1164,7 @@ public class Congthuc {
         } else if (str.substring(0, str.indexOf("bor")).length() > 1) {
             try {
                 String DanGoc3 = XulySo(str.substring(0, str.indexOf("bor")));
-                if (DanGoc3.indexOf("Không hiểu") > -1) {
+                if (DanGoc3.contains("Không hiểu")) {
                     if (DanGoc3.length() > 11) {
                         return DanGoc3;
                     }
@@ -1155,7 +1172,7 @@ public class Congthuc {
                 } else if (str.substring(str.indexOf("bor") + 4, str.indexOf("trung")).length() > 1) {
                     try {
                         String DanBo3 = XulySo(str.substring(str.indexOf("bor") + 4, str.indexOf("trung")));
-                        if (DanBo3.indexOf("Không hiểu") > -1) {
+                        if (DanBo3.contains("Không hiểu")) {
                             if (DanBo3.length() > 11) {
                                 return DanBo3;
                             }
@@ -1163,12 +1180,12 @@ public class Congthuc {
                         } else if (str.substring(str.indexOf("trung") + 5).length() > 1) {
                             try {
                                 String DanTrung3 = XulySo(str.substring(str.indexOf("trung") + 5).replaceAll("trung", sauloc));
-                                if (DanTrung3.indexOf("Không hiểu") <= -1) {
+                                if (!DanTrung3.contains("Không hiểu")) {
                                     String[] danlayS2 = DanGoc3.split(",");
                                     String sauloc4 = "";
-                                    for (int i2 = 0; i2 < danlayS2.length; i2++) {
-                                        if (DanTrung3.indexOf(danlayS2[i2]) > -1 && DanBo3.indexOf(danlayS2[i2]) == -1) {
-                                            sauloc4 = sauloc4 + danlayS2[i2] + ",";
+                                    for (String s : danlayS2) {
+                                        if (DanTrung3.contains(s) && !DanBo3.contains(s)) {
+                                            sauloc4 = sauloc4 + s + ",";
                                         }
                                     }
                                     return sauloc4;
@@ -1200,7 +1217,7 @@ public class Congthuc {
 
     public static String ToMauError(String value, String NoiDung) {
         String tomau = "ldpro" + value + "</font>";
-        if (NoiDung.indexOf(value) > -1) {
+        if (NoiDung.contains(value)) {
             return NoiDung.replace(value, tomau);
         }
         return "ldpro" + NoiDung + "</font>";
@@ -2814,8 +2831,7 @@ public class Congthuc {
         return "Không hiểu " + str;
     }
 
-    public static String XulyTien(String str) {
-        String str1 = "";
+    public static String XulyTien(String str) {// tra ve so tien vd: 100k => 100; 1,2tr => 1200
         String tien = "";
         if (str.length() - str.replaceAll("x", "").length() > 1) {
             return "Không hiểu " + str;
@@ -2826,9 +2842,8 @@ public class Congthuc {
             if (str2.length() <= 0) {
                 return "Không hiểu";
             }
-            if (str2.endsWith("tr")) {
+            if (str2.endsWith("tr")) {// trieu
                 String str3 = str2.replaceAll("tr", "").trim().replaceAll("\\.", "");
-                str3.indexOf(",");
                 String[] Mtien = str3.split(",");
                 if (Mtien.length > 2) {
                     return "Không hiểu " + str3;
@@ -2852,19 +2867,17 @@ public class Congthuc {
                 while (i < str2.length() && !isNumeric(str2.substring(i, i + 1))) {
                     i++;
                 }
-                int j = i;
-                while (j < str2.length() && isNumeric(str2.substring(j, j + 1))) {
-                    tien = tien + str2.substring(j, j + 1);
-                    j++;
+                while (i < str2.length() && isNumeric(str2.substring(i, i + 1))) {
+                    tien = tien + str2.charAt(i);
+                    i++;
                 }
                 if (str2.replaceAll(tien, "").replaceAll("ng", "").replaceAll("n", "").replaceAll("d", "").replaceAll("k", "").replaceAll(",", "").replaceAll("\\.", "").replaceAll("/", "").replaceAll(" ", "").length() > 0) {
                     return "Không hiểu " + str;
                 }
-                str1 = tien;
             }
             try {
-                if (Integer.parseInt(str1) > 0) {
-                    return str1;
+                if (Integer.parseInt(tien) > 0) {
+                    return tien;
                 }
                 return "Không hiểu " + str;
             } catch (Exception e) {
@@ -2966,8 +2979,8 @@ public class Congthuc {
         return FixDan(str1);
     }
 
-    public static boolean isNumeric(String str) {
-        Boolean B = true;
+    public static boolean isNumeric(String str) { //la so
+        boolean B = true;
         if (str == null || str.length() == 0) {
             return false;
         }
@@ -3013,15 +3026,13 @@ public class Congthuc {
         }
     }
 
-    public static boolean CheckTime(String time) {
+    public static boolean CheckTime(String time) { // da qua Time chua?
         Date gioKT = parseDate(time);
         Calendar now = Calendar.getInstance();
         int hour = now.get(11);
         int minute = now.get(12);
-        if (parseDate(hour + ":" + minute).after(gioKT)) {
-            return true;
-        }
-        return false;
+
+        return parseDate(hour + ":" + minute) .after(gioKT);
     }
 
     public static boolean CheckDate(String time) {
@@ -3033,10 +3044,8 @@ public class Congthuc {
         try {
             c.setTime(sdf.parse(time));
             c.add(5, 1);
-            if (new Date().before(sdf.parse(sdf.format(c.getTime())))) {
-                return true;
-            }
-            return false;
+            return new Date()
+                    .before(sdf.parse(sdf.format(c.getTime())));
         } catch (ParseException e) {
             e.printStackTrace();
             return false;

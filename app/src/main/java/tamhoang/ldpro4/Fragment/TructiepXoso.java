@@ -1,5 +1,7 @@
 package tamhoang.ldpro4.Fragment;
 
+import static android.content.ContentValues.TAG;
+
 import android.annotation.SuppressLint;
 import android.content.Context;
 import android.database.Cursor;
@@ -56,6 +58,7 @@ public class TructiepXoso extends Fragment {
     String DangXuat = "lo";
     int So_giai = 0;
     Switch Switch1;
+    String Url = "https://xoso.me/embedded/kq-mienbac";
     Database db;
     Handler handler;
     List<JSONObject> jsonValues;
@@ -65,17 +68,22 @@ public class TructiepXoso extends Fragment {
     WebView mWebView;
     RadioButton rdb_XemLo;
     RadioButton rdb_XemXien;
+    RadioButton rdb_XsoMe;
+    RadioButton rdb_ThienPhu;
+
     private Runnable runnable = new Runnable() {
-        /* class tamhoang.ldpro4.Fragment.TructiepXoso.AnonymousClass6 */
 
         public void run() {
-            if (TructiepXoso.this.listSo.size() > 26) {
-                TructiepXoso.this.handler.removeCallbacks(TructiepXoso.this.runnable);
+            if (listSo.size() > 26) {
+                handler.removeCallbacks(runnable);
                 return;
             }
-            TructiepXoso tructiepXoso = TructiepXoso.this;
-            tructiepXoso.loadJavascript("(function() { return " + "document.getElementsByClassName('firstlast-mb fl')[0].innerText;" + "; })();");
-            TructiepXoso.this.handler.postDelayed(this, 2000);
+            if (rdb_ThienPhu.isChecked()) {
+                loadJavascript("(function() { return document.getElementsByClassName('table table-lotto-xsmb')[0].innerText;; })();");
+            } else {
+                loadJavascript("(function() { return document.getElementsByClassName('firstlast-mb fl')[0].innerText;; })();");
+            }
+            handler.postDelayed(this, 2000);
         }
     };
     View v;
@@ -88,37 +96,44 @@ public class TructiepXoso extends Fragment {
         init();
         Calendar.getInstance().setTime(new Date());
         new SimpleDateFormat("yyyy-MM-dd").setTimeZone(TimeZone.getDefault());
-        this.Switch1.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
-            /* class tamhoang.ldpro4.Fragment.TructiepXoso.AnonymousClass1 */
+        this.Switch1.setOnCheckedChangeListener((compoundButton, b) -> {
+            if (Switch1.isChecked()) {
+                mWebView.setVisibility(View.VISIBLE);
+            } else {
+                mWebView.setVisibility(View.GONE);
+            }
+        });
+        this.rdb_XemLo.setOnCheckedChangeListener((compoundButton, b) -> {
+            if (rdb_XemLo.isChecked()) {
+                DangXuat = "lo";
+                Xem_lv();
+            }
+        });
 
-            public void onCheckedChanged(CompoundButton compoundButton, boolean b) {
-                if (TructiepXoso.this.Switch1.isChecked()) {
-                    TructiepXoso.this.mWebView.setVisibility(View.VISIBLE);
-                } else {
-                    TructiepXoso.this.mWebView.setVisibility(View.GONE);
+        this.rdb_XemXien.setOnCheckedChangeListener((compoundButton, b) -> {
+            if (rdb_XemXien.isChecked()) {
+                DangXuat = "xi";
+                Xem_lv();
+            }
+        });
+        this.rdb_XsoMe.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
+            public void onCheckedChanged(CompoundButton compoundButton, boolean z) {
+                if (rdb_XsoMe.isChecked()) {
+                    Url = "https://xoso.me/embedded/kq-mienbac";
+                    mWebView.loadUrl(Url);
                 }
             }
         });
-        this.rdb_XemLo.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
-            /* class tamhoang.ldpro4.Fragment.TructiepXoso.AnonymousClass2 */
-
-            public void onCheckedChanged(CompoundButton compoundButton, boolean b) {
-                if (TructiepXoso.this.rdb_XemLo.isChecked()) {
-                    TructiepXoso.this.DangXuat = "lo";
-                    TructiepXoso.this.Xem_lv();
+        this.rdb_ThienPhu.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
+            public void onCheckedChanged(CompoundButton compoundButton, boolean z) {
+                if (rdb_ThienPhu.isChecked()) {
+                    String mDate = MainActivity.Get_ngay().replaceAll("/", "-");
+                    Url = "https://xosothienphu.com/ma-nhung/xsmb-" + mDate + ".html";
+                    mWebView.loadUrl(Url);
                 }
             }
         });
-        this.rdb_XemXien.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
-            /* class tamhoang.ldpro4.Fragment.TructiepXoso.AnonymousClass3 */
 
-            public void onCheckedChanged(CompoundButton compoundButton, boolean b) {
-                if (TructiepXoso.this.rdb_XemXien.isChecked()) {
-                    TructiepXoso.this.DangXuat = "xi";
-                    TructiepXoso.this.Xem_lv();
-                }
-            }
-        });
         this.handler = new Handler();
         if (!Congthuc.CheckTime("18:14") || Congthuc.CheckTime("24:30")) {
             this.mWebView.setVisibility(View.GONE);
@@ -136,12 +151,10 @@ public class TructiepXoso extends Fragment {
             this.mWebView.loadUrl("https://xoso.me/embedded/kq-mienbac");
         }
         this.mWebView.setWebViewClient(new WebViewClient() {
-            /* class tamhoang.ldpro4.Fragment.TructiepXoso.AnonymousClass4 */
-
             public void onPageFinished(WebView view, String url) {
-                TructiepXoso.this.loadJavascript("document.getElementsByClassName('embeded-breadcrumb')[0].style.display = 'none';\ndocument.getElementsByClassName('tit-mien')[0].style.display = 'none';");
-                TructiepXoso.this.mWebView.setVisibility(View.VISIBLE);
-                TructiepXoso.this.Switch1.setEnabled(true);
+                loadJavascript("document.getElementsByClassName('embeded-breadcrumb')[0].style.display = 'none';\ndocument.getElementsByClassName('tit-mien')[0].style.display = 'none';");
+                mWebView.setVisibility(View.VISIBLE);
+                Switch1.setEnabled(true);
             }
         });
         this.mWebView.setEnabled(false);
@@ -164,65 +177,60 @@ public class TructiepXoso extends Fragment {
     }
 
     public void loadJavascript(String javascript) {
-        this.mWebView.evaluateJavascript(javascript, new ValueCallback<String>() {
-            /* class tamhoang.ldpro4.Fragment.TructiepXoso.AnonymousClass5 */
-
-            public void onReceiveValue(String s) {
-                String msg;
-                JsonReader reader = new JsonReader(new StringReader(s));
-                reader.setLenient(true);
-                try {
-                    if (reader.peek() != JsonToken.NULL && reader.peek() == JsonToken.STRING && (msg = reader.nextString()) != null && msg.indexOf("\n") > -1) {
-                        String[] SSS = msg.substring(msg.indexOf("0")).split("\n");
-                        for (int i = 0; i < SSS.length; i++) {
-                            if (SSS[i].length() > 2) {
-                                SSS[i] = SSS[i].substring(2);
-                            } else {
-                                SSS[i] = "";
-                            }
+        this.mWebView.evaluateJavascript(javascript, s -> {
+            String msg;
+            JsonReader reader = new JsonReader(new StringReader(s));
+            Log.e(TAG, "loadJavascript: " + s);
+            reader.setLenient(true);
+            try {
+                if (reader.peek() != JsonToken.NULL && reader.peek() == JsonToken.STRING && (msg = reader.nextString()) != null && msg.contains("\n")) {
+                    String[] SSS = msg.substring(msg.indexOf("0")).split("\n");
+                    for (int i = 0; i < SSS.length; i++) {
+                        if (SSS[i].length() > 2) {
+                            SSS[i] = SSS[i].substring(2);
+                        } else {
+                            SSS[i] = "";
                         }
-                        if (SSS.length == 10) {
-                            TructiepXoso.this.listSo = new ArrayList<>();
-                            for (int i2 = 0; i2 < SSS.length; i2++) {
-                                String[] Sodit = SSS[i2].replaceAll(" ", "").split(",");
-                                for (int j = 0; j < Sodit.length; j++) {
-                                    if (Sodit[j].length() == 1) {
-                                        ArrayList<String> arrayList = TructiepXoso.this.listSo;
-                                        arrayList.add(i2 + Sodit[j]);
-                                    } else if (Sodit[j].length() == 2) {
-                                        ArrayList<String> arrayList2 = TructiepXoso.this.listSo;
-                                        arrayList2.add(i2 + Sodit[j].substring(1));
-                                    }
+                    }
+                    if (SSS.length == 10) {
+                        listSo = new ArrayList<>();
+                        for (int i2 = 0; i2 < SSS.length; i2++) {
+                            String[] Sodit = SSS[i2].replaceAll(" ", "").split(",");
+                            for (String value : Sodit) {
+                                if (value.length() == 1) {
+                                    listSo.add(i2 + value);
+                                } else if (value.length() == 2) {
+                                    listSo.add(i2 + value.substring(1));
                                 }
                             }
-                            if (TructiepXoso.this.listSo.size() != TructiepXoso.this.So_giai) {
-                                TructiepXoso.this.TinhTienTuDong(TructiepXoso.this.listSo);
-                                TructiepXoso.this.Xem_lv();
-                                TructiepXoso.this.So_giai = TructiepXoso.this.listSo.size();
-                            }
-                        } else {
-                            Toast.makeText(TructiepXoso.this.getActivity(), "Trang xoso.me đang bị lỗi!", Toast.LENGTH_LONG).show();
-                            TructiepXoso.this.handler.removeCallbacks(TructiepXoso.this.runnable);
                         }
+                        if (listSo.size() != So_giai) {
+                            TinhTienTuDong(listSo);
+                            Xem_lv();
+                            So_giai = listSo.size();
+                        }
+                    } else {
+                        Toast.makeText(getActivity(), "Trang xoso.me đang bị lỗi!", Toast.LENGTH_LONG).show();
+                        handler.removeCallbacks(runnable);
                     }
-                    try {
-                        reader.close();
-                    } catch (IOException e) {
-                    }
-                } catch (IOException e2) {
-                    Log.e("TAG", "MainActivity: IOException", e2);
-                    try {
-                        reader.close();
-                    } catch (IOException e) {
-                        e.printStackTrace();
-                    }
-                } catch (Throwable th) {
-                    try {
-                        reader.close();
-                    } catch (IOException e3) {
-                    }
-                    throw th;
                 }
+                try {
+                    reader.close();
+                } catch (IOException e) {
+                }
+            } catch (IOException e2) {
+                Log.e(TAG, "MainActivity: IOException", e2);
+                try {
+                    reader.close();
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+            } catch (Throwable th) {
+                try {
+                    reader.close();
+                } catch (IOException e3) {
+                }
+                throw th;
             }
         });
         return;
@@ -289,9 +297,6 @@ public class TructiepXoso extends Fragment {
         database6.QueryData("Update tbl_soctS set ket_qua = -diem * lan_an * so_nhay + tong_tien WHERE ngay_nhan = '" + this.mDate + "' AND type_kh = 2 AND the_loai <> 'tt' AND the_loai <> 'cn'");
     }
 
-    /* JADX INFO: Multiple debug info for r18v7 'str'  java.lang.String: [D('m_SoXien' java.lang.String[]), D('str' java.lang.String)] */
-    /* JADX WARNING: Removed duplicated region for block: B:102:0x022e  */
-    /* JADX WARNING: Removed duplicated region for block: B:112:? A[RETURN, SYNTHETIC] */
     public void Xem_lv() {
         String str;
         JSONException e;
@@ -346,8 +351,6 @@ public class TructiepXoso extends Fragment {
                             }
                             i++;
                             str = str2;
-                            activity2 = activity2;
-                            m_SoXien = m_SoXien;
                         }
                         activity = activity2;
                         if (dem_xien == 4) {
@@ -399,19 +402,15 @@ public class TructiepXoso extends Fragment {
                     }
                 }
             }
-            Collections.sort(this.jsonValues, new Comparator<JSONObject>() {
-                /* class tamhoang.ldpro4.Fragment.TructiepXoso.AnonymousClass7 */
-
-                public int compare(JSONObject a, JSONObject b) {
-                    int valA = 0;
-                    Integer valB = 0;
-                    try {
-                        valA = Integer.valueOf(a.getInt("xep_diem"));
-                        valB = Integer.valueOf(b.getInt("xep_diem"));
-                    } catch (JSONException e) {
-                    }
-                    return valB.compareTo(valA);
+            Collections.sort(this.jsonValues, (a, b) -> {
+                int valA = 0;
+                Integer valB = 0;
+                try {
+                    valA = a.getInt("xep_diem");
+                    valB = b.getInt("xep_diem");
+                } catch (JSONException e1) {
                 }
+                return valB.compareTo(valA);
             });
             if (cursor != null && !cursor.isClosed()) {
                 cursor.close();
@@ -422,7 +421,6 @@ public class TructiepXoso extends Fragment {
         }
     }
 
-    /* access modifiers changed from: package-private */
     public class So_OmAdapter extends ArrayAdapter {
         public So_OmAdapter(Context context, int resource, List<JSONObject> objects) {
             super(context, resource, objects);
@@ -456,7 +454,7 @@ public class TructiepXoso extends Fragment {
             } else {
                 holder = (ViewHolder) mView.getTag();
             }
-            JSONObject Json = TructiepXoso.this.jsonValues.get(position);
+            JSONObject Json = jsonValues.get(position);
             try {
                 if (Json.getInt("so_nhay") > 0) {
                     holder.tview5.setTextColor(SupportMenu.CATEGORY_MASK);
@@ -466,22 +464,22 @@ public class TructiepXoso extends Fragment {
                     holder.tview4.setTextColor(SupportMenu.CATEGORY_MASK);
                     if (Json.getInt("so_nhay") == 1) {
                         TextView textView = holder.tview5;
-                        textView.setText(((Object) Html.fromHtml(Json.getString("so_chon"))) + "*");
+                        textView.setText(Html.fromHtml(Json.getString("so_chon")) + "*");
                     } else if (Json.getInt("so_nhay") == 2) {
                         TextView textView2 = holder.tview5;
-                        textView2.setText(((Object) Html.fromHtml(Json.getString("so_chon"))) + "**");
+                        textView2.setText(Html.fromHtml(Json.getString("so_chon")) + "**");
                     } else if (Json.getInt("so_nhay") == 3) {
                         TextView textView3 = holder.tview5;
-                        textView3.setText(((Object) Html.fromHtml(Json.getString("so_chon"))) + "***");
+                        textView3.setText(Html.fromHtml(Json.getString("so_chon")) + "***");
                     } else if (Json.getInt("so_nhay") == 4) {
                         TextView textView4 = holder.tview5;
-                        textView4.setText(((Object) Html.fromHtml(Json.getString("so_chon"))) + "****");
+                        textView4.setText(Html.fromHtml(Json.getString("so_chon")) + "****");
                     } else if (Json.getInt("so_nhay") == 5) {
                         TextView textView5 = holder.tview5;
-                        textView5.setText(((Object) Html.fromHtml(Json.getString("so_chon"))) + "*****");
+                        textView5.setText(Html.fromHtml(Json.getString("so_chon")) + "*****");
                     } else if (Json.getInt("so_nhay") == 6) {
                         TextView textView6 = holder.tview5;
-                        textView6.setText(((Object) Html.fromHtml(Json.getString("so_chon"))) + "******");
+                        textView6.setText(Html.fromHtml(Json.getString("so_chon")) + "******");
                     }
                     holder.tview7.setText(Json.getString("tien_nhan"));
                     holder.tview8.setText(Json.getString("tien_om"));
@@ -516,5 +514,7 @@ public class TructiepXoso extends Fragment {
         this.rdb_XemXien = (RadioButton) this.v.findViewById(R.id.rdb_XemXien);
         this.listView = (ListView) this.v.findViewById(R.id.ListviewTructiep);
         this.mWebView = (WebView) this.v.findViewById(R.id.fragment_main_webview);
+        this.rdb_XsoMe = (RadioButton) this.v.findViewById(R.id.rdb_XsoMe);
+        this.rdb_ThienPhu = (RadioButton) this.v.findViewById(R.id.rdb_ThienPhu);
     }
 }

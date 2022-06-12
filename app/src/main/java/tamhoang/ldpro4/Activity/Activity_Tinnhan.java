@@ -105,59 +105,54 @@ public class Activity_Tinnhan extends BaseToolBarActivity {
         }
         imm.hideSoftInputFromWindow(view.getWindowToken(), 0);
         this.btn_suatin.setOnClickListener(v -> {
-            Database database1 = Activity_Tinnhan.this.db;
-            database1.QueryData("DELETE FROM tbl_soctS WHERE ngay_nhan = '" + Activity_Tinnhan.this.ngay_nhan + "' AND ten_kh = '" + Activity_Tinnhan.this.tenKH + "'  AND so_tin_nhan = " + Activity_Tinnhan.this.soTN + " And type_kh = " + Activity_Tinnhan.this.typeKH);
-            StringBuilder sb = new StringBuilder();
-            sb.append("Update tbl_tinnhanS Set nd_phantich = '");
-            sb.append(Activity_Tinnhan.this.editText_suatin.getText().toString());
-            sb.append("', phat_hien_loi = 'ko' WHERE id = ");
-            sb.append(Activity_Tinnhan.this.id);
-            Activity_Tinnhan.this.db.QueryData(sb.toString());
+            db.QueryData("DELETE FROM tbl_soctS WHERE ngay_nhan = '" + ngay_nhan + "' AND ten_kh = '" + tenKH + "'  AND so_tin_nhan = " + soTN + " And type_kh = " + typeKH);
+            String sb = "Update tbl_tinnhanS Set nd_phantich = '" + editText_suatin.getText().toString() + "', phat_hien_loi = 'ko' WHERE id = " + id;
+            db.QueryData(sb);
             try {
-                Activity_Tinnhan.this.db.Update_TinNhanGoc(Integer.parseInt(Activity_Tinnhan.this.id), Activity_Tinnhan.this.typeKH);
+                db.Update_TinNhanGoc(Integer.parseInt(id), typeKH);
             } catch (Exception e) {
                 Toast.makeText(Activity_Tinnhan.this, "Đã xảy ra lỗi!", Toast.LENGTH_LONG).show();
             } catch (Throwable throwable) {
                 throwable.printStackTrace();
             }
-            Database database2 = Activity_Tinnhan.this.db;
-            Cursor cur = database2.GetData("Select * FROM tbl_tinnhanS Where id = " + Activity_Tinnhan.this.id);
+            Database database2 = db;
+            Cursor cur = database2.GetData("Select * FROM tbl_tinnhanS Where id = " + id);
             cur.moveToFirst();
             if (cur.getString(11).contains("Không hiểu")) {
-                Activity_Tinnhan.this.editText_suatin.setText(Html.fromHtml(cur.getString(10).replace("ldpro", "<font color='#FF0000'>")));
+                editText_suatin.setText(Html.fromHtml(cur.getString(10).replace("ldpro", "<font color='#FF0000'>")));
                 if (cur.getString(10).contains("ldpro")) {
-                    Activity_Tinnhan.this.editText_suatin.setSelection(cur.getString(10).indexOf("ldpro"));
+                    editText_suatin.setSelection(cur.getString(10).indexOf("ldpro"));
                 }
-                Activity_Tinnhan.this.mDanGoc.clear();
-                Activity_Tinnhan.this.mPhantich.clear();
-                ListView listView = Activity_Tinnhan.this.lv_suatin;
+                mDanGoc.clear();
+                mPhantich.clear();
+                ListView listView = lv_suatin;
                 Activity_Tinnhan activity_Tinnhan = Activity_Tinnhan.this;
                 listView.setAdapter((ListAdapter) new TN_Adapter(activity_Tinnhan, R.layout.frag_suatin_lv1, activity_Tinnhan.mDanGoc));
                 return;
             }
-            Activity_Tinnhan.this.editText_suatin.setText(cur.getString(9));
-            Activity_Tinnhan.this.mDanGoc.clear();
-            Activity_Tinnhan.this.mPhantich.clear();
+            editText_suatin.setText(cur.getString(9));
+            mDanGoc.clear();
+            mPhantich.clear();
             try {
-                Activity_Tinnhan.this.json = new JSONObject(cur.getString(15));
-                Iterator<String> keys = Activity_Tinnhan.this.json.keys();
+                json = new JSONObject(cur.getString(15));
+                Iterator<String> keys = json.keys();
                 while (keys.hasNext()) {
-                    JSONObject dan = Activity_Tinnhan.this.json.getJSONObject(keys.next());
-                    List<String> list = Activity_Tinnhan.this.mDanGoc;
+                    JSONObject dan = json.getJSONObject(keys.next());
+                    List<String> list = mDanGoc;
                     list.add(dan.getString("du_lieu") + " (" + dan.getString("so_luong") + ")");
-                    List<String> list2 = Activity_Tinnhan.this.mPhantich;
+                    List<String> list2 = mPhantich;
                     list2.add(dan.getString("dan_so") + "x" + dan.getString("so_tien"));
                 }
-                Activity_Tinnhan.this.lv_suatin.setAdapter((ListAdapter) new TN_Adapter(Activity_Tinnhan.this, R.layout.frag_suatin_lv1, Activity_Tinnhan.this.mDanGoc));
+                lv_suatin.setAdapter((ListAdapter) new TN_Adapter(Activity_Tinnhan.this, R.layout.frag_suatin_lv1, mDanGoc));
             } catch (JSONException e2) {
                 e2.printStackTrace();
             }
         });
         this.lv_suatin.setOnItemLongClickListener((adapterView, view1, position, id) -> {
-            Activity_Tinnhan.this.lv_position = position;
+            lv_position = position;
             return false;
         });
-        this.btn_xoatin.setOnClickListener(v -> Activity_Tinnhan.this.finish());
+        this.btn_xoatin.setOnClickListener(v -> finish());
         registerForContextMenu(this.lv_suatin);
         cursor.close();
     }
@@ -186,7 +181,7 @@ public class Activity_Tinnhan extends BaseToolBarActivity {
             @SuppressLint("ViewHolder") View v2 = ((Activity) getContext()).getLayoutInflater().inflate(R.layout.frag_suatin_lv1, (ViewGroup) null);
             TextView tv_dangoc = (TextView) v2.findViewById(R.id.dan_goc);
             final TextView tv_danpt = (TextView) v2.findViewById(R.id.dan_phantich);
-            tv_dangoc.setText((CharSequence) Activity_Tinnhan.this.mDanGoc.get(position));
+            tv_dangoc.setText((CharSequence) mDanGoc.get(position));
             tv_dangoc.setOnClickListener(v1 -> {
                 if (tv_danpt.getVisibility() == View.VISIBLE) {
                     tv_danpt.setVisibility(View.GONE);
@@ -194,7 +189,7 @@ public class Activity_Tinnhan extends BaseToolBarActivity {
                     tv_danpt.setVisibility(View.VISIBLE);
                 }
             });
-            tv_danpt.setText((CharSequence) Activity_Tinnhan.this.mPhantich.get(position));
+            tv_danpt.setText((CharSequence) mPhantich.get(position));
             tv_danpt.setVisibility(View.GONE);
             return v2;
         }

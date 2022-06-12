@@ -1,5 +1,7 @@
 package tamhoang.ldpro4;
 
+import static android.content.ContentValues.TAG;
+
 import android.app.Notification;
 import android.app.PendingIntent;
 import android.app.RemoteInput;
@@ -17,20 +19,24 @@ import androidx.core.app.NotificationCompat;
 
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.Iterator;
 import java.util.TimeZone;
 import org.json.JSONObject;
 import tamhoang.ldpro4.Congthuc.Congthuc;
+import tamhoang.ldpro4.data.BriteDb;
 import tamhoang.ldpro4.data.Contact;
 import tamhoang.ldpro4.data.Database;
+import tamhoang.ldpro4.data.model.KhachHang;
+import tamhoang.ldpro4.data.model.TinNhanS;
 
 public class NotificationReader extends NotificationListenerService {
     public static final String VIBER = "com.viber.voip";
     public static final String WHATSAPP = "com.whatsapp";
     public static final String ZALO = "com.zing.zalo";
-    static boolean replied;
+
     String ID = "";
     String Ten_KH;
     private ArrayList<NotificationCompat.Action> actions;
@@ -72,6 +78,8 @@ public class NotificationReader extends NotificationListenerService {
                 String text = extras.getCharSequence(NotificationCompat.EXTRA_TEXT).toString();//nội dung tin nhắn hoặc số(tin nhắn)
                 Notification notification = sbn.getNotification();
                 String title = extras.getCharSequence(NotificationCompat.EXTRA_TITLE).toString();// 1/ = Tên KH (số tin nhắn)
+
+                Log.e(TAG, "onNotificationPosted: text " + text + " - "+ extras);
 
                 if (sbn.getPackageName().equals(ZALO)) {
                     if ((text.contains("tin nhắn chưa đọc.")) || (text.contains("đã gửi tập tin cho bạn")) || (text.contains("cảm xúc với tin nhắn bạn gửi"))
@@ -152,12 +160,14 @@ public class NotificationReader extends NotificationListenerService {
                     }
                 }
 
-                if (!MainActivity.arr_TenKH.contains(GhepTen) && !GhepTen.contains("null")) {
-                    Notification.WearableExtender wearableExtender = new Notification.WearableExtender(notification);
-                    ArrayList<Notification.Action> actions = new ArrayList<>(wearableExtender.getActions());
-                    it = actions.iterator();
-                    while (it.hasNext()) {
-                        Notification.Action act = it.next();
+                Log.e(TAG, "onNotificationPosted: arr_TenKH contains(GhepTen) =" + MainActivity.arr_TenKH.contains(GhepTen) + " GhepTen null = "+  GhepTen.contains("null"));
+
+                if ( !GhepTen.contains("null")) {
+                    Notification.Action[] actions = notification.actions;
+
+                    for (Notification.Action act: actions) {
+                        Log.e(TAG, "Gui_Tin_Nhan onNotificationPosted: action title = " + act.title );
+
                         if (act.title.toString().contains("Trả lời") || act.title.toString().contains("Reply")) {
                             MainActivity.arr_TenKH.add(GhepTen);
                             Contact cont = new Contact();
@@ -167,9 +177,8 @@ public class NotificationReader extends NotificationListenerService {
                             cont.remoteInput = act.getRemoteInputs()[0];
                             cont.remoteExtras = sbn.getNotification().extras;
                             MainActivity.contactslist.add(cont);
-                            if (MainActivity.Notifi == null) {
-                                MainActivity.Notifi = this;
-                            }
+                            if (MainActivity.Notifi == null) MainActivity.Notifi = this;
+
                         }
                     }
                 }
@@ -182,103 +191,97 @@ public class NotificationReader extends NotificationListenerService {
                 if (app != null) {
                     try {
                         if (!GhepTen.contains("null") && app != "") {
-                            Database database = this.db;
                             String query = "Select * From Chat_database WHERE " +
                                     "ngay_nhan = '" + mNgayNhan +"' And Ten_kh = '" + GhepTen + "' AND nd_goc = '"+ text + "'";
-                            try {
-                                Cursor cursor = database.GetData(query);
-                                if (cursor.getCount() == 0) {
-                                    String queryInsert = "Insert into Chat_database Values" +
-                                            "( null,'" + mNgayNhan + "', '" + mGionhan +"', 1, '"+GhepTen +"', '"+GhepTen+"', '"+app+"','"+text+"',1)";
-                                    try {
-                                        this.db.QueryData(queryInsert);
-                                        MainActivity.sms = true;
-                                    } catch (Exception e2) {
-                                        return;
-                                    }
-                                } else {
-                                    app = null;
+                            Cursor cursor = db.GetData(query);
+                            if (cursor.getCount() == 0) {//neu khong bi trung tin nhan
+
+                                String queryInsert = "Insert into Chat_database Values" +
+                                        "( null,'" + mNgayNhan + "', '" + mGionhan +"', 1, '"+GhepTen +"', '"+GhepTen+"', '"+app+"','"+text+"',1)";
+                                try {
+                                    this.db.QueryData(queryInsert);
+                                    MainActivity.sms = true;
+                                } catch (Exception e) {
+                                    return;
                                 }
-                                cursor.close();
-                                if (app != null) {
-                                    try {
-                                        if (!GhepTen.contains("null") && app != "" && text.length() > 5) {
-                                            this.body = text.replaceAll("'", " ");
-                                            this.Ten_KH = GhepTen;
-                                            if (!(!MainActivity.DSkhachhang.contains(this.Ten_KH) || this.body.startsWith("Ok") || this.body.startsWith("Bỏ")
-                                                    || this.body.toLowerCase().startsWith("ldpro") || this.body.startsWith("Thiếu")
-                                                    || this.body.startsWith("Success")) || this.body.contains("Tra lai")) {
-                                                Cursor getTenKH = this.db.GetData("Select * FROM tbl_kh_new WHERE ten_kh ='" + this.Ten_KH + "'");
-                                                getTenKH.moveToFirst();
-                                                JSONObject jSONObject3 = new JSONObject(getTenKH.getString(5));
-                                                this.json = jSONObject3;//"caidat_tg":{"dlgiu_de":0,"dlgiu_lo":0,"dlgiu_xi":0,"dlgiu_xn":0,"dlgiu_bc":0,"khgiu_de":0,"khgiu_lo":0,"khgiu_xi":0,"khgiu_xn":0,"khgiu_bc":0,"ok_tin":3,"xien_nhan":0,"chot_sodu":0,"tg_loxien":"18:13","tg_debc":"18:20","loi_donvi":0,"heso_de":0,"maxDe":0,"maxLo":0,"maxXi":0,"maxCang":0}}
-                                                JSONObject jSONObject4 = jSONObject3.getJSONObject("caidat_tg");
-                                                this.caidat_tg = jSONObject4;
-                                                if (!Congthuc.CheckTime(jSONObject4.getString("tg_debc"))) {
-                                                    try {
-                                                        Cursor getSoTN = this.db.GetData("Select max(so_tin_nhan) from tbl_tinnhanS WHERE ngay_nhan = '" + mNgayNhan + "' AND ten_kh = '" + this.Ten_KH + "' AND type_kh = 1");
-                                                        getSoTN.moveToFirst();
-                                                        this.soTN = getSoTN.getInt(0) + 1;
-                                                        this.db.QueryData(!this.body.contains("Tra lai") ? "Insert Into tbl_tinnhanS values (null, '" + mNgayNhan + "', '" + mGionhan + "',1, '" + this.Ten_KH + "', '" + getTenKH.getString(1) + "','" + app + "', " + this.soTN + ", '" + this.body + "',null,'" + this.body + "', 'ko',0,1,1, null)" : "Insert Into tbl_tinnhanS values (null, '" + mNgayNhan + "', '" + mGionhan + "',1, '" + this.Ten_KH + "', '" + getTenKH.getString(1) + "','" + app + "', " + this.soTN + ", '" + this.body + "',null,'" + this.body + "', 'ko',0,0,0, null)");
-                                                        if (Congthuc.CheckDate(MainActivity.myDate)) {
-                                                            Cursor c = this.db.GetData("Select * from tbl_tinnhanS WHERE ngay_nhan = '" + mNgayNhan + "' AND ten_kh = '" + this.Ten_KH + "' AND so_tin_nhan = " + this.soTN + " AND type_kh = 1");
-                                                            c.moveToFirst();
-                                                            try {
-                                                                this.db.Update_TinNhanGoc(c.getInt(0), 1);
-                                                            } catch (Exception e3) {
-                                                                this.db.QueryData("Update tbl_tinnhanS set phat_hien_loi = 'ko' WHERE id = " + c.getInt(0));
-                                                                this.db.QueryData("Delete From tbl_soctS WHERE ngay_nhan = '" + mNgayNhan + "' AND ten_kh = '" + this.Ten_KH + "' AND so_tin_nhan = " + this.soTN + " AND type_kh = 1");
-                                                            } catch (Throwable throwable) {
-                                                                throwable.printStackTrace();
-                                                            }
-                                                            if (!Congthuc.CheckTime("18:30") && !this.body.contains("Tra lai")) {
-                                                                if (MainActivity.handler == null) {
-                                                                    MainActivity.handler = new Handler();
-                                                                    MainActivity.handler.postDelayed(MainActivity.runnable, 1000);
-                                                                }
-                                                                if (!MainActivity.json_Tinnhan.has(this.Ten_KH)) {
-                                                                    JSONObject jsontinnan = new JSONObject();
-                                                                    jsontinnan.put("Time", 0);
-                                                                    MainActivity.json_Tinnhan.put(this.Ten_KH, jsontinnan.toString());
-                                                                } else {
-                                                                    JSONObject jsontinnan2 = new JSONObject(MainActivity.json_Tinnhan.getString(this.Ten_KH));
-                                                                    jsontinnan2.put("Time", 0);
-                                                                    MainActivity.json_Tinnhan.put(this.Ten_KH, jsontinnan2.toString());
-                                                                }
-                                                                this.db.Gui_Tin_Nhan(c.getInt(0));
-                                                            }
-                                                            c.close();
-                                                        }
-                                                        getSoTN.close();
-                                                        getTenKH.close();
-                                                    } catch (Exception e4) {
-                                                        return;
-                                                    }
-                                                } else {
-                                                    Cursor getSoTN2 = this.db.GetData("Select max(so_tin_nhan) from tbl_tinnhanS WHERE ngay_nhan = '" + mNgayNhan + "' AND ten_kh = '" + this.Ten_KH + "'");
-                                                    getSoTN2.moveToFirst();
-                                                    this.soTN = getSoTN2.getInt(0) + 1;
-                                                    this.db.QueryData("Insert Into tbl_tinnhanS values (null, '" + mNgayNhan + "', '" + mGionhan + "',1, '" + this.Ten_KH + "', '" + getTenKH.getString(1) + "','" + app + "', " + this.soTN + ", '" + this.body + "',null,'" + this.body + "', 'Hết giờ nhận số!',0,1,1, null)");
-                                                    getSoTN2.close();
-                                                    getTenKH.close();
-                                                    if (!Congthuc.CheckTime("18:30") && MainActivity.jSon_Setting.getInt("tin_qua_gio") == 1) {
-                                                        NotificationWearReader(this.Ten_KH, "Hết giờ nhận!");
-                                                    }
+                            } else {
+                                app = null;
+                            }
+
+                            cursor.close();
+                            if (app != null) {
+                                Log.e(TAG, "onNotificationPosted: APP: " + app + "- GhepTen: " + GhepTen + "- text: "+text);
+                                if (!GhepTen.contains("null") && app != "" && text.length() > 5) {
+                                    this.body = text.replaceAll("'", " ");
+                                    this.Ten_KH = GhepTen;
+                                    if (!(!MainActivity.DSkhachhang.contains(GhepTen) || this.body.startsWith("Ok") || this.body.startsWith("Bỏ")
+                                            || this.body.toLowerCase().startsWith("ldpro") || this.body.startsWith("Thiếu")
+                                            || this.body.startsWith("Success")) || this.body.contains("Tra lai")) {
+
+                                        KhachHang khachHang_s = BriteDb.INSTANCE.selectKhachHang(Ten_KH);
+                                        json = new JSONObject(khachHang_s.getTbl_MB());//"caidat_tg":{"dlgiu_de":0,"dlgiu_lo":0,"dlgiu_xi":0,"dlgiu_xn":0,"dlgiu_bc":0,"khgiu_de":0,"khgiu_lo":0,"khgiu_xi":0,"khgiu_xn":0,"khgiu_bc":0,"ok_tin":3,"xien_nhan":0,"chot_sodu":0,"tg_loxien":"18:13","tg_debc":"18:20","loi_donvi":0,"heso_de":0,"maxDe":0,"maxLo":0,"maxXi":0,"maxCang":0}}
+                                        caidat_tg = json.getJSONObject("caidat_tg");
+
+                                        if (!Congthuc.CheckTime(caidat_tg.getString("tg_debc"))) {
+                                            int maxSoTn = BriteDb.INSTANCE.getMaxSoTinNhan(mNgayNhan, 1, "ten_kh = '"+ Ten_KH +"'");
+                                            soTN = maxSoTn + 1;
+
+                                            boolean isTraLai = body.contains("Tra lai");
+                                            int okTn = isTraLai? 0: 1;
+                                            int del_sms = okTn;
+                                            TinNhanS tinNhanS_i = new TinNhanS(null, mNgayNhan, mGionhan, 1, Ten_KH, khachHang_s.getSdt(), app,
+                                                    soTN, body, null, body, "ko", 0, okTn, del_sms, null);
+                                            Log.e(TAG, "onNotificationPosted: tinNhanS_i " + tinNhanS_i );
+                                            BriteDb.INSTANCE.insertTinNhanS(tinNhanS_i);
+
+                                            if (Congthuc.CheckDate(MainActivity.myDate)) {
+                                                TinNhanS tinNhanS_g = BriteDb.INSTANCE.selectTinNhanS(mNgayNhan, Ten_KH, soTN, 1);
+                                                try {
+                                                    db.Update_TinNhanGoc(tinNhanS_g.getID(), 1);
+                                                } catch (Exception e) {
+                                                    Log.e(TAG, "onNotificationPosted: Exception " +e );
+
+                                                    db.QueryData("Update tbl_tinnhanS set phat_hien_loi = 'ko' WHERE id = " + tinNhanS_g.getID());
+                                                    db.QueryData("Delete From tbl_soctS WHERE ngay_nhan = '" + mNgayNhan + "' AND ten_kh = '" + this.Ten_KH + "' AND so_tin_nhan = " + this.soTN + " AND type_kh = 1");
+                                                } catch (Throwable throwable) {
+                                                    Log.e(TAG, "onNotificationPosted: throwable " +throwable );
                                                 }
-                                                if (!getTenKH.isClosed()) {
-                                                    getTenKH.close();
-                                                    return;
+                                                if (!Congthuc.CheckTime("18:30") && !isTraLai) {
+                                                    Log.e(TAG, "onNotificationPosted: !CheckTime(18:30) " +  MainActivity.json_Tinnhan.has(Ten_KH) + " - "+ Ten_KH);
+                                                    if (MainActivity.handler == null) {
+                                                        MainActivity.handler = new Handler();
+                                                        MainActivity.handler.postDelayed(MainActivity.runnable, 1000);
+                                                    }
+                                                    if (!MainActivity.json_Tinnhan.has(Ten_KH)) {
+                                                        JSONObject jsontinnan = new JSONObject();
+                                                        jsontinnan.put("Time", 0);
+                                                        MainActivity.json_Tinnhan.put(Ten_KH, jsontinnan.toString());
+                                                    } else {
+                                                        JSONObject jsontinnan = new JSONObject(MainActivity.json_Tinnhan.getString(Ten_KH));
+                                                        jsontinnan.put("Time", 0);
+                                                        MainActivity.json_Tinnhan.put(Ten_KH, jsontinnan.toString());
+                                                    }
+
+                                                    db.Gui_Tin_Nhan(tinNhanS_g.getID());
                                                 }
-                                                return;
                                             }
-                                            return;
+
+                                        } else {
+                                            int maxSoTn = BriteDb.INSTANCE.getMaxSoTinNhan(mNgayNhan, null, "ten_kh = '"+ Ten_KH +"'");
+                                            soTN = maxSoTn + 1;
+
+                                            TinNhanS tinNhanS_i = new TinNhanS(null, mNgayNhan, mGionhan, 1, Ten_KH, khachHang_s.getSdt(), app,
+                                                    soTN, body, null, body, "Hết giờ nhận số!", 0, 1, 1, null);
+                                            BriteDb.INSTANCE.insertTinNhanS(tinNhanS_i);
+
+                                            if (!Congthuc.CheckTime("18:30") && MainActivity.jSon_Setting.getInt("tin_qua_gio") == 1) {
+                                                NotificationWearReader(this.Ten_KH, "Hết giờ nhận!");
+                                            }
                                         }
-                                    } catch (Exception e5) {
                                         return;
                                     }
+                                    return;
                                 }
-                            } catch (Exception e6) {
-                                return;
                             }
                         }
                     } catch (Exception e7) {
@@ -290,12 +293,6 @@ public class NotificationReader extends NotificationListenerService {
                     this.ID = title.trim();
                     this.mWhat = text;
                     GhepTen = app + " - " + this.ID.trim();
-                    Notification.WearableExtender wearableExtender2 = new Notification.WearableExtender(notification);
-                    ArrayList<Notification.Action> acti2 = new ArrayList<>();
-                    acti2.addAll(wearableExtender2.getActions());
-                    it = acti2.iterator();
-                    while (it.hasNext()) {
-                    }
                     MainActivity.Notifi = this;
                     NotificationWearReader(GhepTen, "Tin mồi!");
                 } catch (Exception e) {
@@ -303,7 +300,7 @@ public class NotificationReader extends NotificationListenerService {
                 }
 
             } catch (Exception e) {
-                Log.e("TAG", "onNotificationPosted: error " + e.getMessage());
+                Log.e(TAG, "onNotificationPosted: error " + e.getMessage());
             }
         }
     }
@@ -314,23 +311,27 @@ public class NotificationReader extends NotificationListenerService {
 
     public void NotificationWearReader(String mName, String message) {
         int indexName = MainActivity.arr_TenKH.indexOf(mName);
+
+        Log.e(TAG, "NotificationWearReader: Name: " + mName + " - Message: "+ message);
+
         if (indexName > -1) {
             try {
                 Intent localIntent = new Intent();
                 Bundle localBundle = MainActivity.contactslist.get(indexName).remoteExtras;
+
                 RemoteInput[] remoteInputs = {MainActivity.contactslist.get(indexName).remoteInput};
-                if (Build.VERSION.SDK_INT >= 20) {
-                    localBundle.putCharSequence(remoteInputs[0].getResultKey(), message);
-                    RemoteInput.addResultsToIntent(remoteInputs, localIntent, localBundle);
-                }
+
+                localBundle.putCharSequence(remoteInputs[0].getResultKey(), message);
+                RemoteInput.addResultsToIntent(remoteInputs, localIntent, localBundle);
+
                 MainActivity.contactslist.get(indexName).pendingIntent.send(MainActivity.Notifi, 0, localIntent);
-                if (MainActivity.Json_Tinnhan.has(mName)) {
-                    MainActivity.Json_Tinnhan.remove(mName);
-                }
-            } catch (PendingIntent.CanceledException e) {
+
+                if (MainActivity.Json_Tinnhan.has(mName)) MainActivity.Json_Tinnhan.remove(mName);
+
+            } catch (Exception e) {
+                Log.e(TAG, "NotificationWearReader: error " + e);
+
                 e.printStackTrace();
-            } catch (Exception e2) {
-                e2.getMessage();
             }
         }
     }

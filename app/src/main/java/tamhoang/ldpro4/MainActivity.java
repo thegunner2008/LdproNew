@@ -76,6 +76,7 @@ import tamhoang.ldpro4.Fragment.Livestream;
 import tamhoang.ldpro4.Fragment.Tab_ChayTrang;
 import tamhoang.ldpro4.Fragment.Tab_Tinnhan;
 import tamhoang.ldpro4.Fragment.TructiepXoso;
+import tamhoang.ldpro4.data.BriteDb;
 import tamhoang.ldpro4.data.Contact;
 import tamhoang.ldpro4.data.Database;
 
@@ -105,8 +106,6 @@ public class MainActivity extends AppCompatActivity {
     public static String myDate = "31/12/2022";
     private static DatePickerDialog.OnDateSetListener onDateSetListener;
     static Runnable runnable = new Runnable() {
-        /* class tamhoang.ldpro4.MainActivity.AnonymousClass5 */
-
         public void run() {
             try {
                 Iterator<String> keys = MainActivity.json_Tinnhan.keys();
@@ -122,11 +121,9 @@ public class MainActivity extends AppCompatActivity {
                         Iterator<String> tinnhans = dan.keys();
                         while (tinnhans.hasNext()) {
                             String tinnhan = tinnhans.next();
-                            if (tinnhan.indexOf("Time") == -1) {
+                            if (!tinnhan.contains("Time")) {
                                 NotificationReader notificationReader = new NotificationReader();
-                                if (Build.VERSION.SDK_INT >= 20) {
-                                    notificationReader.NotificationWearReader(key, tinnhan);
-                                }
+                                notificationReader.NotificationWearReader(key, tinnhan);
                             }
                         }
                         JSONObject dan2 = new JSONObject();
@@ -161,7 +158,7 @@ public class MainActivity extends AppCompatActivity {
     DrawerLayout drawerLayout;
     RelativeLayout drawerPane;
     String insertData;
-    List<NavItem> listNavItems;
+    List<NavItem> listNavItems = new ArrayList<>();
     ListView lvNav;
     String my_id = "";
     String viewData;
@@ -175,6 +172,7 @@ public class MainActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
         this.db = new Database(this);
+        BriteDb.INSTANCE.init(getApplication());
         Main_activity = this;
 //        Suagia();
         this.viewData = Get_link() + "json_data.php";
@@ -222,43 +220,37 @@ public class MainActivity extends AppCompatActivity {
         sb.append("-");
         sb.append(mYear);
         textView.setText(sb.toString());
-        onDateSetListener = new DatePickerDialog.OnDateSetListener() {
-            /* class tamhoang.ldpro4.MainActivity.AnonymousClass1 */
-
-            public void onDateSet(DatePicker view, int year, int monthOfYear, int dayOfMonth) {
-                Object obj;
-                Object obj2;
-                MainActivity.mYear = year;
-                MainActivity.mMonth = monthOfYear;
-                MainActivity.mDay = dayOfMonth;
-                MainActivity.sms = true;
-                TextView textView = MainActivity.this.Text_date;
-                StringBuilder sb = new StringBuilder();
-                if (MainActivity.mDay < 10) {
-                    obj = "0" + MainActivity.mDay;
-                } else {
-                    obj = Integer.valueOf(MainActivity.mDay);
-                }
-                sb.append(obj);
-                sb.append("-");
-                if (MainActivity.mMonth + 1 < 10) {
-                    obj2 = "0" + (MainActivity.mMonth + 1);
-                } else {
-                    obj2 = Integer.valueOf(MainActivity.mMonth + 1);
-                }
-                sb.append(obj2);
-                sb.append("-");
-                sb.append(MainActivity.mYear);
-                textView.setText(sb.toString());
+        onDateSetListener = (view, year, monthOfYear, dayOfMonth) -> {
+            Object obj1;
+            Object obj21;
+            MainActivity.mYear = year;
+            MainActivity.mMonth = monthOfYear;
+            MainActivity.mDay = dayOfMonth;
+            MainActivity.sms = true;
+            TextView textView1 = MainActivity.this.Text_date;
+            StringBuilder sb1 = new StringBuilder();
+            if (MainActivity.mDay < 10) {
+                obj1 = "0" + MainActivity.mDay;
+            } else {
+                obj1 = Integer.valueOf(MainActivity.mDay);
             }
+            sb1.append(obj1);
+            sb1.append("-");
+            if (MainActivity.mMonth + 1 < 10) {
+                obj21 = "0" + (MainActivity.mMonth + 1);
+            } else {
+                obj21 = Integer.valueOf(MainActivity.mMonth + 1);
+            }
+            sb1.append(obj21);
+            sb1.append("-");
+            sb1.append(MainActivity.mYear);
+            textView1.setText(sb1.toString());
         };
-        actionBar.setBackgroundDrawable(new ColorDrawable(Color.parseColor("#FF9300")));
+        actionBar.setBackgroundDrawable(new ColorDrawable(getColor(R.color.colorPrimaryDark)));
         this.drawerLayout = (DrawerLayout) findViewById(R.id.drawer_layout);
         this.drawerPane = (RelativeLayout) findViewById(R.id.drawer_pane);
         this.lvNav = (ListView) findViewById(R.id.nav_list);
-        ArrayList arrayList = new ArrayList();
-        this.listNavItems = arrayList;
-        arrayList.add(new NavItem("Trang chủ", "Imei, hạn sử dụng", R.drawable.home));
+        this.listNavItems.add(new NavItem("Trang chủ", "Imei, hạn sử dụng", R.drawable.home));
         this.listNavItems.add(new NavItem("Sửa tin nhắn", "Sửa/tải lại tin nhắn", R.drawable.edit));
         this.listNavItems.add(new NavItem("Quản lý tin nhắn", "SMS, Zalo, Viber, WhatsApp", R.drawable.number_report));
         this.listNavItems.add(new NavItem("Chuyển số/Giữ số", "Chuyển số và giữ số", R.drawable.number_report));
@@ -291,17 +283,12 @@ public class MainActivity extends AppCompatActivity {
         setTitle(this.listNavItems.get(0).getTitle());
         this.lvNav.setItemChecked(0, true);
         this.drawerLayout.closeDrawer(this.drawerPane);
-        this.lvNav.setOnItemClickListener(new AdapterView.OnItemClickListener() {
-            /* class tamhoang.ldpro4.MainActivity.AnonymousClass2 */
-
-            @Override // android.widget.AdapterView.OnItemClickListener
-            public void onItemClick(AdapterView<?> adapterView, View view, int position, long id) {
-                MainActivity.this.getSupportFragmentManager().beginTransaction().replace(R.id.main_content, MainActivity.listFragments.get(position)).commit();
-                MainActivity mainActivity = MainActivity.this;
-                mainActivity.setTitle(mainActivity.listNavItems.get(position).getTitle());
-                MainActivity.this.lvNav.setItemChecked(position, true);
-                MainActivity.this.drawerLayout.closeDrawer(MainActivity.this.drawerPane);
-            }
+        this.lvNav.setOnItemClickListener((adapterView, view, position, id) -> {
+            MainActivity.this.getSupportFragmentManager().beginTransaction().replace(R.id.main_content, MainActivity.listFragments.get(position)).commit();
+            MainActivity mainActivity = MainActivity.this;
+            mainActivity.setTitle(mainActivity.listNavItems.get(position).getTitle());
+            MainActivity.this.lvNav.setItemChecked(position, true);
+            MainActivity.this.drawerLayout.closeDrawer(MainActivity.this.drawerPane);
         });
 
         ActionBarDrawerToggle r6 = new ActionBarDrawerToggle(this, this.drawerLayout, R.string.drawer_opened, R.string.drawer_closed) {
@@ -569,10 +556,10 @@ public class MainActivity extends AppCompatActivity {
             try {
                 if (!Congthuc.CheckTime(caidat_tg.getString("tg_debc"))) {
                     try {
-                        Cursor getSoTN = this.db.GetData("Select max(so_tin_nhan) from tbl_tinnhanS WHERE ngay_nhan = '" + mNgayNhan + "' AND so_dienthoai = '" + mSDT + "' AND type_kh = 1");
-                        getSoTN.moveToFirst();
+                        int maxSoTn = BriteDb.INSTANCE.getMaxSoTinNhan(mNgayNhan, 1, "so_dienthoai = '"+ mSDT +"'");
+
                         String Ten_KH = getTenKH.getString(0);
-                        int soTN = getSoTN.getInt(0) + 1;
+                        int soTN = maxSoTn + 1;
                         if (body.indexOf("Tra lai") == -1) {
                             try {
                                 S = "Insert Into tbl_tinnhanS values (null, '" + mNgayNhan + "', '" + mGionhan + "'," + type_kh + ", '" + Ten_KH + "', '" + getTenKH.getString(1) + "','TL', " + soTN + ", '" + body + "',null,'" + body + "', 'ko',0,1,1, null)";
@@ -613,9 +600,6 @@ public class MainActivity extends AppCompatActivity {
                             }
                             c.close();
                         }
-                        if (getSoTN != null && !getSoTN.isClosed()) {
-                            getSoTN.close();
-                        }
                     } catch (SQLException e8) {
                     }
                     if (getTenKH != null && !getTenKH.isClosed()) {
@@ -623,22 +607,18 @@ public class MainActivity extends AppCompatActivity {
                         return;
                     }
                 }
-                Cursor getSoTN2 = this.db.GetData("Select max(so_tin_nhan) from tbl_tinnhanS WHERE ngay_nhan = '" + mNgayNhan + "' AND so_dienthoai = '" + mSDT + "' AND type_kh = 1");
-                getSoTN2.moveToFirst();
-                this.db.QueryData("Insert Into tbl_tinnhanS values (null, '" + mNgayNhan + "', '" + mGionhan + "',1, '" + getTenKH.getString(0) + "', '" + getTenKH.getString(1) + "','TL', " + (getSoTN2.getInt(0) + 1) + ", '" + body + "',null,'" + body + "', 'Hết giờ nhận số!',0,1,1, null)");
-                if (getSoTN2 != null && !getSoTN2.isClosed()) {
-                    getSoTN2.close();
-                }
+
+                int maxSoTn = BriteDb.INSTANCE.getMaxSoTinNhan(mNgayNhan, 1, "so_dienthoai = '"+ mSDT +"'");
+
+                this.db.QueryData("Insert Into tbl_tinnhanS values (null, '" + mNgayNhan + "', '" + mGionhan + "',1, '" + getTenKH.getString(0) + "', '" + getTenKH.getString(1) + "','TL', " + (maxSoTn + 1) + ", '" + body + "',null,'" + body + "', 'Hết giờ nhận số!',0,1,1, null)");
+
                 if (!Congthuc.CheckTime("18:30") && jSon_Setting.getInt("tin_qua_gio") == 1) {
                     sendMessage(getTenKH.getLong(1), "Hết giờ nhận!");
                 }
-                if (getTenKH != null) {
-                }
+
             } catch (JSONException e10) {
                 e = e10;
                 e.printStackTrace();
-                if (getTenKH != null) {
-                }
             }
         }
     }
@@ -822,7 +802,7 @@ public class MainActivity extends AppCompatActivity {
             public boolean onMenuItemClick(MenuItem item) {
                 int order = item.getOrder();
                 if (order == 0) {
-                    MainActivity.this.startActivity(new Intent(MainActivity.this, Activity_thaythe.class));
+                    MainActivity.this.startActivity(new Intent(MainActivity.this,  Activity_thaythe.class));
                 } else if (order == 1) {
                     MainActivity.this.startActivity(new Intent(MainActivity.this, Activity_GiuSo.class));
                 } else if (order == 2) {
