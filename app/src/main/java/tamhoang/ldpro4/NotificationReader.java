@@ -310,9 +310,9 @@ public class NotificationReader extends NotificationListenerService {
     }
 
     public void NotificationWearReader(String mName, String message) {
-        int indexName = MainActivity.arr_TenKH.indexOf(mName);
+        int indexName = MainActivity.arr_TenKH.lastIndexOf(mName);
 
-        Log.e(TAG, "NotificationWearReader: Name: " + mName + " - Message: "+ message);
+        Log.e(TAG, "NotificationWearReader: " + indexName + ", name: " + mName +" - Message: " + message);
 
         if (indexName > -1) {
             try {

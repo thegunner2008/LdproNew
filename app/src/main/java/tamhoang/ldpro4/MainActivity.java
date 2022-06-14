@@ -55,6 +55,9 @@ import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.TimeZone;
+
+import org.drinkless.td.libcore.telegram.Client;
+import org.drinkless.td.libcore.telegram.TdApi;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -76,11 +79,16 @@ import tamhoang.ldpro4.Fragment.Livestream;
 import tamhoang.ldpro4.Fragment.Tab_ChayTrang;
 import tamhoang.ldpro4.Fragment.Tab_Tinnhan;
 import tamhoang.ldpro4.Fragment.TructiepXoso;
+import tamhoang.ldpro4.Telegram.TelegramClient;
 import tamhoang.ldpro4.data.BriteDb;
 import tamhoang.ldpro4.data.Contact;
 import tamhoang.ldpro4.data.Database;
 
-public class MainActivity extends AppCompatActivity {
+public class MainActivity extends AppCompatActivity implements TelegramClient.Callback {
+    public static Client client;
+    public String firstNameTL = "";
+    public String lastNameTL = "";
+
     public static String Acc_manager = "";
     public static ArrayList<String> DSkhachhang = new ArrayList<>();
     public static JSONObject Json_Chat_Telegram = new JSONObject();
@@ -328,10 +336,9 @@ public class MainActivity extends AppCompatActivity {
         this.actionBarDrawerToggle.syncState();
         notificationPermission();
         ((NotificationManager) getSystemService("notification")).cancel(1);
-//        startService(new Intent(this, ZBroadcast.class));
-//        Client client2 = TelegramClient.getClient(this);
-//        client = client2;
-//        client2.send(new TdApi.GetMe(), this);
+        startService(new Intent(this, ZBroadcast.class));
+        client = TelegramClient.getClient(this);
+        client.send(new TdApi.GetMe(), this);
     }
 
     public static void setListFragment(int i) {
@@ -339,204 +346,196 @@ public class MainActivity extends AppCompatActivity {
         listFragments.add(4, new Frag_No_new());
     }
 
-    /* JADX INFO: Multiple debug info for r0v13 'cursor'  android.database.Cursor: [D('ten_kh' java.lang.String), D('cursor' android.database.Cursor)] */
-    /* JADX INFO: Can't fix incorrect switch cases order, some code will duplicate */
-//    @Override // tamhoang.ldpro4.Telegram.TelegramClient.Callback, org.drinkless.td.libcore.telegram.Client.ResultHandler
-//    public void onResult(TdApi.Object object) {
-//        boolean tinHethong;
-//        String ten_kh;
-//        int type_kh;
-//        Cursor cursor;
-//        switch (object.getConstructor()) {
-//            case TdApi.User.CONSTRUCTOR /*{ENCODED_INT: -824771497}*/:
-//                this.my_id = ((TdApi.User) object).id + "";
-//                break;
-//            case TdApi.UpdateNewMessage.CONSTRUCTOR /*{ENCODED_INT: -563105266}*/:
-//                break;
-//            case TdApi.UpdateOption.CONSTRUCTOR /*{ENCODED_INT: 900822020}*/:
-//                TdApi.UpdateOption updateOption = (TdApi.UpdateOption) object;
-//                if (updateOption.name.indexOf("my_id") > -1) {
-//                    String optionValue = updateOption.value.toString();
-//                    this.my_id = optionValue;
-//                    String substring = optionValue.substring(optionValue.indexOf("=") + 1);
-//                    this.my_id = substring;
-//                    this.my_id = substring.substring(0, substring.indexOf("\n")).trim();
-//                    this.db.QueryData("Update So_Om set Sphu1 = '" + this.my_id + "' WHERE ID = 1");
-//                    return;
-//                }
-//                return;
-//            case TdApi.UpdateUser.CONSTRUCTOR /*{ENCODED_INT: 1183394041}*/:
-//                TdApi.UpdateUser updateUser = (TdApi.UpdateUser) object;
-//                try {
-//                    if (!Json_Chat_Telegram.has(updateUser.user.id + "")) {
-//                        JSONObject json = new JSONObject();
-//                        String type = updateUser.user.type.toString();
-//                        json.put("type", type.substring(0, type.indexOf("{")).trim());
-//                        json.put("basicGroupId", updateUser.user.id);
-//                        json.put("title", "TL - " + updateUser.user.firstName + " " + updateUser.user.lastName);
-//                        JSONObject jSONObject = Json_Chat_Telegram;
-//                        StringBuilder sb = new StringBuilder();
-//                        sb.append(updateUser.user.id);
-//                        sb.append("");
-//                        jSONObject.put(sb.toString(), json);
-//                        return;
-//                    }
-//                    return;
-//                } catch (JSONException e) {
-//                    e.printStackTrace();
-//                    return;
-//                }
-//            case TdApi.UpdateConnectionState.CONSTRUCTOR /*{ENCODED_INT: 1469292078}*/:
-//                if (((TdApi.UpdateConnectionState) object).state.getConstructor() == 48608492) {
-//                    Log.d("AuthActivity", "onResult: ConnectionStateReady");
-//                    return;
-//                }
-//                return;
-//            case TdApi.UpdateAuthorizationState.CONSTRUCTOR /*{ENCODED_INT: 1622347490}*/:
-//                onAuthStateUpdated(((TdApi.UpdateAuthorizationState) object).authorizationState);
-//                return;
-//            case TdApi.UpdateNewChat.CONSTRUCTOR /*{ENCODED_INT: 2075757773}*/:
-//                TdApi.UpdateNewChat updateNewChat = (TdApi.UpdateNewChat) object;
-//                try {
-//                    if (!Json_Chat_Telegram.has(updateNewChat.chat.id + "")) {
-//                        JSONObject json2 = new JSONObject();
-//                        String type2 = updateNewChat.chat.type.toString();
-//                        json2.put("type", type2.substring(0, type2.indexOf("{")).trim());
-//                        json2.put("basicGroupId", updateNewChat.chat.id);
-//                        json2.put("title", "TL - " + updateNewChat.chat.title);
-//                        Json_Chat_Telegram.put(updateNewChat.chat.id + "", json2);
-//                        return;
-//                    }
-//                    return;
-//                } catch (JSONException e2) {
-//                    e2.printStackTrace();
-//                    return;
-//                }
-//            default:
-//                return;
-//        }
-//        if (this.my_id == "") {
-//            Cursor cursor2 = this.db.GetData("Select Sphu1 from so_om where ID = 1");
-//            cursor2.moveToFirst();
-//            this.my_id = cursor2.getString(0);
-//            cursor2.close();
-//        }
-//        TdApi.UpdateNewMessage newMessage = (TdApi.UpdateNewMessage) object;
-//        String senderUserId = newMessage.message.senderUserId + "";
-//        String chatId = newMessage.message.chatId + "";
-//        String text = ((TdApi.MessageText) newMessage.message.content).text.text.replace("'", "");
-//        if (newMessage.message.isChannelPost || newMessage.message.chatId == 777000 || newMessage.message.chatId == 93372553) {
-//            tinHethong = false;
-//        } else {
-//            tinHethong = true;
-//        }
-//        if (tinHethong) {
-//            Calendar calendar = Calendar.getInstance();
-//            calendar.setTime(new Date());
-//            SimpleDateFormat dmyFormat = new SimpleDateFormat("yyyy-MM-dd");
-//            SimpleDateFormat hourFormat = new SimpleDateFormat("HH:mm:ss");
-//            dmyFormat.setTimeZone(TimeZone.getDefault());
-//            hourFormat.setTimeZone(TimeZone.getDefault());
-//            String mNgayNhan = dmyFormat.format(calendar.getTime());
-//            String mGionhan = hourFormat.format(calendar.getTime());
-//            try {
-//                ten_kh = Json_Chat_Telegram.getJSONObject(chatId).getString("title");
-//            } catch (JSONException e3) {
-//                Cursor cursor3 = this.db.GetData("Select * From tbl_kh_new Where sdt = '" + chatId + "'");
-//                if (cursor3.getCount() > 0) {
-//                    cursor3.moveToFirst();
-//                    String ten_kh2 = cursor3.getString(0);
-//                    cursor3.close();
-//                    ten_kh = ten_kh2;
-//                } else {
-//                    ten_kh = "TL - " + chatId;
-//                }
-//            }
-//            if (chatId.indexOf(this.my_id) > -1 || senderUserId.indexOf(this.my_id) > -1) {
-//                type_kh = 2;
-//            } else {
-//                type_kh = 1;
-//            }
-//            this.db.QueryData("Insert into Chat_database Values( null,'" + mNgayNhan + "', '" + mGionhan + "', " + type_kh + ", '" + ten_kh + "','" + chatId + "', 'TL','" + text + "',1)");
-//            sms = true;
-//            Database database = this.db;
-//            StringBuilder sb2 = new StringBuilder();
-//            sb2.append("Select * From tbl_tinnhanS WHERE ngay_nhan = '");
-//            sb2.append(mNgayNhan);
-//            sb2.append("' And Ten_kh = '");
-//            sb2.append(ten_kh);
-//            sb2.append("' AND nd_goc = '");
-//            sb2.append(text);
-//            sb2.append("'");
-//            Cursor cursor111 = database.GetData(sb2.toString());
-//            if (cursor111.getCount() == 0) {
-//                Cursor cursor4 = this.db.GetData("Select * From tbl_kh_new Where sdt = '" + chatId + "'");
-//                if (cursor4.getCount() <= 0 || text.length() <= 5) {
-//                    cursor = cursor4;
-//                } else {
-//                    cursor4.moveToFirst();
-//                    if (cursor4.getInt(3) == 1 && type_kh == 1) {
-//                        Xulytin(chatId, text, mNgayNhan, mGionhan, type_kh);
-//                        return;
-//                    }
-//                    cursor = cursor4;
-//                    int type_kh2 = type_kh;
-//                    if (cursor.getInt(3) == 2) {
-//                        if (type_kh2 == 1 && text.indexOf("Tra lai") == 0) {
-//                            Xulytin(chatId, text, mNgayNhan, mGionhan, type_kh2);
-//                            return;
-//                        }
-//                        type_kh2 = type_kh2;
-//                    }
-//                    if (cursor.getInt(3) == 3) {
-//                        if (type_kh2 == 1) {
-//                            Xulytin(chatId, text, mNgayNhan, mGionhan, type_kh2);
-//                            return;
-//                        }
-//                    }
-//                }
-//                cursor.close();
-//            }
-//            cursor111.close();
-//        }
-//    }
-//
-//    private void onAuthStateUpdated(TdApi.AuthorizationState authorizationState) {
-//        int constructor = authorizationState.getConstructor();
-//        if (constructor == 52643073) {
-//            new Handler(Looper.getMainLooper()).post(new Runnable() {
-//                /* class tamhoang.ldpro4.MainActivity.AnonymousClass4 */
-//
-//                public void run() {
-//                    MainActivity.this.showDialog2();
-//                }
-//            });
-//        } else if (constructor == 612103496) {
-//            client.send(new TdApi.CheckDatabaseEncryptionKey(), this);
-//        } else if (constructor == 904720988) {
-//            TdApi.TdlibParameters authStateRequest = new TdApi.TdlibParameters();
-//            authStateRequest.apiId = 1855995;
-//            authStateRequest.apiHash = "a4a4dcc61215e41de68609fabb28bcb8";
-//            authStateRequest.useMessageDatabase = true;
-//            authStateRequest.useSecretChats = true;
-//            authStateRequest.systemLanguageCode = "en";
-//            authStateRequest.databaseDirectory = getApplicationContext().getFilesDir().getAbsolutePath();
-//            authStateRequest.deviceModel = "Moto";
-//            authStateRequest.systemVersion = "7.0";
-//            authStateRequest.applicationVersion = "0.1";
-//            authStateRequest.enableStorageOptimizer = true;
-//            client.send(new TdApi.SetTdlibParameters(authStateRequest), this);
-//        }
-//    }
 
-    /* JADX WARNING: Code restructure failed: missing block: B:76:0x02f3, code lost:
-        r0 = e;
-     */
-    /* JADX WARNING: Exception block dominator not found, dom blocks: [B:25:0x00e1, B:65:0x025b] */
-    /* JADX WARNING: Failed to process nested try/catch */
-    /* JADX WARNING: Removed duplicated region for block: B:76:0x02f3 A[ExcHandler: JSONException (e org.json.JSONException), Splitter:B:25:0x00e1] */
-    /* JADX WARNING: Removed duplicated region for block: B:82:0x0303  */
-    /* JADX WARNING: Removed duplicated region for block: B:87:? A[ADDED_TO_REGION, RETURN, SYNTHETIC] */
+    @Override // tamhoang.ldpro4.Telegram.TelegramClient.Callback, org.drinkless.td.libcore.telegram.Client.ResultHandler
+    public void onResult(TdApi.Object object) {
+        Log.e("ContentValues", "onResult: TdApi.Object: " +object);
+
+        boolean tinHethong;
+        String ten_kh;
+        int type_kh;
+        Cursor cursor;
+        switch (object.getConstructor()) {
+            case TdApi.User.CONSTRUCTOR /*{ENCODED_INT: -824771497}*/:
+                this.my_id = ((TdApi.User) object).id + "";
+                break;
+            case TdApi.UpdateNewMessage.CONSTRUCTOR /*{ENCODED_INT: -563105266}*/:
+                break;
+            case TdApi.UpdateOption.CONSTRUCTOR /*{ENCODED_INT: 900822020}*/:
+                TdApi.UpdateOption updateOption = (TdApi.UpdateOption) object;
+                if (updateOption.name.contains("my_id")) {
+                    String optionValue = updateOption.value.toString();
+                    this.my_id = optionValue;
+                    String substring = optionValue.substring(optionValue.indexOf("=") + 1);
+                    this.my_id = substring;
+                    this.my_id = substring.substring(0, substring.indexOf("\n")).trim();
+                    this.db.QueryData("Update So_Om set Sphu1 = '" + this.my_id + "' WHERE ID = 1");
+                    return;
+                }
+                return;
+            case TdApi.UpdateUser.CONSTRUCTOR /*{ENCODED_INT: 1183394041}*/:
+                TdApi.UpdateUser updateUser = (TdApi.UpdateUser) object;
+                try {
+                    if (!Json_Chat_Telegram.has(updateUser.user.id + "")) {
+                        JSONObject json = new JSONObject();
+                        String type = updateUser.user.type.toString();
+                        json.put("type", type.substring(0, type.indexOf("{")).trim());
+                        json.put("basicGroupId", updateUser.user.id);
+                        firstNameTL = updateUser.user.firstName;
+                        lastNameTL = updateUser.user.lastName;
+                        json.put("title", "TL - " + firstNameTL + " " + lastNameTL);
+                        JSONObject jSONObject = Json_Chat_Telegram;
+                        String sb = updateUser.user.id + "";
+                        jSONObject.put(sb, json);
+                        return;
+                    }
+                    return;
+                } catch (JSONException e) {
+                    e.printStackTrace();
+                    return;
+                }
+            case TdApi.UpdateConnectionState.CONSTRUCTOR /*{ENCODED_INT: 1469292078}*/:
+                if (((TdApi.UpdateConnectionState) object).state.getConstructor() == 48608492) {
+                    Log.d("AuthActivity", "onResult: ConnectionStateReady");
+                    return;
+                }
+                return;
+            case TdApi.UpdateAuthorizationState.CONSTRUCTOR /*{ENCODED_INT: 1622347490}*/:
+                onAuthStateUpdated(((TdApi.UpdateAuthorizationState) object).authorizationState);
+                return;
+            case TdApi.UpdateNewChat.CONSTRUCTOR /*{ENCODED_INT: 2075757773}*/:
+                TdApi.UpdateNewChat updateNewChat = (TdApi.UpdateNewChat) object;
+                try {
+                    if (!Json_Chat_Telegram.has(updateNewChat.chat.id + "")) {
+                        JSONObject json2 = new JSONObject();
+                        String type2 = updateNewChat.chat.type.toString();
+                        json2.put("type", type2.substring(0, type2.indexOf("{")).trim());
+                        json2.put("basicGroupId", updateNewChat.chat.id);
+                        json2.put("title", "TL - " + updateNewChat.chat.title);
+                        Json_Chat_Telegram.put(updateNewChat.chat.id + "", json2);
+                        return;
+                    }
+                    return;
+                } catch (JSONException e2) {
+                    e2.printStackTrace();
+                    return;
+                }
+            default:
+                return;
+        }
+        if (this.my_id == "") {
+            Cursor cursor2 = this.db.GetData("Select Sphu1 from so_om where ID = 1");
+            cursor2.moveToFirst();
+            this.my_id = cursor2.getString(0);
+            cursor2.close();
+        }
+        TdApi.UpdateNewMessage newMessage = (TdApi.UpdateNewMessage) object;
+        String senderUserId = newMessage.message.senderUserId + "";
+        String chatId = newMessage.message.chatId + "";
+        String text = ((TdApi.MessageText) newMessage.message.content).text.replace("'", "");
+        if (newMessage.message.isChannelPost || newMessage.message.chatId == 777000 || newMessage.message.chatId == 93372553) {
+            tinHethong = false;
+        } else {
+            tinHethong = true;
+        }
+        if (tinHethong) {
+            Calendar calendar = Calendar.getInstance();
+            calendar.setTime(new Date());
+            SimpleDateFormat dmyFormat = new SimpleDateFormat("yyyy-MM-dd");
+            SimpleDateFormat hourFormat = new SimpleDateFormat("HH:mm:ss");
+            dmyFormat.setTimeZone(TimeZone.getDefault());
+            hourFormat.setTimeZone(TimeZone.getDefault());
+            String mNgayNhan = dmyFormat.format(calendar.getTime());
+            String mGionhan = hourFormat.format(calendar.getTime());
+            try {
+                ten_kh = Json_Chat_Telegram.getJSONObject(chatId).getString("title");
+            } catch (JSONException e3) {
+                Cursor cursor3 = this.db.GetData("Select * From tbl_kh_new Where sdt = '" + chatId + "'");
+                if (cursor3.getCount() > 0) {
+                    cursor3.moveToFirst();
+                    String ten_kh2 = cursor3.getString(0);
+                    cursor3.close();
+                    ten_kh = ten_kh2;
+                } else {
+                    ten_kh = "TL - " + chatId;
+                }
+            }
+            if (chatId.contains(this.my_id) || senderUserId.contains(this.my_id)) {
+                type_kh = 2;
+            } else {
+                type_kh = 1;
+            }
+            this.db.QueryData("Insert into Chat_database Values( null,'" + mNgayNhan + "', '" + mGionhan + "', " + type_kh + ", '" + ten_kh + "','" + chatId + "', 'TL','" + text + "',1)");
+            sms = true;
+            Database database = this.db;
+            StringBuilder sb2 = new StringBuilder();
+            sb2.append("Select * From tbl_tinnhanS WHERE ngay_nhan = '");
+            sb2.append(mNgayNhan);
+            sb2.append("' And Ten_kh = '");
+            sb2.append(ten_kh);
+            sb2.append("' AND nd_goc = '");
+            sb2.append(text);
+            sb2.append("'");
+            Cursor cursor111 = database.GetData(sb2.toString());
+            if (cursor111.getCount() == 0) {
+                Cursor cursor4 = this.db.GetData("Select * From tbl_kh_new Where sdt = '" + chatId + "'");
+                if (cursor4.getCount() <= 0 || text.length() <= 5) {
+                    cursor = cursor4;
+                } else {
+                    cursor4.moveToFirst();
+                    if (cursor4.getInt(3) == 1 && type_kh == 1) {
+                        Xulytin(chatId, text, mNgayNhan, mGionhan, type_kh);
+                        return;
+                    }
+                    cursor = cursor4;
+                    int type_kh2 = type_kh;
+                    if (cursor.getInt(3) == 2) {
+                        if (type_kh2 == 1 && text.indexOf("Tra lai") == 0) {
+                            Xulytin(chatId, text, mNgayNhan, mGionhan, type_kh2);
+                            return;
+                        }
+                        type_kh2 = type_kh2;
+                    }
+                    if (cursor.getInt(3) == 3) {
+                        if (type_kh2 == 1) {
+                            Xulytin(chatId, text, mNgayNhan, mGionhan, type_kh2);
+                            return;
+                        }
+                    }
+                }
+                cursor.close();
+            }
+            cursor111.close();
+        }
+    }
+
+    private void onAuthStateUpdated(TdApi.AuthorizationState authorizationState) {
+        int constructor = authorizationState.getConstructor();
+
+        Log.e("ContentValues", "onAuthStateUpdated: constructor" +constructor);
+
+        //TODO: fake constructor
+//        if (constructor == 52643073) {
+        if (constructor == TdApi.AuthorizationStateWaitCode.CONSTRUCTOR) {
+            new Handler(Looper.getMainLooper()).post(MainActivity.this::showDialog2);
+        } else if (constructor == 612103496) {
+            client.send(new TdApi.CheckDatabaseEncryptionKey(), this);
+        } else if (constructor == 904720988) {
+            TdApi.TdlibParameters authStateRequest = new TdApi.TdlibParameters();
+            authStateRequest.apiId = 1855995;
+            authStateRequest.apiHash = "a4a4dcc61215e41de68609fabb28bcb8";
+            authStateRequest.useMessageDatabase = true;
+            authStateRequest.useSecretChats = true;
+            authStateRequest.systemLanguageCode = "en";
+            authStateRequest.databaseDirectory = getApplicationContext().getFilesDir().getAbsolutePath();
+            authStateRequest.deviceModel = "Moto";
+            authStateRequest.systemVersion = "7.0";
+            authStateRequest.applicationVersion = "0.1";
+            authStateRequest.enableStorageOptimizer = true;
+            client.send(new TdApi.SetTdlibParameters(authStateRequest), this);
+        }
+    }
+
     private void Xulytin(String mSDT, String body, String mNgayNhan, String mGionhan, int type_kh) {
         JSONException e;
         String str = null;
@@ -560,7 +559,7 @@ public class MainActivity extends AppCompatActivity {
 
                         String Ten_KH = getTenKH.getString(0);
                         int soTN = maxSoTn + 1;
-                        if (body.indexOf("Tra lai") == -1) {
+                        if (!body.contains("Tra lai")) {
                             try {
                                 S = "Insert Into tbl_tinnhanS values (null, '" + mNgayNhan + "', '" + mGionhan + "'," + type_kh + ", '" + Ten_KH + "', '" + getTenKH.getString(1) + "','TL', " + soTN + ", '" + body + "',null,'" + body + "', 'ko',0,1,1, null)";
                                 str = "Tra lai";
@@ -576,16 +575,11 @@ public class MainActivity extends AppCompatActivity {
                         }
                         if (Congthuc.CheckDate(myDate)) {
                             Database database = this.db;
-                            StringBuilder sb = new StringBuilder();
-                            sb.append("Select * from tbl_tinnhanS WHERE ngay_nhan = '");
-                            sb.append(mNgayNhan);
-                            sb.append("' AND so_dienthoai = '");
-                            sb.append(mSDT);
-                            sb.append("' AND so_tin_nhan = ");
-                            sb.append(soTN);
-                            sb.append(" AND type_kh = ");
-                            sb.append(type_kh);
-                            Cursor c = database.GetData(sb.toString());
+                            String sb = "Select * from tbl_tinnhanS WHERE ngay_nhan = '" + mNgayNhan +
+                                    "' AND so_dienthoai = '" + mSDT +
+                                    "' AND so_tin_nhan = " + soTN +
+                                    " AND type_kh = " + type_kh;
+                            Cursor c = database.GetData(sb);
                             c.moveToFirst();
                             try {
                                 this.db.Update_TinNhanGoc(c.getInt(0), 1);
@@ -796,45 +790,31 @@ public class MainActivity extends AppCompatActivity {
             popupL.getMenu().add(1, i, i, menus[i]);
         }
         new AlertDialog.Builder(this);
-        popupL.setOnMenuItemClickListener(new PopupMenu.OnMenuItemClickListener() {
-            /* class tamhoang.ldpro4.MainActivity.AnonymousClass8 */
-
-            public boolean onMenuItemClick(MenuItem item) {
-                int order = item.getOrder();
-                if (order == 0) {
-                    MainActivity.this.startActivity(new Intent(MainActivity.this,  Activity_thaythe.class));
-                } else if (order == 1) {
-                    MainActivity.this.startActivity(new Intent(MainActivity.this, Activity_GiuSo.class));
-                } else if (order == 2) {
-                    MainActivity.this.startActivity(new Intent(MainActivity.this, Activity_ChuyenThang.class));
-                } else if (order == 3) {
-                    if (MainActivity.this.my_id != "") {
-                        AlertDialog.Builder bui = new AlertDialog.Builder(MainActivity.this);
-                        bui.setTitle("Thoát Telegram?");
-                        bui.setPositiveButton("OK", new DialogInterface.OnClickListener() {
-                            /* class tamhoang.ldpro4.MainActivity.AnonymousClass8.AnonymousClass1 */
-
-                            public void onClick(DialogInterface dialog, int which) {
-                                MainActivity.this.db.QueryData("Update So_om set  Sphu1 ='' where ID = 1");
-//                                MainActivity.client.send(new TdApi.LogOut(), MainActivity.this, null);
-                                MainActivity.this.my_id = "";
-                                Toast.makeText(MainActivity.this, "Đã thoát Telegram", Toast.LENGTH_SHORT).show();
-                            }
-                        });
-                        bui.setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
-                            /* class tamhoang.ldpro4.MainActivity.AnonymousClass8.AnonymousClass2 */
-
-                            public void onClick(DialogInterface dialog, int which) {
-                                dialog.cancel();
-                            }
-                        });
-                        bui.create().show();
-                    } else {
-                        MainActivity.this.showDialog1();
-                    }
+        popupL.setOnMenuItemClickListener(item -> {
+            int order = item.getOrder();
+            if (order == 0) {
+                MainActivity.this.startActivity(new Intent(MainActivity.this,  Activity_thaythe.class));
+            } else if (order == 1) {
+                MainActivity.this.startActivity(new Intent(MainActivity.this, Activity_GiuSo.class));
+            } else if (order == 2) {
+                MainActivity.this.startActivity(new Intent(MainActivity.this, Activity_ChuyenThang.class));
+            } else if (order == 3) {
+                if (MainActivity.this.my_id != "") {
+                    AlertDialog.Builder bui = new AlertDialog.Builder(MainActivity.this);
+                    bui.setTitle("Thoát Telegram?");
+                    bui.setPositiveButton("OK", (dialog, which) -> {
+                        MainActivity.this.db.QueryData("Update So_om set  Sphu1 ='' where ID = 1");
+                        MainActivity.client.send(new TdApi.LogOut(), this, null);
+                        MainActivity.this.my_id = "";
+                        Toast.makeText(MainActivity.this, "Đã thoát Telegram", Toast.LENGTH_SHORT).show();
+                    });
+                    bui.setNegativeButton("Cancel", (dialog, which) -> dialog.cancel());
+                    bui.create().show();
+                } else {
+                    MainActivity.this.showDialog1();
                 }
-                return true;
             }
+            return true;
         });
         popupL.show();
     }
@@ -845,18 +825,15 @@ public class MainActivity extends AppCompatActivity {
         dialog.getWindow().setLayout(-1, -2);
         final EditText authPhone = (EditText) dialog.findViewById(R.id.authPhone);
         TextView textView = (TextView) dialog.findViewById(R.id.authCodeInfo);
-        ((Button) dialog.findViewById(R.id.loginBtn)).setOnClickListener(new View.OnClickListener() {
-            /* class tamhoang.ldpro4.MainActivity.AnonymousClass9 */
-
-            public void onClick(View view) {
-                String PhoneNumber = authPhone.getText().toString();
-                if (PhoneNumber.length() == 10) {
-//                    MainActivity.client.send(new TdApi.SetAuthenticationPhoneNumber("+84" + PhoneNumber.substring(1), null), MainActivity.this);
-                    dialog.dismiss();
-                    return;
-                }
-                Toast.makeText(MainActivity.this, "Hãy nhập 10 số của số điện thoại!", Toast.LENGTH_SHORT).show();
+        ((Button) dialog.findViewById(R.id.loginBtn)).setOnClickListener(view -> {
+            String PhoneNumber = authPhone.getText().toString();
+            if (PhoneNumber.length() == 10) {
+                client = TelegramClient.getClient(MainActivity.this);
+                client.send(new TdApi.SetAuthenticationPhoneNumber("+84" + PhoneNumber.substring(1), false, false), MainActivity.this);
+                dialog.dismiss();
+                return;
             }
+            Toast.makeText(MainActivity.this, "Hãy nhập 10 số của số điện thoại!", Toast.LENGTH_SHORT).show();
         });
         dialog.setCancelable(true);
         dialog.show();
@@ -868,12 +845,11 @@ public class MainActivity extends AppCompatActivity {
         dialog.getWindow().setLayout(-1, -2);
         final EditText authPhone = (EditText) dialog.findViewById(R.id.authCode);
         ((Button) dialog.findViewById(R.id.checkBtn)).setOnClickListener(new View.OnClickListener() {
-            /* class tamhoang.ldpro4.MainActivity.AnonymousClass10 */
 
             public void onClick(View view) {
                 String code = authPhone.getText().toString();
                 if (code.length() == 5) {
-//                    MainActivity.client.send(new TdApi.CheckAuthenticationCode(code), MainActivity.this);
+                    client.send(new TdApi.CheckAuthenticationCode(code, firstNameTL, lastNameTL), MainActivity.this);
                     dialog.dismiss();
                     return;
                 }

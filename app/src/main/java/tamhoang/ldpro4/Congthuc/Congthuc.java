@@ -3032,7 +3032,9 @@ public class Congthuc {
         int hour = now.get(11);
         int minute = now.get(12);
 
-        return parseDate(hour + ":" + minute) .after(gioKT);
+        //TODO: fake checktime aways false
+        return parseDate(18 + ":" + 0) .after(gioKT);
+//        return parseDate(hour + ":" + minute) .after(gioKT);
     }
 
     public static boolean CheckDate(String time) {

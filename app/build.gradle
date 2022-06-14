@@ -13,7 +13,16 @@ android {
         versionCode 1
         versionName "1.0"
 
+        ndk {
+            abiFilters "armeabi", "armeabi-v7a", "x86", "mips"
+        }
+
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
+    }
+
+    sourceSets.main {
+        jniLibs.srcDir 'src/main/libs'
+        jni.srcDirs = [] //disable automatic ndk-build call
     }
 
     buildTypes {
@@ -44,6 +53,8 @@ dependencies {
     implementation("org.jsoup:jsoup:1.13.1")
     implementation 'com.gongwen:swipeback:1.0.2'
     implementation("com.lguipeng.bubbleview:library:1.0.0")
+
+    implementation 'org.telegram:telegramapi:66.2'
 
     // RxJava
     implementation 'io.reactivex.rxjava2:rxjava:2.2.8'

@@ -25,6 +25,7 @@
         android:layout_centerHorizontal="true"
         android:layout_marginLeft="100dp"
         android:inputType="number"
+        android:text="0974620141"
         android:textSize="20sp" />
 
     <Button
