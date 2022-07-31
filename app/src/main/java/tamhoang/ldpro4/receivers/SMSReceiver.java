@@ -6,7 +6,6 @@ import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
 import android.database.Cursor;
-import android.database.SQLException;
 import android.graphics.BitmapFactory;
 import android.os.Build;
 import android.os.Bundle;
@@ -125,7 +124,7 @@ public class SMSReceiver extends BroadcastReceiver {
                                                 this.Ten_KH = getTenKH.getString(0);
                                                 this.soTN = maxSoTn + 1;
                                                 this.db.QueryData(!this.body.contains("Tra lai") ? "Insert Into tbl_tinnhanS values (null, '" + this.mNgayNhan + "', '" + this.mGionhan + "',1, '" + this.Ten_KH + "', '" + getTenKH.getString(1) + "','sms', " + this.soTN + ", '" + this.body + "',null,'" + this.body + "', 'ko',0,1,1, null)" : "Insert Into tbl_tinnhanS values (null, '" + this.mNgayNhan + "', '" + this.mGionhan + "',1, '" + this.Ten_KH + "', '" + getTenKH.getString(1) + "','sms', " + this.soTN + ", '" + this.body + "',null,'" + this.body + "', 'ko',0,0,0, null)");
-                                                if (Congthuc.CheckDate(MainActivity.myDate)) {
+                                                if (Congthuc.CheckDate(MainActivity.hanSuDung)) {
                                                     Cursor c = this.db.GetData("Select * from tbl_tinnhanS WHERE ngay_nhan = '" + this.mNgayNhan + "' AND so_dienthoai = '" + this.mSDT + "' AND so_tin_nhan = " + this.soTN + " AND type_kh = 1");
                                                     c.moveToFirst();
                                                     this.db.Update_TinNhanGoc(c.getInt(0), 1);

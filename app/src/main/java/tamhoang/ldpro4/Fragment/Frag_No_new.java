@@ -384,7 +384,7 @@ public class Frag_No_new extends Fragment {
                     } catch (JSONException e2) {
                         e2.printStackTrace();
                     }
-                } else if (MainActivity.arr_TenKH.indexOf(GetData.getString(1)) > -1) {
+                } else if (MainActivity.contactsMap.containsKey(GetData.getString(1))) {
                     NotificationReader notificationReader = new NotificationReader();
                     try {
                         if (MainActivity.jSon_Setting.getInt("tachxien_tinchot") == 0) {

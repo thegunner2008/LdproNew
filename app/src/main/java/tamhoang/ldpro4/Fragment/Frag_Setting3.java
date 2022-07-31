@@ -42,6 +42,9 @@ public class Frag_Setting3 extends Fragment {
     Spinner sp_sapxepbaocao;
     Spinner sp_trathuonglo;
     String[] trathuong_lo;
+    Spinner sp_thoiGianCho;
+    String[] thoiGianCho;
+
     View v;
 
     @Override // android.support.v4.app.Fragment
@@ -61,7 +64,7 @@ public class Frag_Setting3 extends Fragment {
 
             @Override // android.widget.AdapterView.OnItemSelectedListener
             public void onItemSelected(AdapterView<?> adapterView, View view, int i, long l) {
-                Frag_Setting3.this.db.Save_Setting("ap_man", i);
+                db.Save_Setting("ap_man", i);
             }
 
             @Override // android.widget.AdapterView.OnItemSelectedListener
@@ -80,7 +83,7 @@ public class Frag_Setting3 extends Fragment {
 
             @Override // android.widget.AdapterView.OnItemSelectedListener
             public void onItemSelected(AdapterView<?> adapterView, View view, int i, long l) {
-                Frag_Setting3.this.db.Save_Setting("tin_qua_gio", i);
+                db.Save_Setting("tin_qua_gio", i);
             }
 
             @Override // android.widget.AdapterView.OnItemSelectedListener
@@ -99,7 +102,7 @@ public class Frag_Setting3 extends Fragment {
 
             @Override // android.widget.AdapterView.OnItemSelectedListener
             public void onItemSelected(AdapterView<?> adapterView, View view, int i, long l) {
-                Frag_Setting3.this.db.Save_Setting("tin_trung", i);
+                db.Save_Setting("tin_trung", i);
             }
 
             @Override // android.widget.AdapterView.OnItemSelectedListener
@@ -118,7 +121,7 @@ public class Frag_Setting3 extends Fragment {
 
             @Override // android.widget.AdapterView.OnItemSelectedListener
             public void onItemSelected(AdapterView<?> adapterView, View view, int i, long l) {
-                Frag_Setting3.this.db.Save_Setting("gioi_han_tin", i + 1);
+                db.Save_Setting("gioi_han_tin", i + 1);
             }
 
             @Override // android.widget.AdapterView.OnItemSelectedListener
@@ -137,7 +140,7 @@ public class Frag_Setting3 extends Fragment {
 
             @Override // android.widget.AdapterView.OnItemSelectedListener
             public void onItemSelected(AdapterView<?> adapterView, View view, int i, long l) {
-                Frag_Setting3.this.db.Save_Setting("bao_cao_so", i);
+                db.Save_Setting("bao_cao_so", i);
             }
 
             @Override // android.widget.AdapterView.OnItemSelectedListener
@@ -156,7 +159,7 @@ public class Frag_Setting3 extends Fragment {
 
             @Override // android.widget.AdapterView.OnItemSelectedListener
             public void onItemSelected(AdapterView<?> adapterView, View view, int i, long l) {
-                Frag_Setting3.this.db.Save_Setting("chuyen_xien", i);
+                db.Save_Setting("chuyen_xien", i);
             }
 
             @Override // android.widget.AdapterView.OnItemSelectedListener
@@ -175,7 +178,7 @@ public class Frag_Setting3 extends Fragment {
 
             @Override // android.widget.AdapterView.OnItemSelectedListener
             public void onItemSelected(AdapterView<?> adapterView, View view, int i, long l) {
-                Frag_Setting3.this.db.Save_Setting("lam_tron", i);
+                db.Save_Setting("lam_tron", i);
             }
 
             @Override // android.widget.AdapterView.OnItemSelectedListener
@@ -194,8 +197,8 @@ public class Frag_Setting3 extends Fragment {
 
             @Override // android.widget.AdapterView.OnItemSelectedListener
             public void onItemSelected(AdapterView<?> adapterView, View view, int i, long l) {
-                Frag_Setting3.this.db.Save_Setting("kieu_bao_cao", i);
-                MainActivity mainActivity = (MainActivity) Frag_Setting3.this.getActivity();
+                db.Save_Setting("kieu_bao_cao", i);
+                MainActivity mainActivity = (MainActivity) getActivity();
                 MainActivity.setListFragment(i);
             }
 
@@ -215,7 +218,7 @@ public class Frag_Setting3 extends Fragment {
 
             @Override // android.widget.AdapterView.OnItemSelectedListener
             public void onItemSelected(AdapterView<?> adapterView, View view, int i, long l) {
-                Frag_Setting3.this.db.Save_Setting("tra_thuong_lo", i);
+                db.Save_Setting("tra_thuong_lo", i);
             }
 
             @Override // android.widget.AdapterView.OnItemSelectedListener
@@ -234,7 +237,7 @@ public class Frag_Setting3 extends Fragment {
 
             @Override // android.widget.AdapterView.OnItemSelectedListener
             public void onItemSelected(AdapterView<?> adapterView, View view, int i, long l) {
-                Frag_Setting3.this.db.Save_Setting("canhbaodonvi", i);
+                db.Save_Setting("canhbaodonvi", i);
             }
 
             @Override // android.widget.AdapterView.OnItemSelectedListener
@@ -253,7 +256,7 @@ public class Frag_Setting3 extends Fragment {
 
             @Override // android.widget.AdapterView.OnItemSelectedListener
             public void onItemSelected(AdapterView<?> adapterView, View view, int i, long l) {
-                Frag_Setting3.this.db.Save_Setting("tachxien_tinchot", i);
+                db.Save_Setting("tachxien_tinchot", i);
             }
 
             @Override // android.widget.AdapterView.OnItemSelectedListener
@@ -272,13 +275,61 @@ public class Frag_Setting3 extends Fragment {
 
             @Override // android.widget.AdapterView.OnItemSelectedListener
             public void onItemSelected(AdapterView<?> adapterView, View view, int i, long l) {
-                Frag_Setting3.this.db.Save_Setting("baotinthieu", i);
+                db.Save_Setting("baotinthieu", i);
             }
 
             @Override // android.widget.AdapterView.OnItemSelectedListener
             public void onNothingSelected(AdapterView<?> adapterView) {
             }
         });
+        this.thoiGianCho = new String[]{"1. Không chờ", "2. Chờ 0,5 giây", "3. Chờ 1 giây", "4. Chờ 2 giây"};
+        this.sp_thoiGianCho.setAdapter((SpinnerAdapter) new ArrayAdapter<>(getActivity(), (int) R.layout.spinner_item, this.thoiGianCho));
+        try {
+            int index;
+            switch (MainActivity.jSon_Setting.getInt("thoigiancho")) {
+                case 500:
+                    index = 1;
+                    break;
+                case 1000:
+                    index = 2;
+                    break;
+                case 2000:
+                    index = 3;
+                    break;
+                default:
+                    index = 0;
+                    break;
+            }
+            this.sp_thoiGianCho.setSelection(index);
+        } catch (JSONException e7) {
+            e7.printStackTrace();
+        }
+
+        this.sp_thoiGianCho.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
+            @Override // android.widget.AdapterView.OnItemSelectedListener
+            public void onItemSelected(AdapterView<?> adapterView, View view, int i, long l) {
+                switch (i) {
+                    case 1:
+                        db.Save_Setting("thoigiancho", 500);
+                        break;
+                    case 2:
+                        db.Save_Setting("thoigiancho", 1000);
+                        break;
+                    case 3:
+                        db.Save_Setting("thoigiancho", 2000);
+                        break;
+                    default:
+                        db.Save_Setting("thoigiancho", 0);
+                        break;
+                }
+            }
+
+            @Override // android.widget.AdapterView.OnItemSelectedListener
+            public void onNothingSelected(AdapterView<?> adapterView) {
+            }
+        });
+
+
         return this.v;
     }
 
@@ -295,5 +346,6 @@ public class Frag_Setting3 extends Fragment {
         this.sp_canhbao = (Spinner) this.v.findViewById(R.id.sp_canhbao);
         this.sp_chotTachXien = (Spinner) this.v.findViewById(R.id.sp_chotTachxien234);
         this.sp_TinThieu = (Spinner) this.v.findViewById(R.id.sp_baotinthieu);
+        this.sp_thoiGianCho = (Spinner) this.v.findViewById(R.id.sp_thoigiancho);
     }
 }

@@ -9,9 +9,9 @@ import android.content.ComponentName;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.content.pm.PackageManager;
 import android.database.Cursor;
 import android.database.SQLException;
-import android.graphics.Color;
 import android.graphics.drawable.ColorDrawable;
 import android.os.Build;
 import android.os.Bundle;
@@ -25,9 +25,7 @@ import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.inputmethod.InputMethodManager;
-import android.widget.AdapterView;
 import android.widget.Button;
-import android.widget.DatePicker;
 import android.widget.EditText;
 import android.widget.ListAdapter;
 import android.widget.ListView;
@@ -89,17 +87,21 @@ public class MainActivity extends AppCompatActivity implements TelegramClient.Ca
     public String firstNameTL = "";
     public String lastNameTL = "";
 
-    public static String Acc_manager = "";
+    //Acc
+    public static JSONObject thongTinAcc;
+    public static String tenAcc = "";
+    public static String hanSuDung = "31/12/2022";
+
     public static ArrayList<String> DSkhachhang = new ArrayList<>();
     public static JSONObject Json_Chat_Telegram = new JSONObject();
     public static JSONObject Json_Tinnhan = new JSONObject();
-    public static Context Main_activity;
     public static String MyToken = "";
     public static NotificationReader Notifi = null;
     static int TIME_REMOVE = 0;
     public static final int TIPO_DIALOGO = 0;
     public static ArrayList<String> arr_TenKH = new ArrayList<>();
     public static ArrayList<Contact> contactslist = new ArrayList<>();
+    public static HashMap<String, Contact> contactsMap = new HashMap();
     public static Context context;
     public static ArrayList<HashMap<String, String>> formArray = new ArrayList<>();
     public static ArrayList<HashMap<String, String>> formList = new ArrayList<>();
@@ -107,11 +109,9 @@ public class MainActivity extends AppCompatActivity implements TelegramClient.Ca
     public static JSONObject jSon_Setting;
     public static JSONObject json_Tinnhan = new JSONObject();
     public static List<Fragment> listFragments;
-    public static JSONObject listKH;
     public static int mDay;
     public static int mMonth;
     public static int mYear;
-    public static String myDate = "31/12/2022";
     private static DatePickerDialog.OnDateSetListener onDateSetListener;
     static Runnable runnable = new Runnable() {
         public void run() {
@@ -158,6 +158,8 @@ public class MainActivity extends AppCompatActivity implements TelegramClient.Ca
             MainActivity.handler = null;
         }
     };
+    int currentMenuPosition = -1;
+
     public static boolean sms = false;
     TextView Text_Menu;
     TextView Text_date;
@@ -171,6 +173,11 @@ public class MainActivity extends AppCompatActivity implements TelegramClient.Ca
     String my_id = "";
     String viewData;
 
+    RelativeLayout notification;
+    boolean notifivationNavigated = false;
+    TextView textErrItemCount;
+    int mErrItemCount = 0;
+
     /* access modifiers changed from: protected */
     @SuppressLint("WrongConstant")
     @Override
@@ -181,7 +188,6 @@ public class MainActivity extends AppCompatActivity implements TelegramClient.Ca
         setContentView(R.layout.activity_main);
         this.db = new Database(this);
         BriteDb.INSTANCE.init(getApplication());
-        Main_activity = this;
 //        Suagia();
         this.viewData = Get_link() + "json_data.php";
         this.insertData = Get_link() + "json_insert.php";
@@ -200,14 +206,14 @@ public class MainActivity extends AppCompatActivity implements TelegramClient.Ca
             }
             cursor.close();
         }
-        @SuppressLint("WrongConstant") View v = ((LayoutInflater) getSystemService("layout_inflater")).inflate(R.layout.customactionbar, (ViewGroup) null);
-        actionBar.setCustomView(v);
+        @SuppressLint("WrongConstant") View customactionbar = ((LayoutInflater) getSystemService("layout_inflater")).inflate(R.layout.customactionbar, (ViewGroup) null);
+        actionBar.setCustomView(customactionbar);
         Calendar calendar = Calendar.getInstance();
         mYear = calendar.get(1);
         mMonth = calendar.get(2);
         mDay = calendar.get(5);
-        this.Text_date = (TextView) v.findViewById(R.id.myTextDate);
-        this.Text_Menu = (TextView) v.findViewById(R.id.myTextMenu);
+        this.Text_date = (TextView) customactionbar.findViewById(R.id.myTextDate);
+        this.Text_Menu = (TextView) customactionbar.findViewById(R.id.myTextMenu);
         TextView textView = this.Text_date;
         StringBuilder sb = new StringBuilder();
         int i = mDay;
@@ -292,6 +298,8 @@ public class MainActivity extends AppCompatActivity implements TelegramClient.Ca
         this.lvNav.setItemChecked(0, true);
         this.drawerLayout.closeDrawer(this.drawerPane);
         this.lvNav.setOnItemClickListener((adapterView, view, position, id) -> {
+            currentMenuPosition = i;
+            notifivationNavigated = false;
             MainActivity.this.getSupportFragmentManager().beginTransaction().replace(R.id.main_content, MainActivity.listFragments.get(position)).commit();
             MainActivity mainActivity = MainActivity.this;
             mainActivity.setTitle(mainActivity.listNavItems.get(position).getTitle());
@@ -334,16 +342,73 @@ public class MainActivity extends AppCompatActivity implements TelegramClient.Ca
         this.actionBarDrawerToggle = r6;
         this.drawerLayout.setDrawerListener(r6);
         this.actionBarDrawerToggle.syncState();
+        Log.e("ContentValues", "onCreate: notificationPermission");
         notificationPermission();
         ((NotificationManager) getSystemService("notification")).cancel(1);
         startService(new Intent(this, ZBroadcast.class));
+
+        toggleNotificationReader();
+
         client = TelegramClient.getClient(this);
         client.send(new TdApi.GetMe(), this);
+
+        textErrItemCount = (TextView) customactionbar.findViewById(R.id.error_badge);
+        notification = (RelativeLayout) customactionbar.findViewById(R.id.notification);
+        notification.setOnClickListener(view -> {
+            if (!notifivationNavigated || currentMenuPosition == -1) {
+                notifivationNavigated = true;
+                Toast.makeText(MainActivity.this, "Sang màn sửa tin...", 0).show();
+                getSupportFragmentManager().beginTransaction().replace(R.id.main_content, MainActivity.listFragments.get(1)).commit();
+                setTitle(listNavItems.get(1).getTitle());
+                lvNav.setItemChecked(1, true);
+                drawerLayout.closeDrawer((View) drawerPane);
+                return;
+            }
+            notifivationNavigated = false;
+            getSupportFragmentManager().beginTransaction().replace(R.id.main_content, MainActivity.listFragments.get(currentMenuPosition)).commit();
+            setTitle(listNavItems.get(currentMenuPosition).getTitle());
+            lvNav.setItemChecked(currentMenuPosition, true);
+            drawerLayout.closeDrawer((View) MainActivity.this.drawerPane);
+        });
+        final Handler handler2 = new Handler();
+        handler2.postDelayed((Runnable) () -> {
+            try {
+                String query = "select * from tbl_tinnhanS WHERE phat_hien_loi <> 'ok' AND ngay_nhan = '" + Get_date() + "'";
+
+                Cursor cursor1 = db.GetData(query);
+                mErrItemCount = cursor1.getCount();
+                cursor1.close();
+            } catch (Exception e) {
+                mErrItemCount = 0;
+            }
+
+            setupBadge();
+        }, 3000);
+
+        setupBadge();
+    }
+
+    private void toggleNotificationReader() {
+        PackageManager pm = getPackageManager();
+        pm.setComponentEnabledSetting(new ComponentName(this, tamhoang.ldpro4.NotificationReader.class),
+                PackageManager.COMPONENT_ENABLED_STATE_DISABLED, PackageManager.DONT_KILL_APP);
+
+        pm.setComponentEnabledSetting(new ComponentName(this, tamhoang.ldpro4.NotificationReader.class),
+                PackageManager.COMPONENT_ENABLED_STATE_ENABLED, PackageManager.DONT_KILL_APP);
     }
 
     public static void setListFragment(int i) {
         listFragments.remove(4);
         listFragments.add(4, new Frag_No_new());
+    }
+
+    public void setupBadge() {
+        if (textErrItemCount != null) {
+            if (mErrItemCount != 0) {
+                textErrItemCount.setText(String.valueOf(mErrItemCount));
+                textErrItemCount.setVisibility(View.VISIBLE);
+            } else textErrItemCount.setVisibility(View.GONE);
+        }
     }
 
 
@@ -433,11 +498,7 @@ public class MainActivity extends AppCompatActivity implements TelegramClient.Ca
         String senderUserId = newMessage.message.senderUserId + "";
         String chatId = newMessage.message.chatId + "";
         String text = ((TdApi.MessageText) newMessage.message.content).text.replace("'", "");
-        if (newMessage.message.isChannelPost || newMessage.message.chatId == 777000 || newMessage.message.chatId == 93372553) {
-            tinHethong = false;
-        } else {
-            tinHethong = true;
-        }
+        tinHethong = !newMessage.message.isChannelPost && newMessage.message.chatId != 777000 && newMessage.message.chatId != 93372553;
         if (tinHethong) {
             Calendar calendar = Calendar.getInstance();
             calendar.setTime(new Date());
@@ -468,15 +529,10 @@ public class MainActivity extends AppCompatActivity implements TelegramClient.Ca
             this.db.QueryData("Insert into Chat_database Values( null,'" + mNgayNhan + "', '" + mGionhan + "', " + type_kh + ", '" + ten_kh + "','" + chatId + "', 'TL','" + text + "',1)");
             sms = true;
             Database database = this.db;
-            StringBuilder sb2 = new StringBuilder();
-            sb2.append("Select * From tbl_tinnhanS WHERE ngay_nhan = '");
-            sb2.append(mNgayNhan);
-            sb2.append("' And Ten_kh = '");
-            sb2.append(ten_kh);
-            sb2.append("' AND nd_goc = '");
-            sb2.append(text);
-            sb2.append("'");
-            Cursor cursor111 = database.GetData(sb2.toString());
+            String sb2 = "Select * From tbl_tinnhanS WHERE ngay_nhan = '" + mNgayNhan +
+                    "' And Ten_kh = '" + ten_kh +
+                    "' AND nd_goc = '" + text + "'";
+            Cursor cursor111 = database.GetData(sb2);
             if (cursor111.getCount() == 0) {
                 Cursor cursor4 = this.db.GetData("Select * From tbl_kh_new Where sdt = '" + chatId + "'");
                 if (cursor4.getCount() <= 0 || text.length() <= 5) {
@@ -488,17 +544,15 @@ public class MainActivity extends AppCompatActivity implements TelegramClient.Ca
                         return;
                     }
                     cursor = cursor4;
-                    int type_kh2 = type_kh;
                     if (cursor.getInt(3) == 2) {
-                        if (type_kh2 == 1 && text.indexOf("Tra lai") == 0) {
-                            Xulytin(chatId, text, mNgayNhan, mGionhan, type_kh2);
+                        if (type_kh == 1 && text.indexOf("Tra lai") == 0) {
+                            Xulytin(chatId, text, mNgayNhan, mGionhan, type_kh);
                             return;
                         }
-                        type_kh2 = type_kh2;
                     }
                     if (cursor.getInt(3) == 3) {
-                        if (type_kh2 == 1) {
-                            Xulytin(chatId, text, mNgayNhan, mGionhan, type_kh2);
+                        if (type_kh == 1) {
+                            Xulytin(chatId, text, mNgayNhan, mGionhan, type_kh);
                             return;
                         }
                     }
@@ -540,7 +594,7 @@ public class MainActivity extends AppCompatActivity implements TelegramClient.Ca
         JSONException e;
         String str = null;
         String S;
-        if ((DSkhachhang.indexOf(mSDT) > -1 && body.indexOf("Ok") != 0 && body.indexOf("Bỏ") != 0 && body.indexOf("Thiếu") != 0) || body.indexOf("Tra lai") > -1) {
+        if ((DSkhachhang.contains(mSDT) && body.indexOf("Ok") != 0 && body.indexOf("Bỏ") != 0 && body.indexOf("Thiếu") != 0) || body.contains("Tra lai")) {
             sms = true;
             JSONObject json = null;
             JSONObject caidat_tg = null;
@@ -573,7 +627,7 @@ public class MainActivity extends AppCompatActivity implements TelegramClient.Ca
                             } catch (SQLException e5) {
                             }
                         }
-                        if (Congthuc.CheckDate(myDate)) {
+                        if (Congthuc.CheckDate(hanSuDung)) {
                             Database database = this.db;
                             String sb = "Select * from tbl_tinnhanS WHERE ngay_nhan = '" + mNgayNhan +
                                     "' AND so_dienthoai = '" + mSDT +
@@ -785,12 +839,14 @@ public class MainActivity extends AppCompatActivity implements TelegramClient.Ca
         } else {
             menus = new String[]{"Từ điển cá nhân", "Nhập dàn giữ số", "Cài đặt chuyển thẳng", "Login Telegram"};
         }
-        PopupMenu popupL = new PopupMenu(this, v);
+        PopupMenu popupMenu = new PopupMenu(this, v);
         for (int i = 0; i < menus.length; i++) {
-            popupL.getMenu().add(1, i, i, menus[i]);
+            popupMenu.getMenu().add(1, i, i, menus[i]);
         }
         new AlertDialog.Builder(this);
-        popupL.setOnMenuItemClickListener(item -> {
+        popupMenu.setOnMenuItemClickListener(item -> {
+            currentMenuPosition = -1;
+            notifivationNavigated = false;
             int order = item.getOrder();
             if (order == 0) {
                 MainActivity.this.startActivity(new Intent(MainActivity.this,  Activity_thaythe.class));
@@ -816,7 +872,7 @@ public class MainActivity extends AppCompatActivity implements TelegramClient.Ca
             }
             return true;
         });
-        popupL.show();
+        popupMenu.show();
     }
 
     public void showDialog1() {

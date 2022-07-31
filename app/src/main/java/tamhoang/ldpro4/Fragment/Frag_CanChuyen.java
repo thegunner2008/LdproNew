@@ -761,7 +761,7 @@ public class Frag_CanChuyen extends Fragment {
             while (cur.moveToNext()) {
                 if (!cur.getString(2).contains("sms")) {
                     if (!cur.getString(2).contains("TL")) {
-                        if (MainActivity.arr_TenKH.contains(cur.getString(1))) {
+                        if (MainActivity.contactsMap.containsKey(cur.getString(1))) {
                             this.mContact.add(cur.getString(0));
                             this.mMobile.add(cur.getString(1));
                             this.mKhongMax.add(cur.getString(6));
@@ -996,7 +996,7 @@ public class Frag_CanChuyen extends Fragment {
                 sb.append(SotinNhan);
                 Cursor c = database.GetData(sb.toString());
                 c.moveToFirst();
-                if (Congthuc.CheckDate(MainActivity.myDate)) {
+                if (Congthuc.CheckDate(MainActivity.hanSuDung)) {
                     try {
                         this.db.Update_TinNhanGoc(c.getInt(0), cur1.getInt(3));
                         final String NoiDungTin = "Tin " + SotinNhan + ":\n" + noidung;
@@ -1038,7 +1038,7 @@ public class Frag_CanChuyen extends Fragment {
                     }
                 } else {
                     try {
-                        Toast.makeText(getActivity(), "Đã hết hạn sử dụng\n\nHãy liên hệ đại lý hoặc SĐT: " + MainActivity.listKH.getString("k_tra") + " để gia hạn", Toast.LENGTH_LONG).show();
+                        Toast.makeText(getActivity(), "Đã hết hạn sử dụng\n\nHãy liên hệ đại lý hoặc SĐT: " + MainActivity.thongTinAcc.getString("k_tra") + " để gia hạn", Toast.LENGTH_LONG).show();
                     } catch (JSONException e4) {
                         e4.printStackTrace();
                     }

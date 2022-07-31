@@ -41,11 +41,45 @@
             android:layout_height="wrap_content"
             android:layout_alignParentTop="true"
             android:layout_alignParentEnd="true"
+            android:layout_marginRight="40dp"
             android:onClick="onClick"
             android:text="01/10/2016"
             android:textAlignment="viewEnd"
             android:textColor="@color/white"
             android:textSize="18dp"
             android:textStyle="bold" />
+
+        <RelativeLayout
+            android:id="@+id/notification"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentRight="true"
+            android:layout_marginStart="-30dp"
+            android:layout_toEndOf="@+id/myTextDate">
+
+            <ImageView
+                android:layout_width="22dp"
+                android:layout_height="22dp"
+                android:layout_alignParentTop="true"
+                android:layout_alignParentEnd="true"
+                android:layout_gravity="center"
+                android:layout_marginRight="8dp"
+                android:src="@drawable/ic_alarm_white" />
+
+            <TextView
+                android:id="@+id/error_badge"
+                android:layout_width="18dp"
+                android:layout_height="18dp"
+                android:layout_alignParentTop="true"
+                android:layout_alignParentEnd="true"
+                android:layout_gravity="top|right|center_vertical|center_horizontal|center|end"
+                android:layout_marginTop="2dp"
+                android:background="@drawable/bg_red_circle"
+                android:gravity="center"
+                android:padding="0.3dp"
+                android:text="0"
+                android:textColor="@android:color/white"
+                android:textSize="9sp" />
+        </RelativeLayout>
     </RelativeLayout>
 </LinearLayout>

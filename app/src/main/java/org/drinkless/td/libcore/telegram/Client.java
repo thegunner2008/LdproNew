@@ -20,6 +20,8 @@
 
 package org.drinkless.td.libcore.telegram;
 
+import static android.content.ContentValues.TAG;
+
 import android.util.Log;
 
 import java.util.concurrent.ConcurrentHashMap;
@@ -324,6 +326,8 @@ public class Client implements Runnable {
     }
 
     private void processResult(long id, TdApi.Object object) {
+        Log.e(TAG, "processResult: " );
+
         Handler handler;
         if (object instanceof TdApi.UpdateAuthorizationState) {
             if (((TdApi.UpdateAuthorizationState) object).authorizationState instanceof TdApi.AuthorizationStateClosed) {
@@ -345,6 +349,8 @@ public class Client implements Runnable {
     }
 
     private void handleResult(TdApi.Object object, ResultHandler resultHandler, ExceptionHandler exceptionHandler) {
+
+        Log.e(TAG, "handleResult: " );
         if (resultHandler == null) {
             return;
         }
@@ -365,8 +371,14 @@ public class Client implements Runnable {
     }
 
     private void receiveQueries(double timeout) {
+        Log.e(TAG, "receiveQueries: eventIds: [ " );
+
         int resultN = NativeClient.clientReceive(nativeClientId, eventIds, events, timeout);
+//        Log.e(TAG, "receiveQueries: eventIds: [ " + nativeClientId + " - " + Arrays.toString(eventIds) + " - " + Arrays.toString(events));
+
         for (int i = 0; i < resultN; i++) {
+            Log.e(TAG, "receiveQueries: eventIds: [ " + i+"]: " + nativeClientId + "eventsId :" + eventIds[i] +" - events :" + events[i]);
+
             processResult(eventIds[i], events[i]);
             events[i] = null;
         }

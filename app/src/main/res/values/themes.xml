@@ -448,7 +448,7 @@
         <item name="toolbarStyle">@style/Widget.MaterialComponents.Toolbar</item>
         <item name="viewInflaterClass">android.support.design.theme.MaterialComponentsViewInflater</item>
     </style>
-    <style name="Base.V14.Theme.MaterialComponents.Light" parent="@style/Base.V14.Theme.MaterialComponents.Light.Bridge">
+    <style name="Base.V14.Theme.MaterialComponents.Light" parent="@style/Base.V14.Theme.MaterialComponents.Light.Bridge" tools:ignore="ResourceCycle">
         <item name="alertDialogTheme">@style/ThemeOverlay.MaterialComponents.Dialog.Alert</item>
         <item name="borderlessButtonStyle">@style/Widget.MaterialComponents.Button.TextButton</item>
         <item name="bottomAppBarStyle">@style/Widget.MaterialComponents.BottomAppBar</item>

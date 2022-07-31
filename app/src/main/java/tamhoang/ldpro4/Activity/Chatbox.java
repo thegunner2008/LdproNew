@@ -164,7 +164,7 @@ public class Chatbox extends BaseToolBarActivity {
                 BriteDb.INSTANCE.insertTinNhanS(tinNhanS);
 
                 TinNhanS tinNhanS2 = BriteDb.INSTANCE.selectTinNhanS(Ngay_gui, Ten_kh, maxSoTn + 1, 2);
-                if (Congthuc.CheckDate(MainActivity.myDate)) {
+                if (Congthuc.CheckDate(MainActivity.hanSuDung)) {
                     try {
                         db.Update_TinNhanGoc(tinNhanS2.getID(), khachHang.getType_kh());
                     } catch (Exception e) {
@@ -176,7 +176,7 @@ public class Chatbox extends BaseToolBarActivity {
                     } catch (Throwable throwable) {
                         throwable.printStackTrace();
                     }
-                } else if (MainActivity.Acc_manager.length() == 0) {
+                } else if (MainActivity.tenAcc.length() == 0) {
                     AlertDialog.Builder bui = new AlertDialog.Builder(this);
                     bui.setTitle("Thông báo:");
                     bui.setMessage("Kiểm tra kết nối Internet!");
@@ -186,7 +186,7 @@ public class Chatbox extends BaseToolBarActivity {
                     try {
                         AlertDialog.Builder bui2 = new AlertDialog.Builder(this);
                         bui2.setTitle("Thông báo:");
-                        bui2.setMessage("Đã hết hạn sử dụng phần mềm\n\nHãy liên hệ đại lý hoặc SĐT: " + MainActivity.listKH.getString("k_tra") + " để gia hạn");
+                        bui2.setMessage("Đã hết hạn sử dụng phần mềm\n\nHãy liên hệ đại lý hoặc SĐT: " + MainActivity.thongTinAcc.getString("k_tra") + " để gia hạn");
                         bui2.setNegativeButton("Đóng", (dialog, which) -> dialog.cancel());
                         bui2.create().show();
                     } catch (JSONException e2) {

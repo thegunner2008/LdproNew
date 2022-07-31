@@ -1,17 +1,17 @@
 package tamhoang.ldpro4.Fragment;
 
+import static android.content.ContentValues.TAG;
+
 import android.annotation.SuppressLint;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.database.Cursor;
 import android.database.DatabaseUtils;
 import android.database.sqlite.SQLiteDatabase;
-import android.database.sqlite.SQLiteException;
-import android.net.Uri;
 import android.os.Bundle;
 import android.os.Handler;
 import android.text.Html;
-import android.text.format.DateFormat;
+import android.util.Log;
 import android.view.ContextMenu;
 import android.view.LayoutInflater;
 import android.view.MenuItem;
@@ -20,10 +20,8 @@ import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
-import android.widget.CompoundButton;
 import android.widget.EditText;
 import android.widget.LinearLayout;
-import android.widget.ListAdapter;
 import android.widget.ListView;
 import android.widget.RadioButton;
 import android.widget.Spinner;
@@ -36,7 +34,6 @@ import androidx.core.app.ActivityCompat;
 import androidx.core.content.ContextCompat;
 import androidx.fragment.app.Fragment;
 
-import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
@@ -45,7 +42,6 @@ import java.util.List;
 import java.util.TimeZone;
 
 import org.json.JSONException;
-import org.json.JSONObject;
 
 import tamhoang.ldpro4.Congthuc.Congthuc;
 import tamhoang.ldpro4.MainActivity;
@@ -103,24 +99,27 @@ public class Frag_Suatin extends Fragment {
             Cursor cur = null;
             Cursor cursor = null;
             error = true;
+            Log.e(TAG, "run:ww " +  MainActivity.tenAcc);
+
             if (editTsuatin.getText().toString().length() < 6) {
                 error = false;
-            } else if (lv_position < 0 || !Congthuc.CheckDate(MainActivity.myDate)) {
+            } else if (lv_position < 0 || !Congthuc.CheckDate(MainActivity.hanSuDung)) {
                 error = false;
                 if (!Congthuc.CheckDate("31/12/2022")) {
                     try {
                         AlertDialog.Builder bui = new AlertDialog.Builder(getActivity());
                         bui.setTitle("Thông báo:");
-                        bui.setMessage("Đã hết hạn sử dụng phần mềm\n\nHãy liên hệ đại lý hoặc SĐT: " + MainActivity.listKH.getString("k_tra") + " để gia hạn");
+                        bui.setMessage("Đã hết hạn sử dụng phần mềm\n\nHãy liên hệ đại lý hoặc SĐT: " + MainActivity.thongTinAcc.getString("k_tra") + " để gia hạn");
                         bui.setNegativeButton("Đóng", (dialog, which) -> dialog.cancel());
                         bui.create().show();
                     } catch (JSONException e) {
                         e.printStackTrace();
                     }
-                } else if (MainActivity.Acc_manager.length() == 0) {
+                } else if (MainActivity.tenAcc.length() == 0) {
+                    Log.e(TAG, "run: " +  MainActivity.tenAcc);
                     AlertDialog.Builder bui2 = new AlertDialog.Builder(getActivity());
                     bui2.setTitle("Thông báo:");
-                    bui2.setMessage("Kiểm tra kết nối Internet!");
+                    bui2.setMessage("Kiểm tra kết nối Internet! 1");
                     bui2.setNegativeButton("Đóng", (dialog, which) -> dialog.cancel());
                     bui2.create().show();
                 } else {
@@ -132,10 +131,11 @@ public class Frag_Suatin extends Fragment {
                 cur.moveToFirst();
                 try {
                     db.Update_TinNhanGoc(mID.get(lv_position), cur.getInt(0));
-                } catch (Throwable e2) {
+                } catch (Throwable e) {
                     db.QueryData("Update tbl_tinnhanS set phat_hien_loi = 'ko' WHERE id = " + mID.get(lv_position));
                     db.QueryData("Delete From tbl_soctS WHERE ngay_nhan = '" + mNgay.get(lv_position) + "' AND so_dienthoai = '" + mSDT.get(lv_position) + "' AND so_tin_nhan = " + mSoTinNhan.get(lv_position) + " AND type_kh = " + cur.getString(0));
                     error = false;
+                    Log.e("ContentValues", "Đã xảy ra lỗi 1 " );
                     Toast.makeText(getActivity(), "Đã xảy ra lỗi!", Toast.LENGTH_SHORT).show();
                 }
                 if (!Congthuc.CheckTime("18:30") && Cur_date.contains(CurDate)) {
@@ -362,7 +362,7 @@ public class Frag_Suatin extends Fragment {
                         sb.append(type_kh);
                         Cursor c = database.GetData(sb.toString());
                         c.moveToFirst();
-                        if (Congthuc.CheckDate(MainActivity.myDate)) {
+                        if (Congthuc.CheckDate(MainActivity.hanSuDung)) {
                             try {
                                 db.Update_TinNhanGoc(c.getInt(0), cur1.getInt(3));
                             } catch (Exception e) {
@@ -374,10 +374,10 @@ public class Frag_Suatin extends Fragment {
                             } catch (Throwable throwable) {
                                 throwable.printStackTrace();
                             }
-                        } else if (MainActivity.Acc_manager.length() == 0) {
+                        } else if (MainActivity.tenAcc.length() == 0) {
                             AlertDialog.Builder bui = new AlertDialog.Builder(getActivity());
                             bui.setTitle("Thông báo:");
-                            bui.setMessage("Kiểm tra kết nối Internet!");
+                            bui.setMessage("Kiểm tra kết nối Internet! 2");
                             bui.setNegativeButton("Đóng", new DialogInterface.OnClickListener() {
                                 /* class tamhoang.ldpro4.Fragment.Frag_Suatin.AnonymousClass9.AnonymousClass1 */
 
@@ -390,7 +390,7 @@ public class Frag_Suatin extends Fragment {
                             try {
                                 AlertDialog.Builder bui2 = new AlertDialog.Builder(getActivity());
                                 bui2.setTitle("Thông báo:");
-                                bui2.setMessage("Đã hết hạn sử dụng phần mềm\n\nHãy liên hệ đại lý hoặc SĐT: " + MainActivity.listKH.getString("k_tra") + " để gia hạn");
+                                bui2.setMessage("Đã hết hạn sử dụng phần mềm\n\nHãy liên hệ đại lý hoặc SĐT: " + MainActivity.thongTinAcc.getString("k_tra") + " để gia hạn");
                                 bui2.setNegativeButton("Đóng", new DialogInterface.OnClickListener() {
                                     /* class tamhoang.ldpro4.Fragment.Frag_Suatin.AnonymousClass9.AnonymousClass2 */
 
@@ -409,68 +409,53 @@ public class Frag_Suatin extends Fragment {
                         MainActivity.sms = true;
                     }
                 });
-                bui.setPositiveButton("Tin Chuyển", new DialogInterface.OnClickListener() {
-                    /* class tamhoang.ldpro4.Fragment.Frag_Suatin.AnonymousClass10 */
+                bui.setPositiveButton("Tin Chuyển", (dialog, which) -> {
+                    type_kh = 2;
+                    int maxSoTn = BriteDb.INSTANCE.getMaxSoTinNhan(mDate, type_kh, "so_dienthoai = '"+ mMobile.get(spin_pointion) +"'");
+                    db.QueryData("Insert Into tbl_tinnhanS values (null, '" + mDate + "', '" + mGionhan + "', " + type_kh + ", '" + mContact.get(spin_pointion) + "', '" + mMobile.get(spin_pointion) + "', '" + cur1.getString(2) + "', " + (maxSoTn + 1) + ", '" + editTsuatin.getText().toString().replaceAll("'", " ").trim() + "', '" + editTsuatin.getText().toString().replaceAll("'", " ").trim() + "', '" + editTsuatin.getText().toString().replaceAll("'", " ").trim() + "', 'ko',0, 0, 0, null)");
+                    editTsuatin.setText("");
+                    Database database = db;
+                    String sb = "Select id From tbl_tinnhanS WHERE ngay_nhan = '" + mDate +
+                            "' AND so_dienthoai = '" + mMobile.get(spin_pointion) +
+                            "' AND so_tin_nhan = " + (maxSoTn + 1) +
+                            " AND type_kh = " + type_kh;
+                    Cursor c = database.GetData(sb);
+                    c.moveToFirst();
+                    if (Congthuc.CheckDate(MainActivity.hanSuDung)) {
+                        try {
+                            db.Update_TinNhanGoc(c.getInt(0), cur1.getInt(3));
+                        } catch (Exception e) {
+                            Log.e("aaa", "onClick: error " + e.getMessage() );
+                            db.QueryData("Update tbl_tinnhanS set phat_hien_loi = 'ko' WHERE id = " + c.getInt(0));
+                            str = "Delete From tbl_soctS WHERE ngay_nhan = '" + mDate + "' AND so_dienthoai = '" + mMobile.get(spin_pointion) + "' AND so_tin_nhan = " + (maxSoTn + 1) + " AND type_kh = " + type_kh;
+                            db.QueryData(str);
+                            Log.e("ContentValues", "Đã xảy ra lỗi! 2 " );
 
-                    public void onClick(DialogInterface dialog, int which) {
-                        type_kh = 2;
-                        int maxSoTn = BriteDb.INSTANCE.getMaxSoTinNhan(mDate, type_kh, "so_dienthoai = '"+ mMobile.get(spin_pointion) +"'");
-                        db.QueryData("Insert Into tbl_tinnhanS values (null, '" + mDate + "', '" + mGionhan + "', " + type_kh + ", '" + mContact.get(spin_pointion) + "', '" + mMobile.get(spin_pointion) + "', '" + cur1.getString(2) + "', " + (maxSoTn + 1) + ", '" + editTsuatin.getText().toString().replaceAll("'", " ").trim() + "', '" + editTsuatin.getText().toString().replaceAll("'", " ").trim() + "', '" + editTsuatin.getText().toString().replaceAll("'", " ").trim() + "', 'ko',0, 0, 0, null)");
-                        editTsuatin.setText("");
-                        Database database = db;
-                        String sb = "Select id From tbl_tinnhanS WHERE ngay_nhan = '" + mDate +
-                                "' AND so_dienthoai = '" + mMobile.get(spin_pointion) +
-                                "' AND so_tin_nhan = " + (maxSoTn + 1) +
-                                " AND type_kh = " + type_kh;
-                        Cursor c = database.GetData(sb);
-                        c.moveToFirst();
-                        if (Congthuc.CheckDate(MainActivity.myDate)) {
-                            try {
-                                db.Update_TinNhanGoc(c.getInt(0), cur1.getInt(3));
-                            } catch (Exception e) {
-                                Database database2 = db;
-                                database2.QueryData("Update tbl_tinnhanS set phat_hien_loi = 'ko' WHERE id = " + c.getInt(0));
-                                Frag_Suatin frag_Suatin = Frag_Suatin.this;
-                                frag_Suatin.str = "Delete From tbl_soctS WHERE ngay_nhan = '" + mDate + "' AND so_dienthoai = '" + mMobile.get(spin_pointion) + "' AND so_tin_nhan = " + (maxSoTn + 1) + " AND type_kh = " + type_kh;
-                                db.QueryData(str);
-                                Toast.makeText(getActivity(), "Đã xảy ra lỗi!", Toast.LENGTH_LONG).show();
-                            } catch (Throwable throwable) {
-                                throwable.printStackTrace();
-                            }
-                        } else if (MainActivity.Acc_manager.length() == 0) {
-                            AlertDialog.Builder bui = new AlertDialog.Builder(getActivity());
-                            bui.setTitle("Thông báo:");
-                            bui.setMessage("Kiểm tra kết nối Internet!");
-                            bui.setNegativeButton("Đóng", new DialogInterface.OnClickListener() {
-                                /* class tamhoang.ldpro4.Fragment.Frag_Suatin.AnonymousClass10.AnonymousClass1 */
-
-                                public void onClick(DialogInterface dialog, int which) {
-                                    dialog.cancel();
-                                }
-                            });
-                            bui.create().show();
-                        } else {
-                            try {
-                                AlertDialog.Builder bui2 = new AlertDialog.Builder(getActivity());
-                                bui2.setTitle("Thông báo:");
-                                bui2.setMessage("Đã hết hạn sử dụng phần mềm\n\nHãy liên hệ đại lý hoặc SĐT: " + MainActivity.listKH.getString("k_tra") + " để gia hạn");
-                                bui2.setNegativeButton("Đóng", new DialogInterface.OnClickListener() {
-                                    /* class tamhoang.ldpro4.Fragment.Frag_Suatin.AnonymousClass10.AnonymousClass2 */
-
-                                    public void onClick(DialogInterface dialog, int which) {
-                                        dialog.cancel();
-                                    }
-                                });
-                                bui2.create().show();
-                            } catch (JSONException e2) {
-                                e2.printStackTrace();
-                            }
+                            Toast.makeText(getActivity(), "Đã xảy ra lỗi!", Toast.LENGTH_LONG).show();
+                        } catch (Throwable throwable) {
+                            throwable.printStackTrace();
                         }
-                        cur1.close();
-                        c.close();
-                        dialog.cancel();
-                        MainActivity.sms = true;
+                    } else if (MainActivity.tenAcc.length() == 0) {
+                        AlertDialog.Builder bui1 = new AlertDialog.Builder(getActivity());
+                        bui1.setTitle("Thông báo:");
+                        bui1.setMessage("Kiểm tra kết nối Internet! 3");
+                        bui1.setNegativeButton("Đóng", (dialog1, which1) -> dialog1.cancel());
+                        bui1.create().show();
+                    } else {
+                        try {
+                            AlertDialog.Builder bui2 = new AlertDialog.Builder(getActivity());
+                            bui2.setTitle("Thông báo:");
+                            bui2.setMessage("Đã hết hạn sử dụng phần mềm\n\nHãy liên hệ đại lý hoặc SĐT: " + MainActivity.thongTinAcc.getString("k_tra") + " để gia hạn");
+                            bui2.setNegativeButton("Đóng", (dialog12, which12) -> dialog12.cancel());
+                            bui2.create().show();
+                        } catch (JSONException e2) {
+                            e2.printStackTrace();
+                        }
                     }
+                    cur1.close();
+                    c.close();
+                    dialog.cancel();
+                    MainActivity.sms = true;
                 });
                 bui.create().show();
             } else {
@@ -486,42 +471,32 @@ public class Frag_Suatin extends Fragment {
                         " AND type_kh = " + this.type_kh;
                 Cursor c = database.GetData(sb);
                 c.moveToFirst();
-                if (Congthuc.CheckDate(MainActivity.myDate)) {
+                if (Congthuc.CheckDate(MainActivity.hanSuDung)) {
                     try {
                         this.db.Update_TinNhanGoc(c.getInt(0), cur1.getInt(3));
                     } catch (Exception e) {
+                        Log.e("ContentValues", "onClick: error " + e.getMessage() );
+
                         this.db.QueryData("Update tbl_tinnhanS set phat_hien_loi = 'ko' WHERE id = " + c.getInt(0));
-                        String str3 = "Delete From tbl_soctS WHERE ngay_nhan = '" + mDate + "' AND so_dienthoai = '" + this.mMobile.get(this.spin_pointion) + "' AND so_tin_nhan = " + (maxSoTn + 1) + " AND type_kh = " + this.type_kh;
-                        this.str = str3;
-                        this.db.QueryData(str3);
+                        this.str = "Delete From tbl_soctS WHERE ngay_nhan = '" + mDate + "' AND so_dienthoai = '" + this.mMobile.get(this.spin_pointion) + "' AND so_tin_nhan = " + (maxSoTn + 1) + " AND type_kh = " + this.type_kh;;
+                        this.db.QueryData(str);
+                        Log.e("ContentValues", "Đã xảy ra lỗi!  3" );
                         Toast.makeText(getActivity(), "Đã xảy ra lỗi!", Toast.LENGTH_LONG).show();
                     } catch (Throwable throwable) {
                         throwable.printStackTrace();
                     }
-                } else if (MainActivity.Acc_manager.length() == 0) {
+                } else if (MainActivity.tenAcc.length() == 0) {
                     AlertDialog.Builder bui2 = new AlertDialog.Builder(getActivity());
                     bui2.setTitle("Thông báo:");
-                    bui2.setMessage("Kiểm tra kết nối Internet!");
-                    bui2.setNegativeButton("Đóng", new DialogInterface.OnClickListener() {
-                        /* class tamhoang.ldpro4.Fragment.Frag_Suatin.AnonymousClass11 */
-
-                        public void onClick(DialogInterface dialog, int which) {
-                            dialog.cancel();
-                        }
-                    });
+                    bui2.setMessage("Kiểm tra kết nối Internet! 4");
+                    bui2.setNegativeButton("Đóng", (dialog, which) -> dialog.cancel());
                     bui2.create().show();
                 } else {
                     try {
                         AlertDialog.Builder bui3 = new AlertDialog.Builder(getActivity());
                         bui3.setTitle("Thông báo:");
-                        bui3.setMessage("Đã hết hạn sử dụng phần mềm\n\nHãy liên hệ đại lý hoặc SĐT: " + MainActivity.listKH.getString("k_tra") + " để gia hạn");
-                        bui3.setNegativeButton("Đóng", new DialogInterface.OnClickListener() {
-                            /* class tamhoang.ldpro4.Fragment.Frag_Suatin.AnonymousClass12 */
-
-                            public void onClick(DialogInterface dialog, int which) {
-                                dialog.cancel();
-                            }
-                        });
+                        bui3.setMessage("Đã hết hạn sử dụng phần mềm\n\nHãy liên hệ đại lý hoặc SĐT: " + MainActivity.thongTinAcc.getString("k_tra") + " để gia hạn");
+                        bui3.setNegativeButton("Đóng", (dialog, which) -> dialog.cancel());
                         bui3.create().show();
                     } catch (JSONException e2) {
                         e2.printStackTrace();
@@ -565,7 +540,7 @@ public class Frag_Suatin extends Fragment {
             xem_lv();
             if (this.mND_DaSua.size() > 0) {
                 this.lv_position = 0;
-                if (this.mPhatHienLoi.get(0).indexOf("Không hiểu") > -1) {
+                if (this.mPhatHienLoi.get(0).contains("Không hiểu")) {
                     this.editTsuatin.setText(Html.fromHtml(this.mND_PhanTich.get(0).replace("ldpro", "<font color='#FF0000'>")));
                     int KKK = this.mND_PhanTich.get(0).indexOf("ldpro");
                     if (KKK > -1) {
@@ -633,11 +608,8 @@ public class Frag_Suatin extends Fragment {
         this.db.QueryData("DELETE FROM tbl_soctS WHERE ngay_nhan = '" + mDate + "' AND so_dienthoai = '" + this.mMobile.get(this.spin_pointion) + "'");
         this.db.QueryData("DELETE FROM tbl_tinnhanS WHERE ngay_nhan = '" + mDate + "' AND so_dienthoai = '" + this.mMobile.get(this.spin_pointion) + "'");
         Database database = this.db;
-        StringBuilder sb = new StringBuilder();
-        sb.append("Select * From tbl_kh_new Where sdt = '");
-        sb.append(this.mMobile.get(this.spin_pointion));
-        sb.append("'");
-        Cursor cur1 = database.GetData(sb.toString());
+        String sb = "Select * From tbl_kh_new Where sdt = '" + this.mMobile.get(this.spin_pointion) + "'";
+        Cursor cur1 = database.GetData(sb);
         cur1.moveToFirst();
         int i = 3;
         if (Type_kh == 1) {

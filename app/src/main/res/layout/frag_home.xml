@@ -216,7 +216,7 @@
                             android:minWidth="0dp"
                             android:minHeight="0dp"
                             android:paddingLeft="10dp"
-                            android:text="http://ldpro.org"
+                            android:text="http://ldpro.pro"
                             android:textAlignment="center"
                             android:textColor="@color/blue"
                             android:textSize="14dp"

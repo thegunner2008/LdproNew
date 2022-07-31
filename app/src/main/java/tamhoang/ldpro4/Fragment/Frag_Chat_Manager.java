@@ -48,6 +48,7 @@ import tamhoang.ldpro4.Activity.Chatbox;
 import tamhoang.ldpro4.MainActivity;
 import tamhoang.ldpro4.NotificationReader;
 import tamhoang.ldpro4.R;
+import tamhoang.ldpro4.data.Contact;
 import tamhoang.ldpro4.data.Database;
 import tamhoang.ldpro4.data.model.Chat;
 
@@ -202,7 +203,7 @@ public class Frag_Chat_Manager extends Fragment {
                 String ten_kh = cursor.getString(4);
                 String use_app = cursor.getString(6);
                 
-                if ((MainActivity.arr_TenKH.contains(ten_kh) || use_app.contains("sms") || use_app.contains("ZL") || use_app.contains("TL")|| use_app.contains("VB"))
+                if ((MainActivity.contactsMap.containsKey(ten_kh) || use_app.contains("sms") || use_app.contains("ZL") || use_app.contains("TL")|| use_app.contains("VB"))
                         && !jsonObject.has(ten_kh)) {
                     try {
                         jsonObject.put(ten_kh, "OK");
@@ -217,7 +218,7 @@ public class Frag_Chat_Manager extends Fragment {
             }
             cursor.close();
         }
-        for (String ten_kh : MainActivity.arr_TenKH) {
+        for (String ten_kh : MainActivity.contactsMap.keySet()) {
             if (!this.mTenKH.contains(ten_kh)) {
                 this.mTenKH.add(ten_kh);
                 this.mNoiDung.add("Hôm nay chưa có tin nhắn!");
@@ -293,10 +294,9 @@ public class Frag_Chat_Manager extends Fragment {
                 builder.setTitle("Xoá Khách");
                 builder.setMessage("Sẽ xóa hết dữ liệu chat từ khách này, không thể khôi phục và không thể tải lại tin nhắn!");
                 builder.setNegativeButton("Có", (dialog, which) -> {
-                    int TTkhachhang = MainActivity.arr_TenKH.indexOf(mTenKH.get(position));
-                    if (TTkhachhang >= 0) {
-                        MainActivity.arr_TenKH.remove(TTkhachhang);
-                        MainActivity.contactslist.remove(TTkhachhang);
+                    Contact contact = MainActivity.contactsMap.get(mTenKH.get(position));
+                    if (contact != null) {
+                        MainActivity.contactsMap.remove(mTenKH.get(position));
                     }
                     XemListview();
                     dialog.dismiss();

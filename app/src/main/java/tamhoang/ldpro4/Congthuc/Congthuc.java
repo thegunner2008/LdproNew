@@ -653,15 +653,15 @@ public class Congthuc {
     }
 
     public static String XulyXien(String str) {
+        String _p = " ,";
+
         String str2 = "";
         int i = 0;
-        String ThayThe = "";
         String sss = "";
         String strKQ = "";
         int j = 0;
         boolean Ktra = false;
         String strKQ2 = "";
-        String ThayThe2 = " ,";
         int i2 = 0;
         int j2 = 0;
         StringBuilder strKQ3 = new StringBuilder();
@@ -810,7 +810,7 @@ public class Congthuc {
                 String sss6 = str2;
                 int j3 = 0;
                 while (true) {
-                    if (j3 >= ThayThe2.length()) {
+                    if (j3 >= _p.length()) {
                         break;
                     }
                     boolean Ktra3 = true;
@@ -818,11 +818,9 @@ public class Congthuc {
                     int i8 = 0;
                     while (true) {
                         if (i8 >= ArrSS2.length) {
-                            ThayThe = ThayThe2;
                             sss = sss6;
                             break;
                         } else if (ArrSS2[i8].trim().length() == 0) {
-                            ThayThe = ThayThe2;
                             sss = sss6;
                             break;
                         } else {
@@ -831,19 +829,16 @@ public class Congthuc {
                                 String[] Arrx4 = str22.split(",");
                                 if (Arrx4.length == 1) {
                                     strKQ3 = new StringBuilder();
-                                    ThayThe = ThayThe2;
                                     sss = sss6;
                                     break;
                                 }
                                 int i13 = 0;
                                 while (true) {
                                     if (i13 >= Arrx4.length) {
-                                        ThayThe = ThayThe2;
                                         sss = sss6;
                                         break;
                                     }
                                     if (Arrx4[i13].length() != 3 || !isNumeric(Arrx4[i13])) {
-                                        ThayThe = ThayThe2;
                                         sss = sss6;
                                         if ((Arrx4[i13].length() != 2 || !isNumeric(Arrx4[i13])) && Arrx4[i13].length() > 1) {
                                             Ktra3 = false;
@@ -851,7 +846,6 @@ public class Congthuc {
                                             break;
                                         }
                                     } else {
-                                        ThayThe = ThayThe2;
                                         if (Arrx4[i13].substring(0, 1) == Arrx4[i13].substring(1, 2)) {
                                             sss = sss6;
                                         } else if (Arrx4[i13].substring(0, 1) == Arrx4[i13].substring(2, 3)) {
@@ -869,14 +863,12 @@ public class Congthuc {
                                         }
                                     }
                                     i13++;
-                                    ThayThe2 = ThayThe;
                                     sss6 = sss;
                                 }
                                 if (Ktra3 && str22.length() > 4) {
                                     strKQ3.append(str22.replaceAll(" ", ",")).append(" ");
                                 }
                             } else {
-                                ThayThe = ThayThe2;
                                 sss = sss6;
                                 String[] Arrx5 = str22.split(" ");
                                 if (Arrx5.length == 1) {
@@ -903,7 +895,6 @@ public class Congthuc {
                                 }
                             }
                             i8++;
-                            ThayThe2 = ThayThe;
                             sss6 = sss;
                         }
                     }
@@ -912,7 +903,6 @@ public class Congthuc {
                     }
                     j3++;
                     i = i8;
-                    ThayThe2 = ThayThe;
                     sss6 = sss;
                 }
             } else {
@@ -1238,31 +1228,20 @@ public class Congthuc {
         String ndung23;
         String ndung13;
         String Dan2;
-        String str3;
         String ndung24;
-        String str4;
         String ndung25;
         String ndung14;
         String str_Dau2;
-        String str5;
-        String str6;
-        String str7;
         String str_Tong2;
-        String str_Tong3;
         String str_Dit2;
-        String str8;
         String str_Dit3;
         String Dan3;
         String str_Dit4;
         String Ktra;
         String str_Dit5;
-        String str9;
         String Dan4;
         boolean check;
         String Dan5;
-        String str10;
-        String str11;
-        String str12;
         String ndung15;
         String ndung16;
         String str13;
@@ -1273,14 +1252,21 @@ public class Congthuc {
         String DaySo;
         String ndung27;
         String ndung18;
-        String str15;
         String str16 = str.replaceAll("tong ko chia", "ko chia 3").replaceAll("tong chia 3 du 1", "chia 3 du 1").replaceAll("tong chia 3 du 2", "chia 3 du 2");
         if (str16.contains("tong 10")) {
             return "Không hiểu tong 10";
         }
-        String str17 = ", ";
-        String str18 = str16.replaceAll(":", " ").replaceAll(";", " ").replaceAll(" ,", str17).replaceAll("tong > 10", "so 29,38,39,47,48,49,56,57,58,59,65,66,67,68,69,74,75,76,77,78,79,83,84,85,86,87,88,89,92,93,94,95,96,97,98,99,").replaceAll("tong < 10", "so 01,02,03,04,05,06,07,08,09,10,11,12,13,14,15,16,17,18,20,21,22,23,24,25,26,27,30,31,32,33,34,35,36,40,41,42,43,44,45,50,51,52,53,54,60,61,62,63,70,71,72,80,81,90,").replaceAll("dau > dit", "so 10,20,21,30,31,32,40,41,42,43,50,51,52,53,54,60,61,62,63,64,65,70,71,72,73,74,75,76,80,81,82,83,84,85,86,87,90,91,92,93,94,95,96,97,98,").replaceAll("dit < dau", "so 10,20,21,30,31,32,40,41,42,43,50,51,52,53,54,60,61,62,63,64,65,70,71,72,73,74,75,76,80,81,82,83,84,85,86,87,90,91,92,93,94,95,96,97,98,").replaceAll("dau < dit", "so 01,02,03,04,05,06,07,08,09,12,13,14,15,16,17,18,19,23,24,25,26,27,28,29,34,35,36,37,38,39,45,46,47,48,49,56,57,58,59,67,68,69,78,79,89,").replaceAll("dit > dau", "so 01,02,03,04,05,06,07,08,09,12,13,14,15,16,17,18,19,23,24,25,26,27,28,29,34,35,36,37,38,39,45,46,47,48,49,56,57,58,59,67,68,69,78,79,89,").replaceAll("ko chia 3", "so 00,01,04,07,10,13,16,19,22,25,28,31,34,37,40,43,46,49,52,55,58,61,64,67,70,73,76,79,82,85,88,91,94,97,02,05,08,11,14,17,20,23,26,29,32,35,38,41,44,47,50,53,56,59,62,65,68,71,74,77,80,83,86,89,92,95,98,").replaceAll("tong chia 3", "so 03,06,09,12,15,18,21,24,27,30,33,36,39,42,45,48,51,54,57,60,63,66,69,72,75,78,81,84,87,90,93,96,99, ").replaceAll("chia 3 du 1", "so 01,04,07,10,13,16,19,22,25,28,31,34,37,40,43,46,49,52,55,58,61,64,67,70,73,76,79,82,85,88,91,94,97, ").replaceAll("chia 3 du 2", "so 02,05,08,11,14,17,20,23,26,29,32,35,38,41,44,47,50,53,56,59,62,65,68,71,74,77,80,83,86,89,92,95,98, ");
-        if (str18.trim().length() < 2) {
+        String str18 = str16.replaceAll(":", " ").replaceAll(";", " ").replaceAll(" ,", ", ").replaceAll("tong > 10", "so 29,38,39,47,48,49,56,57,58,59,65,66,67,68,69,74,75,76,77,78,79,83,84,85,86,87,88,89,92,93,94,95,96,97,98,99,")
+                .replaceAll("tong < 10", "so 01,02,03,04,05,06,07,08,09,10,11,12,13,14,15,16,17,18,20,21,22,23,24,25,26,27,30,31,32,33,34,35,36,40,41,42,43,44,45,50,51,52,53,54,60,61,62,63,70,71,72,80,81,90,")
+                .replaceAll("dau > dit", "so 10,20,21,30,31,32,40,41,42,43,50,51,52,53,54,60,61,62,63,64,65,70,71,72,73,74,75,76,80,81,82,83,84,85,86,87,90,91,92,93,94,95,96,97,98,")
+                .replaceAll("dit < dau", "so 10,20,21,30,31,32,40,41,42,43,50,51,52,53,54,60,61,62,63,64,65,70,71,72,73,74,75,76,80,81,82,83,84,85,86,87,90,91,92,93,94,95,96,97,98,")
+                .replaceAll("dau < dit", "so 01,02,03,04,05,06,07,08,09,12,13,14,15,16,17,18,19,23,24,25,26,27,28,29,34,35,36,37,38,39,45,46,47,48,49,56,57,58,59,67,68,69,78,79,89,")
+                .replaceAll("dit > dau", "so 01,02,03,04,05,06,07,08,09,12,13,14,15,16,17,18,19,23,24,25,26,27,28,29,34,35,36,37,38,39,45,46,47,48,49,56,57,58,59,67,68,69,78,79,89,")
+                .replaceAll("ko chia 3", "so 00,01,04,07,10,13,16,19,22,25,28,31,34,37,40,43,46,49,52,55,58,61,64,67,70,73,76,79,82,85,88,91,94,97,02,05,08,11,14,17,20,23,26,29,32,35,38,41,44,47,50,53,56,59,62,65,68,71,74,77,80,83,86,89,92,95,98,")
+                .replaceAll("tong chia 3", "so 03,06,09,12,15,18,21,24,27,30,33,36,39,42,45,48,51,54,57,60,63,66,69,72,75,78,81,84,87,90,93,96,99, ")
+                .replaceAll("chia 3 du 1", "so 01,04,07,10,13,16,19,22,25,28,31,34,37,40,43,46,49,52,55,58,61,64,67,70,73,76,79,82,85,88,91,94,97, ")
+                .replaceAll("chia 3 du 2", "so 02,05,08,11,14,17,20,23,26,29,32,35,38,41,44,47,50,53,56,59,62,65,68,71,74,77,80,83,86,89,92,95,98, ");
+        if (str.trim().length() < 2) {
             return "Không hiểu ";
         }
         int DemVonglap = 0;
@@ -1294,7 +1280,6 @@ public class Congthuc {
         String str_Dit6 = "";
         String str_Dau4 = "";
         String str22 = "";
-        String str19 = str18;
         loop0:
         while (true) {
             String str1 = str22;
@@ -1307,26 +1292,25 @@ public class Congthuc {
             }
             int DemVonglap3 = DemVonglap2;
             String str_Dit7 = str_Tong5;
-            if ((!str19.contains(SKtra2) || str19.length() != SKtra2.length()) && str19.length() != 0) {
-                String SKtra3 = str19;
-                str19 = " " + str19.trim() + " ";
-                String str20 = "0";
+            if ((!str18.contains(SKtra2) || str18.length() != SKtra2.length()) && str18.length() != 0) {
+                String SKtra3 = str18;
+                str18 = " " + str18.trim() + " ";
                 String str_Tong6 = str_Tong4;
-                if (str19.contains("den")) {
+                if (str18.contains("den")) {
                     ndung12 = ndung19;
-                    if (str19.substring(0, 3).contains("tu")) {
-                        str19 = str19.substring(3);
+                    if (str18.substring(0, 3).contains("tu")) {
+                        str18 = str18.substring(3);
                     }
-                    int i2 = str19.indexOf("den");
+                    int i2 = str18.indexOf("den");
                     int i1 = i2;
-                    while (i1 > -1 && !isNumeric(str19.substring(i1, i1 + 2))) {
+                    while (i1 > -1 && !isNumeric(str18.substring(i1, i1 + 2))) {
                         i1--;
                     }
-                    String so12 = str19.substring(i1, i1 + 2);
+                    String so12 = str18.substring(i1, i1 + 2);
                     while (true) {
                         ndung2 = ndung28;
-                        if (i2 >= str19.length() || isNumeric(str19.substring(i2, i2 + 2))) {
-                            String so2 = str19.substring(i2, i2 + 2);
+                        if (i2 >= str18.length() || isNumeric(str18.substring(i2, i2 + 2))) {
+                            String so2 = str18.substring(i2, i2 + 2);
                             Dan = DaySo3;
                         } else {
                             i2++;
@@ -1334,17 +1318,17 @@ public class Congthuc {
                             break;
                         }
                     }
-                    String so22 = str19.substring(i2, i2 + 2);
+                    String so22 = str18.substring(i2, i2 + 2);
                     Dan = DaySo3;
                     if (Integer.parseInt(so12) < Integer.parseInt(so22) && so12.length() > 0 && so22.length() > 0) {
                         for (int i = Integer.parseInt(so12); i < Integer.parseInt(so22) + 1; i++) {
                             if (i < 10) {
-                                DaySo2 = DaySo2 + str20 + i + ",";
+                                DaySo2 = DaySo2 + "0" + i + ",";
                             } else if (i > 9) {
                                 DaySo2 = DaySo2 + i + ",";
                             }
                         }
-                        str19 = str19.substring(0, i1) + " " + str19.substring(i2 + 2);
+                        str18 = str18.substring(0, i1) + " " + str18.substring(i2 + 2);
                         so1 = so12;
                     }
                 } else {
@@ -1353,43 +1337,43 @@ public class Congthuc {
                     Dan = DaySo3;
                     so1 = "";
                 }
-                String str21 = "Không hiểu";
-                if (str19.contains("ghep dit")) {
-                    int i3 = str19.indexOf("ghep dit");
+                String KHONG_HIEU = "Không hiểu";
+
+                if (str18.contains("ghep dit")) {
+                    int i3 = str18.indexOf("ghep dit");
                     while (true) {
                         i3--;
-                        if (str19.substring(i3, i3 + 3).equals("dau")) {
+                        if (str18.startsWith("dau", i3)) {
                             break;
                         }
-                        so1 = so1;
                     }
-                    int j = str19.indexOf("ghep dit") + 9;
+                    int j = str18.indexOf("ghep dit") + 9;
                     while (true) {
-                        if (j >= str19.length() - 1) {
+                        if (j >= str18.length() - 1) {
                             DaySo = DaySo2;
                             break;
                         }
                         DaySo = DaySo2;
-                        if (str17.indexOf(str19.substring(j, j + 1)) <= -1 && !isNumeric(str19.substring(j, j + 1))) {
+                        if (!", ".contains(str18.substring(j, j + 1)) && !isNumeric(str18.substring(j, j + 1))) {
                             j--;
                             break;
                         }
                         j++;
                         DaySo2 = DaySo;
                     }
-                    String ndung110 = str19.substring(i3, str19.indexOf("ghep dit")).replaceAll("dau", "");
-                    String ndung29 = str19.substring(str19.indexOf("ghep dit"), j + 1).replaceAll("ghep dit", "");
+                    String ndung110 = str18.substring(i3, str18.indexOf("ghep dit")).replaceAll("dau", "");
+                    String ndung29 = str18.substring(str18.indexOf("ghep dit"), j + 1).replaceAll("ghep dit", "");
                     if (ndung110.length() == 0) {
-                        return "Không hiểu " + str19;
+                        return "Không hiểu " + str18;
                     } else if (ndung29.length() == 0) {
                         return "Không hiểu " + str;
                     } else if (!xuLymem(ndung110)) {
-                        return "Không hiểu " + str19.substring(i3, str19.indexOf("ghep dit"));
+                        return "Không hiểu " + str18.substring(i3, str18.indexOf("ghep dit"));
                     } else if (!xuLymem(ndung29)) {
-                        return "Không hiểu " + str19.substring(str19.indexOf("ghep dit"), j + 1);
+                        return "Không hiểu " + str18.substring(str18.indexOf("ghep dit"), j + 1);
                     } else {
                         if (!xuLymem(ndung110) || !xuLymem(ndung29)) {
-                            str2 = str21;
+                            str2 = KHONG_HIEU;
                             ndung18 = ndung110;
                             ndung27 = ndung29;
                             SKtra = SKtra3;
@@ -1398,12 +1382,12 @@ public class Congthuc {
                         } else {
                             str_Dau = GhepDau(ndung110);
                             ndung18 = ndung110;
-                            if (str_Dau.indexOf(str21) > -1) {
+                            if (str_Dau.contains(KHONG_HIEU)) {
                                 return "Không hiểu " + str;
                             }
                             String str_Dit8 = GhepDit(ndung29);
                             ndung27 = ndung29;
-                            if (str_Dit8.indexOf(str21) > -1) {
+                            if (str_Dit8.contains(KHONG_HIEU)) {
                                 return "Không hiểu " + str;
                             }
                             int i22 = 0;
@@ -1414,98 +1398,93 @@ public class Congthuc {
                                     break;
                                 }
                                 if (i22 < 10) {
-                                    str15 = str21;
-                                    if (str_Dau.indexOf(str20 + i22) > -1) {
-                                        if (str_Dit8.indexOf(str20 + i22) > -1) {
-                                            DaySo4 = DaySo4 + str20 + i22 + ",";
+                                    if (str_Dau.contains("0" + i22)) {
+                                        if (str_Dit8.contains("0" + i22)) {
+                                            DaySo4 = DaySo4 + "0" + i22 + ",";
                                             i22++;
-                                            SKtra3 = SKtra;
-                                            str21 = str15;
                                         }
                                     }
                                 } else {
-                                    str15 = str21;
                                 }
                                 if (i22 > 9) {
-                                    if (str_Dau.indexOf("" + i22) > -1) {
-                                        if (str_Dit8.indexOf("" + i22) > -1) {
+                                    if (str_Dau.contains("" + i22)) {
+                                        if (str_Dit8.contains("" + i22)) {
                                             DaySo4 = DaySo4 + i22 + ",";
                                         }
                                     }
                                 }
                                 i22++;
                                 SKtra3 = SKtra;
-                                str21 = str15;
                             }
-                            str2 = str21;
+                            str2 = KHONG_HIEU;
                             str_Dit7 = str_Dit8;
                             DaySo2 = DaySo4;
                         }
-                        str19 = (str19.substring(0, i3) + " " + str19.substring(j + 1)).trim();
+                        str18 = (str18.substring(0, i3) + " " + str18.substring(j + 1)).trim();
                         check2 = true;
                         ndung22 = ndung27;
                         ndung19 = ndung18;
                     }
                 } else {
-                    str2 = str21;
+                    str2 = KHONG_HIEU;
                     SKtra = SKtra3;
                     str_Dau = str_Dit6;
                     ndung19 = ndung12;
                     ndung22 = ndung2;
                 }
-                if (str19.trim().length() == 0) {
+                if (str18.trim().length() == 0) {
                     str_Dit = str_Dit7;
                     str_Tong4 = str_Tong6;
                     break;
                 }
-                if (str19.indexOf("ghep dau") > -1) {
-                    int i4 = str19.indexOf("ghep dau");
+
+                if (str18.contains("ghep dau")) {
+                    int i4 = str18.indexOf("ghep dau");
                     while (true) {
                         i4--;
-                        if (str19.substring(i4, i4 + 3).equals("dit")) {
+                        if (str18.startsWith("dit", i4)) {
                             break;
                         }
                     }
-                    int j2 = str19.indexOf("ghep dau") + 9;
+                    int j2 = str18.indexOf("ghep dau") + 9;
                     while (true) {
-                        if (j2 >= str19.length() - 1) {
+                        if (j2 >= str18.length() - 1) {
                             str_Dau3 = str_Dau;
                             break;
                         }
                         str_Dau3 = str_Dau;
-                        if (str17.indexOf(str19.substring(j2, j2 + 1)) <= -1 && !isNumeric(str19.substring(j2, j2 + 1))) {
+                        if (!", ".contains(str18.substring(j2, j2 + 1)) && !isNumeric(str18.substring(j2, j2 + 1))) {
                             j2--;
                             break;
                         }
                         j2++;
                         str_Dau = str_Dau3;
                     }
-                    String ndung111 = str19.substring(i4, str19.indexOf("ghep dau")).replaceAll("dit", "");
-                    String ndung210 = str19.substring(str19.indexOf("ghep dau"), j2 + 1).replaceAll("ghep dau", "");
+                    String ndung111 = str18.substring(i4, str18.indexOf("ghep dau")).replaceAll("dit", "");
+                    String ndung210 = str18.substring(str18.indexOf("ghep dau"), j2 + 1).replaceAll("ghep dau", "");
                     if (ndung111.length() == 0) {
-                        return "Không hiểu " + str19;
+                        return "Không hiểu " + str18;
                     } else if (ndung210.length() == 0) {
                         return "Không hiểu " + str;
                     } else if (!xuLymem(ndung111)) {
-                        return "Không hiểu " + str19.substring(i4, str19.indexOf("ghep dau"));
+                        return "Không hiểu " + str18.substring(i4, str18.indexOf("ghep dau"));
                     } else if (!xuLymem(ndung210)) {
-                        return "Không hiểu " + str19.substring(str19.indexOf("ghep dau"), j2 + 1);
+                        return "Không hiểu " + str18.substring(str18.indexOf("ghep dau"), j2 + 1);
                     } else {
                         if (!xuLymem(ndung111) || !xuLymem(ndung210)) {
                             ndung17 = ndung111;
                             ndung26 = ndung210;
                             str_Dau = str_Dau3;
-                            DaySo2 = DaySo2;
                         } else {
                             String str_Dau5 = GhepDau(ndung210);
                             ndung26 = ndung210;
                             String str24 = str2;
-                            if (str_Dau5.indexOf(str24) > -1) {
+                            if (str_Dau5.contains(KHONG_HIEU)) {
                                 return "Không hiểu " + str;
                             }
                             String str_Dit9 = GhepDit(ndung111);
                             ndung17 = ndung111;
-                            if (str_Dit9.indexOf(str24) > -1) {
+                            if (str_Dit9.contains(KHONG_HIEU)) {
                                 return "Không hiểu " + str;
                             }
                             int i23 = 0;
@@ -1513,11 +1492,10 @@ public class Congthuc {
                             while (i23 < 100) {
                                 if (i23 < 10) {
                                     str14 = str24;
-                                    if (str_Dau5.indexOf(str20 + i23) > -1) {
-                                        if (str_Dit9.indexOf(str20 + i23) > -1) {
-                                            DaySo2 = DaySo2 + str20 + i23 + ",";
+                                    if (str_Dau5.contains("0" + i23)) {
+                                        if (str_Dit9.contains("0" + i23)) {
+                                            DaySo2 = DaySo2 + "0" + i23 + ",";
                                             i23++;
-                                            check2 = check2;
                                             str24 = str14;
                                         }
                                     }
@@ -1525,46 +1503,45 @@ public class Congthuc {
                                     str14 = str24;
                                 }
                                 if (i23 > 9) {
-                                    if (str_Dau5.indexOf("" + i23) > -1) {
-                                        if (str_Dit9.indexOf("" + i23) > -1) {
+                                    if (str_Dau5.contains("" + i23)) {
+                                        if (str_Dit9.contains("" + i23)) {
                                             DaySo2 = DaySo2 + i23 + ",";
                                         }
                                     }
                                 }
                                 i23++;
-                                check2 = check2;
                                 str24 = str14;
                             }
                             str2 = str24;
                             str_Dit7 = str_Dit9;
                             str_Dau = str_Dau5;
                         }
-                        str19 = (str19.substring(0, i4) + " " + str19.substring(j2 + 1)).trim();
+                        str18 = (str18.substring(0, i4) + " " + str18.substring(j2 + 1)).trim();
                         check2 = true;
                         ndung22 = ndung26;
                         ndung19 = ndung17;
                     }
                 }
-                if (str19.trim().length() == 0) {
+                if (str18.trim().length() == 0) {
                     str_Dit = str_Dit7;
                     str_Tong4 = str_Tong6;
                     break;
                 }
-                if (str19.indexOf("ghepdd") > -1) {
-                    int i5 = str19.indexOf("ghepdd");
-                    int j3 = str19.indexOf("ghepdd") + 11;
+
+                if (str18.contains("ghepdd")) {
+                    int i5 = str18.indexOf("ghepdd");
+                    int j3 = str18.indexOf("ghepdd") + 11;
                     while (true) {
-                        if (j3 >= str19.length()) {
+                        if (j3 >= str18.length()) {
                             break;
                         }
-                        if (str17.indexOf(str19.substring(j3, j3 + 1)) <= -1 && !isNumeric(str19.substring(j3, j3 + 1))) {
+                        if (!", ".contains(str18.substring(j3, j3 + 1)) && !isNumeric(str18.substring(j3, j3 + 1))) {
                             j3--;
                             break;
                         }
                         j3++;
-                        str_Dau = str_Dau;
                     }
-                    String Dan6 = str19.substring(str19.indexOf("ghepdd"), j3).replaceAll("ghepdd", "").trim();
+                    String Dan6 = str18.substring(str18.indexOf("ghepdd"), j3).replaceAll("ghepdd", "").trim();
                     if (Dan6.length() == 0) {
                         return "Không hiểu " + str;
                     } else if (xuLymem(Dan6)) {
@@ -1576,11 +1553,11 @@ public class Congthuc {
                             if (i32 >= DanArr.length) {
                                 String str_Dau6 = GhepDau(Dan6);
                                 String str25 = str2;
-                                if (str_Dau6.indexOf(str25) > -1) {
+                                if (str_Dau6.contains(KHONG_HIEU)) {
                                     return "Không hiểu " + str;
                                 }
                                 String str_Dit10 = GhepDit(Dan6);
-                                if (str_Dit10.indexOf(str25) > -1) {
+                                if (str_Dit10.contains(KHONG_HIEU)) {
                                     return "Không hiểu " + str;
                                 }
                                 int i24 = 0;
@@ -1588,11 +1565,10 @@ public class Congthuc {
                                 while (i24 < 100) {
                                     if (i24 < 10) {
                                         str13 = str25;
-                                        if (str_Dau6.indexOf(str20 + i24) > -1) {
-                                            if (str_Dit10.indexOf(str20 + i24) > -1) {
-                                                DaySo5 = DaySo5 + str20 + i24 + ",";
+                                        if (str_Dau6.contains("0" + i24)) {
+                                            if (str_Dit10.contains("0" + i24)) {
+                                                DaySo5 = DaySo5 + "0" + i24 + ",";
                                                 i24++;
-                                                DanArr = DanArr;
                                                 str25 = str13;
                                             }
                                         }
@@ -1600,27 +1576,26 @@ public class Congthuc {
                                         str13 = str25;
                                     }
                                     if (i24 > 9) {
-                                        if (str_Dau6.indexOf("" + i24) > -1) {
-                                            if (str_Dit10.indexOf("" + i24) > -1) {
+                                        if (str_Dau6.contains("" + i24)) {
+                                            if (str_Dit10.contains("" + i24)) {
                                                 DaySo5 = DaySo5 + i24 + ",";
                                             }
                                         }
                                     }
                                     i24++;
-                                    DanArr = DanArr;
                                     str25 = str13;
                                 }
                                 str2 = str25;
-                                str19 = (str19.substring(0, i5) + " " + str19.substring(j3)).trim();
+                                str18 = (str18.substring(0, i5) + " " + str18.substring(j3)).trim();
                                 str_Dit7 = str_Dit10;
                                 DaySo2 = DaySo5;
                                 Dan2 = Dan6;
                                 check2 = true;
                                 str_Dau = str_Dau6;
                             } else if (DanArr[i32].length() == 2 && isNumeric(DanArr[i32]) && i32 > 0) {
-                                return "Không hiểu " + str19.substring(str19.indexOf(DanArr[i32]), i5);
+                                return "Không hiểu " + str18.substring(str18.indexOf(DanArr[i32]), i5);
                             } else if (!isNumeric(DanArr[i32])) {
-                                return "Không hiểu " + str19.substring(str19.indexOf(DanArr[i32]), i5);
+                                return "Không hiểu " + str18.substring(str18.indexOf(DanArr[i32]), i5);
                             } else {
                                 i32++;
                                 ndung22 = ndung23;
@@ -1628,42 +1603,39 @@ public class Congthuc {
                             }
                         }
                     } else {
-                        return "Không hiểu " + str19.substring(str19.indexOf("ghepdd"), j3);
+                        return "Không hiểu " + str18.substring(str18.indexOf("ghepdd"), j3);
                     }
                 } else {
                     ndung13 = ndung19;
                     ndung23 = ndung22;
                     Dan2 = Dan;
                 }
-                if (str19.indexOf("dan") <= -1 || str19.indexOf("dan") >= 5) {
-                    str3 = str20;
-                    str4 = str2;
+
+                if (!str18.contains("dan") || str18.indexOf("dan") >= 5) {
                     str_Dit = str_Dit7;
                     ndung19 = ndung13;
                     ndung24 = ndung23;
-                } else if (str19.length() >= 5) {
+                } else if (str18.length() >= 5) {
                     int i6 = -1;
                     ndung19 = ndung13;
                     ndung24 = ndung23;
                     while (true) {
-                        int i12 = str19.indexOf("dan", i6 + 1);
+                        int i12 = str18.indexOf("dan", i6 + 1);
                         String str_Dau7 = str_Dau;
                         if (i12 == -1) {
-                            str3 = str20;
-                            str4 = str2;
                             str_Dau = str_Dau7;
                             str_Dit = str_Dit7;
                             break;
                         }
                         int i7 = i12 + 4;
                         while (true) {
-                            if (i7 >= str19.length()) {
+                            if (i7 >= str18.length()) {
                                 ndung16 = ndung19;
                                 break;
                             }
-                            if (!isNumeric(str19.substring(i7, i7 + 1))) {
+                            if (!isNumeric(str18.substring(i7, i7 + 1))) {
                                 ndung16 = ndung19;
-                                if (str17.indexOf(str19.substring(i7, i7 + 1)) <= -1) {
+                                if (!", ".contains(str18.substring(i7, i7 + 1))) {
                                     i7--;
                                     break;
                                 }
@@ -1673,12 +1645,12 @@ public class Congthuc {
                             i7++;
                             ndung19 = ndung16;
                         }
-                        String Dan7 = str19.substring(i12 + 4, i7);
+                        String Dan7 = str18.substring(i12 + 4, i7);
                         if (Dan7.length() == 0) {
                             return "Không hiểu " + str;
                         }
                         String Dan8 = Dan7.trim().replaceAll(" ", ",").trim().replaceAll(",,", ",").trim().replaceAll(",,", ",");
-                        if (Dan8.length() != 3 || Dan8.indexOf(",") <= -1) {
+                        if (Dan8.length() != 3 || !Dan8.contains(",")) {
                             Dan2 = Dan8;
                         } else {
                             Dan2 = Dan8.replace(",", "");
@@ -1692,9 +1664,9 @@ public class Congthuc {
                             } else if (!isNumeric(DanArr2[k])) {
                                 break loop0;
                             } else if (Integer.parseInt(DanArr2[k].substring(0, 1)) >= Integer.parseInt(DanArr2[k].substring(1, 2)) - 1) {
-                                return "Không hiểu " + str19.substring(str19.indexOf(DanArr2[k]), i7);
+                                return "Không hiểu " + str18.substring(str18.indexOf(DanArr2[k]), i7);
                             } else if (!isNumeric(DanArr2[k])) {
-                                return "Không hiểu " + str19.substring(i12, i7);
+                                return "Không hiểu " + str18.substring(i12, i7);
                             } else {
                                 String ndung211 = "";
                                 if (DanArr2[k].length() == 2 && isNumeric(DanArr2[k])) {
@@ -1704,18 +1676,16 @@ public class Congthuc {
                                         ndung112 = ndung112 + j4;
                                         ndung211 = ndung211 + j4;
                                         j4++;
-                                        str20 = str20;
                                     }
                                     String str_Dau8 = GhepDau(ndung112);
                                     ndung16 = ndung112;
-                                    if (str_Dau8.indexOf(str2) > -1) {
+                                    if (str_Dau8.contains(str2)) {
                                         return "Không hiểu " + str;
                                     }
                                     String[] s = str_Dau8.split(",");
                                     String str_Dit11 = GhepDit(ndung211);
                                     str_Dau7 = str_Dau8;
                                     int indexOf = str_Dit11.indexOf(str2);
-                                    str2 = str2;
                                     if (indexOf > -1) {
                                         return "Không hiểu " + str;
                                     }
@@ -1727,47 +1697,42 @@ public class Congthuc {
                                         if (j5 >= s.length) {
                                             break;
                                         }
-                                        if (str26.indexOf(s[j5]) > -1) {
+                                        if (str26.contains(s[j5])) {
                                             DaySo6 = DaySo6 + s[j5] + ",";
                                         }
                                         j5++;
-                                        str26 = str26;
                                         str_Dit11 = str_Dit7;
                                     }
                                     str23 = str26;
                                     k++;
                                     DaySo2 = DaySo6;
                                     ndung24 = ndung211;
-                                    Dan2 = Dan2;
-                                    check2 = check2;
-                                    str20 = str20;
                                 }
                             }
                         }
-                        str19 = (str19.substring(0, i12) + " " + str19.substring(i7)).trim();
+                        str18 = (str18.substring(0, i12) + " " + str18.substring(i7)).trim();
                         check2 = true;
-                        ndung24 = ndung24;
                         str_Dau = str_Dau7;
                         ndung19 = ndung16;
                         i6 = 0;
-                        str20 = str20;
                     }
                 } else {
                     return "Không hiểu " + str;
                 }
-                if (str19.trim().length() == 0) {
+                if (str18.trim().length() == 0) {
                     str_Tong4 = str_Tong6;
                     break;
                 }
                 String str_Dit12 = str_Dit;
-                if (str19.indexOf("boj") <= -1 || str19.indexOf("boj") >= 5) {
+
+                if (!str18.contains("boj") || str18.indexOf("boj") >= 5) {
                     str_Dau2 = str_Dau;
                     ndung14 = ndung19;
                     ndung25 = ndung24;
-                } else if (str19.length() >= 5) {
+                } else if (str18.length() >= 5) {
                     int i9 = -1;
                     while (true) {
-                        int i13 = str19.indexOf("boj", i9 + 1);
+                        int i13 = str18.indexOf("boj", i9 + 1);
                         str_Dau2 = str_Dau;
                         if (i13 == -1) {
                             ndung14 = ndung19;
@@ -1776,12 +1741,12 @@ public class Congthuc {
                         }
                         int i10 = i13 + 4;
                         while (true) {
-                            if (i10 >= str19.length()) {
+                            if (i10 >= str18.length()) {
                                 ndung15 = ndung19;
                                 break;
                             }
                             ndung15 = ndung19;
-                            if (str17.indexOf(str19.substring(i10, i10 + 1)) <= -1 && !isNumeric(str19.substring(i10, i10 + 1))) {
+                            if (!", ".contains(str18.substring(i10, i10 + 1)) && !isNumeric(str18.substring(i10, i10 + 1))) {
                                 i10--;
                                 break;
                             }
@@ -1789,9 +1754,9 @@ public class Congthuc {
                             ndung19 = ndung15;
                         }
                         try {
-                            String Dan9 = str19.substring(i13, i10).replaceAll("boj", "").trim();
+                            String Dan9 = str18.substring(i13, i10).replaceAll("boj", "").trim();
                             if (Dan9.trim().length() == 0) {
-                                return "Không hiểu " + str19;
+                                return "Không hiểu " + str18;
                             }
                             String Dan10 = Dan9.trim().replaceAll(" ", ",").trim().replaceAll(",,", ",");
                             String[] s2 = Dan10.split(",");
@@ -1800,15 +1765,12 @@ public class Congthuc {
                                 if (isNumeric(s2[i25]) && s2[i25].length() == 2) {
                                     DaySo2 = DaySo2 + GhepBo(s2[i25]);
                                     i25++;
-                                    Dan10 = Dan10;
-                                    ndung24 = ndung24;
                                 }
                             }
-                            str19 = (str19.substring(0, i13) + " " + str19.substring(i10)).trim();
+                            str18 = (str18.substring(0, i13) + " " + str18.substring(i10)).trim();
                             check2 = true;
                             Dan2 = Dan10;
                             ndung19 = ndung15;
-                            ndung24 = ndung24;
                             i9 = 0;
                             str_Dau = str_Dau2;
                         } catch (Exception e) {
@@ -1818,121 +1780,93 @@ public class Congthuc {
                 } else {
                     return "Không hiểu " + str;
                 }
-                if (str19.trim().length() == 0) {
+                if (str18.trim().length() == 0) {
                     str_Dit = str_Dit12;
                     str_Tong4 = str_Tong6;
                     ndung19 = ndung14;
                     break;
                 }
-                if (str19.indexOf("cham tong") <= -1 || str19.indexOf("cham tong") >= 5) {
-                    str5 = str17;
-                    str7 = str3;
-                    str6 = str4;
+
+                if (!str18.contains("cham tong") || str18.indexOf("cham tong") >= 5) {
                     str_Dit = str_Dit12;
                     str_Tong4 = str_Tong6;
-                } else if (str19.length() <= 10) {
+                } else if (str18.length() <= 10) {
                     return "Không hiểu " + str;
-                } else if (str19.substring(0, 11).indexOf("cham tong") != -1) {
+                } else if (str18.substring(0, 11).contains("cham tong")) {
                     int i14 = -1;
                     String str_Dau9 = str_Dau2;
                     while (true) {
-                        int i15 = str19.indexOf("cham tong", i14 + 1);
+                        int i15 = str18.indexOf("cham tong", i14 + 1);
                         if (i15 == -1) {
-                            str5 = str17;
                             str_Dau2 = str_Dau9;
-                            str7 = str3;
-                            str6 = str4;
                             str_Dit = str_Dit12;
                             str_Tong4 = str_Tong6;
                             break;
                         }
                         int i11 = i15 + 10;
                         while (true) {
-                            if (i11 >= str19.length()) {
+                            if (i11 >= str18.length()) {
                                 break;
                             }
-                            if ("0123456789, ".indexOf(str19.substring(i11, i11 + 1)) <= -1) {
+                            if (!"0123456789, ".contains(str18.substring(i11, i11 + 1))) {
                                 i11--;
                                 break;
                             }
                             i11++;
                         }
-                        if (str19.length() > 10) {
-                            Dan5 = str19.substring(i15, i11).replaceAll("cham tong", "").trim().replaceAll(" ", ",");
+                        if (str18.length() > 10) {
+                            Dan5 = str18.substring(i15, i11).replaceAll("cham tong", "").trim().replaceAll(" ", ",");
                         } else {
                             Dan5 = "";
                         }
                         if (Dan5.length() == 0) {
-                            return "Không hiểu " + str19.substring(i15, i11);
+                            return "Không hiểu " + str18.substring(i15, i11);
                         }
                         String[] DanArr3 = Dan5.split(",");
                         int i33 = 0;
                         while (i33 < DanArr3.length) {
                             if (DanArr3[i33].length() == 2 && isNumeric(DanArr3[i33]) && i33 > 0 && !xuLymem(Dan5)) {
-                                return "Không hiểu " + str19.substring(str19.indexOf(DanArr3[i33]), i11);
+                                return "Không hiểu " + str18.substring(str18.indexOf(DanArr3[i33]), i11);
                             } else if (DanArr3[i33].length() == 3 && isNumeric(DanArr3[i33]) && i33 > 0 && !xuLymem(Dan5)) {
-                                return "Không hiểu " + str19.substring(str19.indexOf(DanArr3[i33]), i11);
+                                return "Không hiểu " + str18.substring(str18.indexOf(DanArr3[i33]), i11);
                             } else if (!isNumeric(DanArr3[i33])) {
-                                return "Không hiểu " + str19.substring(i15, i11);
+                                return "Không hiểu " + str18.substring(i15, i11);
                             } else {
                                 i33++;
-                                str_Dau9 = str_Dau9;
-                                DaySo2 = DaySo2;
                             }
                         }
                         String str_Dau10 = GhepDau(Dan5);
-                        if (str_Dau10.indexOf(str4) > -1) {
+                        if (str_Dau10.contains(KHONG_HIEU)) {
                             return "Không hiểu " + str;
                         }
                         String str_Dit13 = GhepDit(Dan5);
-                        if (str_Dit13.indexOf(str4) > -1) {
+                        if (str_Dit13.contains(KHONG_HIEU)) {
                             return "Không hiểu " + str;
                         }
                         String str_Tong7 = GhepTong(Dan5);
-                        if (str_Tong7.indexOf(str4) > -1) {
+                        if (str_Tong7.contains(KHONG_HIEU)) {
                             return "Không hiểu " + str;
                         }
                         int i26 = 0;
                         String DaySo7 = DaySo2;
                         while (i26 < 100) {
                             if (i26 < 10) {
-                                StringBuilder sb = new StringBuilder();
-                                str10 = str17;
-                                str12 = str3;
-                                sb.append(str12);
-                                sb.append(i26);
-                                str11 = str4;
-                                if (str_Dau10.indexOf(sb.toString()) <= -1) {
-                                    if (str_Dit13.indexOf(str12 + i26) <= -1) {
-                                    }
-                                }
-                                DaySo7 = DaySo7 + str12 + i26 + ",";
+                                DaySo7 = DaySo7 + "0" + i26 + ",";
                                 i26++;
-                                str4 = str11;
-                                check2 = check2;
-                                str3 = str12;
-                                str17 = str10;
                             } else {
-                                str10 = str17;
-                                str12 = str3;
-                                str11 = str4;
                             }
                             if (i26 > 9) {
-                                if (str_Dau10.indexOf("" + i26) <= -1) {
-                                    if (str_Dit13.indexOf("" + i26) <= -1) {
-                                        if (str_Tong7.indexOf("" + i26) <= -1) {
+                                if (!str_Dau10.contains("" + i26)) {
+                                    if (!str_Dit13.contains("" + i26)) {
+                                        if (!str_Tong7.contains("" + i26)) {
                                         }
                                     }
                                 }
                                 DaySo7 = DaySo7 + i26 + ",";
                             }
                             i26++;
-                            str4 = str11;
-                            check2 = check2;
-                            str3 = str12;
-                            str17 = str10;
                         }
-                        str19 = (str19.substring(0, i15) + " " + str19.substring(i11)).trim();
+                        str18 = (str18.substring(0, i15) + " " + str18.substring(i11)).trim();
                         check2 = true;
                         i14 = 0;
                         str_Tong6 = str_Tong7;
@@ -1940,204 +1874,173 @@ public class Congthuc {
                         DaySo2 = DaySo7;
                         str_Dau9 = str_Dau10;
                         Dan2 = Dan5;
-                        str4 = str4;
-                        str3 = str3;
-                        str17 = str17;
                     }
                 } else {
                     return "Không hiểu " + str;
                 }
-                if (str19.trim().length() == 0) {
+                if (str18.trim().length() == 0) {
                     ndung19 = ndung14;
                     break;
                 }
-                if (str19.indexOf("cham") <= -1 || str19.indexOf("cham") >= 5) {
+
+                if (!str18.contains("cham") || str18.indexOf("cham") >= 5) { //xu ly khi các muc truoc do da xu ly
                     str_Tong2 = str_Tong4;
-                    str_Tong3 = str6;
-                } else if (str19.length() >= 6) {
+                } else if (str18.length() >= 6) {
                     int i16 = -1;
                     while (true) {
-                        int i17 = str19.indexOf("cham", i16 + 1);
+                        int i17 = str18.indexOf("cham", i16 + 1);
                         if (i17 == -1) {
                             str_Tong2 = str_Tong4;
-                            str_Tong3 = str6;
                             break;
                         }
                         int i18 = i17 + 5;
                         while (true) {
-                            if (i18 >= str19.length()) {
+                            if (i18 >= str18.length()) {
                                 break;
                             }
-                            if ("0123456789, ".indexOf(str19.substring(i18, i18 + 1)) <= -1) {
+                            if (!"0123456789, ".contains(str18.substring(i18, i18 + 1))) {
                                 i18--;
                                 break;
                             }
                             i18++;
                         }
-                        if (str19.length() > 5) {
-                            Dan4 = str19.substring(i17, i18).replaceAll("cham", "").trim().replaceAll(" ", ",");
+                        if (str18.length() > 5) {
+                            Dan4 = str18.substring(i17, i18).replaceAll("cham", "").trim().replaceAll(" ", ",");
                         } else {
                             Dan4 = "";
                         }
                         if (Dan4.length() == 0) {
-                            return "Không hiểu " + str19.substring(i17, i18);
+                            return "Không hiểu " + str18.substring(i17, i18);
                         }
                         String[] DanArr4 = Dan4.split(",");
                         int i34 = 0;
-                        while (i34 < DanArr4.length) {
+                        while (i34 < DanArr4.length) {// 2 hoac 3 chu so hoac khong phai so => khong hiu
                             if (DanArr4[i34].length() == 2 && isNumeric(DanArr4[i34]) && i34 > 0) {
-                                return "Không hiểu " + str19.substring(str19.indexOf(DanArr4[i34]), i18);
+                                return "Không hiểu " + str18.substring(str18.indexOf(DanArr4[i34]), i18);
                             } else if (DanArr4[i34].length() == 3 && isNumeric(DanArr4[i34]) && i34 > 0) {
-                                return "Không hiểu " + str19.substring(str19.indexOf(DanArr4[i34]), i18);
+                                return "Không hiểu " + str18.substring(str18.indexOf(DanArr4[i34]), i18);
                             } else if (!isNumeric(DanArr4[i34])) {
-                                return "Không hiểu " + str19.substring(i17, i18);
+                                return "Không hiểu " + str18.substring(i17, i18);
                             } else {
                                 i34++;
-                                str_Dit = str_Dit;
-                                str_Tong4 = str_Tong4;
                             }
                         }
-                        String str_Dau11 = GhepDau(Dan4);
-                        if (str_Dau11.indexOf(str6) > -1) {
+
+                        String ghepDau = GhepDau(Dan4);
+                        if (ghepDau.contains(KHONG_HIEU)) {
                             return "Không hiểu " + str;
                         }
-                        String str_Dit14 = GhepDit(Dan4);
-                        if (str_Dit14.indexOf(str6) > -1) {
+                        String ghepDit = GhepDit(Dan4);
+                        if (ghepDit.contains(KHONG_HIEU)) {
                             return "Không hiểu " + str;
                         }
-                        int i27 = 0;
-                        while (i27 < 100) {
-                            if (i27 < 10) {
-                                check = check2;
-                                if (str_Dau11.indexOf(str7 + i27) <= -1) {
-                                }
-                                DaySo2 = DaySo2 + str7 + i27 + ",";
-                                i27++;
-                                check2 = check;
-                            } else {
-                                check = check2;
-                            }
-                            if (i27 > 9) {
-                                if (str_Dau11.indexOf("" + i27) <= -1) {
-                                    if (str_Dit14.indexOf("" + i27) <= -1) {
-                                    }
-                                }
-                                DaySo2 = DaySo2 + i27 + ",";
-                            }
-                            i27++;
-                            check2 = check;
+
+                        for (int i = 0; i < 100; i++) {
+                            String so = i > 10 ? String.valueOf(i) : "0" + i;
+                            if(ghepDau.contains(so) || ghepDit.contains(so)) DaySo2 = DaySo2 + so + ",";
                         }
-                        str19 = (str19.substring(0, i17) + " " + str19.substring(i18)).trim();
-                        check2 = true;
+
+                        str18 = (str18.substring(0, i17) + " " + str18.substring(i18)).trim();
+                        Log.e("ContentValues", "XulySo: DaySo2 " + DaySo2 + " Str18 "+ str18 );
                         i16 = 0;
-                        str_Dau2 = str_Dau11;
-                        str_Dit = str_Dit14;
+                        str_Dau2 = ghepDau;
+                        str_Dit = ghepDit;
                         Dan2 = Dan4;
-                        str7 = str7;
-                        str6 = str6;
-                        str_Tong4 = str_Tong4;
                     }
                 } else {
                     return "Không hiểu " + str;
                 }
-                if (str19.trim().length() == 0) {
+                if (str18.trim().length() == 0) {
                     str_Tong4 = str_Tong2;
                     ndung19 = ndung14;
                     break;
                 }
-                if (str19.indexOf("tong") <= -1 || str19.indexOf("tong") >= 5) {
+
+                if (!str18.contains("tong") || str18.indexOf("tong") >= 5) {
                     str_Dit2 = str_Dit;
-                    str8 = str5;
-                } else if (str19.length() >= 6) {
+                } else if (str18.length() >= 6) {
                     int i19 = -1;
                     while (true) {
-                        int i110 = str19.indexOf("tong", i19 + 1);
+                        int i110 = str18.indexOf("tong", i19 + 1);
                         if (i110 == -1) {
                             str_Dit2 = str_Dit;
-                            str8 = str5;
                             break;
                         }
                         int i20 = i110 + 5;
                         while (true) {
-                            if (i20 >= str19.length()) {
-                                str9 = str5;
+                            if (i20 >= str18.length()) {
                                 break;
                             }
-                            str9 = str5;
-                            if (str9.indexOf(str19.substring(i20, i20 + 1)) <= -1 && !isNumeric(str19.substring(i20, i20 + 1))) {
+                            if (!", ".contains(str18.substring(i20, i20 + 1)) && !isNumeric(str18.substring(i20, i20 + 1))) {
                                 i20--;
                                 break;
                             }
                             i20++;
-                            str5 = str9;
                         }
-                        if (str19.substring(i110, i20).length() > 5) {
-                            Dan2 = str19.substring(i110, i20).replaceAll("tong", "").trim().replaceAll(" ", ",");
+                        if (str18.substring(i110, i20).length() > 5) {
+                            Dan2 = str18.substring(i110, i20).replaceAll("tong", "").trim().replaceAll(" ", ",");
                         } else {
                             Dan2 = "";
                         }
                         if (Dan2.length() == 0) {
-                            return "Không hiểu " + str19;
+                            return "Không hiểu " + str18;
                         }
                         String[] DanArr5 = Dan2.split(",");
                         int i35 = 0;
                         while (i35 < DanArr5.length) {
                             if (DanArr5[i35].length() == 2 && isNumeric(DanArr5[i35]) && i35 > 0) {
-                                return "Không hiểu " + str19.substring(str19.indexOf(DanArr5[i35]), i20);
+                                return "Không hiểu " + str18.substring(str18.indexOf(DanArr5[i35]), i20);
                             } else if (DanArr5[i35].length() == 3 && isNumeric(DanArr5[i35]) && i35 > 0) {
-                                return "Không hiểu " + str19.substring(str19.indexOf(DanArr5[i35]), i20);
+                                return "Không hiểu " + str18.substring(str18.indexOf(DanArr5[i35]), i20);
                             } else if (!isNumeric(DanArr5[i35])) {
-                                return "Không hiểu " + str19.substring(i110, i20);
+                                return "Không hiểu " + str18.substring(i110, i20);
                             } else {
                                 i35++;
-                                str_Dit = str_Dit;
-                                check2 = check2;
                             }
                         }
                         String str_Tong8 = GhepTong(Dan2);
-                        if (str_Tong8.indexOf(str_Tong3) > -1) {
+                        if (str_Tong8.contains(KHONG_HIEU)) {
                             return "Không hiểu " + str;
                         }
                         DaySo2 = DaySo2 + str_Tong8;
-                        str19 = (str19.substring(0, i110) + " " + str19.substring(i20)).trim();
+                        str18 = (str18.substring(0, i110) + " " + str18.substring(i20)).trim();
                         check2 = true;
                         i19 = 0;
                         str_Tong2 = str_Tong8;
-                        str5 = str9;
                         str_Dit = str_Dit;
                     }
                 } else {
                     return "Không hiểu " + str;
                 }
-                if (str19.trim().length() == 0) {
+                if (str18.trim().length() == 0) {
                     str_Dit = str_Dit2;
                     str_Tong4 = str_Tong2;
                     ndung19 = ndung14;
                     break;
                 }
                 int i21 = -1;
-                if (str19.indexOf("ghep") == -1 && str19.indexOf("dau dit") > -1) {
+                if (!str18.contains("ghep") && str18.contains("dau dit")) {
                     int i111 = -1;
                     str_Dit = str_Dit2;
                     while (true) {
-                        int i112 = str19.indexOf("dau dit", i111 + 1);
+                        int i112 = str18.indexOf("dau dit", i111 + 1);
                         if (i112 == i21) {
                             break;
                         }
                         int i28 = i112 + 8;
                         while (true) {
-                            if (i28 >= str19.length()) {
+                            if (i28 >= str18.length()) {
                                 break;
                             }
-                            if (str8.indexOf(str19.substring(i28, i28 + 1)) <= -1 && !isNumeric(str19.substring(i28, i28 + 1))) {
+                            if (!", ".contains(str18.substring(i28, i28 + 1)) && !isNumeric(str18.substring(i28, i28 + 1))) {
                                 i28--;
                                 break;
                             }
                             i28++;
                         }
-                        if (str19.length() > 8) {
-                            String Dan11 = str19.substring(i112, i28);
-                            if (Dan11.substring(0, 8).indexOf("dau dit") > -1) {
+                        if (str18.length() > 8) {
+                            String Dan11 = str18.substring(i112, i28);
+                            if (Dan11.substring(0, 8).contains("dau dit")) {
                                 Dan2 = Dan11.replaceAll("dau dit", "").trim().replaceAll(" ", ",");
                             } else {
                                 Dan2 = Dan11;
@@ -2152,28 +2055,26 @@ public class Congthuc {
                         int i36 = 0;
                         while (i36 < DanArr6.length) {
                             if (DanArr6[i36].length() == 2 && isNumeric(DanArr6[i36]) && i36 > 0) {
-                                return "Không hiểu " + str19.substring(str19.indexOf(DanArr6[i36]), i28);
+                                return "Không hiểu " + str18.substring(str18.indexOf(DanArr6[i36]), i28);
                             } else if (DanArr6[i36].length() == 3 && isNumeric(DanArr6[i36]) && i36 > 0) {
-                                return "Không hiểu " + str19.substring(str19.indexOf(DanArr6[i36]), i28);
+                                return "Không hiểu " + str18.substring(str18.indexOf(DanArr6[i36]), i28);
                             } else if (!isNumeric(DanArr6[i36])) {
-                                return "Không hiểu " + str19.substring(i112, i28);
+                                return "Không hiểu " + str18.substring(i112, i28);
                             } else {
                                 i36++;
-                                str_Dit = str_Dit;
-                                check2 = check2;
                             }
                         }
                         String str_Dau12 = GhepDau(Dan2);
-                        if (str_Dau12.indexOf(str_Tong3) > -1) {
+                        if (str_Dau12.contains(KHONG_HIEU)) {
                             return "Không hiểu " + str;
                         }
                         String DaySo8 = DaySo2 + str_Dau12;
                         String str_Dit15 = GhepDit(Dan2);
-                        if (str_Dit15.indexOf(str_Tong3) > -1) {
+                        if (str_Dit15.contains(KHONG_HIEU)) {
                             return "Không hiểu " + str;
                         }
                         DaySo2 = DaySo8 + str_Dit15;
-                        str19 = (str19.substring(0, i112) + " " + str19.substring(i28)).trim();
+                        str18 = (str18.substring(0, i112) + " " + str18.substring(i28)).trim();
                         i111 = 0;
                         str_Dau2 = str_Dau12;
                         i21 = -1;
@@ -2183,36 +2084,36 @@ public class Congthuc {
                 } else {
                     str_Dit = str_Dit2;
                 }
-                if (str19.trim().length() == 0) {
+                if (str18.trim().length() == 0) {
                     str_Tong4 = str_Tong2;
                     ndung19 = ndung14;
                     break;
                 }
-                if (str19.indexOf("dau") <= -1 || str19.indexOf("dau") >= 5) {
+                if (str18.indexOf("dau") <= -1 || str18.indexOf("dau") >= 5) {
                     str_Dit3 = str_Dit;
-                } else if (str19.indexOf("ghep") != -1 || str19.indexOf("dau dit") != -1) {
+                } else if (str18.indexOf("ghep") != -1 || str18.indexOf("dau dit") != -1) {
                     str_Dit3 = str_Dit;
-                } else if (str19.length() >= 5) {
+                } else if (str18.length() >= 5) {
                     int i113 = -1;
                     while (true) {
-                        int i114 = str19.indexOf("dau", i113 + 1);
+                        int i114 = str18.indexOf("dau", i113 + 1);
                         if (i114 == -1) {
                             str_Dit3 = str_Dit;
                             break;
                         }
                         int i29 = i114 + 5;
                         while (true) {
-                            if (i29 >= str19.length()) {
+                            if (i29 >= str18.length()) {
                                 break;
                             }
-                            if (str8.indexOf(str19.substring(i29, i29 + 1)) <= -1 && !isNumeric(str19.substring(i29, i29 + 1))) {
+                            if (", ".indexOf(str18.substring(i29, i29 + 1)) <= -1 && !isNumeric(str18.substring(i29, i29 + 1))) {
                                 i29--;
                                 break;
                             }
                             i29++;
                         }
-                        if (str19.length() > 4) {
-                            String Dan12 = str19.substring(i114, i29);
+                        if (str18.length() > 4) {
+                            String Dan12 = str18.substring(i114, i29);
                             str_Dit5 = str_Dit;
                             if (Dan12.substring(0, 4).indexOf("dau") > -1) {
                                 Dan2 = Dan12.replaceAll("dau", "").trim().replaceAll(" ", ",");
@@ -2224,28 +2125,27 @@ public class Congthuc {
                             Dan2 = "";
                         }
                         if (Dan2.length() == 0) {
-                            return "Không hiểu " + str19;
+                            return "Không hiểu " + str18;
                         }
                         String[] DanArr7 = Dan2.split(",");
                         int i37 = 0;
                         while (i37 < DanArr7.length) {
                             if (DanArr7[i37].length() == 2 && isNumeric(DanArr7[i37]) && i37 > 0) {
-                                return "Không hiểu " + str19.substring(str19.indexOf(DanArr7[i37]), i29);
+                                return "Không hiểu " + str18.substring(str18.indexOf(DanArr7[i37]), i29);
                             } else if (DanArr7[i37].length() == 3 && isNumeric(DanArr7[i37]) && i37 > 0) {
-                                return "Không hiểu " + str19.substring(str19.indexOf(DanArr7[i37]), i29);
+                                return "Không hiểu " + str18.substring(str18.indexOf(DanArr7[i37]), i29);
                             } else if (!isNumeric(DanArr7[i37])) {
-                                return "Không hiểu " + str19.substring(i114, i29);
+                                return "Không hiểu " + str18.substring(i114, i29);
                             } else {
                                 i37++;
-                                check2 = check2;
                             }
                         }
                         String str_Dau13 = GhepDau(Dan2);
-                        if (str_Dau13.indexOf(str_Tong3) > -1) {
+                        if (str_Dau13.contains(KHONG_HIEU)) {
                             return "Không hiểu " + str;
                         }
                         DaySo2 = DaySo2 + str_Dau13;
-                        str19 = (str19.substring(0, i114) + " " + str19.substring(i29)).trim();
+                        str18 = (str18.substring(0, i114) + " " + str18.substring(i29)).trim();
                         check2 = true;
                         i113 = 0;
                         str_Dau2 = str_Dau13;
@@ -2254,35 +2154,35 @@ public class Congthuc {
                 } else {
                     return "Không hiểu " + str;
                 }
-                if (str19.trim().length() == 0) {
+                if (str18.trim().length() == 0) {
                     str_Dit = str_Dit3;
                     str_Tong4 = str_Tong2;
                     ndung19 = ndung14;
                     break;
                 }
-                if (str19.indexOf("dit") <= -1 || str19.indexOf("dit") >= 5 || str19.indexOf("ghep") != -1 || str19.indexOf("dau dit") != -1) {
+                if (!str18.contains("dit") || str18.indexOf("dit") >= 5 || str18.contains("ghep") || str18.contains("dau dit")) {
                     str_Dit = str_Dit3;
-                } else if (str19.length() >= 5) {
+                } else if (str18.length() >= 5) {
                     int i115 = -1;
                     str_Dit = str_Dit3;
                     while (true) {
-                        int i116 = str19.indexOf("dit", i115 + 1);
+                        int i116 = str18.indexOf("dit", i115 + 1);
                         if (i116 == -1) {
                             break;
                         }
                         int i30 = i116 + 5;
                         while (true) {
-                            if (i30 >= str19.length()) {
+                            if (i30 >= str18.length()) {
                                 break;
                             }
-                            if (str8.indexOf(str19.substring(i30, i30 + 1)) <= -1 && !isNumeric(str19.substring(i30, i30 + 1))) {
+                            if (", ".indexOf(str18.substring(i30, i30 + 1)) <= -1 && !isNumeric(str18.substring(i30, i30 + 1))) {
                                 i30--;
                                 break;
                             }
                             i30++;
                         }
-                        if (str19.length() > 4) {
-                            String Dan13 = str19.substring(i116, i30);
+                        if (str18.length() > 4) {
+                            String Dan13 = str18.substring(i116, i30);
                             if (Dan13.substring(0, 4).indexOf("dit") > -1) {
                                 Dan2 = Dan13.replaceAll("dit", "").trim().replaceAll(" ", ",");
                             } else {
@@ -2298,22 +2198,21 @@ public class Congthuc {
                         int i38 = 0;
                         while (i38 < DanArr8.length) {
                             if (DanArr8[i38].length() == 2 && isNumeric(DanArr8[i38]) && i38 > 0) {
-                                return "Không hiểu " + str19.substring(str19.indexOf(DanArr8[i38]), i30);
+                                return "Không hiểu " + str18.substring(str18.indexOf(DanArr8[i38]), i30);
                             } else if (DanArr8[i38].length() == 3 && isNumeric(DanArr8[i38]) && i38 > 0) {
-                                return "Không hiểu " + str19.substring(str19.indexOf(DanArr8[i38]), i30);
+                                return "Không hiểu " + str18.substring(str18.indexOf(DanArr8[i38]), i30);
                             } else if (!isNumeric(DanArr8[i38])) {
-                                return "Không hiểu " + str19.substring(i116, i30);
+                                return "Không hiểu " + str18.substring(i116, i30);
                             } else {
                                 i38++;
-                                check2 = check2;
                             }
                         }
                         String str_Dit16 = GhepDit(Dan2);
-                        if (str_Dit16.indexOf(str_Tong3) > -1) {
+                        if (str_Dit16.contains(KHONG_HIEU)) {
                             return "Không hiểu " + str;
                         }
                         DaySo2 = DaySo2 + str_Dit16;
-                        str19 = (str19.substring(0, i116) + " " + str19.substring(i30)).trim();
+                        str18 = (str18.substring(0, i116) + " " + str18.substring(i30)).trim();
                         check2 = true;
                         i115 = 0;
                         str_Dit = str_Dit16;
@@ -2321,27 +2220,27 @@ public class Congthuc {
                 } else {
                     return "Không hiểu " + str;
                 }
-                if (str19.trim().length() == 0) {
+                if (str18.trim().length() == 0) {
                     str_Tong4 = str_Tong2;
                     ndung19 = ndung14;
                     break;
                 }
                 int i31 = -1;
-                if (str19.indexOf("to ") > -1 || str19.indexOf("nho") > -1) {
-                    if (str19.indexOf("to") <= -1 || str19.indexOf("nho") <= -1) {
+                if (str18.indexOf("to ") > -1 || str18.indexOf("nho") > -1) {
+                    if (str18.indexOf("to") <= -1 || str18.indexOf("nho") <= -1) {
                         str_Dit4 = str_Dit;
                         Dan3 = Dan2;
                     } else {
                         while (true) {
-                            if ((str19.indexOf("to ") > i31 && str19.indexOf("to ") < 5) || (str19.indexOf("nho ") > -1 && str19.indexOf("nho") < 5)) {
+                            if ((str18.indexOf("to ") > i31 && str18.indexOf("to ") < 5) || (str18.indexOf("nho ") > -1 && str18.indexOf("nho") < 5)) {
                                 int i210 = DemVonglap3 + 1;
                                 if (i210 <= 100) {
-                                    String Ktra2 = str19;
+                                    String Ktra2 = str18;
                                     str_Dit4 = str_Dit;
-                                    if (str19.indexOf("to") < str19.indexOf("nho")) {
+                                    if (str18.indexOf("to") < str18.indexOf("nho")) {
                                         int i117 = -1;
                                         while (true) {
-                                            int indexOf2 = str19.indexOf("to", i117 + 1);
+                                            int indexOf2 = str18.indexOf("to", i117 + 1);
                                             i117 = indexOf2;
                                             DemVonglap3 = i210;
                                             if (indexOf2 == -1) {
@@ -2351,25 +2250,25 @@ public class Congthuc {
                                             }
                                             int i211 = i117 + 1;
                                             while (true) {
-                                                if (i211 >= str19.length()) {
+                                                if (i211 >= str18.length()) {
                                                     Ktra = Ktra2;
                                                     break;
                                                 }
                                                 Ktra = Ktra2;
-                                                if (str19.substring(i117 + 1, i211).indexOf("to") > -1 || str19.substring(i117 + 1, i211).indexOf("nho") > -1) {
+                                                if (str18.substring(i117 + 1, i211).indexOf("to") > -1 || str18.substring(i117 + 1, i211).indexOf("nho") > -1) {
                                                     break;
                                                 }
                                                 i211++;
                                                 Ktra2 = Ktra;
                                             }
-                                            String sss = str19.substring(i117, i211).replaceAll(" ", "").replaceAll(",", "");
+                                            String sss = str18.substring(i117, i211).replaceAll(" ", "").replaceAll(",", "");
                                             Dan3 = Dan2;
                                             if (sss.indexOf("toto") > -1) {
-                                                str19 = str19.substring(0, i117) + " " + str19.substring(i211);
+                                                str18 = str18.substring(0, i117) + " " + str18.substring(i211);
                                                 DaySo2 = DaySo2 + "55,56,57,58,59,65,66,67,68,69,75,76,77,78,79,85,86,87,88,89,95,96,97,98,99,";
                                                 break;
                                             } else if (sss.indexOf("tonho") > -1) {
-                                                str19 = str19.substring(0, i117) + " " + str19.substring(i211);
+                                                str18 = str18.substring(0, i117) + " " + str18.substring(i211);
                                                 DaySo2 = DaySo2 + "50,51,52,53,54,60,61,62,63,64,70,71,72,73,74,80,81,82,83,84,90,91,92,93,94,";
                                                 break;
                                             } else {
@@ -2382,32 +2281,32 @@ public class Congthuc {
                                         DemVonglap3 = i210;
                                         Ktra = Ktra2;
                                         Dan3 = Dan2;
-                                        if (str19.indexOf("nho") < str19.indexOf("to")) {
+                                        if (str18.indexOf("nho") < str18.indexOf("to")) {
                                             int i118 = -1;
                                             while (true) {
-                                                int indexOf3 = str19.indexOf("nho", i118 + 1);
+                                                int indexOf3 = str18.indexOf("nho", i118 + 1);
                                                 i118 = indexOf3;
                                                 if (indexOf3 == -1) {
                                                     break;
                                                 }
                                                 int i212 = i118 + 1;
-                                                while (i212 < str19.length() && str19.substring(i118 + 1, i212).indexOf("to") <= -1 && str19.substring(i118 + 1, i212).indexOf("nho") <= -1) {
+                                                while (i212 < str18.length() && str18.substring(i118 + 1, i212).indexOf("to") <= -1 && str18.substring(i118 + 1, i212).indexOf("nho") <= -1) {
                                                     i212++;
                                                 }
-                                                String sss2 = str19.substring(i118, i212).replaceAll(" ", "").replaceAll(",", "");
+                                                String sss2 = str18.substring(i118, i212).replaceAll(" ", "").replaceAll(",", "");
                                                 if (sss2.indexOf("nhoto") > -1) {
-                                                    str19 = str19.substring(0, i118) + " " + str19.substring(i212);
+                                                    str18 = str18.substring(0, i118) + " " + str18.substring(i212);
                                                     DaySo2 = DaySo2 + "05,06,07,08,09,15,16,17,18,19,25,26,27,28,29,35,36,37,38,39,45,46,47,48,49,";
                                                     break;
                                                 } else if (sss2.indexOf("nhonho") > -1) {
-                                                    str19 = str19.substring(0, i118) + " " + str19.substring(i212);
+                                                    str18 = str18.substring(0, i118) + " " + str18.substring(i212);
                                                     DaySo2 = DaySo2 + "00,01,02,03,04,10,11,12,13,14,20,21,22,23,24,30,31,32,33,34,40,41,42,43,44,";
                                                     break;
                                                 }
                                             }
                                         }
                                     }
-                                    if (str19.indexOf("to") == -1 || str19.indexOf("nho") == -1) {
+                                    if (str18.indexOf("to") == -1 || str18.indexOf("nho") == -1) {
                                         break;
                                     }
                                     str_Dit = str_Dit4;
@@ -2424,23 +2323,23 @@ public class Congthuc {
                         str_Dit4 = str_Dit;
                         Dan3 = Dan2;
                     }
-                    if (str19.indexOf("to") > -1 && str19.indexOf("nho") == -1) {
-                        if (str19.indexOf("toto") > -1) {
+                    if (str18.indexOf("to") > -1 && str18.indexOf("nho") == -1) {
+                        if (str18.indexOf("toto") > -1) {
                             DaySo2 = DaySo2 + "55,56,57,58,59,65,66,67,68,69,75,76,77,78,79,85,86,87,88,89,95,96,97,98,99,";
-                            str19 = str19.substring(0, str19.indexOf("toto")) + " " + str19.substring(str19.indexOf("toto") + 4);
+                            str18 = str18.substring(0, str18.indexOf("toto")) + " " + str18.substring(str18.indexOf("toto") + 4);
                         }
-                        if (str19.indexOf("to to") > -1) {
+                        if (str18.indexOf("to to") > -1) {
                             DaySo2 = DaySo2 + "55,56,57,58,59,65,66,67,68,69,75,76,77,78,79,85,86,87,88,89,95,96,97,98,99,";
-                            str19 = str19.substring(0, str19.indexOf("to to")) + " " + str19.substring(str19.indexOf("to to") + 5);
+                            str18 = str18.substring(0, str18.indexOf("to to")) + " " + str18.substring(str18.indexOf("to to") + 5);
                         }
                     }
-                    if (str19.indexOf("to") == -1 && str19.indexOf("nho") > -1) {
-                        if (str19.indexOf("nhonho") > -1) {
+                    if (str18.indexOf("to") == -1 && str18.indexOf("nho") > -1) {
+                        if (str18.indexOf("nhonho") > -1) {
                             DaySo2 = DaySo2 + "00,01,02,03,04,10,11,12,13,14,20,21,22,23,24,30,31,32,33,34,40,41,42,43,44,";
-                            str19 = str19.substring(0, str19.indexOf("nhonho")) + " " + str19.substring(str19.indexOf("nhonho") + 6);
+                            str18 = str18.substring(0, str18.indexOf("nhonho")) + " " + str18.substring(str18.indexOf("nhonho") + 6);
                         }
-                        if (str19.indexOf("nho nho") > -1) {
-                            str19 = str19.substring(0, str19.indexOf("nho nho")) + " " + str19.substring(str19.indexOf("nho nho") + 7);
+                        if (str18.indexOf("nho nho") > -1) {
+                            str18 = str18.substring(0, str18.indexOf("nho nho")) + " " + str18.substring(str18.indexOf("nho nho") + 7);
                             DaySo2 = DaySo2 + "00,01,02,03,04,10,11,12,13,14,20,21,22,23,24,30,31,32,33,34,40,41,42,43,44,";
                         }
                     }
@@ -2448,42 +2347,42 @@ public class Congthuc {
                     str_Dit4 = str_Dit;
                     Dan3 = Dan2;
                 }
-                if (str19.trim().length() == 0) {
+                if (str18.trim().length() == 0) {
                     str_Dit = str_Dit4;
                     str_Tong4 = str_Tong2;
                     ndung19 = ndung14;
                     break;
                 }
-                if (str19.indexOf("chan") > -1 || (str19.indexOf("le") > -1 && str19.indexOf("chan") < 5 && str19.indexOf("le") < 5)) {
+                if (str18.indexOf("chan") > -1 || (str18.indexOf("le") > -1 && str18.indexOf("chan") < 5 && str18.indexOf("le") < 5)) {
                     int i39 = -1;
-                    if (str19.indexOf("chan") > -1 && str19.indexOf("le") > -1) {
+                    if (str18.indexOf("chan") > -1 && str18.indexOf("le") > -1) {
                         while (true) {
-                            if (str19.indexOf("lechan") <= i39 && str19.indexOf("chanle") <= i39 && str19.indexOf("le chan") <= i39 && str19.indexOf("chan le") <= i39) {
+                            if (str18.indexOf("lechan") <= i39 && str18.indexOf("chanle") <= i39 && str18.indexOf("le chan") <= i39 && str18.indexOf("chan le") <= i39) {
                                 break;
                             }
                             int DemVonglap4 = DemVonglap3 + 1;
                             if (DemVonglap4 <= 100) {
-                                if (str19.indexOf("chan") < str19.indexOf("le")) {
+                                if (str18.indexOf("chan") < str18.indexOf("le")) {
                                     int i119 = -1;
                                     while (true) {
-                                        int indexOf4 = str19.indexOf("chan", i119 + 1);
+                                        int indexOf4 = str18.indexOf("chan", i119 + 1);
                                         i119 = indexOf4;
                                         if (indexOf4 == -1) {
                                             DemVonglap3 = DemVonglap4;
                                             break;
                                         }
                                         int i213 = i119 + 1;
-                                        while (i213 < str19.length() && str19.substring(i119 + 1, i213).indexOf("chan") <= -1 && str19.substring(i119 + 1, i213).indexOf("le") <= -1) {
+                                        while (i213 < str18.length() && str18.substring(i119 + 1, i213).indexOf("chan") <= -1 && str18.substring(i119 + 1, i213).indexOf("le") <= -1) {
                                             i213++;
                                         }
-                                        String sss3 = str19.substring(i119, i213).replaceAll(" ", "").replaceAll(",", "");
+                                        String sss3 = str18.substring(i119, i213).replaceAll(" ", "").replaceAll(",", "");
                                         DemVonglap3 = DemVonglap4;
                                         if (sss3.indexOf("chanchan") > -1) {
-                                            str19 = str19.substring(0, i119) + " " + str19.substring(i213);
+                                            str18 = str18.substring(0, i119) + " " + str18.substring(i213);
                                             DaySo2 = DaySo2 + "00,02,04,06,08,20,22,24,26,28,40,42,44,46,48,60,62,64,66,68,80,82,84,86,88,";
                                             break;
                                         } else if (sss3.indexOf("chanle") > -1) {
-                                            str19 = str19.substring(0, i119) + " " + str19.substring(i213);
+                                            str18 = str18.substring(0, i119) + " " + str18.substring(i213);
                                             DaySo2 = DaySo2 + "01,03,05,07,09,21,23,25,27,29,41,43,45,47,49,61,63,65,67,69,81,83,85,87,89,";
                                             break;
                                         } else {
@@ -2492,32 +2391,32 @@ public class Congthuc {
                                     }
                                 } else {
                                     DemVonglap3 = DemVonglap4;
-                                    if (str19.indexOf("le") < str19.indexOf("chan")) {
+                                    if (str18.indexOf("le") < str18.indexOf("chan")) {
                                         int i120 = -1;
                                         while (true) {
-                                            int indexOf5 = str19.indexOf("le", i120 + 1);
+                                            int indexOf5 = str18.indexOf("le", i120 + 1);
                                             i120 = indexOf5;
                                             if (indexOf5 == -1) {
                                                 break;
                                             }
                                             int i214 = i120 + 1;
-                                            while (i214 < str19.length() && str19.substring(i120 + 1, i214).indexOf("chan") <= -1 && str19.substring(i120 + 1, i214).indexOf("le") <= -1) {
+                                            while (i214 < str18.length() && str18.substring(i120 + 1, i214).indexOf("chan") <= -1 && str18.substring(i120 + 1, i214).indexOf("le") <= -1) {
                                                 i214++;
                                             }
-                                            String sss4 = str19.substring(i120, i214).replaceAll(" ", "").replaceAll(",", "");
+                                            String sss4 = str18.substring(i120, i214).replaceAll(" ", "").replaceAll(",", "");
                                             if (sss4.indexOf("lechan") > -1) {
-                                                str19 = str19.substring(0, i120) + " " + str19.substring(i214);
+                                                str18 = str18.substring(0, i120) + " " + str18.substring(i214);
                                                 DaySo2 = DaySo2 + "10,12,14,16,18,30,32,34,36,38,50,52,54,56,58,70,72,74,76,78,90,92,94,96,98,";
                                                 break;
                                             } else if (sss4.indexOf("lele") > -1) {
-                                                str19 = str19.substring(0, i120) + " " + str19.substring(i214);
+                                                str18 = str18.substring(0, i120) + " " + str18.substring(i214);
                                                 DaySo2 = DaySo2 + "11,13,15,17,19,31,33,35,37,39,51,53,55,57,59,71,73,75,77,79,91,93,95,97,99,";
                                                 break;
                                             }
                                         }
                                     }
                                 }
-                                if (str19.indexOf("chan") == -1 || str19.indexOf("le") == -1) {
+                                if (str18.indexOf("chan") == -1 || str18.indexOf("le") == -1) {
                                     break;
                                 }
                                 i39 = -1;
@@ -2526,116 +2425,116 @@ public class Congthuc {
                             }
                         }
                     }
-                    if (str19.indexOf("chan") > -1 && str19.indexOf("le") == -1) {
-                        if (str19.indexOf("chanchan") > -1) {
+                    if (str18.indexOf("chan") > -1 && str18.indexOf("le") == -1) {
+                        if (str18.indexOf("chanchan") > -1) {
                             DaySo2 = DaySo2 + "00,02,04,06,08,20,22,24,26,28,40,42,44,46,48,60,62,64,66,68,80,82,84,86,88,";
-                            str19 = str19.substring(0, str19.indexOf("chanchan")) + " " + str19.substring(str19.indexOf("chanchan") + 8);
+                            str18 = str18.substring(0, str18.indexOf("chanchan")) + " " + str18.substring(str18.indexOf("chanchan") + 8);
                         }
-                        if (str19.indexOf("chan chan") > -1) {
+                        if (str18.indexOf("chan chan") > -1) {
                             DaySo2 = DaySo2 + "00,02,04,06,08,20,22,24,26,28,40,42,44,46,48,60,62,64,66,68,80,82,84,86,88,";
-                            str19 = str19.substring(0, str19.indexOf("chan chan")) + " " + str19.substring(str19.indexOf("chan chan") + 9);
+                            str18 = str18.substring(0, str18.indexOf("chan chan")) + " " + str18.substring(str18.indexOf("chan chan") + 9);
                         }
                     }
-                    if (str19.indexOf("chan") == -1 && str19.indexOf("le") > -1) {
-                        if (str19.indexOf("lele") > -1) {
+                    if (str18.indexOf("chan") == -1 && str18.indexOf("le") > -1) {
+                        if (str18.indexOf("lele") > -1) {
                             DaySo2 = DaySo2 + "11,13,15,17,19,31,33,35,37,39,51,53,55,57,59,71,73,75,77,79,91,93,95,97,99,";
-                            str19 = str19.substring(0, str19.indexOf("lele")) + " " + str19.substring(str19.indexOf("lele") + 4);
+                            str18 = str18.substring(0, str18.indexOf("lele")) + " " + str18.substring(str18.indexOf("lele") + 4);
                         }
-                        if (str19.indexOf("le le") > -1) {
-                            str19 = str19.substring(0, str19.indexOf("le le")) + " " + str19.substring(str19.indexOf("le le") + 5);
+                        if (str18.indexOf("le le") > -1) {
+                            str18 = str18.substring(0, str18.indexOf("le le")) + " " + str18.substring(str18.indexOf("le le") + 5);
                             DaySo2 = DaySo2 + "11,13,15,17,19,31,33,35,37,39,51,53,55,57,59,71,73,75,77,79,91,93,95,97,99,";
                         }
                     }
                 }
-                if (str19.trim().length() == 0) {
+                if (str18.trim().length() == 0) {
                     str_Dit = str_Dit4;
                     str_Tong4 = str_Tong2;
                     ndung19 = ndung14;
                     break;
                 }
-                if (str19.indexOf("kep") > -1) {
-                    str19 = str19.replaceAll("bang", "");
+                if (str18.indexOf("kep") > -1) {
+                    str18 = str18.replaceAll("bang", "");
                     int i121 = -1;
                     while (true) {
-                        int indexOf6 = str19.indexOf("kep", i121 + 1);
+                        int indexOf6 = str18.indexOf("kep", i121 + 1);
                         i121 = indexOf6;
                         if (indexOf6 == -1) {
                             break;
-                        } else if (str19.indexOf("sat") <= -1 || str19.indexOf("sat") >= i121 || str19.indexOf("lech") >= i121 + 6 || str19.indexOf("lech") <= -1) {
-                            if (str19.indexOf("sat") < i121 && str19.indexOf("sat") > -1) {
-                                String sss5 = str19.substring(str19.indexOf("sat"), i121 + 3).replaceAll(" ", "").replaceAll(",", "");
+                        } else if (str18.indexOf("sat") <= -1 || str18.indexOf("sat") >= i121 || str18.indexOf("lech") >= i121 + 6 || str18.indexOf("lech") <= -1) {
+                            if (str18.indexOf("sat") < i121 && str18.indexOf("sat") > -1) {
+                                String sss5 = str18.substring(str18.indexOf("sat"), i121 + 3).replaceAll(" ", "").replaceAll(",", "");
                                 if (sss5.indexOf("satkep") > -1) {
-                                    str19 = str19.substring(0, str19.indexOf("sat")) + " " + str19.substring(i121 + 3, str19.length());
+                                    str18 = str18.substring(0, str18.indexOf("sat")) + " " + str18.substring(i121 + 3, str18.length());
                                     i121 = 0;
                                     DaySo2 = DaySo2 + "01,10,12,21,23,32,34,43,45,54,56,65,67,76,78,87,89,98,";
                                 } else if (sss5.indexOf("sathaikep") > -1) {
-                                    str19 = str19.substring(0, str19.indexOf("sat")) + " " + str19.substring(i121 + 3, str19.length());
+                                    str18 = str18.substring(0, str18.indexOf("sat")) + " " + str18.substring(i121 + 3, str18.length());
                                     i121 = 0;
                                     DaySo2 = DaySo2 + "01,10,12,21,23,32,34,43,45,54,56,65,67,76,78,87,89,98,04,06,51,15,17,60,62,26,28,71,73,37,39,82,84,48,93,95,";
                                 } else if (sss5.indexOf("sat2kep") > -1) {
-                                    str19 = str19.substring(0, str19.indexOf("sat")) + " " + str19.substring(i121 + 3, str19.length());
+                                    str18 = str18.substring(0, str18.indexOf("sat")) + " " + str18.substring(i121 + 3, str18.length());
                                     i121 = 0;
                                     DaySo2 = DaySo2 + "01,10,12,21,23,32,34,43,45,54,56,65,67,76,78,87,89,98,04,06,51,15,17,60,62,26,28,71,73,37,39,82,84,48,93,95,";
                                 }
-                            } else if (str19.indexOf("lech") <= -1 || str19.indexOf("lech") >= i121 + 5) {
-                                if (str19.indexOf("le") <= -1 || str19.indexOf("le") >= i121 + 5) {
-                                    if (str19.indexOf("chan") <= -1 || str19.indexOf("chan") >= i121 + 5) {
-                                        if (str19.indexOf(" 2 kep") <= -1 || str19.indexOf(" 2 kep") >= i121 + 3) {
+                            } else if (str18.indexOf("lech") <= -1 || str18.indexOf("lech") >= i121 + 5) {
+                                if (str18.indexOf("le") <= -1 || str18.indexOf("le") >= i121 + 5) {
+                                    if (str18.indexOf("chan") <= -1 || str18.indexOf("chan") >= i121 + 5) {
+                                        if (str18.indexOf(" 2 kep") <= -1 || str18.indexOf(" 2 kep") >= i121 + 3) {
                                             DaySo2 = DaySo2 + "00,11,22,33,44,55,66,77,88,99,";
-                                            str19 = str19.substring(0, i121) + " " + str19.substring(i121 + 3);
+                                            str18 = str18.substring(0, i121) + " " + str18.substring(i121 + 3);
                                         } else {
                                             DaySo2 = DaySo2 + "00,11,22,33,44,55,66,77,88,99,05,50,16,61,27,72,38,83,49,94,";
-                                            str19 = str19.substring(0, i121 - 2) + " " + str19.substring(i121 + 3);
+                                            str18 = str18.substring(0, i121 - 2) + " " + str18.substring(i121 + 3);
                                         }
-                                    } else if (str19.substring(i121, str19.indexOf("chan") + 4).replaceAll(" ", "").replaceAll(",", "").indexOf("kepchan") > -1) {
-                                        str19 = str19.substring(0, i121) + " " + str19.substring(str19.indexOf("chan") + 4);
+                                    } else if (str18.substring(i121, str18.indexOf("chan") + 4).replaceAll(" ", "").replaceAll(",", "").indexOf("kepchan") > -1) {
+                                        str18 = str18.substring(0, i121) + " " + str18.substring(str18.indexOf("chan") + 4);
                                         DaySo2 = DaySo2 + "00,22,44,66,88,";
                                     }
-                                } else if (str19.substring(i121, str19.indexOf("le") + 2).replaceAll(" ", "").replaceAll(",", "").indexOf("keple") > -1) {
-                                    str19 = str19.substring(0, i121) + " " + str19.substring(str19.indexOf("le") + 2);
+                                } else if (str18.substring(i121, str18.indexOf("le") + 2).replaceAll(" ", "").replaceAll(",", "").indexOf("keple") > -1) {
+                                    str18 = str18.substring(0, i121) + " " + str18.substring(str18.indexOf("le") + 2);
                                     DaySo2 = DaySo2 + "11,33,55,77,99,";
                                 }
-                            } else if (str19.substring(i121, str19.indexOf("lech") + 4).replaceAll(" ", "").replaceAll(",", "").indexOf("keplech") > -1) {
-                                str19 = str19.substring(0, i121) + " " + str19.substring(str19.indexOf("lech") + 4);
+                            } else if (str18.substring(i121, str18.indexOf("lech") + 4).replaceAll(" ", "").replaceAll(",", "").indexOf("keplech") > -1) {
+                                str18 = str18.substring(0, i121) + " " + str18.substring(str18.indexOf("lech") + 4);
                                 DaySo2 = DaySo2 + "05,50,16,61,27,72,38,83,49,94,";
                             }
-                        } else if (str19.substring(str19.indexOf("sat"), str19.indexOf("lech") + 4).replaceAll(" ", "").replaceAll(",", "").indexOf("satkeplech") > -1) {
-                            str19 = str19.substring(0, str19.indexOf("sat")) + " " + str19.substring(str19.indexOf("lech") + 4, str19.length());
+                        } else if (str18.substring(str18.indexOf("sat"), str18.indexOf("lech") + 4).replaceAll(" ", "").replaceAll(",", "").indexOf("satkeplech") > -1) {
+                            str18 = str18.substring(0, str18.indexOf("sat")) + " " + str18.substring(str18.indexOf("lech") + 4, str18.length());
                             i121 = 0;
                             DaySo2 = DaySo2 + "04,06,51,15,17,60,62,26,28,71,73,37,39,82,84,48,93,95,";
                         }
                     }
                 }
-                if (str19.trim().length() == 0) {
+                if (str18.trim().length() == 0) {
                     str_Dit = str_Dit4;
                     str_Tong4 = str_Tong2;
                     ndung19 = ndung14;
                     break;
                 }
-                if (str19.indexOf("so") > -1 && str19.indexOf("so") < 7) {
-                    String str27 = str19.trim();
+                if (str18.contains("so") && str18.indexOf("so") < 7) {
+                    String str27 = str18.trim();
                     if (str27.length() <= 3) {
                         return "Không hiểu " + str;
-                    } else if (str27.substring(0, 2).indexOf("so") == -1) {
+                    } else if (!str27.substring(0, 2).contains("so")) {
                         return "Không hiểu " + str;
                     } else {
-                        str19 = str27.substring(str27.indexOf("so") + 2);
+                        str18 = str27.substring(str27.indexOf("so") + 2);
                     }
-                } else if (str19.indexOf("con") > -1 && str19.indexOf("con") < 4) {
-                    if (str19.trim().length() <= 4) {
+                } else if (str18.contains("con") && str18.indexOf("con") < 4) {
+                    if (str18.trim().length() <= 4) {
                         return "Không hiểu " + str;
-                    } else if (str19.substring(0, 5).indexOf("con") == -1) {
+                    } else if (!str18.substring(0, 5).contains("con")) {
                         return "Không hiểu " + str;
                     } else {
-                        str19 = str19.substring(str19.indexOf("con") + 3);
+                        str18 = str18.substring(str18.indexOf("con") + 3);
                     }
                 }
                 int i122 = 0;
                 while (true) {
-                    if (i122 >= str19.length()) {
+                    if (i122 >= str18.length()) {
                         break;
                     }
-                    if (str8.indexOf(str19.substring(i122, i122 + 1)) <= -1 && !isNumeric(str19.substring(i122, i122 + 1))) {
+                    if (!", ".contains(str18.substring(i122, i122 + 1)) && !isNumeric(str18.substring(i122, i122 + 1))) {
                         i122--;
                         break;
                     }
@@ -2644,8 +2543,8 @@ public class Congthuc {
                 if (i122 < 0) {
                     i122 = 0;
                 }
-                if (str19.substring(0, i122).length() > 2) {
-                    String[] array = str19.substring(0, i122).trim().replaceAll(" ", ",").split(",");
+                if (str18.substring(0, i122).length() > 2) {
+                    String[] array = str18.substring(0, i122).trim().replaceAll(" ", ",").split(",");
                     int i40 = 0;
                     while (i40 < array.length) {
                         if (isNumeric(array[i40]) && array[i40].length() == 2) {
@@ -2666,16 +2565,16 @@ public class Congthuc {
                         } else if (array[i40].length() != 0) {
                             if (array[i40].length() == 1) {
                                 String kytuktra = "";
-                                if (str19.indexOf(" " + array[i40] + " ") > -1) {
+                                if (str18.indexOf(" " + array[i40] + " ") > -1) {
                                     kytuktra = " " + array[i40] + " ";
                                 }
-                                if (str19.indexOf(" " + array[i40] + ",") > -1) {
+                                if (str18.indexOf(" " + array[i40] + ",") > -1) {
                                     kytuktra = " " + array[i40] + ",";
                                 }
-                                if (str19.indexOf("," + array[i40] + ",") > -1) {
+                                if (str18.indexOf("," + array[i40] + ",") > -1) {
                                     kytuktra = "," + array[i40] + ",";
                                 }
-                                if (str19.indexOf("," + array[i40] + " ") > -1) {
+                                if (str18.indexOf("," + array[i40] + " ") > -1) {
                                     kytuktra = "," + array[i40] + " ";
                                 }
                                 return "Không hiểu " + kytuktra + "";
@@ -2685,52 +2584,51 @@ public class Congthuc {
                         i40++;
                     }
                     if (i40 < array.length) {
-                        str19 = "  " + str19 + "  ";
-                        String str110 = str19.trim();
+                        str18 = "  " + str18 + "  ";
+                        String str110 = str18.trim();
                         if (str110.trim().length() > 10) {
                             if (array[i40].length() == 1) {
                                 i122 = -1;
                                 while (true) {
-                                    int indexOf7 = str19.indexOf(array[i40], i122 + 1);
+                                    int indexOf7 = str18.indexOf(array[i40], i122 + 1);
                                     i122 = indexOf7;
                                     if (indexOf7 == -1) {
                                         str1 = str110;
                                         break;
                                     }
-                                    if (str19.indexOf(" " + array[i40] + " ") > -1) {
+                                    if (str18.indexOf(" " + array[i40] + " ") > -1) {
                                         return "Không hiểu  " + array[i40] + " ";
                                     }
-                                    if (str19.indexOf(" " + array[i40] + ",") > -1) {
+                                    if (str18.indexOf(" " + array[i40] + ",") > -1) {
                                         return "Không hiểu  " + array[i40] + ",";
                                     }
-                                    if (str19.indexOf("," + array[i40] + " ") > -1) {
+                                    if (str18.indexOf("," + array[i40] + " ") > -1) {
                                         return "Không hiểu ," + array[i40] + " ";
                                     }
-                                    if (str19.indexOf("," + array[i40] + ",") > -1) {
+                                    if (str18.indexOf("," + array[i40] + ",") > -1) {
                                         return "Không hiểu ," + array[i40] + ",";
                                     }
                                 }
                             } else {
                                 return "Không hiểu " + array[i40];
                             }
-                        } else if (str19.trim().length() == 1) {
-                            return "Không hiểu  " + str19.trim() + " ";
+                        } else if (str18.trim().length() == 1) {
+                            return "Không hiểu  " + str18.trim() + " ";
                         } else {
-                            return "Không hiểu " + str19.trim();
+                            return "Không hiểu " + str18.trim();
                         }
                     }
-                    str19 = str19.substring(i122).trim();
+                    str18 = str18.substring(i122).trim();
                     str22 = str1;
                 } else {
                     str22 = str1;
                 }
-                if (str19.trim().length() == 0) {
+                if (str18.trim().length() == 0) {
                     str_Dit = str_Dit4;
                     str_Tong4 = str_Tong2;
                     ndung19 = ndung14;
                     break;
                 }
-                str17 = str8;
                 str_Dau4 = str23;
                 DemVonglap = DemVonglap3;
                 str_Tong5 = str_Dit4;
@@ -2742,19 +2640,19 @@ public class Congthuc {
                 SKtra2 = SKtra;
             }
         }
-        if (str19.replaceAll(" ", "").length() > 0) {
-            String str111 = str19.trim().replaceAll(":", " ").replaceAll(" //. ", "").replaceAll(" , ", "").replaceAll(";", " ").replaceAll("/", "").replaceAll("\\.", ",").replaceAll(" ", ",").replaceAll(" ", ",").replaceAll(" ", ",");
-            if (str19.indexOf("so") <= -1 || str19.indexOf("so") >= 3) {
-                if (str19.indexOf("con") > -1 && str19.indexOf("con") < 4) {
+        if (str18.replaceAll(" ", "").length() > 0) {
+            String str111 = str18.trim().replaceAll(":", " ").replaceAll(" //. ", "").replaceAll(" , ", "").replaceAll(";", " ").replaceAll("/", "").replaceAll("\\.", ",").replaceAll(" ", ",").replaceAll(" ", ",").replaceAll(" ", ",");
+            if (str18.indexOf("so") <= -1 || str18.indexOf("so") >= 3) {
+                if (str18.indexOf("con") > -1 && str18.indexOf("con") < 4) {
                     if (str111.length() <= 4) {
                         return "Không hiểu " + str;
-                    } else if (str19.substring(0, 5).indexOf("con") == -1) {
+                    } else if (str18.substring(0, 5).indexOf("con") == -1) {
                         return "Không hiểu " + str;
                     }
                 }
             } else if (str111.length() <= 3) {
                 return "Không hiểu " + str;
-            } else if (str19.substring(0, 4).indexOf("so") == -1) {
+            } else if (str18.substring(0, 4).indexOf("so") == -1) {
                 return "Không hiểu " + str;
             }
             String[] array2 = str111.split(",");
@@ -2796,7 +2694,7 @@ public class Congthuc {
                 str_Tong4 = str_Tong;
             }
             if (i41 < array2.length) {
-                String str28 = "  " + str19 + "  ";
+                String str28 = "  " + str18 + "  ";
                 if (str111.trim().length() > 10) {
                     if (array2[i41].length() == 1) {
                         int i123 = -1;
@@ -2871,7 +2769,8 @@ public class Congthuc {
                     tien = tien + str2.charAt(i);
                     i++;
                 }
-                if (str2.replaceAll(tien, "").replaceAll("ng", "").replaceAll("n", "").replaceAll("d", "").replaceAll("k", "").replaceAll(",", "").replaceAll("\\.", "").replaceAll("/", "").replaceAll(" ", "").length() > 0) {
+                if (str2.replaceAll(tien, "").replaceAll("ng", "").replaceAll("n", "").replaceAll("d", "")
+                        .replaceAll("k", "").replaceAll(",", "").replaceAll("\\.", "").replaceAll("/", "").replaceAll(" ", "").length() > 0) {
                     return "Không hiểu " + str;
                 }
             }
@@ -2886,7 +2785,7 @@ public class Congthuc {
         }
     }
 
-    public static String GhepDau(String str) {
+    public static String GhepDau(String str) {// lay dau (co the là 1 day so vd: '12' '1,2')
         String[] arr = new String[15];
         String str1 = "";
         if (!xuLymem(str)) {
@@ -2910,7 +2809,7 @@ public class Congthuc {
         return str1;
     }
 
-    public static String GhepDit(String str) {
+    public static String GhepDit(String str) {// lay dit (co the là 1 day so vd: '12' '1,2')
         String[] arr = new String[15];
         String str1 = "";
         if (!xuLymem(str)) {
@@ -2967,7 +2866,7 @@ public class Congthuc {
                 while (true) {
                     if (j >= arr.length) {
                         break;
-                    } else if (arr[j].indexOf(str.substring(i, i + 2)) > -1) {
+                    } else if (arr[j].contains(str.substring(i, i + 2))) {
                         str1 = str1 + arr[j] + ",";
                         break;
                     } else {
@@ -2993,7 +2892,7 @@ public class Congthuc {
         return B;
     }
 
-    public static Boolean xuLymem(String str) {
+    public static Boolean xuLymem(String str) { // kiem tra có phai la day so khong ( remove ',')
         boolean check = true;
         if (str.length() == 0) {
             check = false;
@@ -3033,8 +2932,8 @@ public class Congthuc {
         int minute = now.get(12);
 
         //TODO: fake checktime aways false
-        return parseDate(18 + ":" + 0) .after(gioKT);
-//        return parseDate(hour + ":" + minute) .after(gioKT);
+//        return parseDate(18 + ":" + 0) .after(gioKT);
+        return parseDate(hour + ":" + minute) .after(gioKT);
     }
 
     public static boolean CheckDate(String time) {

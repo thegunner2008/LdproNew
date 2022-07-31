@@ -19,7 +19,6 @@ import android.view.LayoutInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
-import android.webkit.ValueCallback;
 import android.webkit.WebSettings;
 import android.webkit.WebView;
 import android.webkit.WebViewClient;
@@ -317,9 +316,9 @@ public class Frag_Database extends Fragment {
         try {
             Volley.newRequestQueue(getActivity()).add(new StringRequest(1, "https://api.ldpro.us/subcription", response -> {
                 try {
-                    MainActivity.listKH = new JSONObject(response).getJSONArray("listKHs").getJSONObject(0);
-                    String str_ngay = MainActivity.listKH.getString("date").replaceAll("-", "");
-                    MainActivity.myDate = str_ngay.substring(6) + "/" + str_ngay.substring(4, 6) + "/" + str_ngay.substring(0, 4);
+                    MainActivity.thongTinAcc = new JSONObject(response).getJSONArray("listKHs").getJSONObject(0);
+                    String str_ngay = MainActivity.thongTinAcc.getString("date").replaceAll("-", "");
+                    MainActivity.hanSuDung = str_ngay.substring(6) + "/" + str_ngay.substring(4, 6) + "/" + str_ngay.substring(0, 4);
                 } catch (JSONException e) {
                     e.printStackTrace();
                 }

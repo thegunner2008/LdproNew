@@ -315,6 +315,31 @@
                     android:paddingLeft="20dp"
                     android:textSize="14dp" />
             </LinearLayout>
+
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:background="@drawable/border"
+                android:orientation="vertical">
+
+                <TextView
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:gravity="center_vertical"
+                    android:paddingLeft="5dp"
+                    android:text="Thời gian chờ trả lời tin:"
+                    android:textColor="@color/black"
+                    android:textSize="14dp"
+                    android:textStyle="bold" />
+
+                <Spinner
+                    android:id="@+id/sp_thoigiancho"
+                    android:layout_width="match_parent"
+                    android:layout_height="30dp"
+                    android:paddingLeft="20dp"
+                    android:textSize="14dp" />
+            </LinearLayout>
         </LinearLayout>
     </ScrollView>
 </LinearLayout>
