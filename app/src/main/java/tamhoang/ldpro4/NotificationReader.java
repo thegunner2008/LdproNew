@@ -56,8 +56,6 @@ public class NotificationReader extends NotificationListenerService {
     String mWhat = "";
     int soTN;
 
-    static Bundle currentExtras;
-
     public void onCreate() {
         Log.e(TAG, "onNotificationPosted: onCreate ");
 
@@ -72,36 +70,13 @@ public class NotificationReader extends NotificationListenerService {
         if (this.context == null) this.context = this;
 
         Bundle extras = sbn.getNotification().extras;
-        currentExtras = extras;
         String text = extras.getCharSequence(NotificationCompat.EXTRA_TEXT).toString();//nội dung tin nhắn hoặc số(tin nhắn)
         CharSequence[] textLines = extras.getCharSequenceArray(NotificationCompat.EXTRA_TEXT_LINES);
-//        Log.e(TAG, "onNotificationPosted: extras " + extras);
 
         Log.e(TAG, "aaaa onNotificationPosted: text " + text);
 
         Log.e(TAG, "aaaa onNotificationPosted: textLines " + Arrays.toString(textLines));
-
-        if(textLines != null && textLines.length > 1) {
-            for (int i = 0; i < textLines.length; i++) {
-                processText(sbn, textLines[i].toString(), i + 1, textLines.length);
-            }
-        } else {
-            try {
-                NotificationCompat.MessagingStyle msgStyle = NotificationCompat.MessagingStyle.extractMessagingStyleFromNotification(sbn.getNotification());
-                List<NotificationCompat.MessagingStyle.Message> messages = msgStyle.getMessages();
-
-                if(messages.size() > 1) {
-
-                    for (int i = 0; i < messages.size(); i++) {
-                        Log.e(TAG, "onNotificationPosted: messages " + messages.get(i).getText());
-
-                        processText(sbn, messages.get(i).getText().toString(), i + 1 , messages.size());
-                    }
-                } else if(!text.isEmpty()) processText(sbn, text, 1, 1);
-            } catch (Exception e) {
-                if(!text.isEmpty()) processText(sbn, text, 1, 1);
-            }
-        }
+        if(!text.isEmpty()) processText(sbn, text, 1, 1);
     }
 
     public void processText(StatusBarNotification sbn, String text, int process, int number) {
@@ -277,7 +252,7 @@ public class NotificationReader extends NotificationListenerService {
                                         || this.body.startsWith("Success")) || this.body.contains("Tra lai")) {
 
                                     KhachHang khachHang_s = BriteDb.INSTANCE.selectKhachHang(Ten_KH);
-                                    json = new JSONObject(khachHang_s.getTbl_MB());//"caidat_tg":{"dlgiu_de":0,"dlgiu_lo":0,"dlgiu_xi":0,"dlgiu_xn":0,"dlgiu_bc":0,"khgiu_de":0,"khgiu_lo":0,"khgiu_xi":0,"khgiu_xn":0,"khgiu_bc":0,"ok_tin":3,"xien_nhan":0,"chot_sodu":0,"tg_loxien":"18:13","tg_debc":"18:20","loi_donvi":0,"heso_de":0,"maxDe":0,"maxLo":0,"maxXi":0,"maxCang":0}}
+                                    json = new JSONObject(khachHang_s.getTbl_MB());
                                     caidat_tg = json.getJSONObject("caidat_tg");
 
                                     Log.e(TAG, "onNotificationPosted: CheckTime: " + !Congthuc.CheckTime(caidat_tg.getString("tg_debc")));
@@ -349,10 +324,6 @@ public class NotificationReader extends NotificationListenerService {
                 } catch (Exception e7) {
                     return;
                 }
-
-                Log.e(TAG, "NotificationWearReader processText: " + text);
-
-                NotificationWearReader(Ten_KH, null);
             }
 
         } catch (Exception e) {
@@ -370,59 +341,21 @@ public class NotificationReader extends NotificationListenerService {
         Log.e(TAG, "NotificationWearReader: name: " + mName +" - Message: " + message );
 
         if (contact != null) {
-            Log.e(TAG, "NotificationWearReader: contact: " + contact );
-
             try {
-                if(message != null && !contact.waitingList.contains(message)) contact.waitingList.add(message);
-                if(contact.process < contact.number) return;
-
-                StringBuilder textSend = new StringBuilder();
-                if(contact.waitingList != null && contact.waitingList.size() > 0) {
-                    for (int i = 0; i < contact.waitingList.size(); i++) {
-                        textSend.append(contact.waitingList.get(i));
-                        if (i < contact.waitingList.size() - 1) textSend.append("\n \n");
-                    }
-                } else {
-                    return;
-                }
 
                 Intent localIntent = new Intent();
                 Bundle localBundle = contact.remoteExtras;
 
                 RemoteInput[] remoteInputs = {contact.remoteInput};
 
-                localBundle.putCharSequence(remoteInputs[0].getResultKey(), textSend.toString());
+                localBundle.putCharSequence(remoteInputs[0].getResultKey(), message);
                 RemoteInput.addResultsToIntent(remoteInputs, localIntent, localBundle);
 
-                Bundle extras = contact.remoteExtras;
+                Log.e(TAG, "aaaa onNotificationPosted: send " + message);
+                contact.pendingIntent.send(MainActivity.Notifi, 0, localIntent);
+                Log.e(TAG, "aaaa onNotificationPosted: send done " );
 
-                int delayTime;
-                try {
-                    delayTime = MainActivity.jSon_Setting.getInt("thoigiancho");
-                } catch (Exception e) {
-                    delayTime = 0;
-                }
-
-                Log.e(TAG, "aaaa onNotificationPosted: delayTime " + delayTime);
-
-                Observable.just(localIntent)
-                        .delay(delayTime, TimeUnit.MILLISECONDS)
-                        .subscribe( intent -> {
-
-                            Log.e(TAG, "aaaa onNotificationPosted: condition = " + currentExtras.equals(extras));
-
-                            if(!currentExtras.equals(extras)) return;
-
-                            contact.pendingIntent.send(MainActivity.Notifi, 0, intent);
-                            Log.e(TAG, "aaaa onNotificationPosted: send done " + intent.toString());
-
-                            if (MainActivity.contactsMap.containsKey(mName)) MainActivity.contactsMap.remove(mName);
-                            if (MainActivity.Json_Tinnhan.has(mName)) MainActivity.Json_Tinnhan.remove(mName);
-                        });
-//                Log.e(TAG, "aaaa onNotificationPosted: send " + Thread.currentThread().getName());
-//                contact.pendingIntent.send(MainActivity.Notifi, 0, localIntent);
-//
-//                if (MainActivity.Json_Tinnhan.has(mName)) MainActivity.Json_Tinnhan.remove(mName);
+                if (MainActivity.Json_Tinnhan.has(mName)) MainActivity.Json_Tinnhan.remove(mName);
 
             } catch (Exception e) {
                 Toast.makeText(context, "Notification Error " + e.getMessage(), Toast.LENGTH_LONG).show();

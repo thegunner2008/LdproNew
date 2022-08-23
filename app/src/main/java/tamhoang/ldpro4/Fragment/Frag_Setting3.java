@@ -271,7 +271,6 @@ public class Frag_Setting3 extends Fragment {
             e12.printStackTrace();
         }
         this.sp_TinThieu.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
-            /* class tamhoang.ldpro4.Fragment.Frag_Setting3.AnonymousClass12 */
 
             @Override // android.widget.AdapterView.OnItemSelectedListener
             public void onItemSelected(AdapterView<?> adapterView, View view, int i, long l) {

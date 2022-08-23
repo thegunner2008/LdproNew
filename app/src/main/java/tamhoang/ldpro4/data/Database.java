@@ -1,6 +1,5 @@
 package tamhoang.ldpro4.data;
 
-import static android.Manifest.permission_group.SMS;
 import static android.content.ContentValues.TAG;
 
 import android.annotation.SuppressLint;
@@ -33,7 +32,6 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Calendar;
 import java.util.Collections;
-import java.util.Comparator;
 import java.util.Date;
 import java.util.Iterator;
 import java.util.List;
@@ -47,7 +45,6 @@ import tamhoang.ldpro4.constants.Constants;
 import tamhoang.ldpro4.data.model.Chat;
 import tamhoang.ldpro4.data.model.KhachHang;
 import tamhoang.ldpro4.data.model.TinNhanS;
-import tamhoang.ldpro4.util.TheLoai;
 
 public class Database extends SQLiteOpenHelper {
 //    static final /* synthetic */ boolean $assertionsDisabled = false;
@@ -179,7 +176,7 @@ public class Database extends SQLiteOpenHelper {
         cursor2.moveToFirst();
         int rw = 0;
         String str44 = " ";
-        boolean quagio = false;
+        boolean quaGioLo = false;
         String dayso = null;
         String nd_phantich = cursor2.getString(0).replace("ldpro", "").replace(FONT, "").replaceAll("-", ",").replaceAll("/", ";")
                 .replaceAll("\n", " ").replaceAll("\\.", ",").replaceAll("x ", " x ").replaceAll("ba bc", "bc").replaceAll(";,", ";")
@@ -255,7 +252,7 @@ public class Database extends SQLiteOpenHelper {
             str_Err1 = phanTichTN;
 
         if (Congthuc.CheckTime(caidat_tg.getString("tg_loxien")) && !Congthuc.CheckTime("18:30")) {
-            quagio = true;
+            quaGioLo = true;
         }
 
         Log.e("aaaa", "NhanTinNhan 3 " + nd_phantich );
@@ -379,6 +376,19 @@ public class Database extends SQLiteOpenHelper {
                             Log.e("aaaa", "NhanTinNhan 52 " + Arrays.deepToString(mang[k]));
 
                             BaoLoiTien(k);
+
+                            //Check x10 xien
+                            if (mang[k][1].startsWith(XI) || mang[k][1].startsWith(XQ) || mang[k][1].startsWith("xg") && !mang[k][5].contains(KHONG_HIEU)) {
+                                try {
+                                    if (caidat_tg.getInt("xien_nhan") == 1 && mang[k][3].contains("d"))
+                                        mang[k][5] = (Integer.parseInt(tien) * 10) + "";
+                                    else if (caidat_tg.getInt("xien_nhan") == 2)
+                                        mang[k][5] = (Integer.parseInt(tien) * 10) + "";
+                                } catch (Exception e) {
+                                    mang[k][5] = KHONG_HIEU_ + mang[k][3];
+                                }
+                            }
+
                             Log.e("aaaa", "NhanTinNhan 53 " + Arrays.deepToString(mang[k]) + " mang 4 : " + mang[k][4]);
 
                             if (mang[k][4] != null && !mang[k][4].equals("")) {
@@ -499,7 +509,7 @@ public class Database extends SQLiteOpenHelper {
                         xien = true;
                     }
 
-                    if (quagio) {
+                    if (quaGioLo) {
                         if (type_kh == 1) {
                             if (!mang[kk][1].contains("de dit db") && !mang[kk][1].contains("de dau db")
                                     && !mang[kk][1].contains("bc") && !mang[kk][1].contains("de 8")) {
@@ -587,7 +597,7 @@ public class Database extends SQLiteOpenHelper {
                 nd_phantich_b = nd_phantich_b.replaceAll("xg 2:", "xi:").replaceAll("xg 3:", "xi:").replaceAll("xg 4:", "xi:");
             Log.e("aaaa", "NhanTinNhan 9 " + nd_phantich );
 
-            if (quagio) {
+            if (quaGioLo) {
                 if (type_kh == 1) {
                     if (lo || xien || nhat) {
                         if (lo) {
@@ -686,13 +696,8 @@ public class Database extends SQLiteOpenHelper {
                     Update_TinNhanGoc(ccc.getInt(0), 2);
                     if (Thongtin.getString(2).contains("TL")) {
                         final Long TralaiID = Thongtin.getLong(1);
-                        new Handler(Looper.getMainLooper()).post(new Runnable() {
-                            /* class tamhoang.ldpro4.data.Database.AnonymousClass1 */
-
-                            public void run() {
-                                new MainActivity();
-                                MainActivity.sendMessage(TralaiID, Tralai2);
-                            }
+                        new Handler(Looper.getMainLooper()).post(() -> {
+                            MainActivity.sendMessage(TralaiID, Tralai2);
                         });
                     } else if (Thongtin.getString(2).contains("sms")) {
                         SendSMS(Thongtin.getString(1), Tralai2);
@@ -1320,7 +1325,6 @@ public class Database extends SQLiteOpenHelper {
 
     private void XulyMang(int k) {
         String[] Danxi;
-        String[] Danxi2;
         String[] Danxi3;
         String[] danlayS;
         if (mang[k][1].contains("lo dau")) {
@@ -1528,23 +1532,16 @@ public class Database extends SQLiteOpenHelper {
                     }
                     String[] ArrXien3 = mang[k][4].split(" ");
                     boolean ktra2 = false;
-                    int s12 = 0;
-                    while (true) {
-                        if (s12 >= ArrXien3.length) {
-                            break;
-                        } else if (ArrXien3[s12].replaceAll(",", "").length() != 2 || !Congthuc.isNumeric(ArrXien3[s12].replaceAll(",", ""))) {
+                    for (String item : ArrXien3 ) {
+                        if (item.replaceAll(",", "").length() != 2 || !Congthuc.isNumeric(item.replaceAll(",", "")))
                             ktra2 = true;
-                        }
-                        s12++;
                     }
-                    if (ktra2 || ArrXien3.length >= 5) {
-                    } else {
+                    if (!ktra2 && ArrXien3.length < 5) { 
                         mang[k][4] = Congthuc.XulySo(mang[k][4]);
                     }
                     String[] ArrXien4 = mang[k][4].split(" ");
-                    int i9 = 0;
-                    while (i9 < ArrXien4.length) {
-                        String ss2 = Congthuc.XulySo(ArrXien4[i9]);
+                    for (String item : ArrXien4 ) {
+                        String ss2 = Congthuc.XulySo(item);
                         if (ss2.length() >= 5 && ss2.length() <= 12) {
                             if (!ss2.contains("Không hiểu")) {
                                 if (mang[k][1] != "xq" || ss2.length() >= 8) {
@@ -1568,7 +1565,7 @@ public class Database extends SQLiteOpenHelper {
                                 }
                             }
                         }
-                        if (ArrXien4[i9].length() < 4) {
+                        if (item.length() < 4) {
                             mang[k][4] = "Không hiểu " + mang[k][2];
                         }
                         if (!mang[k][4].contains("Không hiểu")) {
@@ -1587,21 +1584,21 @@ public class Database extends SQLiteOpenHelper {
                                 if (soxien2.contains("Không hiểu")) {
                                     break;
                                 }
-                                boolean check2 = false;
+                                boolean checkTrung = false;
                                 for (String str2 : soxien2.split(",")) {
                                     if (soxien2.length() - soxien2.replaceAll(str2, "").length() > 2) {
-                                        check2 = true;
+                                        checkTrung = true;
                                     }
                                 }
-                                if (soxien2.length() < 5 || soxien2.length() > 12 || check2) {
+                                if (soxien2.length() < 5 || soxien2.length() > 12 || checkTrung) {
                                     mang[k][4] = "Không hiểu " + mang[k][2];
+                                    break;
                                 } else {
                                     mang[k][4] = mang[k][4] + Congthuc.sortXien(soxien2) + " ";
                                     i10++;
                                 }
                             }
                         }
-                        i9++;
                     }
                 } else {
                     mang[k][4] = "Không hiểu " + mang[k][2].substring(0, mang[k][2].indexOf("xi"));
@@ -1609,20 +1606,19 @@ public class Database extends SQLiteOpenHelper {
             } else if (mang[k][1].contains("xq")) {
                 if (mang[k][2].contains("xq") || mang[k][2].trim().indexOf("xq") <= 0) {
                     if (mang[k][2].contains("xqa")) {
-                        String[] Danxi4 = mang[k][2].split("xqa");
                         mang[k][1] = "xq dau";
-                        Danxi = Danxi4;
+                        Danxi = mang[k][2].split("xqa");
                     } else {
                         Danxi = mang[k][2].split("xq");
                     }
 
                     String Danxienghep5 = "";
                     if (Danxi.length > 2) {
-                        for (int i45 = 1; i45 < Danxi.length; i45++) {
-                            if (Danxi[i45].length() > 4) {
-                                Danxienghep5 = Danxienghep5 + Congthuc.XulySo(Danxi[i45]) + " ";
-                                if (Congthuc.XulySo(Danxi[i45]).contains("Không hiểu")) {
-                                    mang[k][4] = "Không hiểu " + Danxi[i45];
+                        for (int i = 1; i < Danxi.length; i++) {
+                            if (Danxi[i].length() > 4) {
+                                Danxienghep5 = Danxienghep5 + Congthuc.XulySo(Danxi[i]) + " ";
+                                if (Congthuc.XulySo(Danxi[i]).contains("Không hiểu")) {
+                                    mang[k][4] = "Không hiểu " + Danxi[i];
                                 }
                             }
                         }
@@ -1643,22 +1639,15 @@ public class Database extends SQLiteOpenHelper {
                         String ss3 = Congthuc.XulySo(ArrXien6[i11]);
 
                         if (ss3.length() >= 8 && ss3.length() <= 12 && !ss3.contains("Không hiểu")) {
-                            if (mang[k][1] == "xq") {
-                                ss3.length();
-                            }
                             String[] danlayS4 = ss3.split(",");
 
                             for (String so: danlayS4 ) {
                                 if (so.length() == 2 && Congthuc.isNumeric(so)) {
-                                    Danxi2 = Danxi;
                                 } else if (mang[k][4].length() > 4) {
-                                    Danxi2 = Danxi;
                                     mang[k][4] = "Không hiểu " + mang[k][2];
                                 } else {
-                                    Danxi2 = Danxi;
                                     mang[k][4] = "Không hiểu " + mang[k][0];
                                 }
-                                Danxi = Danxi2;
                             }
                             i11++;
                         } else {
@@ -1683,13 +1672,13 @@ public class Database extends SQLiteOpenHelper {
                                     if (soxien3.contains("Không hiểu")) {
                                         break;
                                     }
-                                    boolean check3 = false;
+                                    boolean checkTrung = false;
                                     for (String str3 : soxien3.split(",")) {
                                         if (soxien3.length() - soxien3.replaceAll(str3, "").length() > 2) {
-                                            check3 = true;
+                                            checkTrung = true;
                                         }
                                     }
-                                    if (soxien3.length() < 5 || soxien3.length() > 12 || check3) {
+                                    if (soxien3.length() < 5 || soxien3.length() > 12 || checkTrung) {
                                         mang[k][4] = "Không hiểu " + mang[k][2];
                                         break;
                                     } else {
@@ -1758,7 +1747,8 @@ public class Database extends SQLiteOpenHelper {
 
     private void BaoLoiTien(int k) {
         try {
-            mang[k][5] = Congthuc.XulyTien(mang[k][3]);
+            mang[k][5] = Congthuc.XulyTien(mang[k][3], mang[k][1]);
+            checkLoiDonvi(k);
             if (mang[k][5].contains("Không hiểu") && mang[k][5].trim().length() < 13) {
                 mang[k][0] = Congthuc.ToMauError(mang[k][5].substring(11), mang[k][0]);
             } else if (mang[k][5].contains("Không hiểu") && mang[k][5].trim().length() > 12) {
@@ -1767,6 +1757,17 @@ public class Database extends SQLiteOpenHelper {
         } catch (Exception e) {
             mang[k][0] = Congthuc.ToMauError(mang[k][3], mang[k][0]);
         }
+    }
+
+    private void checkLoiDonvi(int k) throws JSONException {
+        if (caidat_tg.getInt("loi_donvi") == 0) return;
+
+        String DonviTinh = mang[k][3];
+        if (mang[k][1] == "lo" && (DonviTinh.contains("n") || DonviTinh.contains("k") || DonviTinh.contains("tr")))
+            mang[k][5] = "Không hiểu " + mang[k][3];
+
+        if ((mang[k][1] == "de dit db" || mang[k][1] == "de dau db" || mang[k][1] == "hai cua" || mang[k][1] == "de 8" || mang[k][1] == "de dit nhat" || mang[k][1] == "de dau nhat") && DonviTinh.contains("d"))
+            mang[k][5] = "Không hiểu " + mang[k][3];
     }
 
     
@@ -1881,14 +1882,15 @@ public class Database extends SQLiteOpenHelper {
             String str8 = ",";
 
             if (mThe_loai.equals("deb")) {
-                if (database.caidat_tg.getInt("heso_de") == 2) {
+                if (database.caidat_tg.getInt("heso_de") == 2)
                     mDiemquydoi = (int) (0.875d * mDiem);
-                } else if (database.caidat_tg.getInt("heso_de") == 1) {
+                else if (database.caidat_tg.getInt("heso_de") == 1)
                     mDiemquydoi = (int) (1.143d * mDiem);
-                } else {
+                else
                     mDiemquydoi = mDiem;
-                }
-            }
+            } else
+                mDiemquydoi = mDiem;
+
             if (c.getInt(3) == 1) {
                 mDiem_DlyGiu = (int) ((mDiemquydoi * mKhachGiu) / 100.0d);
                 mLanAn2 = mLanAn;
@@ -1902,14 +1904,10 @@ public class Database extends SQLiteOpenHelper {
                 mDiem_DlyGiu = 0;
                 mDiem_KhachGiu = 0;
             }
-            double mKhachGiu3 = mLanAn3;
-            double mKhachGiu4 = mDiem_KhachGiu;
-            Double.isNaN(mKhachGiu4);
-            double d = mDiemquydoi - mKhachGiu4;
-            double mDiemquydoi2 = mDiemquydoi;
-            double mDiemquydoi3 = mDiem_DlyGiu;
-            Double.isNaN(mDiemquydoi3);
-            int mDiemton = (int) (d - mDiemquydoi3);
+            Double.isNaN(mDiem_KhachGiu);
+            double d = mDiemquydoi - mDiem_KhachGiu;
+            Double.isNaN(mDiem_DlyGiu);
+            int mDiemton = (int) (d - mDiem_DlyGiu);
             if ("dea,deb,dec,ded,det,lo,loa,bc,bca".contains(mThe_loai)) {
                 str2 = dan_so.split(str8);
             } else {
@@ -1944,8 +1942,8 @@ public class Database extends SQLiteOpenHelper {
                 ih2.bind(ih2.getColumnIndex("the_loai"), mThe_loai);
                 ih2.bind(ih2.getColumnIndex("so_chon"), So_chon);
                 ih2.bind(ih2.getColumnIndex("diem"), mDiem);
-                ih2.bind(ih2.getColumnIndex("diem_quydoi"), mDiemquydoi2);
-                ih2.bind(ih2.getColumnIndex("diem_khachgiu"), mKhachGiu3);
+                ih2.bind(ih2.getColumnIndex("diem_quydoi"), mDiemquydoi);
+                ih2.bind(ih2.getColumnIndex("diem_khachgiu"), mLanAn3);
                 ih2.bind(ih2.getColumnIndex("diem_dly_giu"), mDlyGiu);
                 ih2.bind(ih2.getColumnIndex("diem_ton"), mDiemton);
                 ih2.bind(ih2.getColumnIndex("gia"), mGia * 1000.0d);
@@ -2050,6 +2048,11 @@ public class Database extends SQLiteOpenHelper {
             SoOm = "Om_lo";
             tloai = "the_loai = 'lo'";
             donvi = "d ";
+        } else if (TheLoai == "loa") {
+            xuatDan = "Lo:";
+            SoOm = "Om_lo";
+            tloai = "the_loai = 'loa'";
+            donvi = "d ";
         } else {
             xuatDan = "";
         }
@@ -2068,17 +2071,11 @@ public class Database extends SQLiteOpenHelper {
         } catch (JSONException e) {
             e.printStackTrace();
         }
-        if (mFrom > 0) {
-            mFrom2 = mFrom - 1;
-            xuatDan2 = xuatDan;
-            Dem = 0;
-            tien = 0;
-        } else {
-            mFrom2 = mFrom;
-            xuatDan2 = xuatDan;
-            Dem = 0;
-            tien = 0;
-        }
+
+        mFrom2 = mFrom > 0 ? mFrom - 1 : mFrom;
+        xuatDan2 = xuatDan;
+        Dem = 0;
+        tien = 0;
         while (cursor.moveToNext()) {
             if (Dem < mFrom2 || Dem > mTo - 1) {
                 mFrom3 = mFrom2;
@@ -2088,9 +2085,9 @@ public class Database extends SQLiteOpenHelper {
                     MaxTien = (cursor.getInt(4) / mLamtron) * mLamtron;
                 } else {
                     mFrom3 = mFrom2;
-                    if (str.indexOf("%") > -1) {
+                    if (str.contains("%")) {
                         MaxTien = (((cursor.getInt(4) * TienChuyen) / mLamtron) / 100) * mLamtron;
-                    } else if (str.indexOf(">") > -1) {
+                    } else if (str.contains(">")) {
                         MaxTien = ((cursor.getInt(4) - TienChuyen) / mLamtron) * mLamtron;
                     } else if (cursor.getInt(4) > TienChuyen) {
                         MaxTien = (TienChuyen / mLamtron) * mLamtron;
@@ -2115,350 +2112,198 @@ public class Database extends SQLiteOpenHelper {
             Dem++;
             str = Tienxuat;
             mFrom2 = mFrom3;
-            dmyFormat = dmyFormat;
-            mDate = mDate;
         }
         if (xuatDan2.length() > 4 && DemPhu > 0) {
             xuatDan2 = xuatDan2 + "x" + tien + donvi;
         }
-        if (cursor != null) {
-            cursor.close();
-        }
+        cursor.close();
         return xuatDan2;
     }
 
     public String Tin_Chottien(String TenKH) throws JSONException {
-        String str;
+        String AnNhan = "AnNhan";
+        String KQNhan = "KQNhan";
+        String KQChuyen = "KQChuyen";
+        String DiemChuyen = "DiemChuyen";
+
         Cursor CongNo_Nhan;
-        String mDate;
         String nocu;
-        String nocu2;
-        String str2;
-        String str3;
         String socuoi;
-        Cursor Tin_nhan;
-        JSONObject jsonKhach;
-        double TienNhan;
+        Cursor cur_Tin_nhan;
         double TienChuyen;
-        double TienChuyen2;
-        double TienNhan2;
-        String socuoi2;
-        Cursor ThongTin_khach;
-        String nocu3;
-        String mDate2;
+        double TienNhan;
         Cursor CongNo_Nhan2;
-        String str4;
-        String str5;
-        String mDate3;
-        String str6;
-        String nocu4;
-        JSONObject jsonKhach2;
+        JSONObject jsonKhach;
         Iterator<String> keys;
         Cursor ThanhToan;
-        String str7;
-        Cursor Tin_nhan2;
-        JSONObject jsonKhach3;
-        Iterator<String> keys2;
-        String str8;
-        String str9;
-        String str10;
-        String Str_c;
-        JSONException e;
         Database database = this;
-        String str11 = "AnNhan";
-        String str12 = "KQNhan";
-        new MainActivity();
         String mDate4 = MainActivity.Get_date();
         String mNgay = MainActivity.Get_ngay();
         DecimalFormat decimalFormat = new DecimalFormat("###,###");
         String TinChot = null;
-        Cursor ThongTin_khach2 = database.GetData("Select * From tbl_kh_new Where ten_kh = '" + TenKH + "'");
-        ThongTin_khach2.moveToFirst();
-        str = "xn";
-        JSONObject jSONObject = new JSONObject(ThongTin_khach2.getString(5));
+        Cursor cur_ThongTin_khach = database.GetData("Select * From tbl_kh_new Where ten_kh = '" + TenKH + "'");
+        cur_ThongTin_khach.moveToFirst();
+        JSONObject jSONObject = new JSONObject(cur_ThongTin_khach.getString(5));
         database.json = jSONObject;
         database.caidat_tg = jSONObject.getJSONObject("caidat_tg");
         CongNo_Nhan = database.GetData("Select ten_kh, so_dienthoai \n, SUM((ngay_nhan < '" + mDate4 + "') * ket_qua * (100-diem_khachgiu)/100)/1000  as NoCu \n, SUM((ngay_nhan <= '" + mDate4 + "')*ket_qua*(100-diem_khachgiu)/100)/1000 as SoCuoi  \n FROM tbl_soctS WHERE ten_kh = '" + TenKH + "'  GROUP BY ten_kh");
         CongNo_Nhan.moveToFirst();
-        StringBuilder sb3 = new StringBuilder();
-        sb3.append("So cu: ");
-        mDate = "xi";
-        nocu = "lo";
-        sb3.append(decimalFormat.format(CongNo_Nhan.getDouble(2)));
-        nocu2 = sb3.toString();
-        StringBuilder sb22 = new StringBuilder();
-        sb22.append("So cuoi: ");
-        str2 = "KQChuyen";
-        str3 = "DiemChuyen";
-        sb22.append(decimalFormat.format(CongNo_Nhan.getDouble(3)));
-        socuoi = sb22.toString();
-        Tin_nhan = database.GetData("Select ten_kh, so_dienthoai, the_loai\n, sum((type_kh = 1)*diem) as mDiem\n, CASE WHEN the_loai = 'xi' OR the_loai = 'xia' \n THEN sum((type_kh = 1)*diem*so_nhay*lan_an/1000) \n ELSE sum((type_kh = 1)*diem*so_nhay)  END nAn\n, sum((type_kh = 1)*ket_qua/1000) as mKetqua\n, sum((type_kh = 2)*diem) as mDiem\n, CASE WHEN the_loai = 'xi' OR the_loai = 'xia' \n THEN sum((type_kh = 2)*diem*so_nhay*lan_an/1000) \n ELSE sum((type_kh = 2)*diem*so_nhay)  END nAn\n, sum((type_kh = 2)*ket_qua/1000) as mKetqua\n, 100-(diem_khachgiu*(type_kh=1)) as PT\n  From tbl_soctS Where ngay_nhan = '" + mDate4 + "' AND ten_kh = '" + TenKH + "'\n  AND the_loai <> 'tt' GROUP by ten_kh, the_loai");
+        nocu = "So cu: " + decimalFormat.format(CongNo_Nhan.getDouble(2));
+        socuoi = "So cuoi: " + decimalFormat.format(CongNo_Nhan.getDouble(3));
+        cur_Tin_nhan = database.GetData("Select ten_kh, so_dienthoai, the_loai\n, sum((type_kh = 1)*diem) as mDiem\n, CASE WHEN the_loai = 'xi' OR the_loai = 'xia' \n THEN sum((type_kh = 1)*diem*so_nhay*lan_an/1000) \n ELSE sum((type_kh = 1)*diem*so_nhay)  END nAn\n, sum((type_kh = 1)*ket_qua/1000) as mKetqua\n, sum((type_kh = 2)*diem) as mDiem\n, CASE WHEN the_loai = 'xi' OR the_loai = 'xia' \n THEN sum((type_kh = 2)*diem*so_nhay*lan_an/1000) \n ELSE sum((type_kh = 2)*diem*so_nhay)  END nAn\n, sum((type_kh = 2)*ket_qua/1000) as mKetqua\n, 100-(diem_khachgiu*(type_kh=1)) as PT\n  From tbl_soctS Where ngay_nhan = '" + mDate4 + "' AND ten_kh = '" + TenKH + "'\n  AND the_loai <> 'tt' GROUP by ten_kh, the_loai");
         jsonKhach = new JSONObject();
         TienNhan = 0.0d;
         TienChuyen = 0.0d;
-        while (Tin_nhan.moveToNext()) {
+        while (cur_Tin_nhan.moveToNext()) {
             JSONObject jsonDang = new JSONObject();
-            socuoi2 = socuoi;
-            jsonDang.put("DiemNhan", Tin_nhan.getDouble(3));
-            jsonDang.put(str11, Tin_nhan.getDouble(4));
-            CongNo_Nhan2 = CongNo_Nhan;
-            jsonDang.put(str12, Tin_nhan.getDouble(5));
-            str6 = str3;
+            jsonDang.put("DiemNhan", cur_Tin_nhan.getDouble(3));
+            jsonDang.put(AnNhan, cur_Tin_nhan.getDouble(4));
+            jsonDang.put(KQNhan, cur_Tin_nhan.getDouble(5));
             try {
-                jsonDang.put(str6, Tin_nhan.getDouble(6));
-                ThongTin_khach = ThongTin_khach2;
+                jsonDang.put(DiemChuyen, cur_Tin_nhan.getDouble(6));
 
-                jsonDang.put("AnChuyen", Tin_nhan.getDouble(7));
-                str4 = str2;
+                jsonDang.put("AnChuyen", cur_Tin_nhan.getDouble(7));
 
-                jsonDang.put(str4, Tin_nhan.getDouble(8));
-                if (Tin_nhan.getString(2).indexOf("de") > -1) {
+                jsonDang.put(KQChuyen, cur_Tin_nhan.getDouble(8));
+                if (cur_Tin_nhan.getString(2).contains("de")) {
                     jsonDang.put("PhanTram", 100 - database.caidat_tg.getInt("khgiu_de"));
-                    str5 = nocu;
-                    nocu3 = nocu2;
-                    nocu4 = mDate;
-                    mDate2 = mDate4;
-                    mDate3 = str;
                 } else {
-                    str5 = nocu;
-                    nocu3 = nocu2;
-                    if (Tin_nhan.getString(2).contains(str5)) {
+                    if (cur_Tin_nhan.getString(2).contains("lo")) {
                         jsonDang.put("PhanTram", 100 - database.caidat_tg.getInt("khgiu_lo"));
-                        nocu4 = mDate;
-                        mDate2 = mDate4;
-                        mDate3 = str;
                     } else {
-                        nocu4 = mDate;
-                        mDate2 = mDate4;
-                        if (Tin_nhan.getString(2).indexOf(nocu4) > -1) {
+                        if (cur_Tin_nhan.getString(2).contains("xi")) {
                             jsonDang.put("PhanTram", 100 - database.caidat_tg.getInt("khgiu_xi"));
-                            mDate3 = str;
                         } else {
-
-                            if (Tin_nhan.getString(2).indexOf("bc") > -1) {
+                            if (cur_Tin_nhan.getString(2).contains("bc")) {
                                 jsonDang.put("PhanTram", 100 - database.caidat_tg.getInt("khgiu_bc"));
-                                mDate3 = str;
                             } else {
-                                mDate3 = str;
-                                if (Tin_nhan.getString(2).indexOf(mDate3) > -1) {
+                                if (cur_Tin_nhan.getString(2).contains("xn")) {
                                     jsonDang.put("PhanTram", 100 - database.caidat_tg.getInt("khgiu_xn"));
                                 } else {
-                                    jsonDang.put("PhanTram", Tin_nhan.getDouble(9));
+                                    jsonDang.put("PhanTram", cur_Tin_nhan.getDouble(9));
                                 }
                             }
                         }
                     }
                 }
+                TienNhan += (jsonDang.getDouble(KQNhan) * jsonDang.getDouble("PhanTram")) / 100;
+                TienChuyen += jsonDang.getInt(KQChuyen);
+                jsonKhach.put(cur_Tin_nhan.getString(2), jsonDang.toString());
             } catch (JSONException e19) {
+                Log.e(TAG, "Tin_Chottien: JSONException " +e19 );
             }
         }
-        socuoi2 = socuoi;
         CongNo_Nhan2 = CongNo_Nhan;
-        mDate3 = str;
-        str5 = nocu;
-        str6 = str3;
-        jsonKhach2 = jsonKhach;
-        nocu3 = nocu2;
-        ThongTin_khach = ThongTin_khach2;
-        str4 = str2;
-        nocu4 = mDate;
-        mDate2 = mDate4;
-        TienNhan2 = TienNhan;
-        TienChuyen2 = TienChuyen;
-        JSONObject jsonObject2222222222222222 = new JSONObject();
-        jsonObject2222222222222222.put("dea", "Dau DB: ");
-        jsonObject2222222222222222.put("deb", "De: ");
-        jsonObject2222222222222222.put("det", "De 8: ");
-        jsonObject2222222222222222.put("dec", "Dau Nhat: ");
-        jsonObject2222222222222222.put("ded", "Dit Nhat: ");
-        jsonObject2222222222222222.put(str5, "Lo: ");
-        jsonObject2222222222222222.put(nocu4, "Xien: ");
-        jsonObject2222222222222222.put(mDate3, "X.nhay: ");
-        jsonObject2222222222222222.put("bc", "3Cang: ");
-        jsonObject2222222222222222.put("loa", "Lo dau: ");
-        jsonObject2222222222222222.put("xia", "Xien dau: ");
-        jsonObject2222222222222222.put("bca", "Cang dau: ");
-        keys = jsonObject2222222222222222.keys();
-        String Str_n2222222222222222 = "";
-        String Str_c22222222222222222 = "";
+        JSONObject jsonObject = new JSONObject();
+        jsonObject.put("dea", "Dau DB: ");
+        jsonObject.put("deb", "De: ");
+        jsonObject.put("det", "De 8: ");
+        jsonObject.put("dec", "Dau Nhat: ");
+        jsonObject.put("ded", "Dit Nhat: ");
+        jsonObject.put("lo", "Lo: ");
+        jsonObject.put("xi", "Xien: ");
+        jsonObject.put("xn", "X.nhay: ");
+        jsonObject.put("bc", "3Cang: ");
+        jsonObject.put("loa", "Lo dau: ");
+        jsonObject.put("xia", "Xien dau: ");
+        jsonObject.put("bca", "Cang dau: ");
+        keys = jsonObject.keys();
+        String Str_n = "";
+        String Str_c = "";
         while (keys.hasNext()) {
             String key = keys.next();
-            if (jsonKhach2.has(key)) {
-                keys2 = keys;
-                JSONObject jsonDang2 = new JSONObject(jsonKhach2.getString(key));
-                jsonKhach3 = jsonKhach2;
-                Tin_nhan2 = Tin_nhan;
+            if (jsonKhach.has(key)) {
+                JSONObject jsonDang2 = new JSONObject(jsonKhach.getString(key));
                 if (jsonDang2.getInt("PhanTram") != 100) {
-                    Str_c = Str_c22222222222222222;
-                    str9 = str6;
                     if (jsonDang2.getDouble("DiemNhan") > 0.0d) {
-                        StringBuilder sb4 = new StringBuilder();
-                        sb4.append(Str_n2222222222222222);
-                        sb4.append(jsonObject2222222222222222.getString(key));
-                        str10 = str4;
-                        sb4.append(decimalFormat.format(jsonDang2.getDouble("DiemNhan")));
-                        sb4.append("(");
-                        sb4.append(decimalFormat.format(jsonDang2.getDouble(str11)));
-                        sb4.append(") =");
-                        sb4.append(decimalFormat.format(jsonDang2.getDouble(str12)));
-                        sb4.append("x");
-                        sb4.append(jsonDang2.getString("PhanTram"));
-                        sb4.append("%=");
-                        sb4.append(decimalFormat.format((jsonDang2.getDouble(str12) * jsonDang2.getDouble("PhanTram")) / 100.0d));
-                        sb4.append("\n");
-                        Str_n2222222222222222 = sb4.toString();
-                    } else {
-                        str10 = str4;
+                        Str_n = Str_n +
+                                jsonObject.getString(key) +
+                                decimalFormat.format(jsonDang2.getDouble("DiemNhan")) +
+                                "(" + decimalFormat.format(jsonDang2.getDouble(AnNhan)) + ") =" +
+                                decimalFormat.format(jsonDang2.getDouble(KQNhan)) + "x" +
+                                jsonDang2.getString("PhanTram") + "%=" +
+                                decimalFormat.format((jsonDang2.getDouble(KQNhan) * jsonDang2.getDouble("PhanTram")) / 100.0d) +
+                                "\n";
                     }
                 } else if (jsonDang2.getDouble("DiemNhan") > 0.0d) {
-                    StringBuilder sb5 = new StringBuilder();
-                    sb5.append(Str_n2222222222222222);
-                    sb5.append(jsonObject2222222222222222.getString(key));
-                    Str_c = Str_c22222222222222222;
-                    str9 = str6;
-                    sb5.append(decimalFormat.format(jsonDang2.getDouble("DiemNhan")));
-                    sb5.append("(");
-                    sb5.append(decimalFormat.format(jsonDang2.getDouble(str11)));
-                    sb5.append(")=");
-                    sb5.append(decimalFormat.format(jsonDang2.getDouble(str12)));
-                    sb5.append("\n");
-                    Str_n2222222222222222 = sb5.toString();
-                    str10 = str4;
-                } else {
-                    Str_c = Str_c22222222222222222;
-                    str9 = str6;
-                    str10 = str4;
+                    Str_n = Str_n +
+                            jsonObject.getString(key) +
+                            decimalFormat.format(jsonDang2.getDouble("DiemNhan")) +
+                            "(" + decimalFormat.format(jsonDang2.getDouble(AnNhan)) + ")=" +
+                            decimalFormat.format(jsonDang2.getDouble(KQNhan)) +
+                            "\n";
                 }
-                if (jsonDang2.getDouble(str9) > 0.0d) {
-                    StringBuilder sb6 = new StringBuilder();
-                    sb6.append(Str_c);
-                    sb6.append(jsonObject2222222222222222.getString(key));
-                    str8 = str11;
-                    str7 = str12;
-                    sb6.append(decimalFormat.format(jsonDang2.getDouble(str9)));
-                    sb6.append("(");
-                    sb6.append(decimalFormat.format(jsonDang2.getDouble("AnChuyen")));
-                    sb6.append(")=");
-                    sb6.append(decimalFormat.format(jsonDang2.getDouble(str10)));
-                    sb6.append("\n");
-                    Str_c22222222222222222 = sb6.toString();
-                } else {
-                    str8 = str11;
-                    str7 = str12;
-                    Str_c22222222222222222 = Str_c;
+                if (jsonDang2.getDouble(DiemChuyen) > 0.0d) {
+                    Str_c = Str_c +
+                            jsonObject.getString(key) +
+                            decimalFormat.format(jsonDang2.getDouble(DiemChuyen)) +
+                            "(" + decimalFormat.format(jsonDang2.getDouble("AnChuyen")) + ")=" +
+                            decimalFormat.format(jsonDang2.getDouble(KQChuyen)) +
+                            "\n";
                 }
-            } else {
-                jsonKhach3 = jsonKhach2;
-                keys2 = keys;
-                Tin_nhan2 = Tin_nhan;
-                str7 = str12;
-                str9 = str6;
-                str10 = str4;
-                str8 = str11;
             }
-            str11 = str8;
-            keys = keys2;
-            jsonKhach2 = jsonKhach3;
-            str12 = str7;
-            str4 = str10;
-            str6 = str9;
-            Tin_nhan = Tin_nhan2;
         }
-        ThanhToan = GetData("SELECT SUM((the_loai = 'tt') * ket_qua) AS Ttoan \n FROM tbl_soctS WHERE ten_kh = '" + TenKH + "' AND ngay_nhan ='" + mDate2 + "'");
+        ThanhToan = GetData("SELECT SUM((the_loai = 'tt') * ket_qua) AS Ttoan \n FROM tbl_soctS WHERE ten_kh = '" + TenKH + "' AND ngay_nhan ='" + mDate4 + "'");
         ThanhToan.moveToFirst();
         String Ttoan2222222222222222 = "";
         if (ThanhToan.getInt(0) != 0) {
             Ttoan2222222222222222 = "T.toan: " + decimalFormat.format(ThanhToan.getDouble(0) / 1000.0d) + "\n";
         }
+        Log.e(TAG, "Tin_Chottien: " + Str_n + Str_c +  this.caidat_tg.getInt("chot_sodu"));
         if (this.caidat_tg.getInt("chot_sodu") == 0) {
-            if (Str_n2222222222222222.length() > 0 && Str_c22222222222222222.length() > 0) {
-                TinChot = mNgay + ":\n" + Str_n2222222222222222 + "Tong nhan:" + decimalFormat.format(TienNhan2) + "\n\n" + Str_c22222222222222222 + "Tong chuyen:" + decimalFormat.format(TienChuyen2) + "\nTong tien: " + decimalFormat.format(TienNhan2 + TienChuyen2);
-            } else if (Str_n2222222222222222.length() > 0) {
-                TinChot = mNgay + ":\n" + Str_n2222222222222222 + "Tong nhan:" + decimalFormat.format(TienNhan2);
-            } else if (Str_c22222222222222222.length() > 0) {
-                TinChot = mNgay + ":\n" + Str_c22222222222222222 + "Tong chuyen:" + decimalFormat.format(TienChuyen2);
-            }
-        } else if (Str_n2222222222222222.length() > 0 && Str_c22222222222222222.length() > 0) {
-            TinChot = mNgay + ":\n" + nocu3 + "\n" + Str_n2222222222222222 + "Tong nhan:" + decimalFormat.format(TienNhan2) + "\n\n" + Str_c22222222222222222 + "Tong chuyen:" + decimalFormat.format(TienChuyen2) + "\nTong tien: " + decimalFormat.format(TienNhan2 + TienChuyen2) + "\n" + Ttoan2222222222222222 + socuoi2;
-        } else if (Str_n2222222222222222.length() > 0) {
-            TinChot = mNgay + ":\n" + nocu3 + "\n" + Str_n2222222222222222 + "Tong chuyen:" + decimalFormat.format(TienNhan2) + "\n" + Ttoan2222222222222222 + socuoi2;
-        } else if (Str_c22222222222222222.length() > 0) {
-            TinChot = mNgay + ":\n" + nocu3 + "\n" + Str_c22222222222222222 + "Tong chuyen:" + decimalFormat.format(TienChuyen2) + "\n" + Ttoan2222222222222222 + socuoi2;
+            if (Str_n.length() > 0 && Str_c.length() > 0)
+                TinChot = mNgay + ":\n" + Str_n + "Tong nhan:" + decimalFormat.format(TienNhan) + "\n\n" + Str_c + "Tong chuyen:" + decimalFormat.format(TienChuyen) + "\nTong tien: " + decimalFormat.format(TienNhan + TienChuyen);
+            else if (Str_n.length() > 0)
+                TinChot = mNgay + ":\n" + Str_n + "Tong nhan:" + decimalFormat.format(TienNhan);
+            else if (Str_c.length() > 0)
+                TinChot = mNgay + ":\n" + Str_c + "Tong chuyen:" + decimalFormat.format(TienChuyen);
+        } else if (Str_n.length() > 0 && Str_c.length() > 0) {
+            TinChot = mNgay + ":\n" + nocu + "\n" + Str_n + "Tong nhan:" + decimalFormat.format(TienNhan) + "\n\n" + Str_c + "Tong chuyen:" + decimalFormat.format(TienChuyen) + "\nTong tien: " + decimalFormat.format(TienNhan + TienChuyen) + "\n" + Ttoan2222222222222222 + socuoi;
+        } else if (Str_n.length() > 0) {
+            TinChot = mNgay + ":\n" + nocu + "\n" + Str_n + "Tong chuyen:" + decimalFormat.format(TienNhan) + "\n" + Ttoan2222222222222222 + socuoi;
+        } else if (Str_c.length() > 0) {
+            TinChot = mNgay + ":\n" + nocu + "\n" + Str_c + "Tong chuyen:" + decimalFormat.format(TienChuyen) + "\n" + Ttoan2222222222222222 + socuoi;
         }
         if (!CongNo_Nhan2.isClosed()) {
             CongNo_Nhan2.close();
         }
-        if (!ThongTin_khach.isClosed()) {
-            ThongTin_khach.close();
+        if (!cur_ThongTin_khach.isClosed()) {
+            cur_ThongTin_khach.close();
         }
         return TinChot;
     }
 
     public String Tin_Chottien_xien(String TenKH) throws JSONException {
-        String str;
+        String AnNhan = "AnNhan";
+        String KQNhan = "KQNhan";
+        String KQChuyen = "KQChuyen";
+        String DiemChuyen = "DiemChuyen";
+
         Cursor CongNo_Nhan;
-        String str2;
-        String socuoi;
         String nocu;
-        String str3;
-        String str4;
-        String socuoi2;
         Cursor Tin_nhan;
         JSONObject jsonKhach;
         double TienNhan;
         double TienChuyen;
-        double TienChuyen2;
-        String nocu2;
         String socuoi3;
         Cursor ThongTin_khach;
         Cursor CongNo_Nhan2;
-        String str5;
-        String str6;
-        String str7;
-        double TienNhan2;
-        JSONObject jsonKhach2;
-        String nocu3;
-        String str8;
         Iterator<String> keys;
         Cursor ThanhToan;
-        String mDate;
-        JSONObject jsonKhach3;
-        Iterator<String> keys2;
-        String str9;
-        String str10;
-        String mDate2;
-        String str11;
-        String str12;
-        JSONException e;
-        String str13 = "DiemChuyen";
-        String str14 = "AnNhan";
-        String str15 = "KQNhan";
-        new MainActivity();
-        String mDate3 = MainActivity.Get_date();
+        String mDate = MainActivity.Get_date();
         String mNgay = MainActivity.Get_ngay();
         DecimalFormat decimalFormat = new DecimalFormat("###,###");
         String TinChot = null;
         Cursor ThongTin_khach2 = GetData("Select * From tbl_kh_new Where ten_kh = '" + TenKH + "'");
         ThongTin_khach2.moveToFirst();
-        str = "'";
         JSONObject jSONObject = new JSONObject(ThongTin_khach2.getString(5));
         this.json = jSONObject;
         this.caidat_tg = jSONObject.getJSONObject("caidat_tg");
-        CongNo_Nhan = GetData("Select ten_kh, so_dienthoai \n, SUM((ngay_nhan < '" + mDate3 + "') * ket_qua * (100-diem_khachgiu)/100)/1000  as NoCu \n, SUM((ngay_nhan <= '" + mDate3 + "')*ket_qua*(100-diem_khachgiu)/100)/1000 as SoCuoi  \n FROM tbl_soctS WHERE ten_kh = '" + TenKH + "'  GROUP BY ten_kh");
+        CongNo_Nhan = GetData("Select ten_kh, so_dienthoai \n, SUM((ngay_nhan < '" + mDate + "') * ket_qua * (100-diem_khachgiu)/100)/1000  as NoCu \n, SUM((ngay_nhan <= '" + mDate + "')*ket_qua*(100-diem_khachgiu)/100)/1000 as SoCuoi  \n FROM tbl_soctS WHERE ten_kh = '" + TenKH + "'  GROUP BY ten_kh");
         CongNo_Nhan.moveToFirst();
-        StringBuilder sb3 = new StringBuilder();
-        sb3.append("So cu: ");
-        str2 = "bc";
-        socuoi = "xn";
-        sb3.append(decimalFormat.format(CongNo_Nhan.getDouble(2)));
-        nocu = sb3.toString();
-        StringBuilder sb22 = new StringBuilder();
-        sb22.append("So cuoi: ");
-        str3 = "lo";
-        str4 = "KQChuyen";
-        sb22.append(decimalFormat.format(CongNo_Nhan.getDouble(3)));
-        socuoi2 = sb22.toString();
-        String Sql2 = "Select ten_kh, so_dienthoai, CASE \nWHEN the_loai = 'xi' And length(so_chon) = 5 THEN 'xi2' \nWHEN the_loai = 'xi' And length(so_chon) = 8 THEN 'xi3' \nWHEN the_loai = 'xi' And length(so_chon) = 11 THEN 'xi4' \nWHEN the_loai = 'xia' And length(so_chon) = 5 THEN 'xia2' \nWHEN the_loai = 'xia' And length(so_chon) = 8 THEN 'xia3' \nWHEN the_loai = 'xia' And length(so_chon) = 11 THEN 'xia4' \nELSE the_loai END m_theloai\n, sum((type_kh = 1)*diem) as mDiem\n, sum((type_kh = 1)*diem*so_nhay) as mAn \n, sum((type_kh = 1)*ket_qua)/1000 as mKetqua\n, sum((type_kh = 2)*diem) as mDiem\n, sum((type_kh = 2)*diem*so_nhay) as mAn \n, sum((type_kh = 2)*ket_qua)/1000 as mKetqua\n, 100-(diem_khachgiu*(type_kh=1)) as PT\n  From tbl_soctS Where the_loai <> 'tt' AND ten_kh = '" + TenKH + "' and ngay_nhan = '" + mDate3 + "'\n  GROUP by m_theloai";
+        nocu = "So cu: " + decimalFormat.format(CongNo_Nhan.getDouble(2));
+        socuoi3 = "So cuoi: " + decimalFormat.format(CongNo_Nhan.getDouble(3));
+        String Sql2 = "Select ten_kh, so_dienthoai, CASE \nWHEN the_loai = 'xi' And length(so_chon) = 5 THEN 'xi2' \nWHEN the_loai = 'xi' And length(so_chon) = 8 THEN 'xi3' \nWHEN the_loai = 'xi' And length(so_chon) = 11 THEN 'xi4' \nWHEN the_loai = 'xia' And length(so_chon) = 5 THEN 'xia2' \nWHEN the_loai = 'xia' And length(so_chon) = 8 THEN 'xia3' \nWHEN the_loai = 'xia' And length(so_chon) = 11 THEN 'xia4' \nELSE the_loai END m_theloai\n, sum((type_kh = 1)*diem) as mDiem\n, sum((type_kh = 1)*diem*so_nhay) as mAn \n, sum((type_kh = 1)*ket_qua)/1000 as mKetqua\n, sum((type_kh = 2)*diem) as mDiem\n, sum((type_kh = 2)*diem*so_nhay) as mAn \n, sum((type_kh = 2)*ket_qua)/1000 as mKetqua\n, 100-(diem_khachgiu*(type_kh=1)) as PT\n  From tbl_soctS Where the_loai <> 'tt' AND ten_kh = '" + TenKH + "' and ngay_nhan = '" + mDate + "'\n  GROUP by m_theloai";
         Tin_nhan = GetData(Sql2);
         jsonKhach = new JSONObject();
         TienNhan = 0.0d;
@@ -2467,195 +2312,107 @@ public class Database extends SQLiteOpenHelper {
             try {
                 JSONObject jsonDang = new JSONObject();
                 jsonDang.put("DiemNhan", Tin_nhan.getDouble(3));
-                jsonDang.put(str14, Tin_nhan.getDouble(4));
-                CongNo_Nhan2 = CongNo_Nhan;
-                jsonDang.put(str15, Tin_nhan.getDouble(5));
-                jsonDang.put(str13, Tin_nhan.getDouble(6));
-                nocu2 = nocu;
-                try {
-                    jsonDang.put("AnChuyen", Tin_nhan.getDouble(7));
-                    str6 = str4;
-                    try {
-                        jsonDang.put(str6, Tin_nhan.getDouble(8));
-                        if (Tin_nhan.getString(2).indexOf("de") > -1) {
-                            jsonDang.put("PhanTram", 100 - this.caidat_tg.getInt("khgiu_de"));
-                            str5 = str13;
-                            str8 = str3;
-                            nocu3 = str2;
-                            ThongTin_khach = ThongTin_khach2;
-                            str7 = socuoi;
-                            socuoi3 = socuoi2;
-                        } else {
-                            str8 = str3;
-                            try {
-                                if (Tin_nhan.getString(2).indexOf(str8) > -1) {
-                                    jsonDang.put("PhanTram", 100 - this.caidat_tg.getInt("khgiu_lo"));
-                                    str5 = str13;
-                                    nocu3 = str2;
-                                    ThongTin_khach = ThongTin_khach2;
-                                    str7 = socuoi;
-                                    socuoi3 = socuoi2;
-                                } else if (Tin_nhan.getString(2).indexOf("xi") > -1) {
-                                    jsonDang.put("PhanTram", 100 - this.caidat_tg.getInt("khgiu_xi"));
-                                    str5 = str13;
-                                    nocu3 = str2;
-                                    ThongTin_khach = ThongTin_khach2;
-                                    str7 = socuoi;
-                                    socuoi3 = socuoi2;
-                                } else {
-                                    nocu3 = str2;
-                                    try {
-                                        ThongTin_khach = ThongTin_khach2;
-                                        if (Tin_nhan.getString(2).indexOf(nocu3) > -1) {
-                                            jsonDang.put("PhanTram", 100 - this.caidat_tg.getInt("khgiu_bc"));
-                                            str5 = str13;
-                                            str7 = socuoi;
-                                            socuoi3 = socuoi2;
-                                        } else {
-                                            str7 = socuoi;
-                                            socuoi3 = socuoi2;
-                                            if (Tin_nhan.getString(2).indexOf(str7) > -1) {
-                                                jsonDang.put("PhanTram", 100 - this.caidat_tg.getInt("khgiu_xn"));
-                                                str5 = str13;
-                                            } else {
-                                                str5 = str13;
-                                                jsonDang.put("PhanTram", Tin_nhan.getDouble(9));
-                                            }
-                                        }
-                                    } catch (JSONException e14) {
-                                    }
-                                }
-                            } catch (JSONException e15) {
-                            }
-                        }
-                        TienNhan += (jsonDang.getDouble(str15) * jsonDang.getDouble("PhanTram")) / 100.0d;
-                        TienChuyen += jsonDang.getDouble(str6);
-                        String string = Tin_nhan.getString(2);
-                        jsonKhach2 = jsonKhach;
-                    } catch (JSONException e17) {
-                    }
-                } catch (JSONException e18) {
+                jsonDang.put(AnNhan, Tin_nhan.getDouble(4));
+                jsonDang.put(KQNhan, Tin_nhan.getDouble(5));
+                jsonDang.put(DiemChuyen, Tin_nhan.getDouble(6));
+                jsonDang.put("AnChuyen", Tin_nhan.getDouble(7));
+
+                jsonDang.put(KQChuyen, Tin_nhan.getDouble(8));
+                if (Tin_nhan.getString(2).contains("de")) {
+                    jsonDang.put("PhanTram", 100 - this.caidat_tg.getInt("khgiu_de"));
+                } else if (Tin_nhan.getString(2).contains("lo")) {
+                    jsonDang.put("PhanTram", 100 - this.caidat_tg.getInt("khgiu_lo"));
+                } else if (Tin_nhan.getString(2).contains("xi")) {
+                    jsonDang.put("PhanTram", 100 - this.caidat_tg.getInt("khgiu_xi"));
+                } else if (Tin_nhan.getString(2).contains("bc")) {
+                    jsonDang.put("PhanTram", 100 - this.caidat_tg.getInt("khgiu_bc"));
+                } else if (Tin_nhan.getString(2).contains("xn")) {
+                    jsonDang.put("PhanTram", 100 - this.caidat_tg.getInt("khgiu_xn"));
+                } else {
+                    jsonDang.put("PhanTram", Tin_nhan.getDouble(9));
                 }
+                TienNhan += (jsonDang.getDouble(KQNhan) * jsonDang.getDouble("PhanTram")) / 100.0d;
+                TienChuyen += jsonDang.getDouble(KQChuyen);
+                String string = Tin_nhan.getString(2);
+                jsonKhach.put(string, jsonDang.toString());
             } catch (JSONException e19) {
             }
         }
-        nocu2 = nocu;
         CongNo_Nhan2 = CongNo_Nhan;
-        str8 = str3;
-        nocu3 = str2;
-        str6 = str4;
         ThongTin_khach = ThongTin_khach2;
-        jsonKhach2 = jsonKhach;
-        str5 = str13;
-        str7 = socuoi;
-        socuoi3 = socuoi2;
-        TienNhan2 = TienNhan;
-        TienChuyen2 = TienChuyen;
-        JSONObject jsonObject22222222222222222 = new JSONObject();
-        String str1622222222222222222 = str5;
-        jsonObject22222222222222222.put("dea", "Dau DB: ");
-        jsonObject22222222222222222.put("deb", "De: ");
-        jsonObject22222222222222222.put("det", "De 8: ");
-        jsonObject22222222222222222.put("dec", "Dau Nhat: ");
-        jsonObject22222222222222222.put("ded", "Dit Nhat: ");
-        jsonObject22222222222222222.put(str8, "Lo: ");
-        jsonObject22222222222222222.put("xi2", "Xien 2: ");
-        jsonObject22222222222222222.put("xi3", "Xien 3: ");
-        jsonObject22222222222222222.put("xi4", "Xien 4: ");
-        jsonObject22222222222222222.put(str7, "X.nhay: ");
-        jsonObject22222222222222222.put(nocu3, "3Cang: ");
-        jsonObject22222222222222222.put("loa", "Lo dau: ");
-        jsonObject22222222222222222.put("xia2", "Xia 2: ");
-        jsonObject22222222222222222.put("xia3", "Xia 3: ");
-        jsonObject22222222222222222.put("xia4", "Xia 4: ");
-        jsonObject22222222222222222.put("bca", "3Cang dau: ");
-        keys = jsonObject22222222222222222.keys();
-        String Str_n22222222222222222 = "";
-        String Str_c22222222222222222 = "";
+        JSONObject jsonObject = new JSONObject();
+        jsonObject.put("dea", "Dau DB: ");
+        jsonObject.put("deb", "De: ");
+        jsonObject.put("det", "De 8: ");
+        jsonObject.put("dec", "Dau Nhat: ");
+        jsonObject.put("ded", "Dit Nhat: ");
+        jsonObject.put("lo", "Lo: ");
+        jsonObject.put("xi2", "Xien 2: ");
+        jsonObject.put("xi3", "Xien 3: ");
+        jsonObject.put("xi4", "Xien 4: ");
+        jsonObject.put("xn", "X.nhay: ");
+        jsonObject.put("bc", "3Cang: ");
+        jsonObject.put("loa", "Lo dau: ");
+        jsonObject.put("xia2", "Xia 2: ");
+        jsonObject.put("xia3", "Xia 3: ");
+        jsonObject.put("xia4", "Xia 4: ");
+        jsonObject.put("bca", "3Cang dau: ");
+        keys = jsonObject.keys();
+        String Str_n2 = "";
+        String Str_c2 = "";
         while (keys.hasNext()) {
             String key = keys.next();
-            if (jsonKhach2.has(key)) {
-                keys2 = keys;
-                JSONObject jsonDang2 = new JSONObject(jsonKhach2.getString(key));
-                jsonKhach3 = jsonKhach2;
-                mDate = mDate3;
+            if (jsonKhach.has(key)) {
+                JSONObject jsonDang2 = new JSONObject(jsonKhach.getString(key));
                 if (jsonDang2.getInt("PhanTram") != 100) {
-                    str12 = str6;
                     if (jsonDang2.getDouble("DiemNhan") > 0.0d) {
-                        Str_n22222222222222222 = Str_n22222222222222222 + jsonObject22222222222222222.getString(key) + decimalFormat.format(jsonDang2.getDouble("DiemNhan")) + "(" + decimalFormat.format(jsonDang2.getDouble(str14)) + ")=" + decimalFormat.format(jsonDang2.getDouble(str15)) + "x" + jsonDang2.getString("PhanTram") + "%=" + decimalFormat.format((jsonDang2.getDouble(str15) * jsonDang2.getDouble("PhanTram")) / 100.0d) + "\n";
+                        Str_n2 = Str_n2 +
+                                jsonObject.getString(key) + decimalFormat.format(jsonDang2.getDouble("DiemNhan")) + "("
+                                + decimalFormat.format(jsonDang2.getDouble(AnNhan)) + ")=" + decimalFormat.format(jsonDang2.getDouble(KQNhan)) + "x"
+                                + jsonDang2.getString("PhanTram") + "%=" + decimalFormat.format((jsonDang2.getDouble(KQNhan) * jsonDang2.getDouble("PhanTram")) / 100.0d) + "\n";
                     }
                 } else if (jsonDang2.getDouble("DiemNhan") > 0.0d) {
-                    StringBuilder sb4 = new StringBuilder();
-                    sb4.append(Str_n22222222222222222);
-                    sb4.append(jsonObject22222222222222222.getString(key));
-                    str12 = str6;
-                    sb4.append(decimalFormat.format(jsonDang2.getDouble("DiemNhan")));
-                    sb4.append("(");
-                    sb4.append(decimalFormat.format(jsonDang2.getDouble(str14)));
-                    sb4.append(")=");
-                    sb4.append(decimalFormat.format(jsonDang2.getDouble(str15)));
-                    sb4.append("\n");
-                    Str_n22222222222222222 = sb4.toString();
-                } else {
-                    str12 = str6;
+                    Str_n2 = Str_n2 +
+                            jsonObject.getString(key) +
+                            decimalFormat.format(jsonDang2.getDouble("DiemNhan")) +
+                            "(" +
+                            decimalFormat.format(jsonDang2.getDouble(AnNhan)) +
+                            ")=" +
+                            decimalFormat.format(jsonDang2.getDouble(KQNhan)) +
+                            "\n";
                 }
-                mDate2 = str1622222222222222222;
-                if (jsonDang2.getDouble(mDate2) > 0.0d) {
-                    StringBuilder sb5 = new StringBuilder();
-                    sb5.append(Str_c22222222222222222);
-                    sb5.append(jsonObject22222222222222222.getString(key));
-                    str10 = str14;
-                    str9 = str15;
-                    sb5.append(decimalFormat.format(jsonDang2.getDouble(mDate2)));
-                    sb5.append("(");
-                    sb5.append(decimalFormat.format(jsonDang2.getDouble("AnChuyen")));
-                    sb5.append(")=");
-                    str11 = str12;
-                    sb5.append(decimalFormat.format(jsonDang2.getDouble(str11)));
-                    sb5.append("\n");
-                    Str_c22222222222222222 = sb5.toString();
-                } else {
-                    str10 = str14;
-                    str9 = str15;
-                    str11 = str12;
+                if (jsonDang2.getDouble(DiemChuyen) > 0.0d) {
+                    Str_c2 = Str_c2 +
+                            jsonObject.getString(key) +
+                            decimalFormat.format(jsonDang2.getDouble(DiemChuyen)) +
+                            "(" +
+                            decimalFormat.format(jsonDang2.getDouble("AnChuyen")) +
+                            ")=" +
+                            decimalFormat.format(jsonDang2.getDouble(KQChuyen)) +
+                            "\n";
                 }
-            } else {
-                keys2 = keys;
-                jsonKhach3 = jsonKhach2;
-                str10 = str14;
-                mDate = mDate3;
-                str11 = str6;
-                mDate2 = str1622222222222222222;
-                str9 = str15;
             }
-            str6 = str11;
-            str14 = str10;
-            str15 = str9;
-            keys = keys2;
-            jsonKhach2 = jsonKhach3;
-            str1622222222222222222 = mDate2;
-            mDate3 = mDate;
         }
-        ThanhToan = GetData("SELECT SUM((the_loai = 'tt') * ket_qua) AS Ttoan \n FROM tbl_soctS WHERE ten_kh = '" + TenKH + "' AND ngay_nhan ='" + mDate3 + str);
+        ThanhToan = GetData("SELECT SUM((the_loai = 'tt') * ket_qua) AS Ttoan \n FROM tbl_soctS WHERE ten_kh = '" + TenKH + "' AND ngay_nhan ='" + mDate + "'");
         ThanhToan.moveToFirst();
         String Ttoan22222222222222222 = "";
         if (ThanhToan.getInt(0) != 0) {
             Ttoan22222222222222222 = "T.toan: " + decimalFormat.format(ThanhToan.getDouble(0) / 1000.0d) + "\n";
         }
         if (this.caidat_tg.getInt("chot_sodu") != 0) {
-            if (Str_n22222222222222222.length() > 0 && Str_c22222222222222222.length() > 0) {
-                TinChot = mNgay + ":\n" + Str_n22222222222222222 + "Tong nhan:" + decimalFormat.format(TienNhan2) + "\n\n" + Str_c22222222222222222 + "Tong chuyen:" + decimalFormat.format(TienChuyen2) + "\nTong tien: " + decimalFormat.format(TienNhan2 + TienChuyen2);
-            } else if (Str_n22222222222222222.length() > 0) {
-                TinChot = mNgay + ":\n" + Str_n22222222222222222 + "Tong nhan:" + decimalFormat.format(TienNhan2);
-            } else if (Str_c22222222222222222.length() > 0) {
-                TinChot = mNgay + ":\n" + Str_c22222222222222222 + "Tong chuyen:" + decimalFormat.format(TienChuyen2);
+            if (Str_n2.length() > 0 && Str_c2.length() > 0) {
+                TinChot = mNgay + ":\n" + Str_n2 + "Tong nhan:" + decimalFormat.format(TienNhan) + "\n\n" + Str_c2 + "Tong chuyen:" + decimalFormat.format(TienChuyen) + "\nTong tien: " + decimalFormat.format(TienNhan + TienChuyen);
+            } else if (Str_n2.length() > 0) {
+                TinChot = mNgay + ":\n" + Str_n2 + "Tong nhan:" + decimalFormat.format(TienNhan);
+            } else if (Str_c2.length() > 0) {
+                TinChot = mNgay + ":\n" + Str_c2 + "Tong chuyen:" + decimalFormat.format(TienChuyen);
             }
-        } else if (Str_n22222222222222222.length() > 0 && Str_c22222222222222222.length() > 0) {
-            TinChot = mNgay + ":\n" + nocu2 + "\n" + Str_n22222222222222222 + "Tong nhan:" + decimalFormat.format(TienNhan2) + "\n\n" + Str_c22222222222222222 + "Tong chuyen:" + decimalFormat.format(TienChuyen2) + "\nTong tien: " + decimalFormat.format(TienNhan2 + TienChuyen2) + "\n" + Ttoan22222222222222222 + socuoi3;
-        } else if (Str_n22222222222222222.length() > 0) {
-            TinChot = mNgay + ":\n" + nocu2 + "\n" + Str_n22222222222222222 + "Tong chuyen:" + decimalFormat.format(TienNhan2) + "\n" + Ttoan22222222222222222 + socuoi3;
-        } else if (Str_c22222222222222222.length() > 0) {
-            TinChot = mNgay + ":\n" + nocu2 + "\n" + Str_c22222222222222222 + "Tong chuyen:" + decimalFormat.format(TienChuyen2) + "\n" + Ttoan22222222222222222 + socuoi3;
+        } else if (Str_n2.length() > 0 && Str_c2.length() > 0) {
+            TinChot = mNgay + ":\n" + nocu + "\n" + Str_n2 + "Tong nhan:" + decimalFormat.format(TienNhan) + "\n\n" + Str_c2 + "Tong chuyen:" + decimalFormat.format(TienChuyen) + "\nTong tien: " + decimalFormat.format(TienNhan + TienChuyen) + "\n" + Ttoan22222222222222222 + socuoi3;
+        } else if (Str_n2.length() > 0) {
+            TinChot = mNgay + ":\n" + nocu + "\n" + Str_n2 + "Tong chuyen:" + decimalFormat.format(TienNhan) + "\n" + Ttoan22222222222222222 + socuoi3;
+        } else if (Str_c2.length() > 0) {
+            TinChot = mNgay + ":\n" + nocu + "\n" + Str_c2 + "Tong chuyen:" + decimalFormat.format(TienChuyen) + "\n" + Ttoan22222222222222222 + socuoi3;
         }
         if (!CongNo_Nhan2.isClosed()) {
             CongNo_Nhan2.close();
@@ -2668,9 +2425,7 @@ public class Database extends SQLiteOpenHelper {
 
     public String Tin_Chottien_CT(String TenKH) {
         String str;
-        MainActivity activity = new MainActivity();
         String mDate = MainActivity.Get_date();
-        String mNgay = MainActivity.Get_ngay();
         String pattern = "###,###";
         DecimalFormat decimalFormat = new DecimalFormat(pattern);
         String NoiDung = "";
@@ -2708,12 +2463,8 @@ public class Database extends SQLiteOpenHelper {
                     if (Sotin != cursor.getInt(0)) {
                         Sotin = cursor.getInt(0);
                         NoiDung = (NoiDung + str + cursor.getString(0) + ":\n") + jsonObject.getString(cursor.getString(1)) + decimalFormat.format(cursor.getDouble(2)) + "(" + decimalFormat.format(cursor.getDouble(3)) + ")\n";
-                        activity = activity;
-                        mDate = mDate;
                     } else {
                         NoiDung = NoiDung + jsonObject.getString(cursor.getString(1)) + decimalFormat.format(cursor.getDouble(2)) + "(" + decimalFormat.format(cursor.getDouble(3)) + ")\n";
-                        activity = activity;
-                        mDate = mDate;
                     }
                 } catch (JSONException e) {
                 }
@@ -2726,198 +2477,22 @@ public class Database extends SQLiteOpenHelper {
                 if (Sotin2 != cursor1.getInt(0)) {
                     Sotin2 = cursor1.getInt(0);
                     NoiDung = NoiDung + str + cursor1.getString(0) + ":\n";
-                    StringBuilder sb = new StringBuilder();
-                    sb.append(NoiDung);
-                    sb.append(jsonObject.getString(cursor1.getString(1)));
-                    sb.append(decimalFormat.format(cursor1.getDouble(2)));
-                    sb.append("(");
-                    sb.append(decimalFormat.format(cursor1.getDouble(3)));
-                    sb.append(")\n");
-                    NoiDung = sb.toString();
-                    mNgay = mNgay;
-                    str = str;
-                    pattern = pattern;
+                    NoiDung = NoiDung +
+                            jsonObject.getString(cursor1.getString(1)) +
+                            decimalFormat.format(cursor1.getDouble(2)) +
+                            "(" +
+                            decimalFormat.format(cursor1.getDouble(3)) +
+                            ")\n";
                 } else {
-                    StringBuilder sb2 = new StringBuilder();
-                    sb2.append(NoiDung);
-                    sb2.append(jsonObject.getString(cursor1.getString(1)));
-                    sb2.append(decimalFormat.format(cursor1.getDouble(2)));
-                    sb2.append("(");
-                    sb2.append(decimalFormat.format(cursor1.getDouble(3)));
-                    sb2.append(")\n");
-                    NoiDung = sb2.toString();
-                    str1 = str1;
-                    mNgay = mNgay;
-                    str = str;
-                    pattern = pattern;
+                    NoiDung = NoiDung +
+                            jsonObject.getString(cursor1.getString(1)) +
+                            decimalFormat.format(cursor1.getDouble(2)) +
+                            "(" +
+                            decimalFormat.format(cursor1.getDouble(3)) +
+                            ")\n";
                 }
             }
         } catch (JSONException e8) {
-        }
-        if (cursor != null && !cursor.isClosed()) {
-            cursor.close();
-        }
-        if (cursor1 != null && !cursor1.isClosed()) {
-            cursor1.close();
-        }
-        return NoiDung;
-    }
-
-    public String Tin_Chottien_CT11(String TenKH) throws JSONException {
-        Cursor cursor1;
-        String mDate;
-        String mNgay;
-        String pattern;
-        String str1;
-        Cursor cursor12;
-        String str;
-        String str2;
-        String str3 = null;
-        String str4 = null;
-        double TongTien = 0;
-        new MainActivity();
-        String mDate2 = MainActivity.Get_date();
-        String mNgay2 = MainActivity.Get_ngay();
-        String pattern2 = "###,###";
-        DecimalFormat decimalFormat = new DecimalFormat(pattern2);
-        String NoiDung = "";
-        String str5 = "Select so_tin_nhan, the_loai\n, sum(diem) as mDiem\n, CASE WHEN the_loai = 'xi' Then sum(diem*so_nhay*lan_an/1000) ELSE sum(diem*so_nhay) END as mAn \n, sum(ket_qua) as ThanhTien \nFrom tbl_soctS Where ngay_nhan = '" + mDate2 + "' And ten_kh = '" + TenKH + "' and the_loai <> 'tt' AND type_kh = 1\nGROUP by so_tin_nhan, the_loai ORDER by type_kh DESC, ten_kh";
-        Cursor cursor = GetData(str5);
-        String str12 = "Select so_tin_nhan, the_loai \n, sum(diem) as mDiem\n, CASE WHEN the_loai = 'xi' Then sum(diem*so_nhay*lan_an/1000) ELSE sum(diem*so_nhay) END as mAn \n, sum(ket_qua) as ThanhTien \nFrom tbl_soctS Where ngay_nhan = '" + mDate2 + "' And ten_kh = '" + TenKH + "' and the_loai <> 'tt' AND type_kh = 2\nGROUP by so_tin_nhan, the_loai ORDER by type_kh DESC, ten_kh";
-        Cursor cursor13 = GetData(str12);
-        JSONObject jsonObject = new JSONObject();
-        jsonObject.put("dea", "Dau DB: ");
-        jsonObject.put("deb", "De: ");
-        jsonObject.put("det", "De 8: ");
-        jsonObject.put("dec", "Dau Nhat: ");
-        jsonObject.put("ded", "Dit Nhat: ");
-        jsonObject.put("lo", "Lo: ");
-        jsonObject.put("xi", "Xien: ");
-        jsonObject.put("xn", "X.nhay: ");
-        jsonObject.put("bc", "3Cang: ");
-        jsonObject.put("loa", "Lo dau: ");
-        jsonObject.put("xia", "Xia: ");
-        jsonObject.put("bca", "3Cang dau: ");
-        if (cursor.getCount() > 0) {
-            NoiDung = "\nTin nhan:";
-        }
-        int Sotin = 0;
-        double TongTien2 = 0.0d;
-        double TongCacTin = 0.0d;
-        String TongTin = "";
-        while (true) {
-            try {
-                mDate = ":";
-                mNgay = "Tong tin ";
-                pattern = ":\n";
-                str1 = "\nTin ";
-                cursor12 = cursor13;
-                str = "(";
-                if (!cursor.moveToNext()) {
-                    break;
-                }
-
-                if (Sotin != cursor.getInt(0)) {
-                    if (Sotin > 0) {
-                        NoiDung = NoiDung + TongTin + decimalFormat.format(TongTien2) + "\n";
-                        TongTien2 = 0.0d;
-                    }
-                    Sotin = cursor.getInt(0);
-                    TongTin = mNgay + cursor.getString(0) + mDate;
-                    NoiDung = ((NoiDung + str1 + cursor.getString(0) + pattern) + jsonObject.getString(cursor.getString(1)) + decimalFormat.format(cursor.getDouble(2)) + str + decimalFormat.format(cursor.getDouble(3)) + ")") + "=" + decimalFormat.format(cursor.getDouble(4) / 1000.0d) + "\n";
-                    TongTien2 += cursor.getDouble(4) / 1000.0d;
-                    TongCacTin += cursor.getDouble(4) / 1000.0d;
-                    mDate2 = mDate2;
-                    mNgay2 = mNgay2;
-                    pattern2 = pattern2;
-                    str12 = str12;
-                    str5 = str5;
-                    cursor13 = cursor12;
-                } else {
-                    NoiDung = (NoiDung + jsonObject.getString(cursor.getString(1)) + decimalFormat.format(cursor.getDouble(2)) + str + decimalFormat.format(cursor.getDouble(3)) + ")") + "=" + decimalFormat.format(cursor.getDouble(4) / 1000.0d) + "\n";
-                    TongTien2 += cursor.getDouble(4) / 1000.0d;
-                    TongCacTin += cursor.getDouble(4) / 1000.0d;
-                    mDate2 = mDate2;
-                    mNgay2 = mNgay2;
-                    pattern2 = pattern2;
-                    str12 = str12;
-                    str5 = str5;
-                    cursor13 = cursor12;
-                }
-            } catch (JSONException e2) {
-                cursor1 = cursor13;
-            }
-        }
-        String str6 = "=";
-        if (TongTien2 > 0.0d) {
-            str2 = ")";
-            NoiDung = (NoiDung + TongTin + decimalFormat.format(TongTien2) + "\n\n") + "Tong cong:" + decimalFormat.format(TongCacTin);
-        } else {
-            str2 = ")";
-        }
-        int Sotin2 = 0;
-        double TongCacTin2 = 0.0d;
-        String TongTin2 = "";
-
-        if (cursor12.getCount() > 0) {
-            StringBuilder sb = new StringBuilder();
-            sb.append(NoiDung);
-            sb.append("\n\nTin Chuyen:");
-            NoiDung = sb.toString();
-            Sotin2 = 0;
-        }
-        str4 = "Tong cong:";
-        str3 = "\n\n";
-        TongTien = 0.0d;
-        while (cursor12.moveToNext()) {
-            try {
-                cursor1 = cursor12;
-                if (Sotin2 != cursor1.getInt(0)) {
-                    if (Sotin2 > 0) {
-                        TongTien = 0.0d;
-                        NoiDung = NoiDung + TongTin2 + decimalFormat.format(TongTien) + "\n";
-                    }
-                    int Sotin3 = cursor1.getInt(0);
-                    TongTin2 = mNgay + cursor.getString(0) + mDate;
-                    NoiDung = (NoiDung + str1 + cursor1.getString(0) + pattern) + jsonObject.getString(cursor1.getString(1)) + decimalFormat.format(cursor1.getDouble(2)) + str + decimalFormat.format(cursor1.getDouble(3)) + str2;
-                    StringBuilder sb2 = new StringBuilder();
-                    sb2.append(NoiDung);
-                    sb2.append(str6);
-                    sb2.append(decimalFormat.format(cursor.getDouble(4) / 1000.0d));
-                    sb2.append("\n");
-                    NoiDung = sb2.toString();
-                    TongTien += cursor.getDouble(4) / 1000.0d;
-                    str2 = str2;
-                    mNgay = mNgay;
-                    str1 = str1;
-                    str6 = str6;
-                    pattern = pattern;
-                    cursor12 = cursor1;
-                    TongCacTin2 += cursor.getDouble(4) / 1000.0d;
-                    str = str;
-                    Sotin2 = Sotin3;
-                    mDate = mDate;
-                } else {
-                    NoiDung = (NoiDung + jsonObject.getString(cursor1.getString(1)) + decimalFormat.format(cursor1.getDouble(2)) + str + decimalFormat.format(cursor1.getDouble(3)) + str2) + str6 + decimalFormat.format(cursor.getDouble(4) / 1000.0d) + "\n";
-                    TongTien += cursor.getDouble(4) / 1000.0d;
-                    str2 = str2;
-                    str = str;
-                    mNgay = mNgay;
-                    TongTin2 = TongTin2;
-                    str1 = str1;
-                    str6 = str6;
-                    pattern = pattern;
-                    cursor12 = cursor1;
-                    TongCacTin2 += cursor.getDouble(4) / 1000.0d;
-                    Sotin2 = Sotin2;
-                    mDate = mDate;
-                }
-            } catch (JSONException e7) {
-            }
-        }
-        cursor1 = cursor12;
-        if (TongTien > 0.0d) {
-            NoiDung = (NoiDung + TongTin2 + decimalFormat.format(TongTien) + str3) + str4 + decimalFormat.format(TongCacTin2);
         }
         if (cursor != null && !cursor.isClosed()) {
             cursor.close();
@@ -3107,8 +2682,7 @@ public class Database extends SQLiteOpenHelper {
 
                     if (!chuyen4.isClosed()) chuyen4.close();
 
-                    if (tinNhanS.getType_kh() == 1 || MainActivity.jSon_Setting.getInt("baotinthieu") <= 0) {
-                    } else {
+                    if (tinNhanS.getType_kh() != 1 && MainActivity.jSon_Setting.getInt("baotinthieu") > 0) {
 
                         List<TinNhanS> listTinNhans = BriteDb.INSTANCE.selectListTinNhanS("ngay_nhan = '" + mNgay5 +
                                 "' AND so_dienthoai = '" + mSoDT4 + "' AND type_kh = 1 ORDER BY so_tin_nhan");

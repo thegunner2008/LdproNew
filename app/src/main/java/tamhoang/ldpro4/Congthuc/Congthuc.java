@@ -22,7 +22,7 @@ import tamhoang.ldpro4.MainActivity;
 public class Congthuc {
     public static String[][] mang;
 
-    public static String NhanTinNhan(String str) {
+    public static String NhanTinNhan(String str) throws JSONException {
         String str2;
         String str3;
         String str4;
@@ -237,7 +237,7 @@ public class Congthuc {
                                                                                                                 }
                                                                                                             }
                                                                                                             mang2[rw][2] = XulyLoDe(dayso3.substring(0, dayso3.indexOf("x")));
-                                                                                                            mang2[rw][3] = XulyTien(dayso3.substring(dayso3.indexOf("x"), dayso3.length()));
+                                                                                                            mang2[rw][3] = XulyTien(dayso3.substring(dayso3.indexOf("x"), dayso3.length()), null);
                                                                                                             str25 = "";
                                                                                                             str8 = dayso5;
                                                                                                             if (!mang2[rw][2].contains(str8)) {
@@ -458,7 +458,7 @@ public class Congthuc {
         String str2 = str + " ";
         str2.replaceAll(" ", ",").replaceAll("\\.", ",").replaceAll(":", ",").replaceAll(";", ",").replaceAll("/", ",").split(",");
         int i = -1;
-        if (str2.indexOf("Không hiểu") != -1) {
+        if (str2.contains("Không hiểu")) {
             return str2;
         }
         for (int i2 = 0; i2 < str2.length(); i2++) {
@@ -544,7 +544,7 @@ public class Congthuc {
                 str5 = str5.trim();
                 for (int i6 = 6; i6 > 0; i6--) {
                     String Sss3 = str5.substring(0, i6);
-                    if (Sss3.trim().indexOf("t") > -1 && isNumeric(Sss3.replaceAll("t", "").replaceAll(",", ""))) {
+                    if (Sss3.trim().contains("t") && isNumeric(Sss3.replaceAll("t", "").replaceAll(",", ""))) {
                         str5 = str5.substring(i6);
                     }
                 }
@@ -2729,9 +2729,9 @@ public class Congthuc {
         return "Không hiểu " + str;
     }
 
-    public static String XulyTien(String str) {// tra ve so tien vd: 100k => 100; 1,2tr => 1200
+    public static String XulyTien(String str, String theLoai) throws JSONException {// tra ve so tien vd: 100k => 100; 1,2tr => 1200
         String tien = "";
-        if (str.length() - str.replaceAll("x", "").length() > 1) {
+        if (str.length() - str.replaceAll("x", "").length() > 1) {// count 'x' > 1
             return "Không hiểu " + str;
         } else if (str.length() == 0) {
             return "Không hiểu ";
@@ -2768,6 +2768,19 @@ public class Congthuc {
                 while (i < str2.length() && isNumeric(str2.substring(i, i + 1))) {
                     tien = tien + str2.charAt(i);
                     i++;
+                }
+                if (MainActivity.jSon_Setting.getInt("canhbaodonvi") == 1 ) {
+                    try {
+                        int tienInt = Integer.parseInt(tien);
+                        boolean checkTien = (theLoai.contains("de") && tienInt > 5000)
+                                || (theLoai.contains("lo") && tienInt > 1000)
+                                ||(theLoai.contains("bc") && tienInt > 2000);
+                        if (checkTien && str2.replaceAll(tien, "").replaceAll(",", "").replaceAll("\\.", "").replaceAll("/", "")
+                                .replaceAll(" ", "").length() <= 0)
+                            return "Không hiểu " + str;
+                    } catch (Exception e) {
+                        return "Không hiểu " + str;
+                    }
                 }
                 if (str2.replaceAll(tien, "").replaceAll("ng", "").replaceAll("n", "").replaceAll("d", "")
                         .replaceAll("k", "").replaceAll(",", "").replaceAll("\\.", "").replaceAll("/", "").replaceAll(" ", "").length() > 0) {

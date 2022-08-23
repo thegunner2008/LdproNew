@@ -88,6 +88,7 @@ public class Frag_CanChuyen extends Fragment {
     RadioButton radio_dec;
     RadioButton radio_ded;
     RadioButton radio_lo;
+    RadioButton radio_loa;
     RadioButton radio_xi;
     RangeSeekBar<Integer> rangeSeekBar;
     private Runnable runnable = new Runnable() {
@@ -112,6 +113,7 @@ public class Frag_CanChuyen extends Fragment {
         this.v = inflate;
         this.radio_de = (RadioButton) inflate.findViewById(R.id.radio_de);
         this.radio_lo = (RadioButton) this.v.findViewById(R.id.radio_lo);
+        this.radio_loa = (RadioButton) this.v.findViewById(R.id.radio_loa);
         this.radio_xi = (RadioButton) this.v.findViewById(R.id.radio_xi);
         this.radio_bc = (RadioButton) this.v.findViewById(R.id.radio_bc);
         this.radio_dea = (RadioButton) this.v.findViewById(R.id.radio_dea);
@@ -147,159 +149,139 @@ public class Frag_CanChuyen extends Fragment {
             min = minValue.intValue();
             max = maxValue.intValue();
         });
-        this.radio_de.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
-            /* class tamhoang.ldpro4.Fragment.Frag_CanChuyen.AnonymousClass2 */
-
-            public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
-                if (radio_de.isChecked()) {
-                    layout.setVisibility(View.VISIBLE);
-                    new MainActivity();
-                    String mDate = MainActivity.Get_date();
-                    try {
-                        Database database = db;
-                        Cursor cursor = database.GetData("Select sum((the_loai = 'dea')* diem) as de_a\n,sum((the_loai = 'deb')* diem) as de_b\n,sum((the_loai = 'det')* diem) as de_t\n,sum((the_loai = 'dec')* diem) as de_c\n,sum((the_loai = 'ded')* diem) as de_d\nFrom tbl_soctS \nWhere ngay_nhan = '" + mDate + "'");
-                        if (!cursor.moveToFirst() || cursor == null) {
-                            DangXuat = "(the_loai = 'deb' or the_loai = 'det')";
-                            return;
-                        }
-                        int[] dem = new int[5];
-                        if (cursor.getDouble(0) > 0.0d) {
-                            dem[0] = 1;
-                            radio_dea.setEnabled(true);
-                        } else {
-                            dem[0] = 0;
-                            radio_dea.setEnabled(false);
-                        }
-                        if (cursor.getDouble(1) > 0.0d) {
-                            dem[1] = 1;
-                            radio_deb.setEnabled(true);
-                        } else {
-                            dem[1] = 0;
-                            radio_deb.setEnabled(false);
-                        }
-                        if (cursor.getDouble(2) > 0.0d) {
-                            dem[2] = 1;
-                        } else {
-                            dem[2] = 0;
-                        }
-                        if (cursor.getDouble(3) > 0.0d) {
-                            dem[3] = 1;
-                            radio_dec.setEnabled(true);
-                        } else {
-                            dem[3] = 0;
-                            radio_dec.setEnabled(false);
-                        }
-                        if (cursor.getDouble(4) > 0.0d) {
-                            dem[4] = 1;
-                            radio_ded.setEnabled(true);
-                        } else {
-                            dem[4] = 0;
-                            radio_ded.setEnabled(false);
-                        }
-                        if (dem[0] == 0 && ((dem[1] == 1 || dem[2] == 1) && dem[3] == 0 && dem[4] == 0)) {
-                            DangXuat = "(the_loai = 'deb' or the_loai = 'det')";
-                            ln_xi.setVisibility(View.GONE);
-                            li_loaide.setVisibility(View.GONE);
-                            radio_deb.setChecked(true);
-                            xem_RecycView();
-                        } else if (dem[0] == 0 && dem[1] == 0 && dem[2] == 0 && dem[3] == 0 && dem[4] == 0) {
-                            DangXuat = "(the_loai = 'deb' or the_loai = 'det')";
-                            ln_xi.setVisibility(View.GONE);
-                            li_loaide.setVisibility(View.GONE);
-                            radio_deb.setChecked(true);
-                            xem_RecycView();
-                        } else {
-                            DangXuat = "(the_loai = 'deb' or the_loai = 'det')";
-                            ln_xi.setVisibility(View.GONE);
-                            li_loaide.setVisibility(View.VISIBLE);
-                            radio_deb.setChecked(true);
-                            xem_RecycView();
-                        }
-                        if (!cursor.isClosed() && cursor != null && !cursor.isClosed()) {
-                            cursor.close();
-                        }
-                    } catch (SQLException e) {
+        this.radio_de.setOnCheckedChangeListener((buttonView, isChecked) -> {
+            if (radio_de.isChecked()) {
+                layout.setVisibility(View.VISIBLE);
+                new MainActivity();
+                String mDate = MainActivity.Get_date();
+                try {
+                    Database database = db;
+                    Cursor cursor = database.GetData("Select sum((the_loai = 'dea')* diem) as de_a\n,sum((the_loai = 'deb')* diem) as de_b\n,sum((the_loai = 'det')* diem) as de_t\n,sum((the_loai = 'dec')* diem) as de_c\n,sum((the_loai = 'ded')* diem) as de_d\nFrom tbl_soctS \nWhere ngay_nhan = '" + mDate + "'");
+                    if (!cursor.moveToFirst() || cursor == null) {
                         DangXuat = "(the_loai = 'deb' or the_loai = 'det')";
+                        return;
                     }
-                }
-            }
-        });
-        this.radio_dea.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
-            /* class tamhoang.ldpro4.Fragment.Frag_CanChuyen.AnonymousClass3 */
-
-            public void onCheckedChanged(CompoundButton compoundButton, boolean b) {
-                if (radio_dea.isChecked()) {
-                    DangXuat = "the_loai = 'dea'";
-                    ln_xi.setVisibility(View.GONE);
-                    xem_RecycView();
-                }
-            }
-        });
-        this.radio_deb.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
-            /* class tamhoang.ldpro4.Fragment.Frag_CanChuyen.AnonymousClass4 */
-
-            public void onCheckedChanged(CompoundButton compoundButton, boolean b) {
-                if (radio_deb.isChecked()) {
-                    DangXuat = "(the_loai = 'deb' or the_loai = 'det')";
-                    ln_xi.setVisibility(View.GONE);
-                    xem_RecycView();
-                }
-            }
-        });
-        this.radio_dec.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
-            /* class tamhoang.ldpro4.Fragment.Frag_CanChuyen.AnonymousClass5 */
-
-            public void onCheckedChanged(CompoundButton compoundButton, boolean b) {
-                if (radio_dec.isChecked()) {
-                    DangXuat = "the_loai = 'dec'";
-                    ln_xi.setVisibility(View.GONE);
-                    xem_RecycView();
-                }
-            }
-        });
-        this.radio_ded.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
-            /* class tamhoang.ldpro4.Fragment.Frag_CanChuyen.AnonymousClass6 */
-
-            public void onCheckedChanged(CompoundButton compoundButton, boolean b) {
-                if (radio_ded.isChecked()) {
-                    DangXuat = "the_loai = 'ded'";
-                    ln_xi.setVisibility(View.GONE);
-                    xem_RecycView();
-                }
-            }
-        });
-        this.radio_lo.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
-            /* class tamhoang.ldpro4.Fragment.Frag_CanChuyen.AnonymousClass7 */
-
-            public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
-                if (radio_lo.isChecked()) {
-                    DangXuat = "the_loai = 'lo'";
-                    ln_xi.setVisibility(View.GONE);
-                    li_loaide.setVisibility(View.GONE);
-                    layout.setVisibility(View.GONE);
-                    xem_RecycView();
-                }
-            }
-        });
-        this.radio_xi.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
-            /* class tamhoang.ldpro4.Fragment.Frag_CanChuyen.AnonymousClass8 */
-
-            public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
-                if (radio_xi.isChecked()) {
-                    new MainActivity();
-                    DangXuat = "the_loai = 'xi'";
-                    layout.setVisibility(View.GONE);
-                    ln_xi.setVisibility(View.VISIBLE);
-                    li_loaide.setVisibility(View.GONE);
-                    try {
-                        Database database = db;
-                        Cursor cursor = database.GetData("Select count(id) From tbl_soctS WHERE the_loai = 'xn' AND ngay_nhan = '" + MainActivity.Get_date() + "'");
-                        if (cursor.moveToFirst() && cursor.getInt(0) > 0) {
-                            check_xn.setVisibility(View.VISIBLE);
-                        }
+                    int[] dem = new int[5];
+                    if (cursor.getDouble(0) > 0.0d) {
+                        dem[0] = 1;
+                        radio_dea.setEnabled(true);
+                    } else {
+                        dem[0] = 0;
+                        radio_dea.setEnabled(false);
+                    }
+                    if (cursor.getDouble(1) > 0.0d) {
+                        dem[1] = 1;
+                        radio_deb.setEnabled(true);
+                    } else {
+                        dem[1] = 0;
+                        radio_deb.setEnabled(false);
+                    }
+                    if (cursor.getDouble(2) > 0.0d) {
+                        dem[2] = 1;
+                    } else {
+                        dem[2] = 0;
+                    }
+                    if (cursor.getDouble(3) > 0.0d) {
+                        dem[3] = 1;
+                        radio_dec.setEnabled(true);
+                    } else {
+                        dem[3] = 0;
+                        radio_dec.setEnabled(false);
+                    }
+                    if (cursor.getDouble(4) > 0.0d) {
+                        dem[4] = 1;
+                        radio_ded.setEnabled(true);
+                    } else {
+                        dem[4] = 0;
+                        radio_ded.setEnabled(false);
+                    }
+                    if (dem[0] == 0 && ((dem[1] == 1 || dem[2] == 1) && dem[3] == 0 && dem[4] == 0)) {
+                        DangXuat = "(the_loai = 'deb' or the_loai = 'det')";
+                        ln_xi.setVisibility(View.GONE);
+                        li_loaide.setVisibility(View.GONE);
+                        radio_deb.setChecked(true);
                         xem_RecycView();
-                    } catch (SQLException e) {
+                    } else if (dem[0] == 0 && dem[1] == 0 && dem[2] == 0 && dem[3] == 0 && dem[4] == 0) {
+                        DangXuat = "(the_loai = 'deb' or the_loai = 'det')";
+                        ln_xi.setVisibility(View.GONE);
+                        li_loaide.setVisibility(View.GONE);
+                        radio_deb.setChecked(true);
+                        xem_RecycView();
+                    } else {
+                        DangXuat = "(the_loai = 'deb' or the_loai = 'det')";
+                        ln_xi.setVisibility(View.GONE);
+                        li_loaide.setVisibility(View.VISIBLE);
+                        radio_deb.setChecked(true);
+                        xem_RecycView();
                     }
+                    if (!cursor.isClosed() && cursor != null && !cursor.isClosed()) {
+                        cursor.close();
+                    }
+                } catch (SQLException e) {
+                    DangXuat = "(the_loai = 'deb' or the_loai = 'det')";
+                }
+            }
+        });
+        this.radio_dea.setOnCheckedChangeListener((compoundButton, b) -> {
+            if (radio_dea.isChecked()) {
+                DangXuat = "the_loai = 'dea'";
+                ln_xi.setVisibility(View.GONE);
+                xem_RecycView();
+            }
+        });
+        this.radio_deb.setOnCheckedChangeListener((compoundButton, b) -> {
+            if (radio_deb.isChecked()) {
+                DangXuat = "(the_loai = 'deb' or the_loai = 'det')";
+                ln_xi.setVisibility(View.GONE);
+                xem_RecycView();
+            }
+        });
+        this.radio_dec.setOnCheckedChangeListener((compoundButton, b) -> {
+            if (radio_dec.isChecked()) {
+                DangXuat = "the_loai = 'dec'";
+                ln_xi.setVisibility(View.GONE);
+                xem_RecycView();
+            }
+        });
+        this.radio_ded.setOnCheckedChangeListener((compoundButton, b) -> {
+            if (radio_ded.isChecked()) {
+                DangXuat = "the_loai = 'ded'";
+                ln_xi.setVisibility(View.GONE);
+                xem_RecycView();
+            }
+        });
+        this.radio_lo.setOnCheckedChangeListener((buttonView, isChecked) -> {
+            if (radio_lo.isChecked()) {
+                DangXuat = "the_loai = 'lo'";
+                ln_xi.setVisibility(View.GONE);
+                li_loaide.setVisibility(View.GONE);
+                xem_RecycView();
+            }
+        });
+
+        this.radio_loa.setOnCheckedChangeListener((buttonView, isChecked) -> {
+            if (radio_loa.isChecked()) {
+                DangXuat = "the_loai = 'loa'";
+                ln_xi.setVisibility(View.GONE);
+                li_loaide.setVisibility(View.GONE);
+                xem_RecycView();
+            }
+        });
+        this.radio_xi.setOnCheckedChangeListener((buttonView, isChecked) -> {
+            if (radio_xi.isChecked()) {
+                new MainActivity();
+                DangXuat = "the_loai = 'xi'";
+                layout.setVisibility(View.GONE);
+                ln_xi.setVisibility(View.VISIBLE);
+                li_loaide.setVisibility(View.GONE);
+                try {
+                    Database database = db;
+                    Cursor cursor = database.GetData("Select count(id) From tbl_soctS WHERE the_loai = 'xn' AND ngay_nhan = '" + MainActivity.Get_date() + "'");
+                    if (cursor.moveToFirst() && cursor.getInt(0) > 0) {
+                        check_xn.setVisibility(View.VISIBLE);
+                    }
+                    xem_RecycView();
+                } catch (SQLException e) {
                 }
             }
         });
@@ -364,8 +346,7 @@ public class Frag_CanChuyen extends Fragment {
         this.lay_x4 = "OR length(so_chon) = 11 ";
         this.no_rp_number.setOnItemClickListener((adapterView, view, position, id) -> {
             try {
-                new MainActivity();
-                Cursor c = db.GetData("Select ten_kh, sum(diem_quydoi) From tbl_soctS WHERE so_chon = '" + mSo.get(position) 
+                Cursor c = db.GetData("Select ten_kh, sum(diem_quydoi) From tbl_soctS WHERE so_chon = '" + mSo.get(position)
                         + "' AND ngay_nhan = '" + MainActivity.Get_date() + "' AND type_kh = 1 AND " + DangXuat + " GROUP BY so_dienthoai");
                 String s1 = "";
                 while (c.moveToNext()) {
@@ -442,168 +423,154 @@ public class Frag_CanChuyen extends Fragment {
                     } else {
                         TienChuyen = 0;
                     }
-//                    if (str == "(the_loai = 'deb' or the_loai = 'det')") {
-//                        if (!str.equals("the_loai = 'lo'") && !str.equals("the_loai = 'dea'") && !str.equals("the_loai = 'dec'")) {
-//                            if (!str.equals("the_loai = 'ded'")) {
-                                switch (DangXuat) {
-                                    case "the_loai = 'xi'":
-                                        this.xuatDan = "Xien:\n";
-                                        int i = this.min;
-                                        while (i < this.mSo.size()) {
-                                            if (this.edt_tien.getText().toString().contains("%")) {
-                                                MaxTien3 = (Integer.parseInt(this.mTienTon.get(i).replace(".", "")) / mLamtron) * mLamtron;
-                                            } else if (this.edt_tien.getText().toString().contains(">")) {
-                                                MaxTien3 = (Integer.parseInt(this.mTienTon.get(i).replace(".", "")) / mLamtron) * mLamtron;
-                                            } else if (TienChuyen == 0) {
-                                                MaxTien3 = (Integer.parseInt(this.mTienTon.get(i).replace(".", "")) / mLamtron) * mLamtron;
-                                            } else if (Integer.parseInt(this.mTienTon.get(i).replace(".", "")) > TienChuyen) {
-                                                MaxTien3 = (TienChuyen / mLamtron) * mLamtron;
-                                            } else {
-                                                MaxTien3 = (Integer.parseInt(this.mTienTon.get(i).replace(".", "")) / mLamtron) * mLamtron;
-                                            }
-                                            if (this.edt_tien.getText().toString().contains("%")) {
-                                                if (MaxTien3 > 0) {
-                                                    try {
-                                                        if (MainActivity.jSon_Setting.getInt("chuyen_xien") > 0) {
-                                                            this.xuatDan += this.mSo.get(i) + "x" + ((MaxTien3 * TienChuyen) / 1000) + "d ";
-                                                        } else if (MainActivity.jSon_Setting.getInt("chuyen_xien") == 0) {
-                                                            this.xuatDan += this.mSo.get(i) + "x" + ((MaxTien3 * TienChuyen) / 100) + "n ";
-                                                        }
-                                                    } catch (JSONException e2) {
-                                                        e2.printStackTrace();
-                                                    }
-                                                }
-                                            } else if (this.edt_tien.getText().toString().contains(">")) {
-                                                if (MaxTien3 > TienChuyen) {
-                                                    try {
-                                                        if (MainActivity.jSon_Setting.getInt("chuyen_xien") > 0) {
-                                                            this.xuatDan += this.mSo.get(i) + "x" + ((MaxTien3 - TienChuyen) / 10) + "d ";
-                                                        } else if (MainActivity.jSon_Setting.getInt("chuyen_xien") == 0) {
-                                                            this.xuatDan += this.mSo.get(i) + "x" + (MaxTien3 - TienChuyen) + "n ";
-                                                        }
-                                                    } catch (JSONException e3) {
-                                                        e3.printStackTrace();
-                                                    }
-                                                }
-                                            } else if (!this.edt_tien.getText().toString().contains(">") && !this.edt_tien.getText().toString().contains("%") && MaxTien3 > 0) {
-                                                try {
-                                                    if (MainActivity.jSon_Setting.getInt("chuyen_xien") > 0) {
-                                                        this.xuatDan += this.mSo.get(i) + "x" + (MaxTien3 / 10) + "d ";
-                                                    } else if (MainActivity.jSon_Setting.getInt("chuyen_xien") == 0) {
-                                                        this.xuatDan += this.mSo.get(i) + "x" + MaxTien3 + "n ";
-                                                    }
-                                                } catch (JSONException e4) {
-                                                    e4.printStackTrace();
-                                                }
-                                            }
-                                            i++;
-                                        }
-                                        break;
-                                    case "the_loai = 'bc'":
-                                        this.xuatDan = "Cang:\n";
-                                        int i2 = this.min;
-                                        int tien = 0;
-                                        while (i2 < this.mSo.size()) {
-                                            if (TienChuyen == 0) {
-                                                MaxTien2 = (Integer.parseInt(this.mTienTon.get(i2).replace(".", "")) / mLamtron) * mLamtron;
-                                            } else if (this.edt_tien.getText().toString().contains("%")) {
-                                                MaxTien2 = (((Integer.parseInt(this.mTienTon.get(i2).replace(".", "")) * TienChuyen) / mLamtron) / 100) * mLamtron;
-                                            } else if (this.edt_tien.getText().toString().contains(">")) {
-                                                MaxTien2 = ((Integer.parseInt(this.mTienTon.get(i2).replace(".", "")) - TienChuyen) / mLamtron) * mLamtron;
-                                            } else if (Integer.parseInt(this.mTienTon.get(i2).replace(".", "")) > TienChuyen) {
-                                                MaxTien2 = (TienChuyen / mLamtron) * mLamtron;
-                                            } else {
-                                                MaxTien2 = (Integer.parseInt(this.mTienTon.get(i2).replace(".", "")) / mLamtron) * mLamtron;
-                                            }
-                                            if (MaxTien2 <= 0) {
-
-                                            } else if (tien > MaxTien2) {
-                                                this.xuatDan += "x" + tien + "n " + this.mSo.get(i2) + ",";
-                                                tien = MaxTien2;
-                                            } else {
-                                                this.xuatDan += this.mSo.get(i2) + ",";
-                                                tien = MaxTien2;
-                                            }
-                                            i2++;
-                                        }
-                                        if (this.xuatDan.length() > 4) {
-                                            this.xuatDan += "x" + tien + "n";
-                                        }
-                                        if (this.xuatDan.contains(":")) {
-                                            String str4 = this.xuatDan;
-                                            if (str4.substring(str4.indexOf(":")).length() > 7) {
-                                                if (!getActivity().isFinishing()) {
-                                                    Dialog(1);
-                                                    return;
-                                                }
-                                                return;
-                                            }
-                                        }
-                                        Toast.makeText(getActivity(), "Không có số liệu!", Toast.LENGTH_LONG).show();
-                                        return;
-                                    case "the_loai = 'xn'":
-                                        this.xuatDan = "Xnhay:\n";
-                                        for (int i3 = this.min; i3 < this.mSo.size(); i3++) {
-                                            if (this.edt_tien.getText().toString().contains("%")) {
-                                                MaxTien = (Integer.parseInt(this.mTienTon.get(i3).replace(".", "")) / mLamtron) * mLamtron;
-                                            } else if (this.edt_tien.getText().toString().contains(">")) {
-                                                MaxTien = (Integer.parseInt(this.mTienTon.get(i3).replace(".", "")) / mLamtron) * mLamtron;
-                                            } else if (TienChuyen == 0) {
-                                                MaxTien = (Integer.parseInt(this.mTienTon.get(i3).replace(".", "")) / mLamtron) * mLamtron;
-                                            } else if (Integer.parseInt(this.mTienTon.get(i3).replace(".", "")) > TienChuyen) {
-                                                MaxTien = (TienChuyen / mLamtron) * mLamtron;
-                                            } else {
-                                                MaxTien = (Integer.parseInt(this.mTienTon.get(i3).replace(".", "")) / mLamtron) * mLamtron;
-                                            }
-                                            if (this.edt_tien.getText().toString().contains("%")) {
-                                                if (MaxTien > 0) {
-                                                    try {
-                                                        if (MainActivity.jSon_Setting.getInt("chuyen_xien") > 0) {
-                                                            this.xuatDan += this.mSo.get(i3) + "x" + ((MaxTien * TienChuyen) / 1000) + "d\n";
-                                                        } else if (MainActivity.jSon_Setting.getInt("chuyen_xien") == 0) {
-                                                            this.xuatDan += this.mSo.get(i3) + "x" + ((MaxTien * TienChuyen) / 100) + "n\n";
-                                                        }
-                                                    } catch (JSONException e5) {
-                                                        e5.printStackTrace();
-                                                    }
-                                                }
-                                            } else if (this.edt_tien.getText().toString().contains(">")) {
-                                                if (MaxTien > TienChuyen) {
-                                                    try {
-                                                        if (MainActivity.jSon_Setting.getInt("chuyen_xien") > 0) {
-                                                            this.xuatDan += this.mSo.get(i3) + "x" + ((MaxTien - TienChuyen) / 10) + "d\n";
-                                                        } else if (MainActivity.jSon_Setting.getInt("chuyen_xien") == 0) {
-                                                            this.xuatDan += this.mSo.get(i3) + "x" + (MaxTien - TienChuyen) + "n\n";
-                                                        }
-                                                    } catch (JSONException e6) {
-                                                        e6.printStackTrace();
-                                                    }
-                                                }
-                                            } else if (!this.edt_tien.getText().toString().contains(">") && !this.edt_tien.getText().toString().contains("%") && MaxTien > 0) {
-                                                try {
-                                                    if (MainActivity.jSon_Setting.getInt("chuyen_xien") > 0) {
-                                                        this.xuatDan += this.mSo.get(i3) + "x" + (MaxTien / 10) + "d\n";
-                                                    } else if (MainActivity.jSon_Setting.getInt("chuyen_xien") == 0) {
-                                                        this.xuatDan += this.mSo.get(i3) + "x" + MaxTien + "n\n";
-                                                    }
-                                                } catch (JSONException e7) {
-                                                    e7.printStackTrace();
-                                                }
-                                            }
-                                        }
-                                        break;
-                                    case "(the_loai = 'deb' or the_loai = 'det')":
-                                        System.out.println("Quangbx");
-                                        break;
-                                    default:
-                                        Toast.makeText(getActivity(), "Không có số liệu!", Toast.LENGTH_LONG).show();
-                                        break;
-                                }
-//                                return;
-//                            }
-//                        }
-//                    }
                     switch (DangXuat) {
+                        case "the_loai = 'xi'":
+                            this.xuatDan = "Xien:\n";
+                            int i = this.min;
+                            while (i < this.mSo.size()) {
+                                if (this.edt_tien.getText().toString().contains("%")) {
+                                    MaxTien3 = (Integer.parseInt(this.mTienTon.get(i).replace(".", "")) / mLamtron) * mLamtron;
+                                } else if (this.edt_tien.getText().toString().contains(">")) {
+                                    MaxTien3 = (Integer.parseInt(this.mTienTon.get(i).replace(".", "")) / mLamtron) * mLamtron;
+                                } else if (TienChuyen == 0) {
+                                    MaxTien3 = (Integer.parseInt(this.mTienTon.get(i).replace(".", "")) / mLamtron) * mLamtron;
+                                } else if (Integer.parseInt(this.mTienTon.get(i).replace(".", "")) > TienChuyen) {
+                                    MaxTien3 = (TienChuyen / mLamtron) * mLamtron;
+                                } else {
+                                    MaxTien3 = (Integer.parseInt(this.mTienTon.get(i).replace(".", "")) / mLamtron) * mLamtron;
+                                }
+                                if (this.edt_tien.getText().toString().contains("%")) {
+                                    if (MaxTien3 > 0) {
+                                        try {
+                                            if (MainActivity.jSon_Setting.getInt("chuyen_xien") > 0) {
+                                                this.xuatDan += this.mSo.get(i) + "x" + ((MaxTien3 * TienChuyen) / 1000) + "d ";
+                                            } else if (MainActivity.jSon_Setting.getInt("chuyen_xien") == 0) {
+                                                this.xuatDan += this.mSo.get(i) + "x" + ((MaxTien3 * TienChuyen) / 100) + "n ";
+                                            }
+                                        } catch (JSONException e2) {
+                                            e2.printStackTrace();
+                                        }
+                                    }
+                                } else if (this.edt_tien.getText().toString().contains(">")) {
+                                    if (MaxTien3 > TienChuyen) {
+                                        try {
+                                            if (MainActivity.jSon_Setting.getInt("chuyen_xien") > 0) {
+                                                this.xuatDan += this.mSo.get(i) + "x" + ((MaxTien3 - TienChuyen) / 10) + "d ";
+                                            } else if (MainActivity.jSon_Setting.getInt("chuyen_xien") == 0) {
+                                                this.xuatDan += this.mSo.get(i) + "x" + (MaxTien3 - TienChuyen) + "n ";
+                                            }
+                                        } catch (JSONException e3) {
+                                            e3.printStackTrace();
+                                        }
+                                    }
+                                } else if (!this.edt_tien.getText().toString().contains(">") && !this.edt_tien.getText().toString().contains("%") && MaxTien3 > 0) {
+                                    try {
+                                        if (MainActivity.jSon_Setting.getInt("chuyen_xien") > 0) {
+                                            this.xuatDan += this.mSo.get(i) + "x" + (MaxTien3 / 10) + "d ";
+                                        } else if (MainActivity.jSon_Setting.getInt("chuyen_xien") == 0) {
+                                            this.xuatDan += this.mSo.get(i) + "x" + MaxTien3 + "n ";
+                                        }
+                                    } catch (JSONException e4) {
+                                        e4.printStackTrace();
+                                    }
+                                }
+                                i++;
+                            }
+                            break;
+                        case "the_loai = 'bc'":
+                            this.xuatDan = "Cang:\n";
+                            int i2 = this.min;
+                            int tien = 0;
+                            while (i2 < this.mSo.size()) {
+                                if (TienChuyen == 0) {
+                                    MaxTien2 = (Integer.parseInt(this.mTienTon.get(i2).replace(".", "")) / mLamtron) * mLamtron;
+                                } else if (this.edt_tien.getText().toString().contains("%")) {
+                                    MaxTien2 = (((Integer.parseInt(this.mTienTon.get(i2).replace(".", "")) * TienChuyen) / mLamtron) / 100) * mLamtron;
+                                } else if (this.edt_tien.getText().toString().contains(">")) {
+                                    MaxTien2 = ((Integer.parseInt(this.mTienTon.get(i2).replace(".", "")) - TienChuyen) / mLamtron) * mLamtron;
+                                } else if (Integer.parseInt(this.mTienTon.get(i2).replace(".", "")) > TienChuyen) {
+                                    MaxTien2 = (TienChuyen / mLamtron) * mLamtron;
+                                } else {
+                                    MaxTien2 = (Integer.parseInt(this.mTienTon.get(i2).replace(".", "")) / mLamtron) * mLamtron;
+                                }
+                                if (MaxTien2 <= 0) {
+
+                                } else if (tien > MaxTien2) {
+                                    this.xuatDan += "x" + tien + "n " + this.mSo.get(i2) + ",";
+                                    tien = MaxTien2;
+                                } else {
+                                    this.xuatDan += this.mSo.get(i2) + ",";
+                                    tien = MaxTien2;
+                                }
+                                i2++;
+                            }
+                            if (this.xuatDan.length() > 4) {
+                                this.xuatDan += "x" + tien + "n";
+                            }
+                            if (this.xuatDan.contains(":")) {
+                                String str4 = this.xuatDan;
+                                if (str4.substring(str4.indexOf(":")).length() > 7) {
+                                    if (!getActivity().isFinishing()) {
+                                        Dialog(1);
+                                        return;
+                                    }
+                                    return;
+                                }
+                            }
+                            Toast.makeText(getActivity(), "Không có số liệu!", Toast.LENGTH_LONG).show();
+                            return;
+                        case "the_loai = 'xn'":
+                            this.xuatDan = "Xnhay:\n";
+                            for (int i3 = this.min; i3 < this.mSo.size(); i3++) {
+                                if (this.edt_tien.getText().toString().contains("%")) {
+                                    MaxTien = (Integer.parseInt(this.mTienTon.get(i3).replace(".", "")) / mLamtron) * mLamtron;
+                                } else if (this.edt_tien.getText().toString().contains(">")) {
+                                    MaxTien = (Integer.parseInt(this.mTienTon.get(i3).replace(".", "")) / mLamtron) * mLamtron;
+                                } else if (TienChuyen == 0) {
+                                    MaxTien = (Integer.parseInt(this.mTienTon.get(i3).replace(".", "")) / mLamtron) * mLamtron;
+                                } else if (Integer.parseInt(this.mTienTon.get(i3).replace(".", "")) > TienChuyen) {
+                                    MaxTien = (TienChuyen / mLamtron) * mLamtron;
+                                } else {
+                                    MaxTien = (Integer.parseInt(this.mTienTon.get(i3).replace(".", "")) / mLamtron) * mLamtron;
+                                }
+                                if (this.edt_tien.getText().toString().contains("%")) {
+                                    if (MaxTien > 0) {
+                                        try {
+                                            if (MainActivity.jSon_Setting.getInt("chuyen_xien") > 0) {
+                                                this.xuatDan += this.mSo.get(i3) + "x" + ((MaxTien * TienChuyen) / 1000) + "d\n";
+                                            } else if (MainActivity.jSon_Setting.getInt("chuyen_xien") == 0) {
+                                                this.xuatDan += this.mSo.get(i3) + "x" + ((MaxTien * TienChuyen) / 100) + "n\n";
+                                            }
+                                        } catch (JSONException e5) {
+                                            e5.printStackTrace();
+                                        }
+                                    }
+                                } else if (this.edt_tien.getText().toString().contains(">")) {
+                                    if (MaxTien > TienChuyen) {
+                                        try {
+                                            if (MainActivity.jSon_Setting.getInt("chuyen_xien") > 0) {
+                                                this.xuatDan += this.mSo.get(i3) + "x" + ((MaxTien - TienChuyen) / 10) + "d\n";
+                                            } else if (MainActivity.jSon_Setting.getInt("chuyen_xien") == 0) {
+                                                this.xuatDan += this.mSo.get(i3) + "x" + (MaxTien - TienChuyen) + "n\n";
+                                            }
+                                        } catch (JSONException e6) {
+                                            e6.printStackTrace();
+                                        }
+                                    }
+                                } else if (!this.edt_tien.getText().toString().contains(">") && !this.edt_tien.getText().toString().contains("%") && MaxTien > 0) {
+                                    try {
+                                        if (MainActivity.jSon_Setting.getInt("chuyen_xien") > 0) {
+                                            this.xuatDan += this.mSo.get(i3) + "x" + (MaxTien / 10) + "d\n";
+                                        } else if (MainActivity.jSon_Setting.getInt("chuyen_xien") == 0) {
+                                            this.xuatDan += this.mSo.get(i3) + "x" + MaxTien + "n\n";
+                                        }
+                                    } catch (JSONException e7) {
+                                        e7.printStackTrace();
+                                    }
+                                }
+                            }
+                            break;
+
                         case "(the_loai = 'deb' or the_loai = 'det')":
                             this.xuatDan = this.db.XuatDanTon2("deb", this.edt_tien.getText().toString(), this.min, this.max);
                             break;
@@ -616,9 +583,17 @@ public class Frag_CanChuyen extends Fragment {
                         case "the_loai = 'ded'":
                             this.xuatDan = this.db.XuatDanTon2("ded", this.edt_tien.getText().toString(), this.min, this.max);
                             break;
-                        default:
+                        case "the_loai = 'loa'":
+                            this.xuatDan = this.db.XuatDanTon2("loa", this.edt_tien.getText().toString(), this.min, this.max);
+                            break;
+                        case "the_loai = 'lo'":
                             this.xuatDan = this.db.XuatDanTon2("lo", this.edt_tien.getText().toString(), this.min, this.max);
                             break;
+                        default:
+                            Toast.makeText(getActivity(), "Không có số liệu!", Toast.LENGTH_LONG).show();
+                            break;
+                    }
+            switch (DangXuat) {
                     }
                     Dialog(1);
 //                    Toast.makeText(getActivity(), "Không có số liệu!", Toast.LENGTH_LONG).show();
@@ -635,7 +610,6 @@ public class Frag_CanChuyen extends Fragment {
         Throwable th;
         String str = "Se_chuyen";
         JSONObject jSon = new JSONObject();
-        MainActivity mainActivity = new MainActivity();
         String mDate = MainActivity.Get_date();
         String Str1 = "Select so_chon, Sum(diem) FROM tbl_soctS Where ten_kh = '" + ten_kh + "' AND type_kh = 2 AND (the_loai = 'deb' or the_loai = 'det') AND ngay_nhan = '" + mDate + "' Group by so_chon";
         Cursor cursor = this.db.GetData(Str1);
@@ -666,7 +640,6 @@ public class Frag_CanChuyen extends Fragment {
         String str = "Se_chuyen";
         double maxDang = 0.0d;
         JSONObject jSon = new JSONObject();
-        MainActivity mainActivity = new MainActivity();
         String mDate = MainActivity.Get_date();
         String Str1 = "Select so_chon, Sum(diem) FROM tbl_soctS Where ten_kh = '" + ten_kh + "' AND type_kh = 2 AND the_loai = 'lo' AND ngay_nhan = '" + mDate + "' Group by so_chon";
         Cursor cursor = this.db.GetData(Str1);
@@ -692,7 +665,6 @@ public class Frag_CanChuyen extends Fragment {
         Throwable th;
         String str = "Se_chuyen";
         JSONObject jSon = new JSONObject();
-        MainActivity mainActivity = new MainActivity();
         String mDate = MainActivity.Get_date();
         String Str1 = "Select so_chon, Sum(diem) FROM tbl_soctS Where ten_kh = '" + ten_kh + "' AND type_kh = 2 AND the_loai = 'bc' AND ngay_nhan = '" + mDate + "' Group by so_chon";
         Cursor cursor = this.db.GetData(Str1);
@@ -720,7 +692,6 @@ public class Frag_CanChuyen extends Fragment {
         String str2 = "xien3";
         String str3 = "xien2";
         JSONObject jSon = new JSONObject();
-        MainActivity mainActivity = new MainActivity();
         String mDate = MainActivity.Get_date();
         Cursor cursor = this.db.GetData("Select so_chon, Sum(diem) FROM tbl_soctS Where ten_kh = '" + ten_kh + "' AND type_kh = 2 AND the_loai = 'xi' AND ngay_nhan = '" + mDate + "' Group by so_chon");
         while (cursor.moveToNext()) {
@@ -925,14 +896,9 @@ public class Frag_CanChuyen extends Fragment {
                                     ndung = new StringBuilder(str_so.length == 1 ? DangGi + "\n" + str_so[j] + "," + TienChiTiet2 + " " : DangGi + "\n" + str_so[j] + ",");
                                 }
                                 j++;
-                                str3 = str3;
                                 str4 = str2;
                             }
                             k++;
-                            mDate = mDate;
-                            NganDai = NganDai;
-                            TinNhan = TinNhan;
-                            str3 = str3;
                         }
                         str = str3;
                     } else {
@@ -970,7 +936,6 @@ public class Frag_CanChuyen extends Fragment {
 
     public void Xulytin(int SotinNhan, String noidung, int Chuyen) {
         int type_kh;
-        final MainActivity mainActivity = new MainActivity();
         String mDate = MainActivity.Get_date();
         Calendar calendar = Calendar.getInstance();
         calendar.setTime(new Date());
@@ -987,14 +952,10 @@ public class Frag_CanChuyen extends Fragment {
                 }
                 this.db.QueryData("Insert Into tbl_tinnhanS values (null, '" + mDate + "', '" + mGionhan + "', " + type_kh + ", '" + this.mContact.get(this.mSpiner) + "', '" + this.mMobile.get(this.mSpiner) + "', 2, " + SotinNhan + ", 'Tin " + SotinNhan + ":\n" + noidung + "',null, '" + noidung + "', 'ko',0, 0, 1, null)");
                 Database database = this.db;
-                StringBuilder sb = new StringBuilder();
-                sb.append("Select id From tbl_tinnhanS WHERE ngay_nhan = '");
-                sb.append(mDate);
-                sb.append("' AND so_dienthoai = '");
-                sb.append(this.mMobile.get(this.mSpiner));
-                sb.append("' AND type_kh = 2 AND so_tin_nhan = ");
-                sb.append(SotinNhan);
-                Cursor c = database.GetData(sb.toString());
+                String sb = "Select id From tbl_tinnhanS WHERE ngay_nhan = '" + mDate +
+                        "' AND so_dienthoai = '" + this.mMobile.get(this.mSpiner) +
+                        "' AND type_kh = 2 AND so_tin_nhan = " + SotinNhan;
+                Cursor c = database.GetData(sb);
                 c.moveToFirst();
                 if (Congthuc.CheckDate(MainActivity.hanSuDung)) {
                     try {
@@ -1057,7 +1018,6 @@ public class Frag_CanChuyen extends Fragment {
 
     public void xem_RecycView() {
         String Noi;
-        new MainActivity();
         String mDate = MainActivity.Get_date();
         String query = null;
         this.mSo.clear();
@@ -1072,6 +1032,9 @@ public class Frag_CanChuyen extends Fragment {
                 break;
             case "the_loai = 'lo'":
                 query = "Select tbl_soctS.So_chon\n, Sum((tbl_soctS.type_kh = 1) * (100-tbl_soctS.diem_khachgiu)*diem_quydoi/100) as diem\n, so_om.Om_Lo + sum(tbl_soctS.diem_dly_giu*tbl_soctS.diem_quydoi/100) as So_Om\n, Sum((tbl_soctS.type_kh =2) * tbl_soctS.diem_quydoi) as chuyen\n, Sum((tbl_soctS.type_kh =1) * (100-tbl_soctS.diem_khachgiu-tbl_soctS.diem_dly_giu)*diem_quydoi/100) - Sum((tbl_soctS.type_kh =2) * tbl_soctS.diem_quydoi) - so_om.Om_Lo as ton\n, so_nhay  From so_om Left Join tbl_soctS On tbl_soctS.so_chon = so_om.So \n Where tbl_soctS.ngay_nhan='" + mDate + "' AND tbl_soctS.the_loai='lo' \n GROUP by so_om.So Order by " + this.sapxep;
+                break;
+            case "the_loai = 'loa'":
+                query = "Select tbl_soctS.So_chon\n, Sum((tbl_soctS.type_kh = 1) * (100-tbl_soctS.diem_khachgiu)*diem_quydoi/100) as diem\n, so_om.Om_Lo + sum(tbl_soctS.diem_dly_giu*tbl_soctS.diem_quydoi/100) as So_Om\n, Sum((tbl_soctS.type_kh =2) * tbl_soctS.diem_quydoi) as chuyen\n, Sum((tbl_soctS.type_kh =1) * (100-tbl_soctS.diem_khachgiu-tbl_soctS.diem_dly_giu)*diem_quydoi/100) - Sum((tbl_soctS.type_kh =2) * tbl_soctS.diem_quydoi) - so_om.Om_Lo as ton\n, so_nhay  From so_om Left Join tbl_soctS On tbl_soctS.so_chon = so_om.So \n Where tbl_soctS.ngay_nhan='" + mDate + "' AND tbl_soctS.the_loai='loa' \n GROUP by so_om.So Order by " + this.sapxep;
                 break;
             case "the_loai = 'dea'":
                 query = "Select tbl_soctS.So_chon\n, Sum((tbl_soctS.type_kh = 1) * (100-tbl_soctS.diem_khachgiu)*diem_quydoi/100) as diem\n, so_om.Om_DeA + sum(tbl_soctS.diem_dly_giu*tbl_soctS.diem_quydoi/100) as So_Om\n, Sum((tbl_soctS.type_kh =2) * tbl_soctS.diem_quydoi) as chuyen\n, Sum((tbl_soctS.type_kh =1) * (100-tbl_soctS.diem_khachgiu-tbl_soctS.diem_dly_giu)*diem_quydoi/100) - Sum((tbl_soctS.type_kh =2) * tbl_soctS.diem_quydoi) - so_om.Om_DeA as ton\n, so_nhay  From so_om Left Join tbl_soctS On tbl_soctS.so_chon = so_om.So \n Where tbl_soctS.ngay_nhan='" + mDate + "' AND tbl_soctS.the_loai='dea' GROUP by so_chon Order by " + this.sapxep;

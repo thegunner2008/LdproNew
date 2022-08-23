@@ -47,6 +47,15 @@
                     android:textSize="14dp" />
 
                 <RadioButton
+                    android:id="@+id/radio_loa"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:text="Lô đầu"
+                    android:textColor="@color/red"
+                    android:textSize="14dp" />
+
+                <RadioButton
                     android:id="@+id/radio_xi"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
