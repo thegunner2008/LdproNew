@@ -1,5 +1,7 @@
 package tamhoang.ldpro4.Fragment;
 
+import static android.content.ContentValues.TAG;
+
 import android.annotation.SuppressLint;
 import android.app.Dialog;
 import android.content.Context;
@@ -8,6 +10,7 @@ import android.database.SQLException;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Looper;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -43,7 +46,7 @@ import java.util.TimeZone;
 
 import tamhoang.ldpro4.Congthuc.Congthuc;
 import tamhoang.ldpro4.MainActivity;
-import tamhoang.ldpro4.NotificationReader;
+import tamhoang.ldpro4.NotificationNewReader;
 import tamhoang.ldpro4.R;
 import tamhoang.ldpro4.RangeSeekBar;
 import tamhoang.ldpro4.data.BriteDb;
@@ -92,7 +95,6 @@ public class Frag_CanChuyen extends Fragment {
     RadioButton radio_xi;
     RangeSeekBar<Integer> rangeSeekBar;
     private Runnable runnable = new Runnable() {
-        /* class tamhoang.ldpro4.Fragment.Frag_CanChuyen.AnonymousClass16 */
 
         public void run() {
             new MainActivity();
@@ -134,17 +136,14 @@ public class Frag_CanChuyen extends Fragment {
         this.check_xn = (CheckBox) this.v.findViewById(R.id.check_xn);
         this.no_rp_number = (ListView) this.v.findViewById(R.id.lview);
         this.db = new Database(getActivity());
-        Handler handler2 = new Handler();
-        this.handler = handler2;
-        handler2.postDelayed(this.runnable, 1000);
-        RangeSeekBar<Integer> rangeSeekBar2 = new RangeSeekBar<>(getActivity());
-        this.rangeSeekBar = rangeSeekBar2;
-        rangeSeekBar2.setRangeValues(0, 100);
+        this.handler = new Handler();
+        this.handler.postDelayed(this.runnable, 1000);
+        this.rangeSeekBar = new RangeSeekBar<>(getActivity());
+        this.rangeSeekBar.setRangeValues(0, 100);
         this.rangeSeekBar.setSelectedMinValue(0);
         this.rangeSeekBar.setSelectedMaxValue(100);
-        LinearLayout linearLayout3 = (LinearLayout) this.v.findViewById(R.id.seekbar);
-        this.layout = linearLayout3;
-        linearLayout3.addView(this.rangeSeekBar);
+        this.layout = (LinearLayout) this.v.findViewById(R.id.seekbar);
+        this.layout.addView(this.rangeSeekBar);
         this.rangeSeekBar.setOnRangeSeekBarChangeListener((rangeSeekBar, minValue, maxValue) -> {
             min = minValue.intValue();
             max = maxValue.intValue();
@@ -334,11 +333,13 @@ public class Frag_CanChuyen extends Fragment {
             }
         });
         this.btn_Xuatso.setOnClickListener(v -> {
-            if (Congthuc.isNumeric(edt_tien.getText().toString().replaceAll("%", "").replaceAll("n", "").replaceAll("k", "")
+            if (mSo.size() == 0 || mTienTon.stream().filter(s -> !s.equals("0")).count() == 0) {
+                Toast.makeText(getContext(), "Không có số liệu!", Toast.LENGTH_SHORT).show();
+            } else if (Congthuc.isNumeric(edt_tien.getText().toString().replaceAll("%", "").replaceAll("n", "").replaceAll("k", "")
                     .replaceAll("d", "").replaceAll(">", "").replaceAll("\\.", "")) || edt_tien.getText().toString().length() == 0) {
                 btn_click();
             } else {
-                Toast.makeText(getActivity(), "Kiểm tra lại tiền!", Toast.LENGTH_LONG).show();
+                Toast.makeText(getContext(), "Số tiền không hợp lệ", Toast.LENGTH_SHORT).show();
             }
         });
         this.lay_x2 = "length(so_chon) = 5 ";
@@ -414,190 +415,188 @@ public class Frag_CanChuyen extends Fragment {
         } catch (JSONException e) {
             e.printStackTrace();
         }
-        if (mDate2.contains(curDate)) {
+    if (mDate2.contains(curDate)) {
 //            if (this.edt_tien.getText().toString().length() != 0) {
 //                if (this.edt_tien.getText().toString() != "0") {
-                    String str3 = this.edt_tien.getText().toString().replaceAll("%", "").replaceAll("n", "").replaceAll("k", "").replaceAll("d", "").replaceAll(">", "").replaceAll("\\.", "").replaceAll(",", "");
-                    if (Congthuc.isNumeric(str3)) {
-                        TienChuyen = Integer.parseInt(str3);
-                    } else {
-                        TienChuyen = 0;
-                    }
-                    switch (DangXuat) {
-                        case "the_loai = 'xi'":
-                            this.xuatDan = "Xien:\n";
-                            int i = this.min;
-                            while (i < this.mSo.size()) {
-                                if (this.edt_tien.getText().toString().contains("%")) {
-                                    MaxTien3 = (Integer.parseInt(this.mTienTon.get(i).replace(".", "")) / mLamtron) * mLamtron;
-                                } else if (this.edt_tien.getText().toString().contains(">")) {
-                                    MaxTien3 = (Integer.parseInt(this.mTienTon.get(i).replace(".", "")) / mLamtron) * mLamtron;
-                                } else if (TienChuyen == 0) {
-                                    MaxTien3 = (Integer.parseInt(this.mTienTon.get(i).replace(".", "")) / mLamtron) * mLamtron;
-                                } else if (Integer.parseInt(this.mTienTon.get(i).replace(".", "")) > TienChuyen) {
-                                    MaxTien3 = (TienChuyen / mLamtron) * mLamtron;
-                                } else {
-                                    MaxTien3 = (Integer.parseInt(this.mTienTon.get(i).replace(".", "")) / mLamtron) * mLamtron;
-                                }
-                                if (this.edt_tien.getText().toString().contains("%")) {
-                                    if (MaxTien3 > 0) {
-                                        try {
-                                            if (MainActivity.jSon_Setting.getInt("chuyen_xien") > 0) {
-                                                this.xuatDan += this.mSo.get(i) + "x" + ((MaxTien3 * TienChuyen) / 1000) + "d ";
-                                            } else if (MainActivity.jSon_Setting.getInt("chuyen_xien") == 0) {
-                                                this.xuatDan += this.mSo.get(i) + "x" + ((MaxTien3 * TienChuyen) / 100) + "n ";
-                                            }
-                                        } catch (JSONException e2) {
-                                            e2.printStackTrace();
-                                        }
-                                    }
-                                } else if (this.edt_tien.getText().toString().contains(">")) {
-                                    if (MaxTien3 > TienChuyen) {
-                                        try {
-                                            if (MainActivity.jSon_Setting.getInt("chuyen_xien") > 0) {
-                                                this.xuatDan += this.mSo.get(i) + "x" + ((MaxTien3 - TienChuyen) / 10) + "d ";
-                                            } else if (MainActivity.jSon_Setting.getInt("chuyen_xien") == 0) {
-                                                this.xuatDan += this.mSo.get(i) + "x" + (MaxTien3 - TienChuyen) + "n ";
-                                            }
-                                        } catch (JSONException e3) {
-                                            e3.printStackTrace();
-                                        }
-                                    }
-                                } else if (!this.edt_tien.getText().toString().contains(">") && !this.edt_tien.getText().toString().contains("%") && MaxTien3 > 0) {
+                String str3 = this.edt_tien.getText().toString().replaceAll("%", "").replaceAll("n", "").replaceAll("k", "").replaceAll("d", "").replaceAll(">", "").replaceAll("\\.", "").replaceAll(",", "");
+                if (Congthuc.isNumeric(str3)) {
+                    TienChuyen = Integer.parseInt(str3);
+                } else {
+                    TienChuyen = 0;
+                }
+                switch (DangXuat) {
+                    case "the_loai = 'xi'":
+                        this.xuatDan = "Xien:\n";
+                        int i = this.min;
+                        while (i < this.mSo.size()) {
+                            if (this.edt_tien.getText().toString().contains("%")) {
+                                MaxTien3 = (Integer.parseInt(this.mTienTon.get(i).replace(".", "")) / mLamtron) * mLamtron;
+                            } else if (this.edt_tien.getText().toString().contains(">")) {
+                                MaxTien3 = (Integer.parseInt(this.mTienTon.get(i).replace(".", "")) / mLamtron) * mLamtron;
+                            } else if (TienChuyen == 0) {
+                                MaxTien3 = (Integer.parseInt(this.mTienTon.get(i).replace(".", "")) / mLamtron) * mLamtron;
+                            } else if (Integer.parseInt(this.mTienTon.get(i).replace(".", "")) > TienChuyen) {
+                                MaxTien3 = (TienChuyen / mLamtron) * mLamtron;
+                            } else {
+                                MaxTien3 = (Integer.parseInt(this.mTienTon.get(i).replace(".", "")) / mLamtron) * mLamtron;
+                            }
+                            if (this.edt_tien.getText().toString().contains("%")) {
+                                if (MaxTien3 > 0) {
                                     try {
                                         if (MainActivity.jSon_Setting.getInt("chuyen_xien") > 0) {
-                                            this.xuatDan += this.mSo.get(i) + "x" + (MaxTien3 / 10) + "d ";
+                                            this.xuatDan += this.mSo.get(i) + "x" + ((MaxTien3 * TienChuyen) / 1000) + "d ";
                                         } else if (MainActivity.jSon_Setting.getInt("chuyen_xien") == 0) {
-                                            this.xuatDan += this.mSo.get(i) + "x" + MaxTien3 + "n ";
+                                            this.xuatDan += this.mSo.get(i) + "x" + ((MaxTien3 * TienChuyen) / 100) + "n ";
                                         }
-                                    } catch (JSONException e4) {
-                                        e4.printStackTrace();
+                                    } catch (JSONException e2) {
+                                        e2.printStackTrace();
                                     }
                                 }
-                                i++;
-                            }
-                            break;
-                        case "the_loai = 'bc'":
-                            this.xuatDan = "Cang:\n";
-                            int i2 = this.min;
-                            int tien = 0;
-                            while (i2 < this.mSo.size()) {
-                                if (TienChuyen == 0) {
-                                    MaxTien2 = (Integer.parseInt(this.mTienTon.get(i2).replace(".", "")) / mLamtron) * mLamtron;
-                                } else if (this.edt_tien.getText().toString().contains("%")) {
-                                    MaxTien2 = (((Integer.parseInt(this.mTienTon.get(i2).replace(".", "")) * TienChuyen) / mLamtron) / 100) * mLamtron;
-                                } else if (this.edt_tien.getText().toString().contains(">")) {
-                                    MaxTien2 = ((Integer.parseInt(this.mTienTon.get(i2).replace(".", "")) - TienChuyen) / mLamtron) * mLamtron;
-                                } else if (Integer.parseInt(this.mTienTon.get(i2).replace(".", "")) > TienChuyen) {
-                                    MaxTien2 = (TienChuyen / mLamtron) * mLamtron;
-                                } else {
-                                    MaxTien2 = (Integer.parseInt(this.mTienTon.get(i2).replace(".", "")) / mLamtron) * mLamtron;
+                            } else if (this.edt_tien.getText().toString().contains(">")) {
+                                if (MaxTien3 > TienChuyen) {
+                                    try {
+                                        if (MainActivity.jSon_Setting.getInt("chuyen_xien") > 0) {
+                                            this.xuatDan += this.mSo.get(i) + "x" + ((MaxTien3 - TienChuyen) / 10) + "d ";
+                                        } else if (MainActivity.jSon_Setting.getInt("chuyen_xien") == 0) {
+                                            this.xuatDan += this.mSo.get(i) + "x" + (MaxTien3 - TienChuyen) + "n ";
+                                        }
+                                    } catch (JSONException e3) {
+                                        e3.printStackTrace();
+                                    }
                                 }
-                                if (MaxTien2 <= 0) {
+                            } else if (!this.edt_tien.getText().toString().contains(">") && !this.edt_tien.getText().toString().contains("%") && MaxTien3 > 0) {
+                                try {
+                                    if (MainActivity.jSon_Setting.getInt("chuyen_xien") > 0) {
+                                        this.xuatDan += this.mSo.get(i) + "x" + (MaxTien3 / 10) + "d ";
+                                    } else if (MainActivity.jSon_Setting.getInt("chuyen_xien") == 0) {
+                                        this.xuatDan += this.mSo.get(i) + "x" + MaxTien3 + "n ";
+                                    }
+                                } catch (JSONException e4) {
+                                    e4.printStackTrace();
+                                }
+                            }
+                            i++;
+                        }
+                        break;
+                    case "the_loai = 'bc'":
+                        this.xuatDan = "Cang:\n";
+                        int i2 = this.min;
+                        int tien = 0;
+                        while (i2 < this.mSo.size()) {
+                            if (TienChuyen == 0) {
+                                MaxTien2 = (Integer.parseInt(this.mTienTon.get(i2).replace(".", "")) / mLamtron) * mLamtron;
+                            } else if (this.edt_tien.getText().toString().contains("%")) {
+                                MaxTien2 = (((Integer.parseInt(this.mTienTon.get(i2).replace(".", "")) * TienChuyen) / mLamtron) / 100) * mLamtron;
+                            } else if (this.edt_tien.getText().toString().contains(">")) {
+                                MaxTien2 = ((Integer.parseInt(this.mTienTon.get(i2).replace(".", "")) - TienChuyen) / mLamtron) * mLamtron;
+                            } else if (Integer.parseInt(this.mTienTon.get(i2).replace(".", "")) > TienChuyen) {
+                                MaxTien2 = (TienChuyen / mLamtron) * mLamtron;
+                            } else {
+                                MaxTien2 = (Integer.parseInt(this.mTienTon.get(i2).replace(".", "")) / mLamtron) * mLamtron;
+                            }
+                            if (MaxTien2 <= 0) {
 
-                                } else if (tien > MaxTien2) {
-                                    this.xuatDan += "x" + tien + "n " + this.mSo.get(i2) + ",";
-                                    tien = MaxTien2;
-                                } else {
-                                    this.xuatDan += this.mSo.get(i2) + ",";
-                                    tien = MaxTien2;
-                                }
-                                i2++;
+                            } else if (tien > MaxTien2) {
+                                this.xuatDan += "x" + tien + "n " + this.mSo.get(i2) + ",";
+                                tien = MaxTien2;
+                            } else {
+                                this.xuatDan += this.mSo.get(i2) + ",";
+                                tien = MaxTien2;
                             }
-                            if (this.xuatDan.length() > 4) {
-                                this.xuatDan += "x" + tien + "n";
-                            }
-                            if (this.xuatDan.contains(":")) {
-                                String str4 = this.xuatDan;
-                                if (str4.substring(str4.indexOf(":")).length() > 7) {
-                                    if (!getActivity().isFinishing()) {
-                                        Dialog(1);
-                                        return;
-                                    }
+                            i2++;
+                        }
+                        if (this.xuatDan.length() > 4) {
+                            this.xuatDan += "x" + tien + "n";
+                        }
+                        if (this.xuatDan.contains(":")) {
+                            String str4 = this.xuatDan;
+                            if (str4.substring(str4.indexOf(":")).length() > 7) {
+                                if (!getActivity().isFinishing()) {
+                                    Dialog(1);
                                     return;
                                 }
+                                return;
                             }
-                            Toast.makeText(getActivity(), "Không có số liệu!", Toast.LENGTH_LONG).show();
-                            return;
-                        case "the_loai = 'xn'":
-                            this.xuatDan = "Xnhay:\n";
-                            for (int i3 = this.min; i3 < this.mSo.size(); i3++) {
-                                if (this.edt_tien.getText().toString().contains("%")) {
-                                    MaxTien = (Integer.parseInt(this.mTienTon.get(i3).replace(".", "")) / mLamtron) * mLamtron;
-                                } else if (this.edt_tien.getText().toString().contains(">")) {
-                                    MaxTien = (Integer.parseInt(this.mTienTon.get(i3).replace(".", "")) / mLamtron) * mLamtron;
-                                } else if (TienChuyen == 0) {
-                                    MaxTien = (Integer.parseInt(this.mTienTon.get(i3).replace(".", "")) / mLamtron) * mLamtron;
-                                } else if (Integer.parseInt(this.mTienTon.get(i3).replace(".", "")) > TienChuyen) {
-                                    MaxTien = (TienChuyen / mLamtron) * mLamtron;
-                                } else {
-                                    MaxTien = (Integer.parseInt(this.mTienTon.get(i3).replace(".", "")) / mLamtron) * mLamtron;
-                                }
-                                if (this.edt_tien.getText().toString().contains("%")) {
-                                    if (MaxTien > 0) {
-                                        try {
-                                            if (MainActivity.jSon_Setting.getInt("chuyen_xien") > 0) {
-                                                this.xuatDan += this.mSo.get(i3) + "x" + ((MaxTien * TienChuyen) / 1000) + "d\n";
-                                            } else if (MainActivity.jSon_Setting.getInt("chuyen_xien") == 0) {
-                                                this.xuatDan += this.mSo.get(i3) + "x" + ((MaxTien * TienChuyen) / 100) + "n\n";
-                                            }
-                                        } catch (JSONException e5) {
-                                            e5.printStackTrace();
-                                        }
-                                    }
-                                } else if (this.edt_tien.getText().toString().contains(">")) {
-                                    if (MaxTien > TienChuyen) {
-                                        try {
-                                            if (MainActivity.jSon_Setting.getInt("chuyen_xien") > 0) {
-                                                this.xuatDan += this.mSo.get(i3) + "x" + ((MaxTien - TienChuyen) / 10) + "d\n";
-                                            } else if (MainActivity.jSon_Setting.getInt("chuyen_xien") == 0) {
-                                                this.xuatDan += this.mSo.get(i3) + "x" + (MaxTien - TienChuyen) + "n\n";
-                                            }
-                                        } catch (JSONException e6) {
-                                            e6.printStackTrace();
-                                        }
-                                    }
-                                } else if (!this.edt_tien.getText().toString().contains(">") && !this.edt_tien.getText().toString().contains("%") && MaxTien > 0) {
+                        }
+                        Toast.makeText(getActivity(), "Không có số liệu!", Toast.LENGTH_LONG).show();
+                        return;
+                    case "the_loai = 'xn'":
+                        this.xuatDan = "Xnhay:\n";
+                        for (int i3 = this.min; i3 < this.mSo.size(); i3++) {
+                            if (this.edt_tien.getText().toString().contains("%")) {
+                                MaxTien = (Integer.parseInt(this.mTienTon.get(i3).replace(".", "")) / mLamtron) * mLamtron;
+                            } else if (this.edt_tien.getText().toString().contains(">")) {
+                                MaxTien = (Integer.parseInt(this.mTienTon.get(i3).replace(".", "")) / mLamtron) * mLamtron;
+                            } else if (TienChuyen == 0) {
+                                MaxTien = (Integer.parseInt(this.mTienTon.get(i3).replace(".", "")) / mLamtron) * mLamtron;
+                            } else if (Integer.parseInt(this.mTienTon.get(i3).replace(".", "")) > TienChuyen) {
+                                MaxTien = (TienChuyen / mLamtron) * mLamtron;
+                            } else {
+                                MaxTien = (Integer.parseInt(this.mTienTon.get(i3).replace(".", "")) / mLamtron) * mLamtron;
+                            }
+                            if (this.edt_tien.getText().toString().contains("%")) {
+                                if (MaxTien > 0) {
                                     try {
                                         if (MainActivity.jSon_Setting.getInt("chuyen_xien") > 0) {
-                                            this.xuatDan += this.mSo.get(i3) + "x" + (MaxTien / 10) + "d\n";
+                                            this.xuatDan += this.mSo.get(i3) + "x" + ((MaxTien * TienChuyen) / 1000) + "d\n";
                                         } else if (MainActivity.jSon_Setting.getInt("chuyen_xien") == 0) {
-                                            this.xuatDan += this.mSo.get(i3) + "x" + MaxTien + "n\n";
+                                            this.xuatDan += this.mSo.get(i3) + "x" + ((MaxTien * TienChuyen) / 100) + "n\n";
                                         }
-                                    } catch (JSONException e7) {
-                                        e7.printStackTrace();
+                                    } catch (JSONException e5) {
+                                        e5.printStackTrace();
                                     }
                                 }
+                            } else if (this.edt_tien.getText().toString().contains(">")) {
+                                if (MaxTien > TienChuyen) {
+                                    try {
+                                        if (MainActivity.jSon_Setting.getInt("chuyen_xien") > 0) {
+                                            this.xuatDan += this.mSo.get(i3) + "x" + ((MaxTien - TienChuyen) / 10) + "d\n";
+                                        } else if (MainActivity.jSon_Setting.getInt("chuyen_xien") == 0) {
+                                            this.xuatDan += this.mSo.get(i3) + "x" + (MaxTien - TienChuyen) + "n\n";
+                                        }
+                                    } catch (JSONException e6) {
+                                        e6.printStackTrace();
+                                    }
+                                }
+                            } else if (!this.edt_tien.getText().toString().contains(">") && !this.edt_tien.getText().toString().contains("%") && MaxTien > 0) {
+                                try {
+                                    if (MainActivity.jSon_Setting.getInt("chuyen_xien") > 0) {
+                                        this.xuatDan += this.mSo.get(i3) + "x" + (MaxTien / 10) + "d\n";
+                                    } else if (MainActivity.jSon_Setting.getInt("chuyen_xien") == 0) {
+                                        this.xuatDan += this.mSo.get(i3) + "x" + MaxTien + "n\n";
+                                    }
+                                } catch (JSONException e7) {
+                                    e7.printStackTrace();
+                                }
                             }
-                            break;
+                        }
+                        break;
 
-                        case "(the_loai = 'deb' or the_loai = 'det')":
-                            this.xuatDan = this.db.XuatDanTon2("deb", this.edt_tien.getText().toString(), this.min, this.max);
-                            break;
-                        case "the_loai = 'dea'":
-                            this.xuatDan = this.db.XuatDanTon2("dea", this.edt_tien.getText().toString(), this.min, this.max);
-                            break;
-                        case "the_loai = 'dec'":
-                            this.xuatDan = this.db.XuatDanTon2("dec", this.edt_tien.getText().toString(), this.min, this.max);
-                            break;
-                        case "the_loai = 'ded'":
-                            this.xuatDan = this.db.XuatDanTon2("ded", this.edt_tien.getText().toString(), this.min, this.max);
-                            break;
-                        case "the_loai = 'loa'":
-                            this.xuatDan = this.db.XuatDanTon2("loa", this.edt_tien.getText().toString(), this.min, this.max);
-                            break;
-                        case "the_loai = 'lo'":
-                            this.xuatDan = this.db.XuatDanTon2("lo", this.edt_tien.getText().toString(), this.min, this.max);
-                            break;
-                        default:
-                            Toast.makeText(getActivity(), "Không có số liệu!", Toast.LENGTH_LONG).show();
-                            break;
-                    }
-            switch (DangXuat) {
-                    }
-                    Dialog(1);
-//                    Toast.makeText(getActivity(), "Không có số liệu!", Toast.LENGTH_LONG).show();
-                    return;
+                    case "(the_loai = 'deb' or the_loai = 'det')":
+                        this.xuatDan = this.db.XuatDanTon2("deb", this.edt_tien.getText().toString(), this.min, this.max);
+                        break;
+                    case "the_loai = 'dea'":
+                        this.xuatDan = this.db.XuatDanTon2("dea", this.edt_tien.getText().toString(), this.min, this.max);
+                        break;
+                    case "the_loai = 'dec'":
+                        this.xuatDan = this.db.XuatDanTon2("dec", this.edt_tien.getText().toString(), this.min, this.max);
+                        break;
+                    case "the_loai = 'ded'":
+                        this.xuatDan = this.db.XuatDanTon2("ded", this.edt_tien.getText().toString(), this.min, this.max);
+                        break;
+                    case "the_loai = 'loa'":
+                        this.xuatDan = this.db.XuatDanTon2("loa", this.edt_tien.getText().toString(), this.min, this.max);
+                        break;
+                    case "the_loai = 'lo'":
+                        this.xuatDan = this.db.XuatDanTon2("lo", this.edt_tien.getText().toString(), this.min, this.max);
+                        break;
+                    default:
+                        Toast.makeText(getActivity(), "Không có số liệu!", Toast.LENGTH_LONG).show();
+                        break;
+                }
+                Dialog(1);
+//              Toast.makeText(getActivity(), "Không có số liệu!", Toast.LENGTH_LONG).show();
+                return;
 //                }
 //            }
 //            Toast.makeText(getActivity(), "Không có số liệu!", Toast.LENGTH_LONG).show();
@@ -730,20 +729,15 @@ public class Frag_CanChuyen extends Fragment {
             this.mKhongMax.clear();
             this.mAppuse.clear();
             while (cur.moveToNext()) {
-                if (!cur.getString(2).contains("sms")) {
-                    if (!cur.getString(2).contains("TL")) {
-                        if (MainActivity.contactsMap.containsKey(cur.getString(1))) {
-                            this.mContact.add(cur.getString(0));
-                            this.mMobile.add(cur.getString(1));
-                            this.mKhongMax.add(cur.getString(6));
-                            this.mAppuse.add(cur.getString(2));
-                        }
-                    }
+                boolean hasContactsMap = MainActivity.contactsMap.containsKey(cur.getString(1)); //Da mo^i`
+                boolean isSmsOrTL = cur.getString(2).contains("sms") || cur.getString(2).contains("TL");
+
+                if (hasContactsMap || isSmsOrTL) {
+                    this.mContact.add(cur.getString(0));
+                    this.mMobile.add(cur.getString(1));
+                    this.mKhongMax.add(cur.getString(6));
+                    this.mAppuse.add(cur.getString(2));
                 }
-                this.mContact.add(cur.getString(0));
-                this.mMobile.add(cur.getString(1));
-                this.mKhongMax.add(cur.getString(6));
-                this.mAppuse.add(cur.getString(2));
             }
             if (!cur.isClosed()) {
                 cur.close();
@@ -866,10 +860,7 @@ public class Frag_CanChuyen extends Fragment {
                             String TienChiTiet2 = Chitiet[k].substring(Chitiet[k].indexOf(str4)).replaceAll(",", str3);
                             String[] str_so = DanChiTiet.split(",");
                             int j = 0;
-                            while (true) {
-                                if (j >= str_so.length) {
-                                    break;
-                                }
+                            while (j < str_so.length) {
                                 String ndung2 = ndung.toString().replaceAll(",x", str4);
                                 if (ndung2.length() != 0) {
                                     str2 = str4;
@@ -987,7 +978,7 @@ public class Frag_CanChuyen extends Fragment {
                             }
                         }
                         if (Chuyen == 1 && !cur1.getString(2).contains("sms")) {
-                            new NotificationReader().NotificationWearReader(this.mMobile.get(this.mSpiner), NoiDungTin);
+                            new NotificationNewReader().NotificationWearReader(this.mMobile.get(this.mSpiner), NoiDungTin);
                             this.db.QueryData("Insert into Chat_database Values( null,'" + mDate + "', '" + mGionhan + "', 2, '" + this.mContact.get(this.mSpiner) + "', '" + this.mMobile.get(this.mSpiner) + "', '" + cur1.getString(2) + "','" + NoiDungTin + "',1)");
                         }
                     } catch (Exception e3) {

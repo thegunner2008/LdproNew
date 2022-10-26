@@ -59,20 +59,21 @@ public class RangeSeekBar<T extends Number> extends androidx.appcompat.widget.Ap
     private boolean notifyWhileDragging;
     private NumberType numberType;
     private float padding;
-    private final Paint paint = new Paint(1);
+    private final Paint paint;
     private Thumb pressedThumb;
-    private final Bitmap thumbDisabledImage = BitmapFactory.decodeResource(getResources(), R.drawable.seek_thumb_disabled);
+    private final Bitmap thumbDisabledImage;
     private final float thumbHalfHeight;
     private final float thumbHalfWidth;
-    private final Bitmap thumbImage = BitmapFactory.decodeResource(getResources(), R.drawable.seek_thumb_normal);
-    private final Bitmap thumbPressedImage = BitmapFactory.decodeResource(getResources(), R.drawable.seek_thumb_pressed);
+    private final Bitmap thumbImage;
+    private final Bitmap thumbPressedImage;
     private final float thumbWidth;
 
+    /* loaded from: classes.dex */
     public interface OnRangeSeekBarChangeListener<T> {
         void onRangeSeekBarValuesChanged(RangeSeekBar<?> rangeSeekBar, T t, T t2);
     }
 
-    /* access modifiers changed from: private */
+    /* loaded from: classes.dex */
     public enum Thumb {
         MIN,
         MAX
@@ -80,10 +81,15 @@ public class RangeSeekBar<T extends Number> extends androidx.appcompat.widget.Ap
 
     public RangeSeekBar(Context context) {
         super(context);
-        float width = (float) this.thumbImage.getWidth();
+        this.paint = new Paint(1);
+        this.thumbDisabledImage = BitmapFactory.decodeResource(getResources(), R.drawable.seek_thumb_disabled);
+        Bitmap decodeResource = BitmapFactory.decodeResource(getResources(), R.drawable.seek_thumb_normal);
+        this.thumbImage = decodeResource;
+        this.thumbPressedImage = BitmapFactory.decodeResource(getResources(), R.drawable.seek_thumb_pressed);
+        float width = decodeResource.getWidth();
         this.thumbWidth = width;
         this.thumbHalfWidth = width * 0.5f;
-        this.thumbHalfHeight = ((float) this.thumbImage.getHeight()) * 0.5f;
+        this.thumbHalfHeight = decodeResource.getHeight() * 0.5f;
         this.normalizedMinValue = 0.0d;
         this.normalizedMaxValue = 1.0d;
         this.pressedThumb = null;
@@ -94,10 +100,15 @@ public class RangeSeekBar<T extends Number> extends androidx.appcompat.widget.Ap
 
     public RangeSeekBar(Context context, AttributeSet attrs) {
         super(context, attrs);
-        float width = (float) this.thumbImage.getWidth();
+        this.paint = new Paint(1);
+        this.thumbDisabledImage = BitmapFactory.decodeResource(getResources(), R.drawable.seek_thumb_disabled);
+        Bitmap decodeResource = BitmapFactory.decodeResource(getResources(), R.drawable.seek_thumb_normal);
+        this.thumbImage = decodeResource;
+        this.thumbPressedImage = BitmapFactory.decodeResource(getResources(), R.drawable.seek_thumb_pressed);
+        float width = decodeResource.getWidth();
         this.thumbWidth = width;
         this.thumbHalfWidth = width * 0.5f;
-        this.thumbHalfHeight = ((float) this.thumbImage.getHeight()) * 0.5f;
+        this.thumbHalfHeight = decodeResource.getHeight() * 0.5f;
         this.normalizedMinValue = 0.0d;
         this.normalizedMaxValue = 1.0d;
         this.pressedThumb = null;
@@ -108,10 +119,15 @@ public class RangeSeekBar<T extends Number> extends androidx.appcompat.widget.Ap
 
     public RangeSeekBar(Context context, AttributeSet attrs, int defStyle) {
         super(context, attrs, defStyle);
-        float width = (float) this.thumbImage.getWidth();
+        this.paint = new Paint(1);
+        this.thumbDisabledImage = BitmapFactory.decodeResource(getResources(), R.drawable.seek_thumb_disabled);
+        Bitmap decodeResource = BitmapFactory.decodeResource(getResources(), R.drawable.seek_thumb_normal);
+        this.thumbImage = decodeResource;
+        this.thumbPressedImage = BitmapFactory.decodeResource(getResources(), R.drawable.seek_thumb_pressed);
+        float width = decodeResource.getWidth();
         this.thumbWidth = width;
         this.thumbHalfWidth = width * 0.5f;
-        this.thumbHalfHeight = ((float) this.thumbImage.getHeight()) * 0.5f;
+        this.thumbHalfHeight = decodeResource.getHeight() * 0.5f;
         this.normalizedMinValue = 0.0d;
         this.normalizedMaxValue = 1.0d;
         this.pressedThumb = null;
@@ -136,18 +152,18 @@ public class RangeSeekBar<T extends Number> extends androidx.appcompat.widget.Ap
         if (attrs == null) {
             setRangeToDefaultValues();
         } else {
-            TypedArray a = getContext().obtainStyledAttributes(attrs, R.styleable.RangeSeekBar, 0, 0);
-            setRangeValues(extractNumericValueFromAttributes(a, 1, DEFAULT_MINIMUM.intValue()), extractNumericValueFromAttributes(a, 0, DEFAULT_MAXIMUM.intValue()));
-            this.mSingleThumb = a.getBoolean(2, false);
-            a.recycle();
+            TypedArray obtainStyledAttributes = getContext().obtainStyledAttributes(attrs, R.styleable.RangeSeekBar, 0, 0);
+            setRangeValues(extractNumericValueFromAttributes(obtainStyledAttributes, 1, DEFAULT_MINIMUM), extractNumericValueFromAttributes(obtainStyledAttributes, 0, DEFAULT_MAXIMUM));
+            this.mSingleThumb = obtainStyledAttributes.getBoolean(2, false);
+            obtainStyledAttributes.recycle();
         }
         setValuePrimAndNumberType();
-        this.INITIAL_PADDING = (float) PixelUtil.dpToPx(context, 8);
+        this.INITIAL_PADDING = PixelUtil.dpToPx(context, 8);
         this.mTextSize = PixelUtil.dpToPx(context, 14);
         this.mDistanceToTop = PixelUtil.dpToPx(context, 8);
         this.mTextOffset = this.mTextSize + PixelUtil.dpToPx(context, 8) + this.mDistanceToTop;
-        float lineHeight = (float) PixelUtil.dpToPx(context, 1);
-        this.mRect = new RectF(this.padding, (((float) this.mTextOffset) + this.thumbHalfHeight) - (lineHeight / 2.0f), ((float) getWidth()) - this.padding, ((float) this.mTextOffset) + this.thumbHalfHeight + (lineHeight / 2.0f));
+        float dpToPx = PixelUtil.dpToPx(context, 1) / 2.0f;
+        this.mRect = new RectF(this.padding, (this.mTextOffset + this.thumbHalfHeight) - dpToPx, getWidth() - this.padding, this.mTextOffset + this.thumbHalfHeight + dpToPx);
         setFocusable(true);
         setFocusableInTouchMode(true);
         this.mScaledTouchSlop = ViewConfiguration.get(getContext()).getScaledTouchSlop();
@@ -222,72 +238,72 @@ public class RangeSeekBar<T extends Number> extends androidx.appcompat.widget.Ap
 
     public boolean onTouchEvent(MotionEvent event) {
         OnRangeSeekBarChangeListener<T> onRangeSeekBarChangeListener;
-        if (!isEnabled()) {
-            return false;
-        }
-        int action = event.getAction() & 255;
-        if (action == 0) {
-            int pointerId = event.getPointerId(event.getPointerCount() - 1);
-            this.mActivePointerId = pointerId;
-            float x = event.getX(event.findPointerIndex(pointerId));
-            this.mDownMotionX = x;
-            Thumb evalPressedThumb = evalPressedThumb(x);
-            this.pressedThumb = evalPressedThumb;
-            if (evalPressedThumb == null) {
-                return super.onTouchEvent(event);
-            }
-            setPressed(true);
-            invalidate();
-            onStartTrackingTouch();
-            trackTouchEvent(event);
-            attemptClaimDrag();
-        } else if (action == 1) {
-            if (this.mIsDragging) {
-                trackTouchEvent(event);
-                onStopTrackingTouch();
-                setPressed(false);
-            } else {
-                onStartTrackingTouch();
-                trackTouchEvent(event);
-                onStopTrackingTouch();
-            }
-            this.pressedThumb = null;
-            invalidate();
-            OnRangeSeekBarChangeListener<T> onRangeSeekBarChangeListener2 = this.listener;
-            if (onRangeSeekBarChangeListener2 != null) {
-                onRangeSeekBarChangeListener2.onRangeSeekBarValuesChanged(this, getSelectedMinValue(), getSelectedMaxValue());
-            }
-        } else if (action != 2) {
-            if (action == 3) {
-                if (this.mIsDragging) {
-                    onStopTrackingTouch();
-                    setPressed(false);
+        if (isEnabled()) {
+            int action = event.getAction() & 255;
+            if (action == 0) {
+                int pointerId = event.getPointerId(event.getPointerCount() - 1);
+                this.mActivePointerId = pointerId;
+                float x = event.getX(event.findPointerIndex(pointerId));
+                this.mDownMotionX = x;
+                Thumb evalPressedThumb = evalPressedThumb(x);
+                this.pressedThumb = evalPressedThumb;
+                if (evalPressedThumb == null) {
+                    return super.onTouchEvent(event);
                 }
-                invalidate();
-            } else if (action == 5) {
-                int index = event.getPointerCount() - 1;
-                this.mDownMotionX = event.getX(index);
-                this.mActivePointerId = event.getPointerId(index);
-                invalidate();
-            } else if (action == 6) {
-                onSecondaryPointerUp(event);
-                invalidate();
-            }
-        } else if (this.pressedThumb != null) {
-            if (this.mIsDragging) {
-                trackTouchEvent(event);
-            } else if (Math.abs(event.getX(event.findPointerIndex(this.mActivePointerId)) - this.mDownMotionX) > ((float) this.mScaledTouchSlop)) {
                 setPressed(true);
                 invalidate();
                 onStartTrackingTouch();
                 trackTouchEvent(event);
                 attemptClaimDrag();
+            } else if (action == 1) {
+                if (this.mIsDragging) {
+                    trackTouchEvent(event);
+                    onStopTrackingTouch();
+                    setPressed(false);
+                } else {
+                    onStartTrackingTouch();
+                    trackTouchEvent(event);
+                    onStopTrackingTouch();
+                }
+                this.pressedThumb = null;
+                invalidate();
+                OnRangeSeekBarChangeListener<T> onRangeSeekBarChangeListener2 = this.listener;
+                if (onRangeSeekBarChangeListener2 != null) {
+                    onRangeSeekBarChangeListener2.onRangeSeekBarValuesChanged(this, getSelectedMinValue(), getSelectedMaxValue());
+                }
+            } else if (action != 2) {
+                if (action == 3) {
+                    if (this.mIsDragging) {
+                        onStopTrackingTouch();
+                        setPressed(false);
+                    }
+                    invalidate();
+                } else if (action == 5) {
+                    int pointerCount = event.getPointerCount() - 1;
+                    this.mDownMotionX = event.getX(pointerCount);
+                    this.mActivePointerId = event.getPointerId(pointerCount);
+                    invalidate();
+                } else if (action == 6) {
+                    onSecondaryPointerUp(event);
+                    invalidate();
+                }
+            } else if (this.pressedThumb != null) {
+                if (this.mIsDragging) {
+                    trackTouchEvent(event);
+                } else if (Math.abs(event.getX(event.findPointerIndex(this.mActivePointerId)) - this.mDownMotionX) > this.mScaledTouchSlop) {
+                    setPressed(true);
+                    invalidate();
+                    onStartTrackingTouch();
+                    trackTouchEvent(event);
+                    attemptClaimDrag();
+                }
+                if (this.notifyWhileDragging && (onRangeSeekBarChangeListener = this.listener) != null) {
+                    onRangeSeekBarChangeListener.onRangeSeekBarValuesChanged(this, getSelectedMinValue(), getSelectedMaxValue());
+                }
             }
-            if (this.notifyWhileDragging && (onRangeSeekBarChangeListener = this.listener) != null) {
-                onRangeSeekBarChangeListener.onRangeSeekBarValuesChanged(this, getSelectedMinValue(), getSelectedMaxValue());
-            }
+            return true;
         }
-        return true;
+        return false;
     }
 
     private final void onSecondaryPointerUp(MotionEvent ev) {
@@ -314,80 +330,71 @@ public class RangeSeekBar<T extends Number> extends androidx.appcompat.widget.Ap
         }
     }
 
-    /* access modifiers changed from: package-private */
     public void onStartTrackingTouch() {
         this.mIsDragging = true;
     }
 
-    /* access modifiers changed from: package-private */
     public void onStopTrackingTouch() {
         this.mIsDragging = false;
     }
 
-    /* access modifiers changed from: protected */
-    @SuppressLint("WrongConstant")
+    @Override // android.widget.ImageView, android.view.View
     public synchronized void onMeasure(int widthMeasureSpec, int heightMeasureSpec) {
         int width = ItemTouchHelper.Callback.DEFAULT_DRAG_ANIMATION_DURATION;
-        if (View.MeasureSpec.getMode(widthMeasureSpec) != 0) {
-            width = View.MeasureSpec.getSize(widthMeasureSpec);
+        if (MeasureSpec.getMode(widthMeasureSpec) != MeasureSpec.UNSPECIFIED) {
+            width = MeasureSpec.getSize(widthMeasureSpec);
         }
         int height = this.thumbImage.getHeight() + PixelUtil.dpToPx(getContext(), 30);
-        if (View.MeasureSpec.getMode(heightMeasureSpec) != 0) {
+        if (View.MeasureSpec.getMode(heightMeasureSpec) != MeasureSpec.UNSPECIFIED) {
             height = Math.min(height, View.MeasureSpec.getSize(heightMeasureSpec));
         }
         setMeasuredDimension(width, height);
     }
 
-    /* access modifiers changed from: protected */
     public synchronized void onDraw(Canvas canvas) {
         super.onDraw(canvas);
-        this.paint.setTextSize((float) this.mTextSize);
+        this.paint.setTextSize(this.mTextSize);
         this.paint.setStyle(Paint.Style.FILL);
-        int colorToUseForButtonsAndHighlightedLine = -7829368;
         this.paint.setColor(-7829368);
-        boolean selectedValuesAreDefault = true;
+        boolean z;
         this.paint.setAntiAlias(true);
-        String minLabel = getContext().getString(R.string.demo_min_label);
-        String maxLabel = getContext().getString(R.string.demo_max_label);
-        float minMaxLabelSize = Math.max(this.paint.measureText(minLabel), this.paint.measureText(maxLabel));
-        float minMaxHeight = ((float) this.mTextOffset) + this.thumbHalfHeight + ((float) (this.mTextSize / 3));
-        canvas.drawText(minLabel, 0.0f, minMaxHeight, this.paint);
-        canvas.drawText(maxLabel, ((float) getWidth()) - minMaxLabelSize, minMaxHeight, this.paint);
-        float f = this.INITIAL_PADDING + minMaxLabelSize + this.thumbHalfWidth;
-        this.padding = f;
-        this.mRect.left = f;
-        this.mRect.right = ((float) getWidth()) - this.padding;
+        String string = getContext().getString(R.string.demo_min_label);
+        String string2 = getContext().getString(R.string.demo_max_label);
+        float max = Math.max(this.paint.measureText(string), this.paint.measureText(string2));
+        float f = this.mTextOffset + this.thumbHalfHeight + (this.mTextSize / 3);
+        canvas.drawText(string, 0.0f, f, this.paint);
+        canvas.drawText(string2, getWidth() - max, f, this.paint);
+        float f2 = this.INITIAL_PADDING + max + this.thumbHalfWidth;
+        this.padding = f2;
+        this.mRect.left = f2;
+        this.mRect.right = getWidth() - this.padding;
         canvas.drawRect(this.mRect, this.paint);
-        if (!getSelectedMinValue().equals(getAbsoluteMinValue()) || !getSelectedMaxValue().equals(getAbsoluteMaxValue())) {
-            selectedValuesAreDefault = false;
-        }
-        if (!selectedValuesAreDefault) {
-            colorToUseForButtonsAndHighlightedLine = DEFAULT_COLOR;
-        }
+        z = (getSelectedMinValue().equals(getAbsoluteMinValue()) && getSelectedMaxValue().equals(getAbsoluteMaxValue())) ? false : false;
+        int i = z ? -7829368 : DEFAULT_COLOR;
         this.mRect.left = normalizedToScreen(this.normalizedMinValue);
         this.mRect.right = normalizedToScreen(this.normalizedMaxValue);
-        this.paint.setColor(colorToUseForButtonsAndHighlightedLine);
+        this.paint.setColor(i);
         canvas.drawRect(this.mRect, this.paint);
         if (!this.mSingleThumb) {
-            drawThumb(normalizedToScreen(this.normalizedMinValue), Thumb.MIN.equals(this.pressedThumb), canvas, selectedValuesAreDefault);
+            drawThumb(normalizedToScreen(this.normalizedMinValue), Thumb.MIN.equals(this.pressedThumb), canvas, z);
         }
-        drawThumb(normalizedToScreen(this.normalizedMaxValue), Thumb.MAX.equals(this.pressedThumb), canvas, selectedValuesAreDefault);
-        if (!selectedValuesAreDefault) {
-            this.paint.setTextSize((float) this.mTextSize);
+        drawThumb(normalizedToScreen(this.normalizedMaxValue), Thumb.MAX.equals(this.pressedThumb), canvas, z);
+        if (!z) {
+            this.paint.setTextSize(this.mTextSize);
             this.paint.setColor(ViewCompat.MEASURED_STATE_MASK);
-            int offset = PixelUtil.dpToPx(getContext(), 3);
-            String minText = String.valueOf(getSelectedMinValue());
-            String maxText = String.valueOf(getSelectedMaxValue());
-            float minTextWidth = this.paint.measureText(minText) + ((float) offset);
-            float maxTextWidth = this.paint.measureText(maxText) + ((float) offset);
+            int dpToPx = PixelUtil.dpToPx(getContext(), 3);
+            String valueOf = String.valueOf(getSelectedMinValue());
+            String valueOf2 = String.valueOf(getSelectedMaxValue());
+            float f3 = dpToPx;
+            float measureText = this.paint.measureText(valueOf) + f3;
+            float measureText2 = this.paint.measureText(valueOf2) + f3;
             if (!this.mSingleThumb) {
-                canvas.drawText(minText, normalizedToScreen(this.normalizedMinValue) - (minTextWidth * 0.5f), (float) (this.mDistanceToTop + this.mTextSize), this.paint);
+                canvas.drawText(valueOf, normalizedToScreen(this.normalizedMinValue) - (measureText * 0.5f), this.mDistanceToTop + this.mTextSize, this.paint);
             }
-            canvas.drawText(maxText, normalizedToScreen(this.normalizedMaxValue) - (0.5f * maxTextWidth), (float) (this.mDistanceToTop + this.mTextSize), this.paint);
+            canvas.drawText(valueOf2, normalizedToScreen(this.normalizedMaxValue) - (measureText2 * 0.5f), this.mDistanceToTop + this.mTextSize, this.paint);
         }
     }
 
-    /* access modifiers changed from: protected */
     public Parcelable onSaveInstanceState() {
         Bundle bundle = new Bundle();
         bundle.putParcelable("SUPER", super.onSaveInstanceState());
@@ -396,7 +403,6 @@ public class RangeSeekBar<T extends Number> extends androidx.appcompat.widget.Ap
         return bundle;
     }
 
-    /* access modifiers changed from: protected */
     public void onRestoreInstanceState(Parcelable parcel) {
         Bundle bundle = (Bundle) parcel;
         super.onRestoreInstanceState(bundle.getParcelable("SUPER"));
@@ -445,11 +451,10 @@ public class RangeSeekBar<T extends Number> extends androidx.appcompat.widget.Ap
 
     private T normalizedToValue(double normalized) {
         double d = this.absoluteMinValuePrim;
-        double v = d + ((this.absoluteMaxValuePrim - d) * normalized);
-        NumberType numberType2 = this.numberType;
-        double round = (double) Math.round(v * 100.0d);
+        NumberType numberType = this.numberType;
+        double round = Math.round((d + ((this.absoluteMaxValuePrim - d) * normalized)) * 100.0d);
         Double.isNaN(round);
-        return (T) numberType2.toNumber(round / 100.0d);
+        return (T) numberType.toNumber(round / 100.0d);
     }
 
     private double valueToNormalized(T value) {
@@ -478,7 +483,7 @@ public class RangeSeekBar<T extends Number> extends androidx.appcompat.widget.Ap
         return Math.min(1.0d, Math.max(0.0d, (double) ((screenCoord - f) / (((float) width) - (f * 2.0f)))));
     }
 
-    /* access modifiers changed from: private */
+    /* loaded from: classes.dex */
     public enum NumberType {
         LONG,
         DOUBLE,
@@ -535,41 +540,40 @@ public class RangeSeekBar<T extends Number> extends androidx.appcompat.widget.Ap
         }
     }
 
-    /* access modifiers changed from: package-private */
-    /* renamed from: tamhoang.ldpro4.RangeSeekBar$1  reason: invalid class name */
-    public static /* synthetic */ class AnonymousClass1 {
-        static final /* synthetic */ int[] $SwitchMap$tamhoang$ldpro4$RangeSeekBar$NumberType;
+    /* loaded from: classes.dex */
+    public static class AnonymousClass1 {
+        static final int[] $SwitchMap$tamhoang$ldpro4$RangeSeekBar$NumberType;
 
         static {
             int[] iArr = new int[NumberType.values().length];
             $SwitchMap$tamhoang$ldpro4$RangeSeekBar$NumberType = iArr;
             try {
                 iArr[NumberType.LONG.ordinal()] = 1;
-            } catch (NoSuchFieldError e) {
+            } catch (NoSuchFieldError unused) {
             }
             try {
                 $SwitchMap$tamhoang$ldpro4$RangeSeekBar$NumberType[NumberType.DOUBLE.ordinal()] = 2;
-            } catch (NoSuchFieldError e2) {
+            } catch (NoSuchFieldError unused2) {
             }
             try {
                 $SwitchMap$tamhoang$ldpro4$RangeSeekBar$NumberType[NumberType.INTEGER.ordinal()] = 3;
-            } catch (NoSuchFieldError e3) {
+            } catch (NoSuchFieldError unused3) {
             }
             try {
                 $SwitchMap$tamhoang$ldpro4$RangeSeekBar$NumberType[NumberType.FLOAT.ordinal()] = 4;
-            } catch (NoSuchFieldError e4) {
+            } catch (NoSuchFieldError unused4) {
             }
             try {
                 $SwitchMap$tamhoang$ldpro4$RangeSeekBar$NumberType[NumberType.SHORT.ordinal()] = 5;
-            } catch (NoSuchFieldError e5) {
+            } catch (NoSuchFieldError unused5) {
             }
             try {
                 $SwitchMap$tamhoang$ldpro4$RangeSeekBar$NumberType[NumberType.BYTE.ordinal()] = 6;
-            } catch (NoSuchFieldError e6) {
+            } catch (NoSuchFieldError unused6) {
             }
             try {
                 $SwitchMap$tamhoang$ldpro4$RangeSeekBar$NumberType[NumberType.BIG_DECIMAL.ordinal()] = 7;
-            } catch (NoSuchFieldError e7) {
+            } catch (NoSuchFieldError unused7) {
             }
         }
     }

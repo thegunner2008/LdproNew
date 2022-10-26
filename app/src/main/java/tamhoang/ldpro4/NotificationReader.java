@@ -1,45 +1,43 @@
 package tamhoang.ldpro4;
 
 import static android.content.ContentValues.TAG;
+import static androidx.core.app.NotificationCompat.PRIORITY_MAX;
 
 import android.app.Notification;
-import android.app.PendingIntent;
+import android.app.NotificationChannel;
+import android.app.NotificationManager;
 import android.app.RemoteInput;
 import android.content.Context;
 import android.content.Intent;
 import android.database.Cursor;
+import android.graphics.Color;
+import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
-import android.os.Parcelable;
 import android.service.notification.NotificationListenerService;
 import android.service.notification.StatusBarNotification;
 import android.util.Log;
-import android.widget.Toast;
 
+import androidx.annotation.RequiresApi;
 import androidx.core.app.NotificationCompat;
-
-import java.text.SimpleDateFormat;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Calendar;
-import java.util.Date;
-import java.util.HashSet;
-import java.util.Iterator;
-import java.util.List;
-import java.util.TimeZone;
-import java.util.concurrent.TimeUnit;
 
 import org.json.JSONObject;
 
-import io.reactivex.Observable;
+import java.text.SimpleDateFormat;
+import java.util.ArrayList;
+import java.util.Calendar;
+import java.util.Date;
+import java.util.Iterator;
+import java.util.TimeZone;
+
 import tamhoang.ldpro4.Congthuc.Congthuc;
-import tamhoang.ldpro4.Models.Action;
 import tamhoang.ldpro4.data.BriteDb;
 import tamhoang.ldpro4.data.Contact;
 import tamhoang.ldpro4.data.Database;
 import tamhoang.ldpro4.data.model.KhachHang;
 import tamhoang.ldpro4.data.model.TinNhanS;
-import tamhoang.ldpro4.util.NotificationUtils;
+import tamhoang.ldpro4.notifLib.models.Action;
+import tamhoang.ldpro4.notifLib.utils.NotificationUtils;
 
 public class NotificationReader extends NotificationListenerService {
     public static final String VIBER = "com.viber.voip";
@@ -61,29 +59,56 @@ public class NotificationReader extends NotificationListenerService {
 
         super.onCreate();
         this.db = new Database(getBaseContext());
+        startForeground();
+    }
+
+    private void startForeground() {
+
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+            createNotificationChannel();
+        }
+
+        String channelId = Build.VERSION.SDK_INT >= Build.VERSION_CODES.O ?
+                createNotificationChannel() : "";
+
+        NotificationCompat.Builder notificationBuilder = new NotificationCompat.Builder(this, channelId);
+        Notification notification = notificationBuilder.setOngoing(true)
+                .setSmallIcon(R.drawable.icon)
+                .setContentTitle("LDPro")
+                .setContentText("Đang chạy")
+                .setPriority(PRIORITY_MAX)
+                .setCategory(Notification.CATEGORY_SERVICE).build();
+        startForeground(101, notification);
+    }
+
+    @RequiresApi(Build.VERSION_CODES.O)
+    private String createNotificationChannel() {
+        NotificationChannel channel = new NotificationChannel("ld_service", "Ld Background Service", NotificationManager.IMPORTANCE_HIGH);
+        channel.setLightColor(Color.BLUE);
+        channel.setLockscreenVisibility(Notification.VISIBILITY_PUBLIC);
+        NotificationManager service = (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
+        service.createNotificationChannel(channel);
+        return "ld_service";
     }
 
     public void onNotificationPosted(StatusBarNotification sbn) {
         Log.e(TAG, "onNotificationPosted: " + sbn);
-
-        if (!sbn.getPackageName().equals(ZALO) && !sbn.getPackageName().equals(WHATSAPP) && !sbn.getPackageName().equals(VIBER)) return;
+        if (!sbn.getPackageName().equals(ZALO) && !sbn.getPackageName().equals(WHATSAPP) && !sbn.getPackageName().equals(VIBER))
+            return;
         if (this.context == null) this.context = this;
 
         Bundle extras = sbn.getNotification().extras;
         String text = extras.getCharSequence(NotificationCompat.EXTRA_TEXT).toString();//nội dung tin nhắn hoặc số(tin nhắn)
-        CharSequence[] textLines = extras.getCharSequenceArray(NotificationCompat.EXTRA_TEXT_LINES);
 
-        Log.e(TAG, "aaaa onNotificationPosted: text " + text);
-
-        Log.e(TAG, "aaaa onNotificationPosted: textLines " + Arrays.toString(textLines));
-        if(!text.isEmpty()) processText(sbn, text, 1, 1);
+        if (!text.isEmpty()) processText(sbn, text, 1, 1);
     }
 
     public void processText(StatusBarNotification sbn, String text, int process, int number) {
         Log.e(TAG, "processText: " + text);
 
-        String app = "";
+        String app = null;
         String GhepTen; // app - tên KH
+        Iterator it;
 
         Calendar calendar = Calendar.getInstance();
         calendar.setTime(new Date());
@@ -100,10 +125,9 @@ public class NotificationReader extends NotificationListenerService {
             String title = extras.getCharSequence(NotificationCompat.EXTRA_TITLE).toString();// 1/ = Tên KH (số tin nhắn)
 
             if (sbn.getPackageName().equals(ZALO)) {
-                if ((text.contains("tin nhắn chưa đọc.")) || (text.contains("đã gửi tập tin cho bạn")) || (text.contains("cảm xúc với tin nhắn bạn gửi"))
-                        || (text.contains("hình động cho bạn")) || (text.contains("thành viên của nhóm")) || (text.contains("thêm vào nhóm")) || (text.contains("gửi ảnh cho bạn"))) {
-
-                } else if (!text.contains("cuộc trò chuyện")) {
+                if (!text.contains("tin nhắn chưa đọc.") && !text.contains("đã gửi tập tin cho bạn") && !text.contains("cảm xúc với tin nhắn bạn gửi")
+                        && !text.contains("hình động cho bạn") && !text.contains("thành viên của nhóm") && !text.contains("thêm vào nhóm")
+                        && !text.contains("gửi ảnh cho bạn") && !text.contains("cuộc trò chuyện")) {
                     this.ID = title;
                     if (title.contains(" (")) {
                         this.ID = this.ID.substring(0, this.ID.indexOf("(")).trim(); // 2/ = Tên người nhắn
@@ -118,9 +142,8 @@ public class NotificationReader extends NotificationListenerService {
                 }
             }
 
-
             if (sbn.getPackageName().equals(VIBER) && !text.contains("Bạn có các tin nhắn") && !text.contains("thêm bạn vào")
-                    && !text.contains("uộc gọi") && !text.contains("tin nhắn chưa đọc")) {
+                    && !text.contains("uộc gọi") && !text.contains("tin nhắn chưa đọc") && !title.endsWith("Tôi")) {
                 this.ID = title;
                 if (this.ID.contains("trong")) {
                     this.ID = this.ID.substring(this.ID.indexOf("trong") + 6);
@@ -128,7 +151,6 @@ public class NotificationReader extends NotificationListenerService {
                 if (!this.ID.contains("tin nhắn chưa đọc"))
                     app = "VB";
             }
-
 
             if (sbn.getPackageName().equals(WHATSAPP) && !text.contains("tin nhắn")) {
                 this.ID = text;
@@ -159,7 +181,7 @@ public class NotificationReader extends NotificationListenerService {
             }
 
             GhepTen = app + " - " + this.ID.trim();
-            if(app != "") {
+            if (app != null) {
                 JSONObject jsonTin;
                 if (MainActivity.Json_Tinnhan.has(GhepTen)) {
                     jsonTin = new JSONObject(MainActivity.Json_Tinnhan.getString(GhepTen));
@@ -177,15 +199,19 @@ public class NotificationReader extends NotificationListenerService {
                 }
             }
 
-            Log.e(TAG, "onNotificationPosted: MainActivity.contactsMap.containsKey(GhepTen) =" + MainActivity.contactsMap.containsKey(GhepTen) + " GhepTen null = "+  GhepTen.contains("null"));
-
             if ( !GhepTen.contains("null")) {
                 Notification.Action[] actions = notification.actions;
 
-                for (Notification.Action act: actions) {
+                Notification.WearableExtender wearableExtender = new Notification.WearableExtender(notification);
+                ArrayList arrayList = new ArrayList();
+                arrayList.addAll(wearableExtender.getActions());
+                it = arrayList.iterator();
+                while (it.hasNext()) {
+                    Notification.Action act = (Notification.Action) it.next();
                     if (act.title.toString().contains("Trả lời") || act.title.toString().contains("Reply")) {
-                        if(MainActivity.contactsMap.containsKey(GhepTen)) {
-                            if(MainActivity.contactsMap.get(GhepTen) != null) {
+                        Action action = NotificationUtils.getQuickReplyAction(sbn.getNotification(), getPackageName());
+                        if (MainActivity.contactsMap.containsKey(GhepTen)) {
+                            if (MainActivity.contactsMap.get(GhepTen) != null) {
                                 MainActivity.contactsMap.get(GhepTen).process = process;
                                 MainActivity.contactsMap.get(GhepTen).number = number;
                                 MainActivity.contactsMap.get(GhepTen).name = GhepTen;
@@ -193,6 +219,7 @@ public class NotificationReader extends NotificationListenerService {
                                 MainActivity.contactsMap.get(GhepTen).pendingIntent = act.actionIntent;
                                 MainActivity.contactsMap.get(GhepTen).remoteInput = act.getRemoteInputs()[0];
                                 MainActivity.contactsMap.get(GhepTen).remoteExtras = sbn.getNotification().extras;
+                                MainActivity.contactsMap.get(GhepTen).action = action;
                             }
                         } else {
                             Contact cont = new Contact();
@@ -203,6 +230,7 @@ public class NotificationReader extends NotificationListenerService {
                             cont.pendingIntent = act.actionIntent;
                             cont.remoteInput = act.getRemoteInputs()[0];
                             cont.remoteExtras = sbn.getNotification().extras;
+                            cont.action = NotificationUtils.getQuickReplyAction(sbn.getNotification(), getPackageName());
 
                             MainActivity.contactsMap.put(GhepTen, cont);
                         }
@@ -219,18 +247,15 @@ public class NotificationReader extends NotificationListenerService {
 
             if (app != null) {
                 try {
-                    Log.e(TAG, "Gui_Tin_Nhan onNotificationPosted: action GhepTen " + GhepTen );
-
                     if (!GhepTen.contains("null") && app != "") {
                         String query = "Select * From Chat_database WHERE " +
-                                "ngay_nhan = '" + mNgayNhan +"' And Ten_kh = '" + GhepTen + "' AND nd_goc = '"+ text + "'";
+                                "ngay_nhan = '" + mNgayNhan + "' And Ten_kh = '" + GhepTen + "' AND nd_goc = '" + text + "'";
                         Cursor cursor = db.GetData(query);
-                        Log.e(TAG, "Gui_Tin_Nhan onNotificationPosted: action cursor.getCount() " + cursor.getCount() );
 
                         if (cursor.getCount() == 0) {//neu khong bi trung tin nhan
 
                             String queryInsert = "Insert into Chat_database Values" +
-                                    "( null,'" + mNgayNhan + "', '" + mGionhan +"', 1, '"+GhepTen +"', '"+GhepTen+"', '"+app+"','"+text+"',1)";
+                                    "( null,'" + mNgayNhan + "', '" + mGionhan + "', 1, '" + GhepTen + "', '" + GhepTen + "', '" + app + "','" + text + "',1)";
                             try {
                                 this.db.QueryData(queryInsert);
                                 MainActivity.sms = true;
@@ -243,7 +268,6 @@ public class NotificationReader extends NotificationListenerService {
 
                         cursor.close();
                         if (app != null) {
-                            Log.e(TAG, "onNotificationPosted: APP: " + app + "- GhepTen: " + GhepTen + "- text: "+text);
                             if (!GhepTen.contains("null") && app != "" && text.length() > 5) {
                                 this.body = text.replaceAll("'", " ");
                                 this.Ten_KH = GhepTen;
@@ -255,19 +279,15 @@ public class NotificationReader extends NotificationListenerService {
                                     json = new JSONObject(khachHang_s.getTbl_MB());
                                     caidat_tg = json.getJSONObject("caidat_tg");
 
-                                    Log.e(TAG, "onNotificationPosted: CheckTime: " + !Congthuc.CheckTime(caidat_tg.getString("tg_debc")));
-
                                     if (!Congthuc.CheckTime(caidat_tg.getString("tg_debc"))) {
-                                        int maxSoTn = BriteDb.INSTANCE.getMaxSoTinNhan(mNgayNhan, 1, "ten_kh = '"+ Ten_KH +"'");
+                                        int maxSoTn = BriteDb.INSTANCE.getMaxSoTinNhan(mNgayNhan, 1, "ten_kh = '" + Ten_KH + "'");
                                         soTN = maxSoTn + 1;
-                                        Log.e(TAG, "onNotificationPosted: tinNhanS_i " + maxSoTn );
 
                                         boolean isTraLai = body.contains("Tra lai");
-                                        int okTn = isTraLai? 0: 1;
+                                        int okTn = isTraLai ? 0 : 1;
                                         int del_sms = okTn;
                                         TinNhanS tinNhanS_i = new TinNhanS(null, mNgayNhan, mGionhan, 1, Ten_KH, khachHang_s.getSdt(), app,
                                                 soTN, body, null, body, "ko", 0, okTn, del_sms, null);
-                                        Log.e(TAG, "onNotificationPosted: tinNhanS_i " + tinNhanS_i );
                                         BriteDb.INSTANCE.insertTinNhanS(tinNhanS_i);
 
                                         if (Congthuc.CheckDate(MainActivity.hanSuDung)) {
@@ -315,14 +335,11 @@ public class NotificationReader extends NotificationListenerService {
                                             NotificationWearReader(this.Ten_KH, "Hết giờ nhận!");
                                         }
                                     }
-                                    return;
                                 }
-                                return;
                             }
                         }
                     }
-                } catch (Exception e7) {
-                    return;
+                } catch (Exception ignored) {
                 }
             }
 
@@ -338,29 +355,26 @@ public class NotificationReader extends NotificationListenerService {
 
     public void NotificationWearReader(String mName, String message) {
         Contact contact = MainActivity.contactsMap.get(mName);
-        Log.e(TAG, "NotificationWearReader: name: " + mName +" - Message: " + message );
+        Log.e(TAG, "NotificationWearReader: name: " + mName + " - Message: " + message + " isAppOnForeground ");
 
         if (contact != null) {
             try {
 
-                Intent localIntent = new Intent();
-                Bundle localBundle = contact.remoteExtras;
+                Intent intent = new Intent();
+                Bundle bundle = contact.remoteExtras;
 
-                RemoteInput[] remoteInputs = {contact.remoteInput};
+                RemoteInput[] remoteInputArr = {contact.remoteInput};
 
-                localBundle.putCharSequence(remoteInputs[0].getResultKey(), message);
-                RemoteInput.addResultsToIntent(remoteInputs, localIntent, localBundle);
+                bundle.putCharSequence(remoteInputArr[0].getResultKey(), message);
+                RemoteInput.addResultsToIntent(remoteInputArr, intent, bundle);
 
-                Log.e(TAG, "aaaa onNotificationPosted: send " + message);
-                contact.pendingIntent.send(MainActivity.Notifi, 0, localIntent);
-                Log.e(TAG, "aaaa onNotificationPosted: send done " );
+                contact.pendingIntent.send(MainActivity.Notifi, 0, intent);
 
                 if (MainActivity.Json_Tinnhan.has(mName)) MainActivity.Json_Tinnhan.remove(mName);
 
             } catch (Exception e) {
-                Toast.makeText(context, "Notification Error " + e.getMessage(), Toast.LENGTH_LONG).show();
                 Log.e(TAG, "aaaa onNotificationPosted: error " + e);
-
+//                Toast.makeText(context, "Notification Error " + e.getMessage(), Toast.LENGTH_LONG).show();
                 e.printStackTrace();
             }
         }

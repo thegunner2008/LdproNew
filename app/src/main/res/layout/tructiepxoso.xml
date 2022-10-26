@@ -41,7 +41,7 @@
         android:layout_height="wrap_content"
         android:checked="true"
         android:enabled="false"
-        android:text="Tính tiền  trực tiếp từ 18h15 đến 18h30"
+        android:text="Tính tiền trực tiếp từ 18h15 đến 18h30"
         android:textColor="@color/black"
         android:textSize="@dimen/dimen_16sp"
         android:textStyle="bold"

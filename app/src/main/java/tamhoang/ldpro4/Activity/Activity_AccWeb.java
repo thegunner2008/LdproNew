@@ -33,8 +33,7 @@ import tamhoang.ldpro4.data.Database;
 public class Activity_AccWeb extends BaseToolBarActivity {
     Button btn_them_trang;
 
-    /* renamed from: db */
-    Database f174db;
+    Database db;
     EditText edt_Giabc;
     EditText edt_Giadea;
     EditText edt_Giadeb;
@@ -67,13 +66,13 @@ public class Activity_AccWeb extends BaseToolBarActivity {
     public void onCreate(Bundle bundle) {
         super.onCreate(bundle);
         setContentView((int) R.layout.activity_acc_web);
-        this.f174db = new Database(this);
+        this.db = new Database(this);
         this.new_web = getIntent().getStringExtra("new_web");
         init();
         if (this.new_web.length() == 0) {
             this.liner_caidat.setVisibility(View.GONE);
         } else {
-            Database database = this.f174db;
+            Database database = this.db;
             Cursor GetData = database.GetData("Select * from tbl_chaytrang_acc Where Username = '" + this.new_web + "'");
             GetData.moveToFirst();
             this.edt_account.setText(GetData.getString(0));
@@ -104,41 +103,40 @@ public class Activity_AccWeb extends BaseToolBarActivity {
                 e.printStackTrace();
             }
         }
-        this.btn_them_trang.setOnClickListener(new View.OnClickListener() {
-            public void onClick(View view) {
-                if (Activity_AccWeb.this.new_web.length() == 0) {
-                    Database database = Activity_AccWeb.this.f174db;
-                    if (database.GetData("Select * from tbl_chaytrang_acc Where Username = '" + Activity_AccWeb.this.edt_account.getText().toString() + "'").getCount() == 0) {
-                        Activity_AccWeb.this.RUN();
-                    } else {
-                        Toast.makeText(Activity_AccWeb.this, "Đã có tài khoản này trong hệ thống", Toast.LENGTH_SHORT).show();
-                    }
+        this.btn_them_trang.setOnClickListener(view -> {
+            if (new_web.length() == 0) {
+                Database database = db;
+                if (database.GetData("Select * from tbl_chaytrang_acc Where Username = '" + edt_account.getText().toString() + "'").getCount() == 0) {
+                    this.btn_them_trang.setEnabled(false);
+                    RUN();
                 } else {
-                    JSONObject jSONObject = new JSONObject();
-                    try {
-                        jSONObject.put("gia_dea", Activity_AccWeb.this.edt_Giadea.getText().toString().replaceAll("\\.", ""));
-                        jSONObject.put("gia_deb", Activity_AccWeb.this.edt_Giadeb.getText().toString().replaceAll("\\.", ""));
-                        jSONObject.put("gia_dec", Activity_AccWeb.this.edt_Giadec.getText().toString().replaceAll("\\.", ""));
-                        jSONObject.put("gia_ded", Activity_AccWeb.this.edt_Giaded.getText().toString().replaceAll("\\.", ""));
-                        jSONObject.put("gia_lo", Activity_AccWeb.this.edt_Gialo.getText().toString().replaceAll("\\.", ""));
-                        jSONObject.put("gia_xi2", Activity_AccWeb.this.edt_Giaxi2.getText().toString().replaceAll("\\.", ""));
-                        jSONObject.put("gia_xi3", Activity_AccWeb.this.edt_Giaxi3.getText().toString().replaceAll("\\.", ""));
-                        jSONObject.put("gia_xi4", Activity_AccWeb.this.edt_Giaxi4.getText().toString().replaceAll("\\.", ""));
-                        jSONObject.put("max_dea", Activity_AccWeb.this.tview_Maxdea.getText().toString().replaceAll("\\.", ""));
-                        jSONObject.put("max_deb", Activity_AccWeb.this.tview_Maxdeb.getText().toString().replaceAll("\\.", ""));
-                        jSONObject.put("max_dec", Activity_AccWeb.this.tview_Maxdec.getText().toString().replaceAll("\\.", ""));
-                        jSONObject.put("max_ded", Activity_AccWeb.this.tview_Maxded.getText().toString().replaceAll("\\.", ""));
-                        jSONObject.put("max_lo", Activity_AccWeb.this.tview_Maxlo.getText().toString().replaceAll("\\.", ""));
-                        jSONObject.put("max_xi2", Activity_AccWeb.this.tview_Maxxi2.getText().toString().replaceAll("\\.", ""));
-                        jSONObject.put("max_xi3", Activity_AccWeb.this.tview_Maxxi3.getText().toString().replaceAll("\\.", ""));
-                        jSONObject.put("max_xi4", Activity_AccWeb.this.tview_Maxxi4.getText().toString().replaceAll("\\.", ""));
-                    } catch (JSONException e) {
-                        e.printStackTrace();
-                    }
-                    Toast.makeText(Activity_AccWeb.this, "Đã lưu thành công", Toast.LENGTH_SHORT).show();
-                    Activity_AccWeb.this.f174db.QueryData("INSERT OR REPLACE Into tbl_chaytrang_acc (Username, Password, Setting) Values ('" + Activity_AccWeb.this.edt_account.getText().toString() + "', '" + Activity_AccWeb.this.edt_password.getText().toString() + "', '" + jSONObject.toString() + "')");
-                    Activity_AccWeb.this.finish();
+                    Toast.makeText(Activity_AccWeb.this, "Đã có tài khoản này trong hệ thống", Toast.LENGTH_SHORT).show();
                 }
+            } else {
+                JSONObject jSONObject = new JSONObject();
+                try {
+                    jSONObject.put("gia_dea", edt_Giadea.getText().toString().replaceAll("\\.", ""));
+                    jSONObject.put("gia_deb", edt_Giadeb.getText().toString().replaceAll("\\.", ""));
+                    jSONObject.put("gia_dec", edt_Giadec.getText().toString().replaceAll("\\.", ""));
+                    jSONObject.put("gia_ded", edt_Giaded.getText().toString().replaceAll("\\.", ""));
+                    jSONObject.put("gia_lo", edt_Gialo.getText().toString().replaceAll("\\.", ""));
+                    jSONObject.put("gia_xi2", edt_Giaxi2.getText().toString().replaceAll("\\.", ""));
+                    jSONObject.put("gia_xi3", edt_Giaxi3.getText().toString().replaceAll("\\.", ""));
+                    jSONObject.put("gia_xi4", edt_Giaxi4.getText().toString().replaceAll("\\.", ""));
+                    jSONObject.put("max_dea", tview_Maxdea.getText().toString().replaceAll("\\.", ""));
+                    jSONObject.put("max_deb", tview_Maxdeb.getText().toString().replaceAll("\\.", ""));
+                    jSONObject.put("max_dec", tview_Maxdec.getText().toString().replaceAll("\\.", ""));
+                    jSONObject.put("max_ded", tview_Maxded.getText().toString().replaceAll("\\.", ""));
+                    jSONObject.put("max_lo", tview_Maxlo.getText().toString().replaceAll("\\.", ""));
+                    jSONObject.put("max_xi2", tview_Maxxi2.getText().toString().replaceAll("\\.", ""));
+                    jSONObject.put("max_xi3", tview_Maxxi3.getText().toString().replaceAll("\\.", ""));
+                    jSONObject.put("max_xi4", tview_Maxxi4.getText().toString().replaceAll("\\.", ""));
+                } catch (JSONException e) {
+                    e.printStackTrace();
+                }
+                Toast.makeText(this, "Đã lưu thành công", Toast.LENGTH_SHORT).show();
+                db.QueryData("INSERT OR REPLACE Into tbl_chaytrang_acc (Username, Password, Setting) Values ('" + edt_account.getText().toString() + "', '" + edt_password.getText().toString() + "', '" + jSONObject + "')");
+                finish();
             }
         });
     }
@@ -159,7 +157,7 @@ public class Activity_AccWeb extends BaseToolBarActivity {
                 }
 
                 public final void run() {
-                    Activity_AccWeb.this.lambda$RUN$0$Activity_AccWeb(this.f$1, this.f$2, this.f$3);
+                    lambda$RUN$0$Activity_AccWeb(this.f$1, this.f$2, this.f$3);
                 }
             });
         }
@@ -169,23 +167,23 @@ public class Activity_AccWeb extends BaseToolBarActivity {
         try {
             jSONObject.put("Username", this.edt_account.getText().toString());
             jSONObject.put("Password", this.edt_password.getText().toString());
-            atomicReference.set(okHttpClient.newCall(new Request.Builder().url("https://id.lotusapi.com/auth/sign-in").header("Content-Type", "application/json").post(RequestBody.Companion.create(jSONObject.toString(), MediaType.Companion.parse("application/json"))).build()).execute().body().string());
+            atomicReference.set(okHttpClient.newCall(new Request.Builder().url("https://id.lotusapi.com/auth/sign-in").header("Content-Type", "application/json")
+                    .post(RequestBody.Companion.create(jSONObject.toString(), MediaType.Companion.parse("application/json"))).build()).execute().body().string());
             JSONObject jSONObject2 = new JSONObject(atomicReference.toString());
             if (jSONObject2.has("IdToken")) {
                 MainActivity.MyToken = jSONObject2.getString("IdToken");
                 this.new_web = this.edt_account.getText().toString();
                 Request.Builder builder = new Request.Builder();
-                ResponseBody body = okHttpClient.newCall(builder.header("Authorization", "Bearer " + MainActivity.MyToken).url("https://lotto.lotusapi.com/user-game-settings/player").get().build()).execute().body();
+                ResponseBody body = okHttpClient.newCall(builder.header("Authorization", "Bearer " + MainActivity.MyToken)
+                        .url("https://lotto.lotusapi.com/user-game-settings/player").get().build()).execute().body();
                 if (body != null) {
-                    new Handler(Looper.getMainLooper()).post(new Runnable() {
-                        public void run() {
-                            Activity_AccWeb.this.liner_caidat.setVisibility(View.VISIBLE);
-                            Activity_AccWeb.this.edt_account.setEnabled(false);
-                            Activity_AccWeb.this.edt_password.setEnabled(false);
-                            Activity_AccWeb.this.btn_them_trang.setText("Thêm / Sửa trang");
-                            Activity_AccWeb.this.btn_them_trang.setTextColor(SupportMenu.CATEGORY_MASK);
-                            Toast.makeText(Activity_AccWeb.this, "Đăng nhập thành công", Toast.LENGTH_SHORT).show();
-                        }
+                    new Handler(Looper.getMainLooper()).post(() -> {
+                        liner_caidat.setVisibility(View.VISIBLE);
+                        edt_account.setEnabled(false);
+                        edt_password.setEnabled(false);
+                        btn_them_trang.setText("Thêm / Sửa trang");
+                        btn_them_trang.setTextColor(SupportMenu.CATEGORY_MASK);
+                        Toast.makeText(Activity_AccWeb.this, "Đăng nhập thành công", Toast.LENGTH_SHORT).show();
                     });
                     JSONArray jSONArray = new JSONArray(body.string());
                     for (int i = 0; i < jSONArray.length(); i++) {
@@ -217,15 +215,21 @@ public class Activity_AccWeb extends BaseToolBarActivity {
                             this.tview_Maxdec.setText(jSONObject3.getString("MaxPointPerNumber"));
                         }
                     }
+                    new Handler(Looper.getMainLooper()).post(() -> {
+                        this.btn_them_trang.setEnabled(true);
+                    });
                     return;
+                } else {
+                    new Handler(Looper.getMainLooper()).post(() -> {
+                        this.btn_them_trang.setVisibility(View.GONE);
+                        Toast.makeText(this, "Không thể lấy được Max dạng, vui lòng thử lại sau", Toast.LENGTH_SHORT).show();
+                    });
                 }
                 return;
             }
-            new Handler(Looper.getMainLooper()).post(new Runnable() {
-                public void run() {
-                    Toast.makeText(Activity_AccWeb.this, "Sai tài khoản hoặc mật khẩu", Toast.LENGTH_SHORT).show();
-                }
-            });
+            new Handler(Looper.getMainLooper()).post(() ->
+                    Toast.makeText(Activity_AccWeb.this, "Sai tài khoản hoặc mật khẩu", Toast.LENGTH_SHORT).show()
+            );
         } catch (IOException e) {
             e.printStackTrace();
         } catch (JSONException e2) {

@@ -201,7 +201,7 @@
 
             <Spinner
                 android:id="@+id/spr_trang"
-                android:padding="@dimen/dimen_4dp"
+                android:paddingHorizontal="@dimen/dimen_4dp"
                 android:layout_marginBottom="@dimen/dimen_10dp"
                 android:layout_width="match_parent"
                 android:layout_height="30dp"

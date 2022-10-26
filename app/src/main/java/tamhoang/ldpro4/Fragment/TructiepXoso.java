@@ -262,16 +262,10 @@ public class TructiepXoso extends Fragment {
         database.QueryData("Update tbl_soctS Set so_nhay = 0, ket_qua = 0 WHERE ngay_nhan = '" + this.mDate + "' AND the_loai <> 'tt' AND the_loai <> 'cn'");
         String Ketqua = "";
         for (int i = 0; i < ArraySo.size(); i++) {
-            Database database2 = this.db;
-            database2.QueryData("Update tbl_soctS Set so_nhay = so_nhay + 1 Where the_loai = 'lo' and ngay_nhan = '" + this.mDate + "' And so_chon ='" + ArraySo.get(i) + "'");
-            StringBuilder sb = new StringBuilder();
-            sb.append(Ketqua);
-            sb.append(ArraySo.get(i));
-            sb.append(",");
-            Ketqua = sb.toString();
+            this.db.QueryData("Update tbl_soctS Set so_nhay = so_nhay + 1 Where the_loai = 'lo' and ngay_nhan = '" + this.mDate + "' And so_chon ='" + ArraySo.get(i) + "'");
+            Ketqua = Ketqua + ArraySo.get(i) + ",";
         }
-        Database database3 = this.db;
-        Cursor cursor = database3.GetData("Select * From tbl_soctS Where ngay_nhan = '" + this.mDate + "' AND the_loai = 'xi'");
+        Cursor cursor =  this.db.GetData("Select * From tbl_soctS Where ngay_nhan = '" + this.mDate + "' AND the_loai = 'xi'");
         while (cursor.moveToNext()) {
             String[] str2 = cursor.getString(7).split(",");
             boolean check = true;

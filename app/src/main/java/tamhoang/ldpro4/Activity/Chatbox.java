@@ -36,7 +36,7 @@ import org.json.JSONObject;
 import tamhoang.ldpro4.Congthuc.BaseToolBarActivity;
 import tamhoang.ldpro4.Congthuc.Congthuc;
 import tamhoang.ldpro4.MainActivity;
-import tamhoang.ldpro4.NotificationReader;
+import tamhoang.ldpro4.NotificationNewReader;
 import tamhoang.ldpro4.R;
 import tamhoang.ldpro4.data.BriteDb;
 import tamhoang.ldpro4.data.Database;
@@ -114,7 +114,7 @@ public class Chatbox extends BaseToolBarActivity {
                             e.printStackTrace();
                         }
                     } else if (!app_use.contains("sms")) {
-                        new NotificationReader().NotificationWearReader(ten_kh, mess);
+                        new NotificationNewReader().NotificationWearReader(ten_kh, mess);
                         db.QueryData("Insert into Chat_database Values( null,'" + mNgayNhan + "', '" + mGionhan + "', 2, '" + ten_kh + "', '" + so_dienthoai + "', '" + app_use + "','" + mess + "',1)");
                         messageS.setText("");
                         GuiTinTrucTiep(mNgayNhan, mGionhan, ten_kh, mess);

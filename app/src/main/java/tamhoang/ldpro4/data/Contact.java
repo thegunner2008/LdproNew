@@ -6,12 +6,19 @@ import android.os.Bundle;
 
 import java.util.ArrayList;
 
+import tamhoang.ldpro4.notifLib.models.Action;
+import tamhoang.ldpro4.notifLib.models.RemoteInputParcel;
+
+
 public class Contact {
     public String app;
     public String name;
     public PendingIntent pendingIntent;
     public Bundle remoteExtras;
     public RemoteInput remoteInput;
+    public Action action;
+    public RemoteInputParcel remoteInput2;
+
     public int process = 0;
     public int number = 1;
     public ArrayList<String> waitingList = new ArrayList<>();
@@ -80,11 +87,32 @@ public class Contact {
         this.waitingList = waitingList;
     }
 
+    public Action getAction() {
+        return action;
+    }
+
+    public void setAction(Action action) {
+        this.action = action;
+    }
+
+    public RemoteInputParcel getRemoteInput2() {
+        return remoteInput2;
+    }
+
+    public void setRemoteInput2(RemoteInputParcel remoteInput2) {
+        this.remoteInput2 = remoteInput2;
+    }
+
     @Override
     public String toString() {
         return "Contact{" +
                 "app='" + app + '\'' +
                 ", name='" + name + '\'' +
+                ", pendingIntent=" + pendingIntent +
+                ", remoteExtras=" + remoteExtras +
+                ", remoteInput=" + remoteInput +
+                ", action=" + action +
+                ", remoteInput2=" + remoteInput2 +
                 ", process=" + process +
                 ", number=" + number +
                 ", waitingList=" + waitingList +

@@ -107,7 +107,6 @@
         android:text="Kiểm tra hạn sử dụng"
         android:textColor="@color/red"
         android:textSize="15dp"
-        android:visibility="gone"
         tools:visibility="visible" />
 
 
@@ -246,7 +245,7 @@
                             android:layout_height="match_parent"
                             android:padding="5dp"
                             android:paddingLeft="10dp"
-                            android:text="0936.023.645"
+                            android:text="0"
                             android:textAlignment="center"
                             android:textColor="@color/blue"
                             android:textSize="14dp"
@@ -283,7 +282,7 @@
                     android:layout_height="wrap_content"
                     android:layout_weight="1"
                     android:paddingTop="10dp"
-                    android:text="  LdPro - Version 2.3.8"
+                    android:text="  LdPro - Version 2.9"
                     android:textColor="@color/red"
                     android:textSize="20dp"
                     android:textStyle="bold" />

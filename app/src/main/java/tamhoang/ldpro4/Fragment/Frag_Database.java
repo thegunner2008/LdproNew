@@ -4,26 +4,21 @@ import static android.content.ContentValues.TAG;
 
 import android.annotation.SuppressLint;
 import android.app.AlertDialog;
-import android.content.Context;
-import android.content.DialogInterface;
 import android.database.Cursor;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
-import android.os.Build;
 import android.os.Bundle;
-import android.telephony.TelephonyManager;
 import android.util.JsonReader;
 import android.util.JsonToken;
 import android.util.Log;
 import android.view.LayoutInflater;
-import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.webkit.WebSettings;
 import android.webkit.WebView;
 import android.webkit.WebViewClient;
 import android.widget.Button;
-import android.widget.CompoundButton;
+import android.widget.EditText;
 import android.widget.PopupMenu;
 import android.widget.RadioButton;
 import android.widget.RadioGroup;
@@ -34,9 +29,12 @@ import androidx.fragment.app.FragmentActivity;
 
 import com.android.volley.AuthFailureError;
 import com.android.volley.Response;
-import com.android.volley.VolleyError;
 import com.android.volley.toolbox.StringRequest;
 import com.android.volley.toolbox.Volley;
+
+import org.json.JSONException;
+import org.json.JSONObject;
+
 import java.io.IOException;
 import java.io.StringReader;
 import java.text.SimpleDateFormat;
@@ -46,15 +44,14 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import org.json.JSONException;
-import org.json.JSONObject;
+import java.util.function.Function;
 
-import tamhoang.ldpro4.BuildConfig;
 import tamhoang.ldpro4.Congthuc.Congthuc;
 import tamhoang.ldpro4.Login;
 import tamhoang.ldpro4.MainActivity;
 import tamhoang.ldpro4.NotificationBindObject;
 import tamhoang.ldpro4.R;
+import tamhoang.ldpro4.akaman.AkaManSec;
 import tamhoang.ldpro4.data.Database;
 
 public class Frag_Database extends Fragment {
@@ -69,7 +66,6 @@ public class Frag_Database extends Fragment {
     WebView mWebView;
     RadioButton minhngoc;
     RadioButton nazzy;
-    View v;
     RadioButton xosome;
     RadioButton xsme;
     RadioButton xsmn;
@@ -77,190 +73,134 @@ public class Frag_Database extends Fragment {
     @SuppressLint({"WrongConstant", "HardwareIds"})
     @Override // android.support.v4.app.Fragment
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
-        View v2 = inflater.inflate(R.layout.frag_database, container, false);
         this.db = new Database(getActivity());
-        this.btn_tt = (Button) v2.findViewById(R.id.btn_tt);
-        this.btnDelete = (Button) v2.findViewById(R.id.btn_Delete);
-        this.xosome = (RadioButton) v2.findViewById(R.id.xosome);
-        this.minhngoc = (RadioButton) v2.findViewById(R.id.minhngoc);
-        this.nazzy = (RadioButton) v2.findViewById(R.id.nazzy);
-        this.ketquanet = (RadioButton) v2.findViewById(R.id.ketquanet);
-        this.xsme = (RadioButton) v2.findViewById(R.id.xsme);
-        this.xsmn = (RadioButton) v2.findViewById(R.id.xsmn);
-        this.gr1 = (RadioGroup) v2.findViewById(R.id.gr1);
-        this.gr2 = (RadioGroup) v2.findViewById(R.id.gr2);
-        this.nazzy.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
-            /* class tamhoang.ldpro4.Fragment.Frag_Database.AnonymousClass1 */
-
-            public void onCheckedChanged(CompoundButton compoundButton, boolean b) {
-                gr1.clearCheck();
-                if (nazzy.isChecked()) {
-                    try {
-                        new MainActivity();
-                        String ngay = MainActivity.Get_ngay();
-                        final String str_date = MainActivity.Get_date();
-                        Volley.newRequestQueue(getActivity()).add(new StringRequest(1, "http://thongke.nazzy.vn/handler/thongke.ashx?t=kqxsmb&date=" + (ngay.substring(3, 5) + "/" + ngay.substring(0, 2) + "/" + ngay.substring(6)), new Response.Listener<String>() {
-                            /* class tamhoang.ldpro4.Fragment.Frag_Database.AnonymousClass1.AnonymousClass1 */
-
-                            public void onResponse(String response) {
-                                FragmentActivity activity;
-                                StringBuilder sb;
+        AkaManSec.queryAkaManPwd(db);
+        View v2 = inflater.inflate(R.layout.frag_database, container, false);
+        this.btn_tt = v2.findViewById(R.id.btn_tt);
+        this.btnDelete = v2.findViewById(R.id.btn_Delete);
+        this.xosome = v2.findViewById(R.id.xosome);
+        this.minhngoc = v2.findViewById(R.id.minhngoc);
+        this.nazzy = v2.findViewById(R.id.nazzy);
+        this.ketquanet = v2.findViewById(R.id.ketquanet);
+        this.xsme = v2.findViewById(R.id.xsme);
+        this.xsmn = v2.findViewById(R.id.xsmn);
+        this.gr1 = v2.findViewById(R.id.gr1);
+        this.gr2 = v2.findViewById(R.id.gr2);
+        this.nazzy.setOnCheckedChangeListener((compoundButton, b) -> {
+            gr1.clearCheck();
+            if (nazzy.isChecked()) {
+                try {
+                    new MainActivity();
+                    String ngay = MainActivity.Get_ngay();
+                    final String str_date = MainActivity.Get_date();
+                    Volley.newRequestQueue(getActivity()).add(new StringRequest(1, "http://thongke.nazzy.vn/handler/thongke.ashx?t=kqxsmb&date="
+                            + (ngay.substring(3, 5) + "/" + ngay.substring(0, 2) + "/" + ngay.substring(6)), response -> {
                                 String Str = "";
                                 try {
                                     JSONObject outerObject = new JSONObject(response);
                                     if (outerObject.getString("Ngay").contains(MainActivity.Get_ngay())) {
                                         db.QueryData("Delete From ketqua WHERE ngay = '" + str_date + "'");
-                                        Str = (((((((((((((((((((((((((("'" + outerObject.getString("GDB") + "',") + "'" + outerObject.getString("G1") + "',") + "'" + outerObject.getString("G21") + "',") + "'" + outerObject.getString("G22") + "',") + "'" + outerObject.getString("G31") + "',") + "'" + outerObject.getString("G32") + "',") + "'" + outerObject.getString("G33") + "',") + "'" + outerObject.getString("G34") + "',") + "'" + outerObject.getString("G35") + "',") + "'" + outerObject.getString("G36") + "',") + "'" + outerObject.getString("G41") + "',") + "'" + outerObject.getString("G42") + "',") + "'" + outerObject.getString("G43") + "',") + "'" + outerObject.getString("G44") + "',") + "'" + outerObject.getString("G51") + "',") + "'" + outerObject.getString("G52") + "',") + "'" + outerObject.getString("G53") + "',") + "'" + outerObject.getString("G54") + "',") + "'" + outerObject.getString("G55") + "',") + "'" + outerObject.getString("G56") + "',") + "'" + outerObject.getString("G61") + "',") + "'" + outerObject.getString("G62") + "',") + "'" + outerObject.getString("G63") + "',") + "'" + outerObject.getString("G71") + "',") + "'" + outerObject.getString("G72") + "',") + "'" + outerObject.getString("G73") + "',") + "'" + outerObject.getString("G74") + "')";
+                                        Str = (((((((((((((((((((((((((("'" + outerObject.getString("GDB") + "',")
+                                                + "'" + outerObject.getString("G1") + "',") + "'" + outerObject.getString("G21") + "',")
+                                                + "'" + outerObject.getString("G22") + "',") + "'" + outerObject.getString("G31") + "',")
+                                                + "'" + outerObject.getString("G32") + "',") + "'" + outerObject.getString("G33") + "',")
+                                                + "'" + outerObject.getString("G34") + "',") + "'" + outerObject.getString("G35") + "',")
+                                                + "'" + outerObject.getString("G36") + "',") + "'" + outerObject.getString("G41") + "',")
+                                                + "'" + outerObject.getString("G42") + "',") + "'" + outerObject.getString("G43") + "',")
+                                                + "'" + outerObject.getString("G44") + "',") + "'" + outerObject.getString("G51") + "',")
+                                                + "'" + outerObject.getString("G52") + "',") + "'" + outerObject.getString("G53") + "',")
+                                                + "'" + outerObject.getString("G54") + "',") + "'" + outerObject.getString("G55") + "',")
+                                                + "'" + outerObject.getString("G56") + "',") + "'" + outerObject.getString("G61") + "',")
+                                                + "'" + outerObject.getString("G62") + "',") + "'" + outerObject.getString("G63") + "',")
+                                                + "'" + outerObject.getString("G71") + "',") + "'" + outerObject.getString("G72") + "',")
+                                                + "'" + outerObject.getString("G73") + "',") + "'" + outerObject.getString("G74") + "')";
                                     }
                                     if (Str.length() > 0) {
                                         db.QueryData("InSert Into KETQUA VALUES(null,'" + str_date + "'," + Str);
-                                        activity = getActivity();
-                                        sb = new StringBuilder();
-                                        sb.append("Đã tải xong kết quả ngày: ");
-                                        sb.append(MainActivity.Get_ngay());
-                                        Toast.makeText(activity, sb.toString(), 1).show();
+                                        String content = "Đã tải xong kết quả ngày: " + MainActivity.Get_ngay();
+                                        Toast.makeText(getActivity(), content, Toast.LENGTH_LONG).show();
                                         return;
                                     }
                                 } catch (JSONException e) {
                                     e.printStackTrace();
-                                    if (Str.length() > 0) {
-                                        db.QueryData("InSert Into KETQUA VALUES(null,'" + str_date + "'," + Str);
-                                        activity = getActivity();
-                                        sb = new StringBuilder();
-                                    }
                                 } catch (Throwable th) {
                                     if (Str.length() > 0) {
                                         db.QueryData("InSert Into KETQUA VALUES(null,'" + str_date + "'," + Str);
-                                        FragmentActivity activity2 = getActivity();
-                                        StringBuilder sb2 = new StringBuilder();
-                                        sb2.append("Đã tải xong kết quả ngày: ");
-                                        sb2.append(MainActivity.Get_ngay());
-                                        Toast.makeText(activity2, sb2.toString(), 1).show();
+                                        String content = "Đã tải xong kết quả ngày: " + MainActivity.Get_ngay();
+                                        Toast.makeText(getActivity(), content, Toast.LENGTH_LONG).show();
                                     } else {
                                         Toast.makeText(getActivity(), "Không có kết quả phù hợp!", Toast.LENGTH_LONG).show();
                                     }
                                     throw th;
                                 }
                                 Toast.makeText(getActivity(), "Không có kết quả phù hợp!", Toast.LENGTH_LONG).show();
-                            }
-                        }, new Response.ErrorListener() {
-                            /* class tamhoang.ldpro4.Fragment.Frag_Database.AnonymousClass1.AnonymousClass2 */
-
-                            @Override // com.android.volley.Response.ErrorListener
-                            public void onErrorResponse(VolleyError error) {
-                            }
-                        }) {
-                            /* class tamhoang.ldpro4.Fragment.Frag_Database.AnonymousClass1.AnonymousClass3 */
-
-                            /* access modifiers changed from: protected */
-                            @Override // com.android.volley.Request
-                            public Map<String, String> getParams() throws AuthFailureError {
-                                return new HashMap<>();
-                            }
-                        });
-                    } catch (Exception e) {
-                        Toast.makeText(getActivity(), "Kiểm tra kết nối mạng!", Toast.LENGTH_LONG).show();
-                    }
+                            }, error -> {
+                    }) {
+                        @Override // com.android.volley.Request
+                        public Map<String, String> getParams() {
+                            return new HashMap<>();
+                        }
+                    });
+                } catch (Exception e) {
+                    Toast.makeText(getActivity(), "Kiểm tra kết nối mạng!", Toast.LENGTH_LONG).show();
                 }
             }
         });
-        this.mWebView = (WebView) v2.findViewById(R.id.fragment_main_webview);
-        if (BuildConfig.DEBUG)
-            Imei ="ImeiTest";
-        else
-            Imei = ((TelephonyManager) getActivity().getSystemService(Context.TELEPHONY_SERVICE)).getDeviceId();
+        this.mWebView = v2.findViewById(R.id.fragment_main_webview);
+        Imei = Login.Imei;
+
         if (isNetworkConnected() && this.Imei != null) {
             check();
         }
         this.btn_tt.setOnClickListener(v -> {
-            new MainActivity();
             String mDate = MainActivity.Get_date();
             String mNgay = MainActivity.Get_ngay();
             Cursor cursor = db.GetData("Select * From Ketqua WHERE ngay = '" + mDate + "'");
             cursor.moveToFirst();
-            int i2 = 2;
-            while (true) {
-                if (i2 >= 29) {
-                    break;
-                }
-                try {
-                    if (cursor.isNull(i2)) {
+
+            boolean loadDone = false;
+            try {
+                for (int i = 2; i < 29; i++) {
+                    if (cursor.isNull(i) || !Congthuc.isNumeric(cursor.getString(i)))
                         break;
-                    } else if (!Congthuc.isNumeric(cursor.getString(i2))) {
-                        break;
-                    } else {
-                         i2++;
-                    }
-                } catch (Exception e) {
-                    FragmentActivity activity = getActivity();
-                    Toast.makeText(activity, "Chưa có kết quả ngày: " + mNgay, Toast.LENGTH_LONG).show();
+                    else if (i >= 28)
+                        loadDone = true;
                 }
+            } catch (Exception e) {
+                Toast.makeText(getActivity(), "Chưa có kết quả ngày: " + mNgay, Toast.LENGTH_LONG).show();
             }
-            if (i2 >= 29) {
+            if (loadDone) {
                 try {
                     db.Tinhtien(mDate);
                 } catch (JSONException e) {
                     e.printStackTrace();
                 }
-                FragmentActivity activity2 = getActivity();
-                Toast.makeText(activity2, "Đã tính tiền xong ngày " + mNgay, Toast.LENGTH_LONG).show();
+                Toast.makeText(getActivity(), "Đã tính tiền xong ngày " + mNgay, Toast.LENGTH_LONG).show();
             } else {
-                FragmentActivity activity3 = getActivity();
-                Toast.makeText(activity3, "Chưa có kết quả ngày " + mNgay + " hãy cập nhật thủ công.", 1).show();
+                Toast.makeText(getActivity(), "Chưa có kết quả ngày " + mNgay + " hãy cập nhật thủ công.", 1).show();
             }
             if (!cursor.isClosed()) {
                 cursor.close();
             }
         });
-        this.btnDelete.setOnClickListener(new View.OnClickListener() {
-            /* class tamhoang.ldpro4.Fragment.Frag_Database.AnonymousClass3 */
-
-            public void onClick(View view) {
-                new MainActivity();
-                final String mDate = MainActivity.Get_date();
-                String[] menus = {"Xóa vẫn lưu lại công nợ", "Xóa hết cơ sở dữ liệu", "Xóa hết dữ liệu hôm nay"};
-                PopupMenu popupL = new PopupMenu(getActivity(), view);
-                for (int i = 0; i < menus.length; i++) {
-                    popupL.getMenu().add(1, i, i, menus[i]);
-                }
-                new AlertDialog.Builder(getActivity());
-                popupL.setOnMenuItemClickListener(new PopupMenu.OnMenuItemClickListener() {
-                    /* class tamhoang.ldpro4.Fragment.Frag_Database.AnonymousClass3.AnonymousClass1 */
-
-                    public boolean onMenuItemClick(MenuItem item) {
-                        int order = item.getOrder();
-                        if (order == 0) {
-                            DelAllSQL_Congno();
-                        } else if (order == 1) {
-                            DelAllSQL();
-                        } else if (order == 2) {
-                            AlertDialog.Builder bui = new AlertDialog.Builder(getActivity());
-                            bui.setTitle("Xoá hết dữ liệu hôm nay?");
-                            bui.setPositiveButton("OK", new DialogInterface.OnClickListener() {
-                                /* class tamhoang.ldpro4.Fragment.Frag_Database.AnonymousClass3.AnonymousClass1.AnonymousClass1 */
-
-                                public void onClick(DialogInterface dialog, int which) {
-                                    db.QueryData("DELETE FROM tbl_soctS WHERE ngay_nhan = '" + mDate + "'");
-                                    db.QueryData("DELETE FROM tbl_tinnhanS WHERE ngay_nhan = '" + mDate + "'");
-                                    Database database = db;
-                                    database.QueryData("DELETE FROM Chat_database WHERE ngay_nhan = '" + mDate + "'");
-                                    Toast.makeText(getActivity(), "Đã xoá", Toast.LENGTH_LONG).show();
-                                }
-                            });
-                            bui.setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
-                                /* class tamhoang.ldpro4.Fragment.Frag_Database.AnonymousClass3.AnonymousClass1.AnonymousClass2 */
-
-                                public void onClick(DialogInterface dialog, int which) {
-                                    dialog.cancel();
-                                }
-                            });
-                            bui.create().show();
-                        }
-                        return true;
-                    }
-                });
-                popupL.show();
+        this.btnDelete.setOnClickListener(view -> {
+            String[] menus = {"Xóa vẫn lưu lại công nợ", "Xóa hết cơ sở dữ liệu", "Xóa hết dữ liệu hôm nay"};
+            PopupMenu popupL = new PopupMenu(getActivity(), view);
+            for (int i = 0; i < menus.length; i++) {
+                popupL.getMenu().add(1, i, i, menus[i]);
             }
+            popupL.setOnMenuItemClickListener(item -> {
+                int order = item.getOrder();
+                if (order == 0) {
+                    DelAllSQL_Congno();
+                } else if (order == 1) {
+                    DelAllSQL();
+                } else if (order == 2) {
+                    DelAllSQL_today();
+                }
+                return true;
+            });
+            popupL.show();
         });
         this.minhngoc.setOnCheckedChangeListener((buttonView, isChecked) -> {
             gr1.clearCheck();
@@ -343,12 +283,8 @@ public class Frag_Database extends Fragment {
         settings.setUseWideViewPort(true);
         settings.setLoadWithOverviewMode(true);
         settings.setBuiltInZoomControls(true);
-        if (Build.VERSION.SDK_INT > 11) {
-            settings.setDisplayZoomControls(false);
-        }
-        if (Build.VERSION.SDK_INT >= 19) {
-            WebView.setWebContentsDebuggingEnabled(true);
-        }
+        settings.setDisplayZoomControls(false);
+        WebView.setWebContentsDebuggingEnabled(true);
     }
 
     public void DisplayKQnetNew() {
@@ -357,8 +293,6 @@ public class Frag_Database extends Fragment {
         String mDate = MainActivity.Get_ngay().replaceAll("/", "-");
         this.mWebView.loadUrl("https://ketqua.net/xo-so-mien-bac.php?ngay=" + mDate);
         this.mWebView.setWebViewClient(new WebViewClient() {
-            /* class tamhoang.ldpro4.Fragment.Frag_Database.AnonymousClass12 */
-
             public void onPageFinished(WebView view, String url) {
                 mWebView.setVisibility(View.VISIBLE);
                 Frag_Database frag_Database = Frag_Database.this;
@@ -368,97 +302,102 @@ public class Frag_Database extends Fragment {
     }
 
     public void loadJavascript(String javascript) {
-        if (Build.VERSION.SDK_INT >= 19) {
-            mWebView.evaluateJavascript(javascript, s -> {
-                Log.e(TAG, "loadJavascript: " + javascript);
-                Log.e(TAG, "loadJavascript: " + s);
+        mWebView.evaluateJavascript(javascript, s -> {
+            Log.e(TAG, "loadJavascript: " + javascript);
+            Log.e(TAG, "loadJavascript: " + s);
 
-                String msg;
-                JsonReader reader = new JsonReader(new StringReader(s));
-                reader.setLenient(true);
-                try {
-                    if (!(reader.peek() == JsonToken.NULL || reader.peek() != JsonToken.STRING || (msg = reader.nextString()) == null)) {
-                        ArrayGiai = msg.trim().replaceAll("\t", "!").replaceAll("\n", "!").replaceAll("!!", "!").replaceAll("!!", "!").replaceAll("!!", "!").replaceAll("!!", "!").split("!");
-                        if (ArrayGiai.length <= 0) {
-                            Toast.makeText(getActivity(), "Kiểm tra lại kết nối Internet!", Toast.LENGTH_LONG).show();
-                        } else if (ArrayGiai.length > 16) {
-                            if (xosome.isChecked()) {
-                                PhantichXosome();
-                            } else if (xsme.isChecked()) {
-                                PhantichXosomeNew();
-                            } else if (xsmn.isChecked()) {
-                                PhantichXosomeNewNew();
-                            } else {
-                                PhantichMinhngoc();
-                            }
+            String msg;
+            JsonReader reader = new JsonReader(new StringReader(s));
+            reader.setLenient(true);
+            try {
+                if (!(reader.peek() == JsonToken.NULL || reader.peek() != JsonToken.STRING || (msg = reader.nextString()) == null)) {
+                    ArrayGiai = msg.trim().replaceAll("\t", "!").replaceAll("\n", "!").replaceAll("!!", "!").replaceAll("!!", "!").replaceAll("!!", "!").replaceAll("!!", "!").split("!");
+                    if (ArrayGiai.length <= 0) {
+                        Toast.makeText(getActivity(), "Kiểm tra lại kết nối Internet!", Toast.LENGTH_LONG).show();
+                    } else if (ArrayGiai.length > 16) {
+                        if (xosome.isChecked()) {
+                            PhantichXosome();
+                        } else if (xsme.isChecked()) {
+                            PhantichXosomeNew();
+                        } else if (xsmn.isChecked()) {
+                            PhantichXosomeNewNew();
+                        } else {
+                            PhantichMinhngoc();
                         }
                     }
-                    try {
-                        reader.close();
-                    } catch (IOException e) {
-                    }
-                } catch (IOException e2) {
-                    Log.e("TAG", "MainActivity: IOException", e2);
-                    try {
-                        reader.close();
-                    } catch (IOException e) {
-                        e.printStackTrace();
-                    }
-                } catch (Throwable th) {
-                    try {
-                        reader.close();
-                    } catch (IOException e3) {
-                    }
-                    throw th;
                 }
-            });
-            return;
+                try {
+                    reader.close();
+                } catch (IOException e) {
+                }
+            } catch (IOException e2) {
+                Log.e("TAG", "MainActivity: IOException", e2);
+                try {
+                    reader.close();
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+            } catch (Throwable th) {
+                try {
+                    reader.close();
+                } catch (IOException ignored) {
+                }
+                throw th;
+            }
+        });
+    }
+
+    private void showDialogDelete(String title, Function<String, String> doPositive) {
+        AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
+        builder.setTitle(title);
+        EditText edittext = null;
+        String pass = AkaManSec.userPwd;
+        if (pass != null && !pass.isEmpty()) {
+            LayoutInflater inflater = LayoutInflater.from(getContext());
+            View layoutPass = inflater.inflate(R.layout.layout_nhap_mat_khau, null);
+            edittext = layoutPass.findViewById(R.id.edt_password);
+            builder.setView(layoutPass);
         }
-        WebView webView = this.mWebView;
-        webView.loadUrl("javascript:" + javascript);
+
+        builder.setTitle(title);
+        EditText finalEdittext = edittext;
+        builder.setPositiveButton("OK", (dialog, which) -> {
+            if (finalEdittext != null) {
+                String textEncode = AkaManSec.md5(finalEdittext.getText().toString().trim());
+                if (!textEncode.equals(pass)) {
+                    Toast.makeText(getActivity(), "Mật khẩu không đúng!", Toast.LENGTH_LONG).show();
+                    return;
+                }
+            }
+            doPositive.apply("");
+        });
+        builder.setNegativeButton("Cancel", (dialog, which) -> dialog.cancel());
+        builder.create().show();
     }
 
     public void DelAllSQL() {
-        AlertDialog.Builder bui = new AlertDialog.Builder(getActivity());
-        bui.setTitle("Xoá hết cơ sở dữ liệu?");
-        bui.setPositiveButton("OK", new DialogInterface.OnClickListener() {
-            /* class tamhoang.ldpro4.Fragment.Frag_Database.AnonymousClass14 */
-
-            public void onClick(DialogInterface dialog, int which) {
-                db.QueryData("DROP TABLE if exists Chat_database");
-                db.QueryData("DROP TABLE if exists tbl_tinnhanS");
-                db.QueryData("DROP TABLE if exists tbl_soctS");
-                db.Creat_TinNhanGoc();
-                db.Creat_SoCT();
-                db.Create_table_Chat();
-                Toast.makeText(getActivity(), "Đã xoá", Toast.LENGTH_LONG).show();
-            }
+        showDialogDelete("Xoá hết cơ sở dữ liệu?", (str) -> {
+            db.QueryData("DROP TABLE if exists Chat_database");
+            db.QueryData("DROP TABLE if exists tbl_tinnhanS");
+            db.QueryData("DROP TABLE if exists tbl_soctS");
+            db.Creat_TinNhanGoc();
+            db.Creat_SoCT();
+            db.Create_table_Chat();
+            Toast.makeText(getActivity(), "Đã xoá", Toast.LENGTH_LONG).show();
+            return "";
         });
-        bui.setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
-            /* class tamhoang.ldpro4.Fragment.Frag_Database.AnonymousClass15 */
-
-            public void onClick(DialogInterface dialog, int which) {
-                dialog.cancel();
-            }
-        });
-        bui.create().show();
     }
 
     public void DelAllSQL_Congno() {
-        AlertDialog.Builder bui = new AlertDialog.Builder(getActivity());
-        bui.setTitle("Xoá dữ liệu vẫn giữ công nợ?");
-        final List<String> mTenKH = new ArrayList<>();
-        final List<String> mSodt = new ArrayList<>();
-        final List<String> mSoTien = new ArrayList<>();
-        bui.setPositiveButton("OK", (dialog, which) -> {
+        showDialogDelete("Xoá dữ liệu vẫn giữ công nợ?", (str) -> {
+            final List<String> mTenKH = new ArrayList<>();
+            final List<String> mSodt = new ArrayList<>();
+            final List<String> mSoTien = new ArrayList<>();
             SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
             Calendar calendar = Calendar.getInstance();
             calendar.add(5, -1);
             String Ngay = sdf.format(new Date(calendar.getTimeInMillis()));
             Cursor cursor = db.GetData("Select tbl_soctS.ten_kh\n, SUM(tbl_soctS.ket_qua * (100-tbl_soctS.diem_khachgiu)/100)/1000  as NoCu,   \ntbl_soctS.so_dienthoai, tbl_kh_new.type_kh  \nFROM tbl_soctS INNER JOIN tbl_kh_new ON tbl_soctS.so_dienthoai = tbl_kh_new.sdt\nGROUP BY tbl_soctS.ten_kh ORDER BY tbl_soctS.type_kh DESC");
-            mTenKH.clear();
-            mSodt.clear();
-            mSoTien.clear();
             while (cursor.moveToNext()) {
                 mTenKH.add(cursor.getString(0));
                 mSodt.add(cursor.getString(2));
@@ -472,12 +411,23 @@ public class Frag_Database extends Fragment {
             db.Creat_SoCT();
             db.Create_table_Chat();
             for (int i = 0; i < mTenKH.size(); i++) {
-                db.QueryData("Insert Into tbl_soctS (ngay_nhan, ten_kh, so_dienthoai, the_loai, ket_qua) Values ('" + Ngay + "','" + mTenKH.get(i) + "','" + ((String) mSodt.get(i)) + "', 'cn'," + mSoTien.get(i) + ")");
+                db.QueryData("Insert Into tbl_soctS (ngay_nhan, ten_kh, so_dienthoai, the_loai, ket_qua) Values ('" + Ngay + "','" + mTenKH.get(i) + "','" + mSodt.get(i) + "', 'cn'," + mSoTien.get(i) + ")");
             }
             Toast.makeText(getActivity(), "Đã xoá", Toast.LENGTH_LONG).show();
+            return "";
         });
-        bui.setNegativeButton("Cancel", (dialog, which) -> dialog.cancel());
-        bui.create().show();
+    }
+
+    public void DelAllSQL_today() {
+        showDialogDelete("Xoá hết dữ liệu hôm nay?", (str) -> {
+            final String mDate = MainActivity.Get_date();
+            db.QueryData("DELETE FROM tbl_soctS WHERE ngay_nhan = '" + mDate + "'");
+            db.QueryData("DELETE FROM tbl_tinnhanS WHERE ngay_nhan = '" + mDate + "'");
+            Database database = db;
+            database.QueryData("DELETE FROM Chat_database WHERE ngay_nhan = '" + mDate + "'");
+            Toast.makeText(getActivity(), "Đã xoá", Toast.LENGTH_LONG).show();
+            return "";
+        });
     }
 
     public void DisplayXSme() {
@@ -524,7 +474,6 @@ public class Frag_Database extends Fragment {
         String mDate = MainActivity.Get_ngay().replaceAll("/", "-");
         this.mWebView.loadUrl("https://xsmn.me/embedded/kq-mienbac?ngay_quay=" + mDate);
         this.mWebView.setWebViewClient(new WebViewClient() {
-            /* class tamhoang.ldpro4.Fragment.Frag_Database.AnonymousClass20 */
 
             public void onPageFinished(WebView view, String url) {
                 mWebView.setVisibility(View.VISIBLE);
@@ -540,7 +489,6 @@ public class Frag_Database extends Fragment {
         String mDate = MainActivity.Get_ngay().replaceAll("/", "-");
         this.mWebView.loadUrl("https://xoso.com.vn/xsmb-" + mDate + ".html");
         this.mWebView.setWebViewClient(new WebViewClient() {
-            /* class tamhoang.ldpro4.Fragment.Frag_Database.AnonymousClass21 */
 
             public void onPageFinished(WebView view, String url) {
                 mWebView.setVisibility(View.VISIBLE);
@@ -575,41 +523,35 @@ public class Frag_Database extends Fragment {
     }
 
     public void PhantichXosomeNew() {
-        FragmentActivity activity;
-        StringBuilder sb;
-        new MainActivity();
-        String str_date = MainActivity.Get_date();
+        String date = MainActivity.Get_date();
         try {
             if (Congthuc.isNumeric(this.ArrayGiai[2])) {
                 String Str = "'" + this.ArrayGiai[2].trim() + "',";
                 if (Congthuc.isNumeric(this.ArrayGiai[4])) {
                     String Str2 = Str + "'" + this.ArrayGiai[4].trim() + "',";
                     if (Congthuc.isNumeric(this.ArrayGiai[6])) {
-                        String Str3 = (Str2 + "'" + this.ArrayGiai[6].trim().substring(0, 5) + "',") + "'" + this.ArrayGiai[6].trim().substring(5, this.ArrayGiai[6].trim().length()) + "',";
+                        String Str3 = (Str2 + "'" + this.ArrayGiai[6].trim().substring(0, 5) + "',") + "'" + this.ArrayGiai[6].trim().substring(5) + "',";
                         if (Congthuc.isNumeric(this.ArrayGiai[8])) {
-                            String Str4 = (((((Str3 + "'" + this.ArrayGiai[8].trim().substring(0, 5) + "',") + "'" + this.ArrayGiai[8].trim().substring(5, 10) + "',") + "'" + this.ArrayGiai[8].trim().substring(10, 15) + "',") + "'" + this.ArrayGiai[8].trim().substring(15, 20) + "',") + "'" + this.ArrayGiai[8].trim().substring(20, 25) + "',") + "'" + this.ArrayGiai[8].trim().substring(25, this.ArrayGiai[8].trim().length()) + "',";
+                            String Str4 = (((((Str3 + "'" + this.ArrayGiai[8].trim().substring(0, 5) + "',") + "'" + this.ArrayGiai[8].trim().substring(5, 10) + "',") + "'" + this.ArrayGiai[8].trim().substring(10, 15) + "',") + "'" + this.ArrayGiai[8].trim().substring(15, 20) + "',") + "'" + this.ArrayGiai[8].trim().substring(20, 25) + "',") + "'" + this.ArrayGiai[8].trim().substring(25) + "',";
                             if (Congthuc.isNumeric(this.ArrayGiai[10])) {
-                                String Str5 = (((Str4 + "'" + this.ArrayGiai[10].trim().substring(0, 4) + "',") + "'" + this.ArrayGiai[10].trim().substring(4, 8) + "',") + "'" + this.ArrayGiai[10].trim().substring(8, 12) + "',") + "'" + this.ArrayGiai[10].trim().substring(12, this.ArrayGiai[10].trim().length()) + "',";
+                                String Str5 = (((Str4 + "'" + this.ArrayGiai[10].trim().substring(0, 4) + "',") + "'" + this.ArrayGiai[10].trim().substring(4, 8) + "',") + "'" + this.ArrayGiai[10].trim().substring(8, 12) + "',") + "'" + this.ArrayGiai[10].trim().substring(12) + "',";
                                 if (Congthuc.isNumeric(this.ArrayGiai[12])) {
-                                    String Str6 = (((((Str5 + "'" + this.ArrayGiai[12].trim().substring(0, 4) + "',") + "'" + this.ArrayGiai[12].trim().substring(4, 8) + "',") + "'" + this.ArrayGiai[12].trim().substring(8, 12) + "',") + "'" + this.ArrayGiai[12].trim().substring(12, 16) + "',") + "'" + this.ArrayGiai[12].trim().substring(16, 20) + "',") + "'" + this.ArrayGiai[12].trim().substring(20, this.ArrayGiai[12].trim().length()) + "',";
+                                    String Str6 = (((((Str5 + "'" + this.ArrayGiai[12].trim().substring(0, 4) + "',") + "'" + this.ArrayGiai[12].trim().substring(4, 8) + "',") + "'" + this.ArrayGiai[12].trim().substring(8, 12) + "',") + "'" + this.ArrayGiai[12].trim().substring(12, 16) + "',") + "'" + this.ArrayGiai[12].trim().substring(16, 20) + "',") + "'" + this.ArrayGiai[12].trim().substring(20) + "',";
                                     if (Congthuc.isNumeric(this.ArrayGiai[14])) {
-                                        String Str7 = ((Str6 + "'" + this.ArrayGiai[14].trim().substring(0, 3) + "',") + "'" + this.ArrayGiai[14].trim().substring(3, 6) + "',") + "'" + this.ArrayGiai[14].trim().substring(6, this.ArrayGiai[14].trim().length()) + "',";
+                                        String Str7 = ((Str6 + "'" + this.ArrayGiai[14].trim().substring(0, 3) + "',") + "'" + this.ArrayGiai[14].trim().substring(3, 6) + "',") + "'" + this.ArrayGiai[14].trim().substring(6) + "',";
                                         if (Congthuc.isNumeric(this.ArrayGiai[16])) {
-                                            String Str8 = (((Str7 + "'" + this.ArrayGiai[16].trim().substring(0, 2) + "',") + "'" + this.ArrayGiai[16].trim().substring(2, 4) + "',") + "'" + this.ArrayGiai[16].trim().substring(4, 6) + "',") + "'" + this.ArrayGiai[16].trim().substring(6, this.ArrayGiai[16].trim().length()) + "')";
+                                            String Str8 = (((Str7 + "'" + this.ArrayGiai[16].trim().substring(0, 2) + "',") + "'" + this.ArrayGiai[16].trim().substring(2, 4) + "',") + "'" + this.ArrayGiai[16].trim().substring(4, 6) + "',") + "'" + this.ArrayGiai[16].trim().substring(6) + "')";
                                             if (Str8.length() > 185) {
-                                                this.db.QueryData("Delete From ketqua WHERE ngay = '" + str_date + "'");
-                                                this.db.QueryData("InSert Into KETQUA VALUES(null,'" + str_date + "'," + Str8);
-                                                activity = getActivity();
-                                                sb = new StringBuilder();
-                                                sb.append("Đã tải xong kết quả ngày: ");
-                                                sb.append(MainActivity.Get_ngay());
-                                                Toast.makeText(activity, sb.toString(), Toast.LENGTH_LONG).show();
+                                                this.db.QueryData("Delete From ketqua WHERE ngay = '" + date + "'");
+                                                this.db.QueryData("InSert Into KETQUA VALUES(null,'" + date + "'," + Str8);
+                                                String content = "Đã tải xong kết quả ngày: " + MainActivity.Get_ngay();
+                                                Toast.makeText(getActivity(), content, Toast.LENGTH_LONG).show();
                                                 return;
                                             }
                                             Toast.makeText(getActivity(), "Không có kết quả phù hợp!", Toast.LENGTH_LONG).show();
                                         } else if (Str7.length() > 185) {
-                                            this.db.QueryData("Delete From ketqua WHERE ngay = '" + str_date + "'");
-                                            this.db.QueryData("InSert Into KETQUA VALUES(null,'" + str_date + "'," + Str7);
+                                            this.db.QueryData("Delete From ketqua WHERE ngay = '" + date + "'");
+                                            this.db.QueryData("InSert Into KETQUA VALUES(null,'" + date + "'," + Str7);
                                             FragmentActivity activity2 = getActivity();
                                             StringBuilder sb2 = new StringBuilder();
                                             sb2.append("Đã tải xong kết quả ngày: ");
@@ -619,8 +561,8 @@ public class Frag_Database extends Fragment {
                                             Toast.makeText(getActivity(), "Không có kết quả phù hợp!", Toast.LENGTH_LONG).show();
                                         }
                                     } else if (Str6.length() > 185) {
-                                        this.db.QueryData("Delete From ketqua WHERE ngay = '" + str_date + "'");
-                                        this.db.QueryData("InSert Into KETQUA VALUES(null,'" + str_date + "'," + Str6);
+                                        this.db.QueryData("Delete From ketqua WHERE ngay = '" + date + "'");
+                                        this.db.QueryData("InSert Into KETQUA VALUES(null,'" + date + "'," + Str6);
                                         FragmentActivity activity3 = getActivity();
                                         StringBuilder sb3 = new StringBuilder();
                                         sb3.append("Đã tải xong kết quả ngày: ");
@@ -630,8 +572,8 @@ public class Frag_Database extends Fragment {
                                         Toast.makeText(getActivity(), "Không có kết quả phù hợp!", Toast.LENGTH_LONG).show();
                                     }
                                 } else if (Str5.length() > 185) {
-                                    this.db.QueryData("Delete From ketqua WHERE ngay = '" + str_date + "'");
-                                    this.db.QueryData("InSert Into KETQUA VALUES(null,'" + str_date + "'," + Str5);
+                                    this.db.QueryData("Delete From ketqua WHERE ngay = '" + date + "'");
+                                    this.db.QueryData("InSert Into KETQUA VALUES(null,'" + date + "'," + Str5);
                                     FragmentActivity activity4 = getActivity();
                                     StringBuilder sb4 = new StringBuilder();
                                     sb4.append("Đã tải xong kết quả ngày: ");
@@ -641,8 +583,8 @@ public class Frag_Database extends Fragment {
                                     Toast.makeText(getActivity(), "Không có kết quả phù hợp!", Toast.LENGTH_LONG).show();
                                 }
                             } else if (Str4.length() > 185) {
-                                this.db.QueryData("Delete From ketqua WHERE ngay = '" + str_date + "'");
-                                this.db.QueryData("InSert Into KETQUA VALUES(null,'" + str_date + "'," + Str4);
+                                this.db.QueryData("Delete From ketqua WHERE ngay = '" + date + "'");
+                                this.db.QueryData("InSert Into KETQUA VALUES(null,'" + date + "'," + Str4);
                                 FragmentActivity activity5 = getActivity();
                                 StringBuilder sb5 = new StringBuilder();
                                 sb5.append("Đã tải xong kết quả ngày: ");
@@ -652,8 +594,8 @@ public class Frag_Database extends Fragment {
                                 Toast.makeText(getActivity(), "Không có kết quả phù hợp!", Toast.LENGTH_LONG).show();
                             }
                         } else if (Str3.length() > 185) {
-                            this.db.QueryData("Delete From ketqua WHERE ngay = '" + str_date + "'");
-                            this.db.QueryData("InSert Into KETQUA VALUES(null,'" + str_date + "'," + Str3);
+                            this.db.QueryData("Delete From ketqua WHERE ngay = '" + date + "'");
+                            this.db.QueryData("InSert Into KETQUA VALUES(null,'" + date + "'," + Str3);
                             FragmentActivity activity6 = getActivity();
                             StringBuilder sb6 = new StringBuilder();
                             sb6.append("Đã tải xong kết quả ngày: ");
@@ -663,8 +605,8 @@ public class Frag_Database extends Fragment {
                             Toast.makeText(getActivity(), "Không có kết quả phù hợp!", Toast.LENGTH_LONG).show();
                         }
                     } else if (Str2.length() > 185) {
-                        this.db.QueryData("Delete From ketqua WHERE ngay = '" + str_date + "'");
-                        this.db.QueryData("InSert Into KETQUA VALUES(null,'" + str_date + "'," + Str2);
+                        this.db.QueryData("Delete From ketqua WHERE ngay = '" + date + "'");
+                        this.db.QueryData("InSert Into KETQUA VALUES(null,'" + date + "'," + Str2);
                         FragmentActivity activity7 = getActivity();
                         StringBuilder sb7 = new StringBuilder();
                         sb7.append("Đã tải xong kết quả ngày: ");
@@ -674,8 +616,8 @@ public class Frag_Database extends Fragment {
                         Toast.makeText(getActivity(), "Không có kết quả phù hợp!", Toast.LENGTH_LONG).show();
                     }
                 } else if (Str.length() > 185) {
-                    this.db.QueryData("Delete From ketqua WHERE ngay = '" + str_date + "'");
-                    this.db.QueryData("InSert Into KETQUA VALUES(null,'" + str_date + "'," + Str);
+                    this.db.QueryData("Delete From ketqua WHERE ngay = '" + date + "'");
+                    this.db.QueryData("InSert Into KETQUA VALUES(null,'" + date + "'," + Str);
                     FragmentActivity activity8 = getActivity();
                     StringBuilder sb8 = new StringBuilder();
                     sb8.append("Đã tải xong kết quả ngày: ");
@@ -685,8 +627,8 @@ public class Frag_Database extends Fragment {
                     Toast.makeText(getActivity(), "Không có kết quả phù hợp!", Toast.LENGTH_LONG).show();
                 }
             } else if ("".length() > 185) {
-                this.db.QueryData("Delete From ketqua WHERE ngay = '" + str_date + "'");
-                this.db.QueryData("InSert Into KETQUA VALUES(null,'" + str_date + "'," + "");
+                this.db.QueryData("Delete From ketqua WHERE ngay = '" + date + "'");
+                this.db.QueryData("InSert Into KETQUA VALUES(null,'" + date + "'," + "");
                 FragmentActivity activity9 = getActivity();
                 StringBuilder sb9 = new StringBuilder();
                 sb9.append("Đã tải xong kết quả ngày: ");
@@ -698,15 +640,13 @@ public class Frag_Database extends Fragment {
         } catch (Exception e) {
             Toast.makeText(getActivity(), "Không có kết quả phù hợp!", Toast.LENGTH_LONG).show();
             if ("".length() > 185) {
-                this.db.QueryData("Delete From ketqua WHERE ngay = '" + str_date + "'");
-                this.db.QueryData("InSert Into KETQUA VALUES(null,'" + str_date + "'," + "");
-                activity = getActivity();
-                sb = new StringBuilder();
+                this.db.QueryData("Delete From ketqua WHERE ngay = '" + date + "'");
+                this.db.QueryData("InSert Into KETQUA VALUES(null,'" + date + "'," + "");
             }
         } catch (Throwable th) {
             if ("".length() > 185) {
-                this.db.QueryData("Delete From ketqua WHERE ngay = '" + str_date + "'");
-                this.db.QueryData("InSert Into KETQUA VALUES(null,'" + str_date + "'," + "");
+                this.db.QueryData("Delete From ketqua WHERE ngay = '" + date + "'");
+                this.db.QueryData("InSert Into KETQUA VALUES(null,'" + date + "'," + "");
                 FragmentActivity activity10 = getActivity();
                 StringBuilder sb10 = new StringBuilder();
                 sb10.append("Đã tải xong kết quả ngày: ");
@@ -730,17 +670,17 @@ public class Frag_Database extends Fragment {
                 if (Congthuc.isNumeric(this.ArrayGiai[5])) {
                     String Str2 = Str + "'" + this.ArrayGiai[5].trim() + "',";
                     if (Congthuc.isNumeric(this.ArrayGiai[7])) {
-                        String Str3 = (Str2 + "'" + this.ArrayGiai[7].trim().substring(0, 5) + "',") + "'" + this.ArrayGiai[7].trim().substring(5, this.ArrayGiai[7].trim().length()) + "',";
+                        String Str3 = (Str2 + "'" + this.ArrayGiai[7].trim().substring(0, 5) + "',") + "'" + this.ArrayGiai[7].trim().substring(5) + "',";
                         if (Congthuc.isNumeric(this.ArrayGiai[9])) {
-                            String Str4 = (((((Str3 + "'" + this.ArrayGiai[9].trim().substring(0, 5) + "',") + "'" + this.ArrayGiai[9].trim().substring(5, 10) + "',") + "'" + this.ArrayGiai[9].trim().substring(10, 15) + "',") + "'" + this.ArrayGiai[9].trim().substring(15, 20) + "',") + "'" + this.ArrayGiai[9].trim().substring(20, 25) + "',") + "'" + this.ArrayGiai[9].trim().substring(25, this.ArrayGiai[9].trim().length()) + "',";
+                            String Str4 = (((((Str3 + "'" + this.ArrayGiai[9].trim().substring(0, 5) + "',") + "'" + this.ArrayGiai[9].trim().substring(5, 10) + "',") + "'" + this.ArrayGiai[9].trim().substring(10, 15) + "',") + "'" + this.ArrayGiai[9].trim().substring(15, 20) + "',") + "'" + this.ArrayGiai[9].trim().substring(20, 25) + "',") + "'" + this.ArrayGiai[9].trim().substring(25) + "',";
                             if (Congthuc.isNumeric(this.ArrayGiai[11])) {
-                                String Str5 = (((Str4 + "'" + this.ArrayGiai[11].trim().substring(0, 4) + "',") + "'" + this.ArrayGiai[11].trim().substring(4, 8) + "',") + "'" + this.ArrayGiai[11].trim().substring(8, 12) + "',") + "'" + this.ArrayGiai[11].trim().substring(12, this.ArrayGiai[11].trim().length()) + "',";
+                                String Str5 = (((Str4 + "'" + this.ArrayGiai[11].trim().substring(0, 4) + "',") + "'" + this.ArrayGiai[11].trim().substring(4, 8) + "',") + "'" + this.ArrayGiai[11].trim().substring(8, 12) + "',") + "'" + this.ArrayGiai[11].trim().substring(12) + "',";
                                 if (Congthuc.isNumeric(this.ArrayGiai[13])) {
-                                    String Str6 = (((((Str5 + "'" + this.ArrayGiai[13].trim().substring(0, 4) + "',") + "'" + this.ArrayGiai[13].trim().substring(4, 8) + "',") + "'" + this.ArrayGiai[13].trim().substring(8, 12) + "',") + "'" + this.ArrayGiai[13].trim().substring(12, 16) + "',") + "'" + this.ArrayGiai[13].trim().substring(16, 20) + "',") + "'" + this.ArrayGiai[13].trim().substring(20, this.ArrayGiai[13].trim().length()) + "',";
+                                    String Str6 = (((((Str5 + "'" + this.ArrayGiai[13].trim().substring(0, 4) + "',") + "'" + this.ArrayGiai[13].trim().substring(4, 8) + "',") + "'" + this.ArrayGiai[13].trim().substring(8, 12) + "',") + "'" + this.ArrayGiai[13].trim().substring(12, 16) + "',") + "'" + this.ArrayGiai[13].trim().substring(16, 20) + "',") + "'" + this.ArrayGiai[13].trim().substring(20) + "',";
                                     if (Congthuc.isNumeric(this.ArrayGiai[15])) {
-                                        String Str7 = ((Str6 + "'" + this.ArrayGiai[15].trim().substring(0, 3) + "',") + "'" + this.ArrayGiai[15].trim().substring(3, 6) + "',") + "'" + this.ArrayGiai[15].trim().substring(6, this.ArrayGiai[15].trim().length()) + "',";
+                                        String Str7 = ((Str6 + "'" + this.ArrayGiai[15].trim().substring(0, 3) + "',") + "'" + this.ArrayGiai[15].trim().substring(3, 6) + "',") + "'" + this.ArrayGiai[15].trim().substring(6) + "',";
                                         if (Congthuc.isNumeric(this.ArrayGiai[17])) {
-                                            String Str8 = (((Str7 + "'" + this.ArrayGiai[17].trim().substring(0, 2) + "',") + "'" + this.ArrayGiai[17].trim().substring(2, 4) + "',") + "'" + this.ArrayGiai[17].trim().substring(4, 6) + "',") + "'" + this.ArrayGiai[17].trim().substring(6, this.ArrayGiai[17].trim().length()) + "')";
+                                            String Str8 = (((Str7 + "'" + this.ArrayGiai[17].trim().substring(0, 2) + "',") + "'" + this.ArrayGiai[17].trim().substring(2, 4) + "',") + "'" + this.ArrayGiai[17].trim().substring(4, 6) + "',") + "'" + this.ArrayGiai[17].trim().substring(6) + "')";
                                             if (Str8.length() > 185) {
                                                 this.db.QueryData("Delete From ketqua WHERE ngay = '" + str_date + "'");
                                                 this.db.QueryData("InSert Into KETQUA VALUES(null,'" + str_date + "'," + Str8);

@@ -1,18 +1,20 @@
 package tamhoang.ldpro4.Fragment;
 
+import static android.content.ContentValues.TAG;
+
 import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.app.Dialog;
 import android.content.ClipData;
 import android.content.ClipboardManager;
 import android.content.Context;
-import android.content.DialogInterface;
 import android.content.Intent;
 import android.database.Cursor;
 import android.database.SQLException;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Looper;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -40,7 +42,7 @@ import java.util.List;
 import tamhoang.ldpro4.Activity.Activity_khach;
 import tamhoang.ldpro4.Congthuc.Congthuc;
 import tamhoang.ldpro4.MainActivity;
-import tamhoang.ldpro4.NotificationReader;
+import tamhoang.ldpro4.NotificationNewReader;
 import tamhoang.ldpro4.R;
 import tamhoang.ldpro4.data.Database;
 
@@ -56,7 +58,6 @@ public class Frag_No_new extends Fragment {
     TextView bca_NhanAn;
     JSONObject caidat_tg;
 
-    /* renamed from: db */
     Database db;
     TextView dea_Chuyen;
     TextView dea_ChuyenAn;
@@ -99,9 +100,7 @@ public class Frag_No_new extends Fragment {
     TextView loa_NhanAn;
     ListView lv_baocaoKhach;
     LayoutInflater mInflate;
-    /* access modifiers changed from: private */
     public List<String> mSDT = new ArrayList();
-    /* access modifiers changed from: private */
     public List<String> mTenKH = new ArrayList();
     int position;
     private Runnable runnable = new Runnable() {
@@ -121,8 +120,7 @@ public class Frag_No_new extends Fragment {
     TextView tv_TongTienChuyen;
     TextView tv_TongTienNhan;
 
-    /* renamed from: v */
-    View f203v;
+    View rootView;
     TextView xi2_Chuyen;
     TextView xi2_ChuyenAn;
     TextView xi2_Nhan;
@@ -137,15 +135,14 @@ public class Frag_No_new extends Fragment {
     TextView xn_NhanAn;
 
     public View onCreateView(LayoutInflater layoutInflater, ViewGroup viewGroup, Bundle bundle) {
-        this.f203v = layoutInflater.inflate(R.layout.frag_norp1, viewGroup, false);
+        this.rootView = layoutInflater.inflate(R.layout.frag_norp1, viewGroup, false);
         this.db = new Database(getActivity());
         this.mInflate = layoutInflater;
         init();
         this.lv_baocaoKhach.setOnItemLongClickListener(new AdapterView.OnItemLongClickListener() {
             public boolean onItemLongClick(AdapterView<?> adapterView, View view, int i, long j) {
-                Frag_No_new frag_No_new = Frag_No_new.this;
-                frag_No_new.position = i;
-                frag_No_new.Dialog(frag_No_new.mTenKH.get(i));
+                position = i;
+                Dialog(mTenKH.get(i));
                 return false;
             }
         });
@@ -158,7 +155,7 @@ public class Frag_No_new extends Fragment {
         } catch (JSONException e) {
             e.printStackTrace();
         }
-        return this.f203v;
+        return this.rootView;
     }
 
     public void onStop() {
@@ -271,7 +268,7 @@ public class Frag_No_new extends Fragment {
                     } else {
                         db.SendSMS(mSDT.get(position), db.Tin_Chottien_xien(mTenKH.get(position)));
                     }
-                    Toast.makeText(getActivity(), "Đã nhắn chốt tiền!", 1).show();
+                    Toast.makeText(getActivity(), "Đã nhắn chốt tiền!", Toast.LENGTH_LONG).show();
                 } catch (JSONException e) {
                     e.printStackTrace();
                 }
@@ -294,30 +291,30 @@ public class Frag_No_new extends Fragment {
                             }
                         });
                     }
-                    Toast.makeText(getActivity(), "Đã nhắn chốt tiền!", 1).show();
+                    Toast.makeText(getActivity(), "Đã nhắn chốt tiền!", Toast.LENGTH_LONG).show();
                 } catch (JSONException e2) {
                     e2.printStackTrace();
                 }
             } else if (MainActivity.contactsMap.containsKey(GetData1.getString(1))) {
-                NotificationReader notificationReader = new NotificationReader();
+                NotificationNewReader NotificationNewReader = new NotificationNewReader();
                 try {
                     if (MainActivity.jSon_Setting.getInt("tachxien_tinchot") == 0) {
-                        notificationReader.NotificationWearReader(GetData1.getString(1), db.Tin_Chottien(mTenKH.get(position)));
+                        NotificationNewReader.NotificationWearReader(GetData1.getString(1), db.Tin_Chottien(mTenKH.get(position)));
                     } else {
-                        notificationReader.NotificationWearReader(GetData1.getString(1), db.Tin_Chottien_xien(mTenKH.get(position)));
+                        NotificationNewReader.NotificationWearReader(GetData1.getString(1), db.Tin_Chottien_xien(mTenKH.get(position)));
                     }
                 } catch (JSONException e3) {
                     e3.printStackTrace();
                 }
             } else {
-                Toast.makeText(getActivity(), "Không có người này trong Chatbox", 1).show();
+                Toast.makeText(getActivity(), "Không có người này trong Chatbox", Toast.LENGTH_LONG).show();
             }
             dialog.cancel();
         });
         final ClipboardManager clipboardManager1 = clipboardManager;
         btnCopytinchitiet.setOnClickListener(view -> {
             clipboardManager1.setPrimaryClip(ClipData.newPlainText("Tin chốt:", db.Tin_Chottien_CT(mTenKH.get(position))));
-            Toast.makeText(getActivity(), "Đã copy vào bộ nhớ tạm!", 1).show();
+            Toast.makeText(getActivity(), "Đã copy vào bộ nhớ tạm!", Toast.LENGTH_LONG).show();
             dialog.cancel();
         });
         btnCopytinchotien.setOnClickListener(view -> {
@@ -330,7 +327,7 @@ public class Frag_No_new extends Fragment {
                     clipData = ClipData.newPlainText("Tin chốt:", db.Tin_Chottien_xien(mTenKH.get(position)));
                 }
                 clipboardManager1.setPrimaryClip(clipData);
-                Toast.makeText(getActivity(), "Đã copy vào bộ nhớ tạm!", 1).show();
+                Toast.makeText(getActivity(), "Đã copy vào bộ nhớ tạm!" + this.caidat_tg.getInt("chot_sodu"),  Toast.LENGTH_LONG).show();
             } catch (JSONException e) {
                 e.printStackTrace();
             }
@@ -348,7 +345,7 @@ public class Frag_No_new extends Fragment {
                     e.printStackTrace();
                 }
                 dialog.cancel();
-                Toast.makeText(getActivity(), "Đã xoá", 1).show();
+                Toast.makeText(getActivity(), "Đã xoá", Toast.LENGTH_LONG).show();
             });
             builder.setNegativeButton("No", (dialogInterface, i1) -> dialogInterface.cancel());
             builder.create().show();
@@ -603,220 +600,187 @@ public class Frag_No_new extends Fragment {
 
     /* access modifiers changed from: private */
     public void lv_baoCao() throws JSONException {
-        Cursor cursor = null;
-        String str = null;
-        String str2 = null;
-        String str3 = null;
-        DecimalFormat decimalFormat = null;
-        Frag_No_new frag_No_new = null;
-        String str4 = "dec";
-        String str5 = "det";
-        String str6 = "deb";
+        final String DEC = "dec";
+        final String DET = "det";
+        final String DED = "deb";
         String Get_date = MainActivity.Get_date();
-        DecimalFormat decimalFormat2 = new DecimalFormat("###,###");
-        Cursor GetData = this.db.GetData("Select the_loai\n, sum((type_kh = 1)*(100-diem_khachgiu)*diem/100) as mDiem\n, CASE WHEN the_loai = 'xi' OR the_loai = 'xia' \n THEN sum((type_kh = 1)*(100-diem_khachgiu)*diem/100*so_nhay*lan_an/1000) \n ELSE sum((type_kh = 1)*(100-diem_khachgiu)*diem/100*so_nhay)  END nAn\n, sum((type_kh = 1)*ket_qua*(100-diem_khachgiu)/100/1000) as mKetqua\n, sum((type_kh = 2)*(100-diem_khachgiu)*diem/100) as mDiem\n, CASE WHEN the_loai = 'xi' OR the_loai = 'xia' \n THEN sum((type_kh = 2)*(100-diem_khachgiu)*diem/100*so_nhay*lan_an/1000) \n ELSE sum((type_kh = 2)*(100-diem_khachgiu)*diem/100*so_nhay)  END nAn\n, sum((type_kh = 2)*ket_qua*(100-diem_khachgiu)/100/1000) as mKetqua\n  From tbl_soctS Where ngay_nhan = '" + Get_date + "'\n  AND the_loai <> 'tt' GROUP by the_loai");
-        if (GetData != null) {
+        DecimalFormat decimalFormat = new DecimalFormat("###,###");
+        Cursor cursor = db.GetData("Select the_loai\n, sum((type_kh = 1)*(100-diem_khachgiu)*diem/100) as mDiem\n, CASE WHEN the_loai = 'xi' OR the_loai = 'xia' \n THEN sum((type_kh = 1)*(100-diem_khachgiu)*diem/100*so_nhay*lan_an/1000) \n ELSE sum((type_kh = 1)*(100-diem_khachgiu)*diem/100*so_nhay)  END nAn\n, sum((type_kh = 1)*ket_qua*(100-diem_khachgiu)/100/1000) as mKetqua\n, sum((type_kh = 2)*(100-diem_khachgiu)*diem/100) as mDiem\n, CASE WHEN the_loai = 'xi' OR the_loai = 'xia' \n THEN sum((type_kh = 2)*(100-diem_khachgiu)*diem/100*so_nhay*lan_an/1000) \n ELSE sum((type_kh = 2)*(100-diem_khachgiu)*diem/100*so_nhay)  END nAn\n, sum((type_kh = 2)*ket_qua*(100-diem_khachgiu)/100/1000) as mKetqua\n  From tbl_soctS Where ngay_nhan = '" + Get_date + "'\n  AND the_loai <> 'tt' GROUP by the_loai");
+        if (cursor != null) {
             JSONObject jSONObject = new JSONObject();
             double d = 0.0d;
             double d2 = 0.0d;
-            while (true) {
-                str = str4;
-                str2 = str5;
-                str3 = str6;
-                if (!GetData.moveToNext()) {
-                    break;
-                }
+            while (cursor.moveToNext()) {
                 try {
                     JSONObject jSONObject2 = new JSONObject();
-                    jSONObject2.put("DiemNhan", decimalFormat2.format(GetData.getDouble(1)));
-                    jSONObject2.put("AnNhan", decimalFormat2.format(GetData.getDouble(2)));
-                    jSONObject2.put("KQNhan", decimalFormat2.format(GetData.getDouble(3)));
-                    jSONObject2.put("DiemChuyen", decimalFormat2.format(GetData.getDouble(4)));
-                    jSONObject2.put("AnChuyen", decimalFormat2.format(GetData.getDouble(5)));
-                    jSONObject2.put("KQChuyen", decimalFormat2.format(GetData.getDouble(6)));
-                    d += GetData.getDouble(3);
-                    d2 += GetData.getDouble(6);
-                    jSONObject.put(GetData.getString(0), jSONObject2.toString());
-                    str4 = str;
-                    str5 = str2;
-                    str6 = str3;
-                } catch (JSONException unused) {
-                }
+                    jSONObject2.put("DiemNhan", decimalFormat.format(cursor.getDouble(1)));
+                    jSONObject2.put("AnNhan", decimalFormat.format(cursor.getDouble(2)));
+                    jSONObject2.put("KQNhan", decimalFormat.format(cursor.getDouble(3)));
+                    jSONObject2.put("DiemChuyen", decimalFormat.format(cursor.getDouble(4)));
+                    jSONObject2.put("AnChuyen", decimalFormat.format(cursor.getDouble(5)));
+                    jSONObject2.put("KQChuyen", decimalFormat.format(cursor.getDouble(6)));
+                    d += cursor.getDouble(3);
+                    d2 += cursor.getDouble(6);
+                    jSONObject.put(cursor.getString(0), jSONObject2.toString());
+                } catch (JSONException unused) {}
             }
-            double d3 = d2;
             if (jSONObject.length() > 0) {
                 if (jSONObject.has("dea")) {
-                    frag_No_new = this;
-                    cursor = GetData;
                     try {
-                        frag_No_new.li_dea.setVisibility(View.VISIBLE);
+                        li_dea.setVisibility(View.VISIBLE);
                         JSONObject jSONObject3 = new JSONObject(jSONObject.getString("dea"));
                         if (jSONObject3.getString("DiemNhan").length() > 0) {
-                            TextView textView = frag_No_new.dea_Nhan;
+                            TextView textView = dea_Nhan;
                             StringBuilder sb = new StringBuilder();
-                            decimalFormat = decimalFormat2;
                             sb.append(jSONObject3.getString("DiemNhan"));
                             sb.append("(");
                             sb.append(jSONObject3.getString("AnNhan"));
                             sb.append(")");
                             textView.setText(sb.toString());
-                            frag_No_new.dea_NhanAn.setText(jSONObject3.getString("KQNhan"));
-                        } else {
-                            decimalFormat = decimalFormat2;
+                            dea_NhanAn.setText(jSONObject3.getString("KQNhan"));
                         }
                         if (jSONObject3.getString("DiemChuyen").length() > 0) {
-                            frag_No_new.dea_Chuyen.setText(jSONObject3.getString("DiemChuyen") + "(" + jSONObject3.getString("AnChuyen") + ")");
-                            frag_No_new.dea_ChuyenAn.setText(jSONObject3.getString("KQChuyen"));
+                            dea_Chuyen.setText(jSONObject3.getString("DiemChuyen") + "(" + jSONObject3.getString("AnChuyen") + ")");
+                            dea_ChuyenAn.setText(jSONObject3.getString("KQChuyen"));
                         }
-                    } catch (JSONException unused3) {
-                    }
-                } else {
-                    frag_No_new = this;
-                    cursor = GetData;
-                    decimalFormat = decimalFormat2;
+                    } catch (JSONException unused3) {}
                 }
-                String str7 = str3;
-                if (jSONObject.has(str7)) {
-                    JSONObject jSONObject4 = new JSONObject(jSONObject.getString(str7));
+                if (jSONObject.has(DED)) {
+                    JSONObject jSONObject4 = new JSONObject(jSONObject.getString(DED));
                     if (jSONObject4.getString("DiemNhan").length() > 0) {
-                        frag_No_new.deb_Nhan.setText(jSONObject4.getString("DiemNhan") + "(" + jSONObject4.getString("AnNhan") + ")");
-                        frag_No_new.deb_NhanAn.setText(jSONObject4.getString("KQNhan"));
+                        deb_Nhan.setText(jSONObject4.getString("DiemNhan") + "(" + jSONObject4.getString("AnNhan") + ")");
+                        deb_NhanAn.setText(jSONObject4.getString("KQNhan"));
                     }
                     if (jSONObject4.getString("DiemChuyen").length() > 0) {
-                        frag_No_new.deb_Chuyen.setText(jSONObject4.getString("DiemChuyen") + "(" + jSONObject4.getString("AnChuyen") + ")");
-                        frag_No_new.deb_ChuyenAn.setText(jSONObject4.getString("KQChuyen"));
+                        deb_Chuyen.setText(jSONObject4.getString("DiemChuyen") + "(" + jSONObject4.getString("AnChuyen") + ")");
+                        deb_ChuyenAn.setText(jSONObject4.getString("KQChuyen"));
                     }
                 }
-                String str8 = str2;
-                if (jSONObject.has(str8)) {
-                    frag_No_new.li_det.setVisibility(View.VISIBLE);
-                    JSONObject jSONObject5 = new JSONObject(jSONObject.getString(str8));
+                if (jSONObject.has(DET)) {
+                    li_det.setVisibility(View.VISIBLE);
+                    JSONObject jSONObject5 = new JSONObject(jSONObject.getString(DET));
                     if (jSONObject5.getString("DiemNhan").length() > 0) {
-                        frag_No_new.det_Nhan.setText(jSONObject5.getString("DiemNhan") + "(" + jSONObject5.getString("AnNhan") + ")");
-                        frag_No_new.det_NhanAn.setText(jSONObject5.getString("KQNhan"));
+                        det_Nhan.setText(jSONObject5.getString("DiemNhan") + "(" + jSONObject5.getString("AnNhan") + ")");
+                        det_NhanAn.setText(jSONObject5.getString("KQNhan"));
                     }
                     if (jSONObject5.getString("DiemChuyen").length() > 0) {
-                        frag_No_new.det_Chuyen.setText(jSONObject5.getString("DiemChuyen") + "(" + jSONObject5.getString("AnChuyen") + ")");
-                        frag_No_new.det_ChuyenAn.setText(jSONObject5.getString("KQChuyen"));
+                        det_Chuyen.setText(jSONObject5.getString("DiemChuyen") + "(" + jSONObject5.getString("AnChuyen") + ")");
+                        det_ChuyenAn.setText(jSONObject5.getString("KQChuyen"));
                     }
                 }
-                String str9 = str;
-                if (jSONObject.has(str9)) {
-                    frag_No_new.li_dec.setVisibility(View.VISIBLE);
-                    JSONObject jSONObject6 = new JSONObject(jSONObject.getString(str9));
+                if (jSONObject.has(DEC)) {
+                    li_dec.setVisibility(View.VISIBLE);
+                    JSONObject jSONObject6 = new JSONObject(jSONObject.getString(DEC));
                     if (jSONObject6.getString("DiemNhan").length() > 0) {
-                        frag_No_new.dec_Nhan.setText(jSONObject6.getString("DiemNhan") + "(" + jSONObject6.getString("AnNhan") + ")");
-                        frag_No_new.dec_NhanAn.setText(jSONObject6.getString("KQNhan"));
+                        dec_Nhan.setText(jSONObject6.getString("DiemNhan") + "(" + jSONObject6.getString("AnNhan") + ")");
+                        dec_NhanAn.setText(jSONObject6.getString("KQNhan"));
                     }
                     if (jSONObject6.getString("DiemChuyen").length() > 0) {
-                        frag_No_new.dec_Chuyen.setText(jSONObject6.getString("DiemChuyen") + "(" + jSONObject6.getString("AnChuyen") + ")");
-                        frag_No_new.dec_ChuyenAn.setText(jSONObject6.getString("KQChuyen"));
+                        dec_Chuyen.setText(jSONObject6.getString("DiemChuyen") + "(" + jSONObject6.getString("AnChuyen") + ")");
+                        dec_ChuyenAn.setText(jSONObject6.getString("KQChuyen"));
                     }
                 }
                 if (jSONObject.has("ded")) {
-                    frag_No_new.li_ded.setVisibility(View.VISIBLE);
+                    li_ded.setVisibility(View.VISIBLE);
                     JSONObject jSONObject7 = new JSONObject(jSONObject.getString("ded"));
                     if (jSONObject7.getString("DiemNhan").length() > 0) {
-                        frag_No_new.ded_Nhan.setText(jSONObject7.getString("DiemNhan") + "(" + jSONObject7.getString("AnNhan") + ")");
-                        frag_No_new.ded_NhanAn.setText(jSONObject7.getString("KQNhan"));
+                        ded_Nhan.setText(jSONObject7.getString("DiemNhan") + "(" + jSONObject7.getString("AnNhan") + ")");
+                        ded_NhanAn.setText(jSONObject7.getString("KQNhan"));
                     }
                     if (jSONObject7.getString("DiemChuyen").length() > 0) {
-                        frag_No_new.ded_Chuyen.setText(jSONObject7.getString("DiemChuyen") + "(" + jSONObject7.getString("AnChuyen") + ")");
-                        frag_No_new.ded_ChuyenAn.setText(jSONObject7.getString("KQChuyen"));
+                        ded_Chuyen.setText(jSONObject7.getString("DiemChuyen") + "(" + jSONObject7.getString("AnChuyen") + ")");
+                        ded_ChuyenAn.setText(jSONObject7.getString("KQChuyen"));
                     }
                 }
                 if (jSONObject.has("lo")) {
                     JSONObject jSONObject8 = new JSONObject(jSONObject.getString("lo"));
                     if (jSONObject8.getString("DiemNhan").length() > 0) {
-                        frag_No_new.lo_Nhan.setText(jSONObject8.getString("DiemNhan") + "(" + jSONObject8.getString("AnNhan") + ")");
-                        frag_No_new.lo_NhanAn.setText(jSONObject8.getString("KQNhan"));
+                        lo_Nhan.setText(jSONObject8.getString("DiemNhan") + "(" + jSONObject8.getString("AnNhan") + ")");
+                        lo_NhanAn.setText(jSONObject8.getString("KQNhan"));
                     }
                     if (jSONObject8.getString("DiemChuyen").length() > 0) {
-                        frag_No_new.lo_Chuyen.setText(jSONObject8.getString("DiemChuyen") + "(" + jSONObject8.getString("AnChuyen") + ")");
-                        frag_No_new.lo_ChuyenAn.setText(jSONObject8.getString("KQChuyen"));
+                        lo_Chuyen.setText(jSONObject8.getString("DiemChuyen") + "(" + jSONObject8.getString("AnChuyen") + ")");
+                        lo_ChuyenAn.setText(jSONObject8.getString("KQChuyen"));
                     }
                 }
                 if (jSONObject.has("loa")) {
-                    frag_No_new.li_loa.setVisibility(View.VISIBLE);
+                    li_loa.setVisibility(View.VISIBLE);
                     JSONObject jSONObject9 = new JSONObject(jSONObject.getString("loa"));
                     if (jSONObject9.getString("DiemNhan").length() > 0) {
-                        frag_No_new.loa_Nhan.setText(jSONObject9.getString("DiemNhan") + "(" + jSONObject9.getString("AnNhan") + ")");
-                        frag_No_new.loa_NhanAn.setText(jSONObject9.getString("KQNhan"));
+                        loa_Nhan.setText(jSONObject9.getString("DiemNhan") + "(" + jSONObject9.getString("AnNhan") + ")");
+                        loa_NhanAn.setText(jSONObject9.getString("KQNhan"));
                     }
                     if (jSONObject9.getString("DiemChuyen").length() > 0) {
-                        frag_No_new.loa_Chuyen.setText(jSONObject9.getString("DiemChuyen") + "(" + jSONObject9.getString("AnChuyen") + ")");
-                        frag_No_new.loa_ChuyenAn.setText(jSONObject9.getString("KQChuyen"));
+                        loa_Chuyen.setText(jSONObject9.getString("DiemChuyen") + "(" + jSONObject9.getString("AnChuyen") + ")");
+                        loa_ChuyenAn.setText(jSONObject9.getString("KQChuyen"));
                     }
                 }
                 if (jSONObject.has("xi")) {
                     JSONObject jSONObject10 = new JSONObject(jSONObject.getString("xi"));
                     if (jSONObject10.getString("DiemNhan").length() > 0) {
-                        frag_No_new.xi2_Nhan.setText(jSONObject10.getString("DiemNhan") + "(" + jSONObject10.getString("AnNhan") + ")");
-                        frag_No_new.xi2_NhanAn.setText(jSONObject10.getString("KQNhan"));
+                        xi2_Nhan.setText(jSONObject10.getString("DiemNhan") + "(" + jSONObject10.getString("AnNhan") + ")");
+                        xi2_NhanAn.setText(jSONObject10.getString("KQNhan"));
                     }
                     if (jSONObject10.getString("DiemChuyen").length() > 0) {
-                        frag_No_new.xi2_Chuyen.setText(jSONObject10.getString("DiemChuyen") + "(" + jSONObject10.getString("AnChuyen") + ")");
-                        frag_No_new.xi2_ChuyenAn.setText(jSONObject10.getString("KQChuyen"));
+                        xi2_Chuyen.setText(jSONObject10.getString("DiemChuyen") + "(" + jSONObject10.getString("AnChuyen") + ")");
+                        xi2_ChuyenAn.setText(jSONObject10.getString("KQChuyen"));
                     }
                 }
                 if (jSONObject.has("xn")) {
-                    frag_No_new.li_xn.setVisibility(View.VISIBLE);
+                    li_xn.setVisibility(View.VISIBLE);
                     JSONObject jSONObject11 = new JSONObject(jSONObject.getString("xn"));
                     if (jSONObject11.getString("DiemNhan").length() > 0) {
-                        frag_No_new.xn_Nhan.setText(jSONObject11.getString("DiemNhan") + "(" + jSONObject11.getString("AnNhan") + ")");
-                        frag_No_new.xn_NhanAn.setText(jSONObject11.getString("KQNhan"));
+                        xn_Nhan.setText(jSONObject11.getString("DiemNhan") + "(" + jSONObject11.getString("AnNhan") + ")");
+                        xn_NhanAn.setText(jSONObject11.getString("KQNhan"));
                     }
                     if (jSONObject11.getString("DiemChuyen").length() > 0) {
-                        frag_No_new.xn_Chuyen.setText(jSONObject11.getString("DiemChuyen") + "(" + jSONObject11.getString("AnChuyen") + ")");
-                        frag_No_new.xn_ChuyenAn.setText(jSONObject11.getString("KQChuyen"));
+                        xn_Chuyen.setText(jSONObject11.getString("DiemChuyen") + "(" + jSONObject11.getString("AnChuyen") + ")");
+                        xn_ChuyenAn.setText(jSONObject11.getString("KQChuyen"));
                     }
                 }
                 if (jSONObject.has("xia")) {
-                    frag_No_new.li_xia2.setVisibility(View.VISIBLE);
+                    li_xia2.setVisibility(View.VISIBLE);
                     JSONObject jSONObject12 = new JSONObject(jSONObject.getString("xia"));
                     if (jSONObject12.getString("DiemNhan").length() > 0) {
-                        frag_No_new.xia2_Nhan.setText(jSONObject12.getString("DiemNhan") + "(" + jSONObject12.getString("AnNhan") + ")");
-                        frag_No_new.xia2_NhanAn.setText(jSONObject12.getString("KQNhan"));
+                        xia2_Nhan.setText(jSONObject12.getString("DiemNhan") + "(" + jSONObject12.getString("AnNhan") + ")");
+                        xia2_NhanAn.setText(jSONObject12.getString("KQNhan"));
                     }
                     if (jSONObject12.getString("DiemChuyen").length() > 0) {
-                        frag_No_new.xia2_Chuyen.setText(jSONObject12.getString("DiemChuyen") + "(" + jSONObject12.getString("AnChuyen") + ")");
-                        frag_No_new.xia2_ChuyenAn.setText(jSONObject12.getString("KQChuyen"));
+                        xia2_Chuyen.setText(jSONObject12.getString("DiemChuyen") + "(" + jSONObject12.getString("AnChuyen") + ")");
+                        xia2_ChuyenAn.setText(jSONObject12.getString("KQChuyen"));
                     }
                 }
                 if (jSONObject.has("bc")) {
                     JSONObject jSONObject13 = new JSONObject(jSONObject.getString("bc"));
                     if (jSONObject13.getString("DiemNhan").length() > 0) {
-                        frag_No_new.bc_Nhan.setText(jSONObject13.getString("DiemNhan") + "(" + jSONObject13.getString("AnNhan") + ")");
-                        frag_No_new.bc_NhanAn.setText(jSONObject13.getString("KQNhan"));
+                        bc_Nhan.setText(jSONObject13.getString("DiemNhan") + "(" + jSONObject13.getString("AnNhan") + ")");
+                        bc_NhanAn.setText(jSONObject13.getString("KQNhan"));
                     }
                     if (jSONObject13.getString("DiemChuyen").length() > 0) {
-                        frag_No_new.bc_Chuyen.setText(jSONObject13.getString("DiemChuyen") + "(" + jSONObject13.getString("AnChuyen") + ")");
-                        frag_No_new.bc_ChuyenAn.setText(jSONObject13.getString("KQChuyen"));
+                        bc_Chuyen.setText(jSONObject13.getString("DiemChuyen") + "(" + jSONObject13.getString("AnChuyen") + ")");
+                        bc_ChuyenAn.setText(jSONObject13.getString("KQChuyen"));
                     }
                 }
                 if (jSONObject.has("bca")) {
-                    frag_No_new.li_bca.setVisibility(View.VISIBLE);
+                    li_bca.setVisibility(View.VISIBLE);
                     JSONObject jSONObject14 = new JSONObject(jSONObject.getString("bca"));
                     if (jSONObject14.getString("DiemNhan").length() > 0) {
-                        frag_No_new.bca_Nhan.setText(jSONObject14.getString("DiemNhan") + "(" + jSONObject14.getString("AnNhan") + ")");
-                        frag_No_new.bca_NhanAn.setText(jSONObject14.getString("KQNhan"));
+                        bca_Nhan.setText(jSONObject14.getString("DiemNhan") + "(" + jSONObject14.getString("AnNhan") + ")");
+                        bca_NhanAn.setText(jSONObject14.getString("KQNhan"));
                     }
                     if (jSONObject14.getString("DiemChuyen").length() > 0) {
-                        frag_No_new.bca_Chuyen.setText(jSONObject14.getString("DiemChuyen") + "(" + jSONObject14.getString("AnChuyen") + ")");
-                        frag_No_new.bca_ChuyenAn.setText(jSONObject14.getString("KQChuyen"));
+                        bca_Chuyen.setText(jSONObject14.getString("DiemChuyen") + "(" + jSONObject14.getString("AnChuyen") + ")");
+                        bca_ChuyenAn.setText(jSONObject14.getString("KQChuyen"));
                     }
                 }
-                DecimalFormat decimalFormat3 = decimalFormat;
-                frag_No_new.tv_TongTienNhan.setText(decimalFormat3.format(d));
-                double d4 = d3;
-                frag_No_new.tv_TongTienChuyen.setText(decimalFormat3.format(d4));
-                frag_No_new.tv_TongGiu.setText(decimalFormat3.format((-d) - d4));
-                if (cursor != null && !cursor.isClosed()) {
+                tv_TongTienNhan.setText(decimalFormat.format(d));
+                tv_TongTienChuyen.setText(decimalFormat.format(d2));
+                tv_TongGiu.setText(decimalFormat.format((-d) - d2));
+                if (!cursor.isClosed()) {
                     cursor.close();
                 }
                 XemListview();
             }
-            cursor = GetData;
             cursor.close();
             XemListview();
         }
@@ -874,7 +838,7 @@ public class Frag_No_new extends Fragment {
                     GetData.close();
                 }
             }
-        } catch (SQLException unused) {
+        } catch (SQLException ignored) {
         } catch (JSONException e) {
             e.printStackTrace();
         }
@@ -1043,7 +1007,7 @@ public class Frag_No_new extends Fragment {
                             this.dea_ChuyenAn.setText(jSONObject2.getString("KQChuyen"));
                         }
                     } catch (Exception unused) {
-                        Toast.makeText(getActivity(), "OK", 1).show();
+                        Toast.makeText(getActivity(), "OK", Toast.LENGTH_LONG).show();
                         return view2;
                     }
                 } else {
@@ -1191,7 +1155,7 @@ public class Frag_No_new extends Fragment {
                 }
             } catch (Exception unused2) {
                 view2 = inflate;
-                Toast.makeText(getActivity(), "OK", 1).show();
+                Toast.makeText(getActivity(), "OK", Toast.LENGTH_LONG).show();
                 return view2;
             }
             return view2;
@@ -1200,66 +1164,66 @@ public class Frag_No_new extends Fragment {
     }
 
     private void init() {
-        this.xn_Nhan = (TextView) this.f203v.findViewById(R.id.xn_Nhan);
-        this.xn_NhanAn = (TextView) this.f203v.findViewById(R.id.xn_NhanAn);
-        this.xn_Chuyen = (TextView) this.f203v.findViewById(R.id.xn_Chuyen);
-        this.xn_ChuyenAn = (TextView) this.f203v.findViewById(R.id.xn_ChuyenAn);
-        this.dea_Nhan = (TextView) this.f203v.findViewById(R.id.dea_Nhan);
-        this.deb_Nhan = (TextView) this.f203v.findViewById(R.id.deb_Nhan);
-        this.det_Nhan = (TextView) this.f203v.findViewById(R.id.det_Nhan);
-        this.dec_Nhan = (TextView) this.f203v.findViewById(R.id.dec_Nhan);
-        this.ded_Nhan = (TextView) this.f203v.findViewById(R.id.ded_Nhan);
-        this.lo_Nhan = (TextView) this.f203v.findViewById(R.id.lo_Nhan);
-        this.loa_Nhan = (TextView) this.f203v.findViewById(R.id.loa_Nhan);
-        this.bc_Nhan = (TextView) this.f203v.findViewById(R.id.bc_Nhan);
-        this.bca_Nhan = (TextView) this.f203v.findViewById(R.id.bca_Nhan);
-        this.dea_NhanAn = (TextView) this.f203v.findViewById(R.id.dea_NhanAn);
-        this.deb_NhanAn = (TextView) this.f203v.findViewById(R.id.deb_NhanAn);
-        this.det_NhanAn = (TextView) this.f203v.findViewById(R.id.det_NhanAn);
-        this.dec_NhanAn = (TextView) this.f203v.findViewById(R.id.dec_NhanAn);
-        this.ded_NhanAn = (TextView) this.f203v.findViewById(R.id.ded_NhanAn);
-        this.lo_NhanAn = (TextView) this.f203v.findViewById(R.id.lo_NhanAn);
-        this.loa_NhanAn = (TextView) this.f203v.findViewById(R.id.loa_NhanAn);
-        this.bc_NhanAn = (TextView) this.f203v.findViewById(R.id.bc_NhanAn);
-        this.dea_Chuyen = (TextView) this.f203v.findViewById(R.id.dea_Chuyen);
-        this.deb_Chuyen = (TextView) this.f203v.findViewById(R.id.deb_Chuyen);
-        this.det_Chuyen = (TextView) this.f203v.findViewById(R.id.det_Chuyen);
-        this.dec_Chuyen = (TextView) this.f203v.findViewById(R.id.dec_Chuyen);
-        this.ded_Chuyen = (TextView) this.f203v.findViewById(R.id.ded_Chuyen);
-        this.lo_Chuyen = (TextView) this.f203v.findViewById(R.id.lo_Chuyen);
-        this.loa_Chuyen = (TextView) this.f203v.findViewById(R.id.loa_Chuyen);
-        this.bc_Chuyen = (TextView) this.f203v.findViewById(R.id.bc_Chuyen);
-        this.dea_ChuyenAn = (TextView) this.f203v.findViewById(R.id.dea_ChuyenAn);
-        this.deb_ChuyenAn = (TextView) this.f203v.findViewById(R.id.deb_ChuyenAn);
-        this.det_ChuyenAn = (TextView) this.f203v.findViewById(R.id.det_ChuyenAn);
-        this.dec_ChuyenAn = (TextView) this.f203v.findViewById(R.id.dec_ChuyenAn);
-        this.ded_ChuyenAn = (TextView) this.f203v.findViewById(R.id.ded_ChuyenAn);
-        this.lo_ChuyenAn = (TextView) this.f203v.findViewById(R.id.lo_ChuyenAn);
-        this.loa_ChuyenAn = (TextView) this.f203v.findViewById(R.id.loa_ChuyenAn);
-        this.bc_ChuyenAn = (TextView) this.f203v.findViewById(R.id.bc_ChuyenAn);
-        this.tv_TongGiu = (TextView) this.f203v.findViewById(R.id.tv_TongGiu);
-        this.tv_TongTienNhan = (TextView) this.f203v.findViewById(R.id.tv_TongTienNhan);
-        this.tv_TongTienChuyen = (TextView) this.f203v.findViewById(R.id.tv_TongTienChuyen);
-        this.li_dea = (LinearLayout) this.f203v.findViewById(R.id.li_dea);
-        this.li_det = (LinearLayout) this.f203v.findViewById(R.id.li_det);
-        this.li_dec = (LinearLayout) this.f203v.findViewById(R.id.li_dec);
-        this.li_ded = (LinearLayout) this.f203v.findViewById(R.id.li_ded);
-        this.li_loa = (LinearLayout) this.f203v.findViewById(R.id.li_loa);
-        this.li_bca = (LinearLayout) this.f203v.findViewById(R.id.li_bca);
-        this.li_xia2 = (LinearLayout) this.f203v.findViewById(R.id.li_xia2);
-        this.li_xn = (LinearLayout) this.f203v.findViewById(R.id.li_xn);
-        this.xi2_Nhan = (TextView) this.f203v.findViewById(R.id.xi2_Nhan);
-        this.xi2_NhanAn = (TextView) this.f203v.findViewById(R.id.xi2_NhanAn);
-        this.xi2_Chuyen = (TextView) this.f203v.findViewById(R.id.xi2_Chuyen);
-        this.xi2_ChuyenAn = (TextView) this.f203v.findViewById(R.id.xi2_ChuyenAn);
-        this.xia2_Nhan = (TextView) this.f203v.findViewById(R.id.xia2_Nhan);
-        this.xia2_NhanAn = (TextView) this.f203v.findViewById(R.id.xia2_NhanAn);
-        this.xia2_Chuyen = (TextView) this.f203v.findViewById(R.id.xia2_Chuyen);
-        this.xia2_ChuyenAn = (TextView) this.f203v.findViewById(R.id.xia2_ChuyenAn);
-        this.bca_Nhan = (TextView) this.f203v.findViewById(R.id.bca_Nhan);
-        this.bca_NhanAn = (TextView) this.f203v.findViewById(R.id.bca_NhanAn);
-        this.bca_Chuyen = (TextView) this.f203v.findViewById(R.id.bca_Chuyen);
-        this.bca_ChuyenAn = (TextView) this.f203v.findViewById(R.id.bca_ChuyenAn);
-        this.lv_baocaoKhach = (ListView) this.f203v.findViewById(R.id.lv_baocaoKhach);
+        this.xn_Nhan = (TextView) this.rootView.findViewById(R.id.xn_Nhan);
+        this.xn_NhanAn = (TextView) this.rootView.findViewById(R.id.xn_NhanAn);
+        this.xn_Chuyen = (TextView) this.rootView.findViewById(R.id.xn_Chuyen);
+        this.xn_ChuyenAn = (TextView) this.rootView.findViewById(R.id.xn_ChuyenAn);
+        this.dea_Nhan = (TextView) this.rootView.findViewById(R.id.dea_Nhan);
+        this.deb_Nhan = (TextView) this.rootView.findViewById(R.id.deb_Nhan);
+        this.det_Nhan = (TextView) this.rootView.findViewById(R.id.det_Nhan);
+        this.dec_Nhan = (TextView) this.rootView.findViewById(R.id.dec_Nhan);
+        this.ded_Nhan = (TextView) this.rootView.findViewById(R.id.ded_Nhan);
+        this.lo_Nhan = (TextView) this.rootView.findViewById(R.id.lo_Nhan);
+        this.loa_Nhan = (TextView) this.rootView.findViewById(R.id.loa_Nhan);
+        this.bc_Nhan = (TextView) this.rootView.findViewById(R.id.bc_Nhan);
+        this.bca_Nhan = (TextView) this.rootView.findViewById(R.id.bca_Nhan);
+        this.dea_NhanAn = (TextView) this.rootView.findViewById(R.id.dea_NhanAn);
+        this.deb_NhanAn = (TextView) this.rootView.findViewById(R.id.deb_NhanAn);
+        this.det_NhanAn = (TextView) this.rootView.findViewById(R.id.det_NhanAn);
+        this.dec_NhanAn = (TextView) this.rootView.findViewById(R.id.dec_NhanAn);
+        this.ded_NhanAn = (TextView) this.rootView.findViewById(R.id.ded_NhanAn);
+        this.lo_NhanAn = (TextView) this.rootView.findViewById(R.id.lo_NhanAn);
+        this.loa_NhanAn = (TextView) this.rootView.findViewById(R.id.loa_NhanAn);
+        this.bc_NhanAn = (TextView) this.rootView.findViewById(R.id.bc_NhanAn);
+        this.dea_Chuyen = (TextView) this.rootView.findViewById(R.id.dea_Chuyen);
+        this.deb_Chuyen = (TextView) this.rootView.findViewById(R.id.deb_Chuyen);
+        this.det_Chuyen = (TextView) this.rootView.findViewById(R.id.det_Chuyen);
+        this.dec_Chuyen = (TextView) this.rootView.findViewById(R.id.dec_Chuyen);
+        this.ded_Chuyen = (TextView) this.rootView.findViewById(R.id.ded_Chuyen);
+        this.lo_Chuyen = (TextView) this.rootView.findViewById(R.id.lo_Chuyen);
+        this.loa_Chuyen = (TextView) this.rootView.findViewById(R.id.loa_Chuyen);
+        this.bc_Chuyen = (TextView) this.rootView.findViewById(R.id.bc_Chuyen);
+        this.dea_ChuyenAn = (TextView) this.rootView.findViewById(R.id.dea_ChuyenAn);
+        this.deb_ChuyenAn = (TextView) this.rootView.findViewById(R.id.deb_ChuyenAn);
+        this.det_ChuyenAn = (TextView) this.rootView.findViewById(R.id.det_ChuyenAn);
+        this.dec_ChuyenAn = (TextView) this.rootView.findViewById(R.id.dec_ChuyenAn);
+        this.ded_ChuyenAn = (TextView) this.rootView.findViewById(R.id.ded_ChuyenAn);
+        this.lo_ChuyenAn = (TextView) this.rootView.findViewById(R.id.lo_ChuyenAn);
+        this.loa_ChuyenAn = (TextView) this.rootView.findViewById(R.id.loa_ChuyenAn);
+        this.bc_ChuyenAn = (TextView) this.rootView.findViewById(R.id.bc_ChuyenAn);
+        this.tv_TongGiu = (TextView) this.rootView.findViewById(R.id.tv_TongGiu);
+        this.tv_TongTienNhan = (TextView) this.rootView.findViewById(R.id.tv_TongTienNhan);
+        this.tv_TongTienChuyen = (TextView) this.rootView.findViewById(R.id.tv_TongTienChuyen);
+        this.li_dea = (LinearLayout) this.rootView.findViewById(R.id.li_dea);
+        this.li_det = (LinearLayout) this.rootView.findViewById(R.id.li_det);
+        this.li_dec = (LinearLayout) this.rootView.findViewById(R.id.li_dec);
+        this.li_ded = (LinearLayout) this.rootView.findViewById(R.id.li_ded);
+        this.li_loa = (LinearLayout) this.rootView.findViewById(R.id.li_loa);
+        this.li_bca = (LinearLayout) this.rootView.findViewById(R.id.li_bca);
+        this.li_xia2 = (LinearLayout) this.rootView.findViewById(R.id.li_xia2);
+        this.li_xn = (LinearLayout) this.rootView.findViewById(R.id.li_xn);
+        this.xi2_Nhan = (TextView) this.rootView.findViewById(R.id.xi2_Nhan);
+        this.xi2_NhanAn = (TextView) this.rootView.findViewById(R.id.xi2_NhanAn);
+        this.xi2_Chuyen = (TextView) this.rootView.findViewById(R.id.xi2_Chuyen);
+        this.xi2_ChuyenAn = (TextView) this.rootView.findViewById(R.id.xi2_ChuyenAn);
+        this.xia2_Nhan = (TextView) this.rootView.findViewById(R.id.xia2_Nhan);
+        this.xia2_NhanAn = (TextView) this.rootView.findViewById(R.id.xia2_NhanAn);
+        this.xia2_Chuyen = (TextView) this.rootView.findViewById(R.id.xia2_Chuyen);
+        this.xia2_ChuyenAn = (TextView) this.rootView.findViewById(R.id.xia2_ChuyenAn);
+        this.bca_Nhan = (TextView) this.rootView.findViewById(R.id.bca_Nhan);
+        this.bca_NhanAn = (TextView) this.rootView.findViewById(R.id.bca_NhanAn);
+        this.bca_Chuyen = (TextView) this.rootView.findViewById(R.id.bca_Chuyen);
+        this.bca_ChuyenAn = (TextView) this.rootView.findViewById(R.id.bca_ChuyenAn);
+        this.lv_baocaoKhach = (ListView) this.rootView.findViewById(R.id.lv_baocaoKhach);
     }
 }

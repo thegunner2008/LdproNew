@@ -1,6 +1,32 @@
 <?xml version="1.0" encoding="utf-8"?>
-<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android" xmlns:app="http://schemas.android.com/apk/res-auto" xmlns:aapt="http://schemas.android.com/aapt" android:layout_width="match_parent" android:layout_height="match_parent">
-    <TextView android:textSize="20sp" android:id="@+id/authCodeInfo" android:layout_width="wrap_content" android:layout_height="wrap_content" android:layout_margin="10dp" android:text="Hãy điền 5 số code Telegram gửi về" android:textAlignment="center"/>
-    <EditText android:textSize="20sp" android:id="@+id/authCode" android:layout_width="match_parent" android:layout_height="wrap_content" android:layout_marginLeft="100dp" android:layout_below="@+id/authCodeInfo" android:layout_centerHorizontal="true" android:inputType="number"/>
-    <Button android:id="@+id/checkBtn" android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="Check" android:layout_below="@+id/authCode" android:layout_centerHorizontal="true"/>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
+
+    <TextView
+        android:id="@+id/authCodeInfo"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_margin="10dp"
+        android:text="Hãy điền 5 số code Telegram gửi về"
+        android:textAlignment="center"
+        android:textSize="20sp" />
+
+    <EditText
+        android:id="@+id/authCode"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/authCodeInfo"
+        android:layout_centerHorizontal="true"
+        android:layout_marginLeft="100dp"
+        android:inputType="number"
+        android:textSize="20sp" />
+
+    <Button
+        android:id="@+id/checkBtn"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/authCode"
+        android:layout_centerHorizontal="true"
+        android:text="Check" />
 </RelativeLayout>

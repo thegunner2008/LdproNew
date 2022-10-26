@@ -653,6 +653,7 @@ public class Congthuc {
     }
 
     public static String XulyXien(String str) {
+        str = str.replace(", ", ",");
         String _p = " ,";
 
         String str2 = "";
@@ -2945,7 +2946,7 @@ public class Congthuc {
         int minute = now.get(12);
 
         //TODO: fake checktime aways false
-//        return parseDate(18 + ":" + 0) .after(gioKT);
+//        return false;
         return parseDate(hour + ":" + minute) .after(gioKT);
     }
 
@@ -2964,5 +2965,20 @@ public class Congthuc {
             e.printStackTrace();
             return false;
         }
+    }
+
+    public static boolean CheckIsToday(Date date) { // co phai la ngay hom nay khong?
+        Calendar now = Calendar.getInstance();
+        int currentDay = now.get(Calendar.DAY_OF_MONTH);
+        int CurrentMonth = now.get(Calendar.MONTH);
+        int CurrentYear = now.get(Calendar.YEAR);
+
+        Calendar cal = Calendar.getInstance();
+        cal.setTime(date);
+        int day = cal.get(Calendar.DAY_OF_MONTH);
+        int month = cal.get(Calendar.MONTH);
+        int year = cal.get(Calendar.YEAR);
+
+        return (day == currentDay && month == CurrentMonth && year == CurrentYear);
     }
 }

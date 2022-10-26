@@ -8,6 +8,7 @@ import android.database.Cursor;
 import android.database.SQLException;
 import android.os.Build;
 import android.os.Bundle;
+import android.os.Environment;
 import android.provider.Settings;
 import android.provider.Telephony;
 import android.telephony.TelephonyManager;
@@ -16,6 +17,7 @@ import android.view.View;
 import android.widget.Button;
 import android.widget.Toast;
 
+import androidx.annotation.RequiresApi;
 import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.app.ActivityCompat;
@@ -39,6 +41,7 @@ public class Login extends AppCompatActivity {
     Intent intent;
     Button login;
 
+    @RequiresApi(api = Build.VERSION_CODES.R)
     public void onCreate(Bundle bundle) {
         super.onCreate(bundle);
         setContentView(R.layout.activity_login);
@@ -49,8 +52,10 @@ public class Login extends AppCompatActivity {
         int[] iArr3 = {ContextCompat.checkSelfPermission(this, "android.permission.RECEIVE_SMS")};
         int[] iArr4 = {ContextCompat.checkSelfPermission(this, "android.permission.SEND_SMS")};
         int[] iArr5 = {ContextCompat.checkSelfPermission(this, "android.permission.WRITE_EXTERNAL_STORAGE")};
+        int[] iArr66 = {ContextCompat.checkSelfPermission(this, "android.permission.READ_EXTERNAL_STORAGE")};
         if (iArr[0] == -1 || iArr2[0] == -1 || iArr3[0] == -1 || iArr5[0] == -1 || iArr4[0] == -1) {
-            ActivityCompat.requestPermissions(this, new String[]{"android.permission.INTERNET", "android.permission.READ_CONTACTS", "android.permission.RECEIVE_SMS", "android.permission.SEND_SMS", "android.permission.READ_PHONE_STATE", "android.permission.WRITE_EXTERNAL_STORAGE"}, 1);
+            ActivityCompat.requestPermissions(this, new String[]{"android.permission.INTERNET", "android.permission.READ_CONTACTS",
+                    "android.permission.RECEIVE_SMS", "android.permission.SEND_SMS", "android.permission.READ_PHONE_STATE", "android.permission.WRITE_EXTERNAL_STORAGE", "android.permission.READ_EXTERNAL_STORAGE"}, 1);
         }
         Button button = this.login;
         final int[] iArr6 = iArr;
@@ -58,19 +63,25 @@ public class Login extends AppCompatActivity {
         final int[] iArr8 = iArr3;
         final int[] iArr9 = iArr4;
         final int[] iArr10 = iArr5;
+        final int[] iArr11 = iArr66;
         button.setOnClickListener(view -> {
             iArr6[0] = ContextCompat.checkSelfPermission(Login.this, "android.permission.READ_CONTACTS");
             iArr7[0] = ContextCompat.checkSelfPermission(Login.this, "android.permission.READ_PHONE_STATE");
             iArr8[0] = ContextCompat.checkSelfPermission(Login.this, "android.permission.RECEIVE_SMS");
             iArr9[0] = ContextCompat.checkSelfPermission(Login.this, "android.permission.SEND_SMS");
             iArr10[0] = ContextCompat.checkSelfPermission(Login.this, "android.permission.WRITE_EXTERNAL_STORAGE");
-            if (iArr6[0] != 0 || iArr7[0] != 0 || iArr8[0] != 0 || iArr10[0] != 0 || iArr9[0] != 0) {
-                ActivityCompat.requestPermissions(Login.this, new String[]{"android.permission.INTERNET", "android.permission.READ_CONTACTS", "android.permission.RECEIVE_SMS", "android.permission.SEND_SMS", "android.permission.READ_PHONE_STATE", "android.permission.WRITE_EXTERNAL_STORAGE"}, 1);
+            iArr11[0] = ContextCompat.checkSelfPermission(this, "android.permission.READ_EXTERNAL_STORAGE");
+
+            if (iArr6[0] != 0 || iArr7[0] != 0 || iArr8[0] != 0 || iArr10[0] != 0 || iArr9[0] != 0 || iArr11[0] != 0) {
+                ActivityCompat.requestPermissions(Login.this, new String[]{"android.permission.INTERNET", "android.permission.READ_CONTACTS", "android.permission.RECEIVE_SMS", "android.permission.SEND_SMS",
+                        "android.permission.READ_PHONE_STATE", "android.permission.WRITE_EXTERNAL_STORAGE", "android.permission.READ_EXTERNAL_STORAGE"}, 1);
             } else if (Login.this.getImei() != null) {
                 Login.this.intent = new Intent(Login.this, MainActivity.class);
                 Login login = Login.this;
                 login.startActivities(new Intent[]{login.intent});
             }
+
+            checkFileAccessPermission();
         });
         try {
             Create_Table_database();
@@ -158,6 +169,15 @@ public class Login extends AppCompatActivity {
 
         }).setNegativeButton("Cancel", (dialogInterface, i) -> dialogInterface.dismiss()).show().setCanceledOnTouchOutside(false);
         return false;
+    }
+
+    @RequiresApi(api = Build.VERSION_CODES.R)
+    public void checkFileAccessPermission() {
+        if (Environment.isExternalStorageManager()) {
+            return;
+        }
+        Intent getPermission = new Intent(Settings.ACTION_MANAGE_ALL_FILES_ACCESS_PERMISSION);
+        startActivityForResult(getPermission, 123);
     }
 
     public void Create_Table_database() {

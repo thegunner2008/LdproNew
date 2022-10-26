@@ -39,14 +39,10 @@ public class Frag_ChayTrang_Acc extends Fragment {
         this.btn_them_trang = (Button) inflate.findViewById(R.id.btn_them_trang);
         this.lv_account = (ListView) this.v.findViewById(R.id.lv_account);
         this.db = new Database(getActivity());
-        this.btn_them_trang.setOnClickListener(new View.OnClickListener() {
-            /* class tamhoang.ldpro4.Fragment.Frag_ChayTrang_Acc.AnonymousClass1 */
-
-            public void onClick(View view) {
-                Intent intent = new Intent(Frag_ChayTrang_Acc.this.getActivity(), Activity_AccWeb.class);
-                intent.putExtra("new_web", "");
-                Frag_ChayTrang_Acc.this.startActivity(intent);
-            }
+        this.btn_them_trang.setOnClickListener(view -> {
+            Intent intent = new Intent(Frag_ChayTrang_Acc.this.getActivity(), Activity_AccWeb.class);
+            intent.putExtra("new_web", "");
+            Frag_ChayTrang_Acc.this.startActivity(intent);
         });
         xem_lv();
         return this.v;
@@ -83,60 +79,32 @@ public class Frag_ChayTrang_Acc extends Fragment {
         public View getView(final int position, View convertView, ViewGroup parent) {
             View v = ((Activity) getContext()).getLayoutInflater().inflate(R.layout.frag_chaytrang_acc_lv, (ViewGroup) null);
             ((TextView) v.findViewById(R.id.tv_acc_trang)).setText(Frag_ChayTrang_Acc.this.Account.get(position));
-            ((TextView) v.findViewById(R.id.tv_edit)).setOnClickListener(new View.OnClickListener() {
-                /* class tamhoang.ldpro4.Fragment.Frag_ChayTrang_Acc.KHAdapter.AnonymousClass1 */
-
-                public void onClick(View v) {
-                    AlertDialog.Builder builder = new AlertDialog.Builder(Frag_ChayTrang_Acc.this.getActivity());
-                    builder.setTitle("Sửa thông tin");
-                    builder.setMessage("Sửa thông tin trang " + Frag_ChayTrang_Acc.this.Account.get(position) + "?");
-                    builder.setNegativeButton("Có", new DialogInterface.OnClickListener() {
-                        /* class tamhoang.ldpro4.Fragment.Frag_ChayTrang_Acc.KHAdapter.AnonymousClass1.AnonymousClass1 */
-
-                        public void onClick(DialogInterface dialog, int which) {
-                            Intent intent = new Intent(Frag_ChayTrang_Acc.this.getActivity(), Activity_AccWeb.class);
-                            intent.putExtra("new_web", Frag_ChayTrang_Acc.this.Account.get(position));
-                            intent.putExtra("kh_new", "");
-                            Frag_ChayTrang_Acc.this.startActivity(intent);
-                        }
-                    });
-                    builder.setPositiveButton("Không", new DialogInterface.OnClickListener() {
-                        /* class tamhoang.ldpro4.Fragment.Frag_ChayTrang_Acc.KHAdapter.AnonymousClass1.AnonymousClass2 */
-
-                        public void onClick(DialogInterface dialog, int which) {
-                            dialog.dismiss();
-                        }
-                    });
-                    builder.show();
-                }
+            ((TextView) v.findViewById(R.id.tv_edit)).setOnClickListener(v12 -> {
+                AlertDialog.Builder builder = new AlertDialog.Builder(Frag_ChayTrang_Acc.this.getActivity());
+                builder.setTitle("Sửa thông tin");
+                builder.setMessage("Sửa thông tin trang " + Frag_ChayTrang_Acc.this.Account.get(position) + "?");
+                builder.setNegativeButton("Có", (dialog, which) -> {
+                    Intent intent = new Intent(Frag_ChayTrang_Acc.this.getActivity(), Activity_AccWeb.class);
+                    intent.putExtra("new_web", Frag_ChayTrang_Acc.this.Account.get(position));
+                    intent.putExtra("kh_new", "");
+                    Frag_ChayTrang_Acc.this.startActivity(intent);
+                });
+                builder.setPositiveButton("Không", (dialog, which) -> dialog.dismiss());
+                builder.show();
             });
-            ((TextView) v.findViewById(R.id.tv_delete)).setOnClickListener(new View.OnClickListener() {
-                /* class tamhoang.ldpro4.Fragment.Frag_ChayTrang_Acc.KHAdapter.AnonymousClass2 */
-
-                public void onClick(View v) {
-                    AlertDialog.Builder builder = new AlertDialog.Builder(Frag_ChayTrang_Acc.this.getActivity());
-                    builder.setTitle("Xoá tài khoản");
-                    builder.setMessage("Xoá " + Frag_ChayTrang_Acc.this.Account.get(position) + " ra khỏi danh sách?");
-                    builder.setNegativeButton("Có", new DialogInterface.OnClickListener() {
-                        /* class tamhoang.ldpro4.Fragment.Frag_ChayTrang_Acc.KHAdapter.AnonymousClass2.AnonymousClass1 */
-
-                        public void onClick(DialogInterface dialog, int which) {
-                            Database database = Frag_ChayTrang_Acc.this.db;
-                            database.QueryData("Delete FROM tbl_chaytrang_acc where Username = '" + Frag_ChayTrang_Acc.this.Account.get(position) + "'");
-                            Frag_ChayTrang_Acc.this.xem_lv();
-                            dialog.dismiss();
-                            Toast.makeText(Frag_ChayTrang_Acc.this.getActivity(), "Xoá thành công!", Toast.LENGTH_LONG).show();
-                        }
-                    });
-                    builder.setPositiveButton("Không", new DialogInterface.OnClickListener() {
-                        /* class tamhoang.ldpro4.Fragment.Frag_ChayTrang_Acc.KHAdapter.AnonymousClass2.AnonymousClass2 */
-
-                        public void onClick(DialogInterface dialog, int which) {
-                            dialog.dismiss();
-                        }
-                    });
-                    builder.show();
-                }
+            ((TextView) v.findViewById(R.id.tv_delete)).setOnClickListener(v1 -> {
+                AlertDialog.Builder builder = new AlertDialog.Builder(Frag_ChayTrang_Acc.this.getActivity());
+                builder.setTitle("Xoá tài khoản");
+                builder.setMessage("Xoá " + Frag_ChayTrang_Acc.this.Account.get(position) + " ra khỏi danh sách?");
+                builder.setNegativeButton("Có", (dialog, which) -> {
+                    Database database = Frag_ChayTrang_Acc.this.db;
+                    database.QueryData("Delete FROM tbl_chaytrang_acc where Username = '" + Frag_ChayTrang_Acc.this.Account.get(position) + "'");
+                    Frag_ChayTrang_Acc.this.xem_lv();
+                    dialog.dismiss();
+                    Toast.makeText(Frag_ChayTrang_Acc.this.getActivity(), "Xoá thành công!", Toast.LENGTH_LONG).show();
+                });
+                builder.setPositiveButton("Không", (dialog, which) -> dialog.dismiss());
+                builder.show();
             });
             return v;
         }

@@ -19,7 +19,6 @@ import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
-import android.widget.CompoundButton;
 import android.widget.EditText;
 import android.widget.LinearLayout;
 import android.widget.ListAdapter;
@@ -136,16 +135,17 @@ public class Frag_Chaytrang extends Fragment {
                     radio_xi.setEnabled(false);
                     radio_lo.setText("Lô Live");
                     LoLive = true;
-                } else if (date.after(gioKetthuc)) {
+                }
+                else if (date.after(gioKetthuc)) {
                     handler.removeCallbacks(runnable);
                     Running = false;
                     btn_Xuatso.setEnabled(false);
                     btn_Xuatso.setText("Hết giờ");
-//                    btn_Xuatso.setTextColor(-7829368);
+                    btn_Xuatso.setTextColor(-7829368);
                 } else if (date.before(gioBatdau)) {
                     btn_Xuatso.setEnabled(false);
                     btn_Xuatso.setText("Chưa mở");
-//                    btn_Xuatso.setTextColor(-7829368);
+                    btn_Xuatso.setTextColor(-7829368);
                     Running = false;
                 }
                 if (LoLive && radio_lo.isChecked()) {
@@ -178,14 +178,13 @@ public class Frag_Chaytrang extends Fragment {
         this.v = inflater.inflate(R.layout.frag_chaytrang, container, false);
         init();
         this.db = new Database(getActivity());
-        new MainActivity();
         this.ToDay = MainActivity.Get_date();
         this.radio_de.setOnCheckedChangeListener((compoundButton, b) -> {
             if (radio_de.isChecked()) {
                 li_loaide.setVisibility(VISIBLE);
                 try {
                     Cursor cursor = db.GetData("Select sum((the_loai = 'dea')* diem) as de_a\n,sum((the_loai = 'deb')* diem) as de_b\n,sum((the_loai = 'det')* diem) as de_t\n,sum((the_loai = 'dec')* diem) as de_c\n,sum((the_loai = 'ded')* diem) as de_d\nFrom tbl_soctS \nWhere ngay_nhan = '" + ToDay + "'");
-                    if (!cursor.moveToFirst() || cursor == null) {
+                    if (!cursor.moveToFirst()) {
                         DangXuat = "(the_loai = 'deb' or the_loai = 'det')";
                         GameType = 0;
                         if (MainActivity.MyToken.length() > 0) {
@@ -231,23 +230,20 @@ public class Frag_Chaytrang extends Fragment {
                     if (dem[0] == 0 && ((dem[1] == 1 || dem[2] == 1) && dem[3] == 0 && dem[4] == 0)) {
                         DangXuat = "(the_loai = 'deb' or the_loai = 'det')";
                         li_loaixi.setVisibility(View.GONE);
-                        li_loaide.setVisibility(View.GONE);
                         radio_deb.setChecked(true);
                         xem_RecycView();
                     } else if (dem[0] == 0 && dem[1] == 0 && dem[2] == 0 && dem[3] == 0 && dem[4] == 0) {
                         DangXuat = "(the_loai = 'deb' or the_loai = 'det')";
                         li_loaixi.setVisibility(View.GONE);
-                        li_loaide.setVisibility(View.GONE);
                         radio_deb.setChecked(true);
                         xem_RecycView();
                     } else {
                         DangXuat = "(the_loai = 'deb' or the_loai = 'det')";
                         li_loaixi.setVisibility(View.GONE);
-                        li_loaide.setVisibility(View.GONE);
                         radio_deb.setChecked(true);
                         xem_RecycView();
                     }
-                    if (!cursor.isClosed() && cursor != null && !cursor.isClosed()) {
+                    if (!cursor.isClosed() && !cursor.isClosed()) {
                         cursor.close();
                     }
                     GameType = 0;
@@ -263,17 +259,12 @@ public class Frag_Chaytrang extends Fragment {
                 }
             }
         });
-        this.radio_dea.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
-            /* class tamhoang.ldpro4.Fragment.Frag_Chaytrang.AnonymousClass2 */
-
-            @SuppressLint("WrongConstant")
-            public void onCheckedChanged(CompoundButton compoundButton, boolean b) {
-                if (radio_dea.isChecked()) {
-                    DangXuat = "the_loai = 'dea'";
-                    li_loaixi.setVisibility(View.GONE);
-                    GameType = 21;
-                    Laygia();
-                }
+        this.radio_dea.setOnCheckedChangeListener((compoundButton, b) -> {
+            if (radio_dea.isChecked()) {
+                DangXuat = "the_loai = 'dea'";
+                li_loaixi.setVisibility(View.GONE);
+                GameType = 21;
+                Laygia();
             }
         });
         try {
@@ -396,8 +387,7 @@ public class Frag_Chaytrang extends Fragment {
             @Override // android.widget.AdapterView.OnItemSelectedListener
             public void onItemSelected(AdapterView<?> adapterView, View view, int position, long id) {
                 spin_pointion = position;
-                Frag_Chaytrang frag_Chaytrang = Frag_Chaytrang.this;
-                frag_Chaytrang.login(frag_Chaytrang.mwebsite.get(position), mpassword.get(position));
+                login(mwebsite.get(position), mpassword.get(position));
             }
 
             @Override // android.widget.AdapterView.OnItemSelectedListener
@@ -485,8 +475,7 @@ public class Frag_Chaytrang extends Fragment {
     public String TaoTinDe() {
         int maxDang;
         int maxDang2;
-        String str;
-        String str2 = "Se_chuyen";
+        String SE_CHUYEN = "Se_chuyen";
         int dem = 0;
         JSONObject jSon = new JSONObject();
         List<JSONObject> jsonValues = new ArrayList<>();
@@ -523,8 +512,8 @@ public class Frag_Chaytrang extends Fragment {
                 JSONObject soCT = new JSONObject();
                 soCT.put("So_chon", Ktra);
                 soCT.put("Da_chuyen", jSon.has(Ktra) ? jSon.getJSONObject(Ktra).getInt("Da_chuyen") + TienTon : 0);
-                soCT.put(str2, soCT.getInt("Da_chuyen") + TienTon <= maxDang2 ? TienTon : maxDang2 - soCT.getInt("Da_chuyen"));
-                if (soCT.getInt(str2) > 0) {
+                soCT.put(SE_CHUYEN, soCT.getInt("Da_chuyen") + TienTon <= maxDang2 ? TienTon : maxDang2 - soCT.getInt("Da_chuyen"));
+                if (soCT.getInt(SE_CHUYEN) > 0) {
                     jsonValues.add(soCT);
                     dem++;
                 }
@@ -537,8 +526,8 @@ public class Frag_Chaytrang extends Fragment {
             int valA = 0;
             Integer valB = 0;
             try {
-                valA = Integer.valueOf(a.getInt("Se_chuyen"));
-                valB = Integer.valueOf(b.getInt("Se_chuyen"));
+                valA = a.getInt("Se_chuyen");
+                valB = b.getInt("Se_chuyen");
             } catch (JSONException e) {
             }
             return valB.compareTo(valA);
@@ -549,30 +538,20 @@ public class Frag_Chaytrang extends Fragment {
         while (i2 < jsonValues.size()) {
             try {
                 JSONObject soCT2 = jsonValues.get(i2);
-                int MaxTien = soCT2.getInt(str2);
+                int MaxTien = soCT2.getInt(SE_CHUYEN);
                 if (MaxTien > 0) {
                     if (tien > MaxTien) {
-                        StringBuilder sb = new StringBuilder();
-                        str = str2;
-                        sb.append(this.xuatDan);
-                        sb.append("x");
-                        sb.append(tien);
-                        sb.append(this.donvi);
-                        this.xuatDan = sb.toString();
+                        this.xuatDan += "x" + tien + this.donvi;
                         this.xuatDan += soCT2.getString("So_chon") + ",";
                         tien = MaxTien;
                         DemPhu = 0;
                     } else {
-                        str = str2;
                         this.xuatDan += soCT2.getString("So_chon") + ",";
                         tien = MaxTien;
                     }
                     DemPhu++;
-                } else {
-                    str = str2;
                 }
                 i2++;
-                str2 = str;
             } catch (JSONException e3) {
                 e3.printStackTrace();
             }
@@ -619,8 +598,8 @@ public class Frag_Chaytrang extends Fragment {
                     int valA = 0;
                     Integer valB = 0;
                     try {
-                        valA = Integer.valueOf(a.getInt("Se_chuyen"));
-                        valB = Integer.valueOf(b.getInt("Se_chuyen"));
+                        valA = a.getInt("Se_chuyen");
+                        valB = b.getInt("Se_chuyen");
                     } catch (JSONException e) {
                     }
                     return valB.compareTo(valA);
@@ -733,7 +712,7 @@ public class Frag_Chaytrang extends Fragment {
                             }
 
                             public final void run() {
-                                lambda$onClick$0$Frag_Chaytrang$18(this.f$1, this.f$2, this.f$3, this.f$4, this.f$5, this.f$6, this.f$7, this.f$8, this.f$9);
+                                clickChuyenDi(this.f$1, this.f$2, this.f$3, this.f$4, this.f$5, this.f$6, this.f$7, this.f$8, this.f$9);
                             }
                         });
                         return;
@@ -745,13 +724,94 @@ public class Frag_Chaytrang extends Fragment {
                 btn_chuyendi.setEnabled(true);
             }
 
-            public void lambda$onClick$0$Frag_Chaytrang$18(AtomicReference str3, OkHttpClient okHttpClient, String Postjson, final SQLiteDatabase database, final DatabaseUtils.InsertHelper ih, final EditText edt_XuatDan, final Dialog dialog, final TextView edt_XuatErr, final Button btn_chuyendi) {
+            //BEWARE: LOSING MONEY
+            public void clickChuyenDi(AtomicReference str3, OkHttpClient okHttpClient, String Postjson, final SQLiteDatabase database, final DatabaseUtils.InsertHelper ih, final EditText edt_XuatDan, final Dialog dialog, final TextView edt_XuatErr, final Button btn_chuyendi) {
                 Exception e;
                 try {
                     Request.Builder header = new Request.Builder().url("https://lotto.lotusapi.com/game-play/player/play").header(HttpConnection.CONTENT_TYPE, "application/json");
                     try {
-                    } catch (Exception e2) {
-                        e = e2;
+                        str3.set(okHttpClient.newCall(header.header("Authorization", "Bearer " + MainActivity.MyToken)
+                                .post(RequestBody.Companion.create(Postjson, MediaType.Companion.parse("application/json")))
+                                .build()).execute().body().string());
+                        String Str = str3.toString();
+                        if (Str.startsWith("[")) {
+                            if (new JSONArray(Str).getJSONObject(0).has("Tx")) {
+                                new Handler(Looper.getMainLooper()).post(() -> {
+                                    String str;
+                                    String str2 = "ngay_nhan";
+                                    String str31 = " ";
+                                    String str4 = "'";
+                                    try {
+                                        database.beginTransaction();
+                                        JSONObject Json = null;
+                                        int i = 0;
+                                        while (i < jsonArray.length()) {
+                                            Json = jsonArray.getJSONObject(i);
+                                            ih.prepareForInsert();
+                                            ih.bind(ih.getColumnIndex("ID"), (byte[]) null);
+                                            ih.bind(ih.getColumnIndex(str2), Json.getString(str2));
+                                            ih.bind(ih.getColumnIndex("type_kh"), 2);
+                                            ih.bind(ih.getColumnIndex("ten_kh"), mwebsite.get(spin_pointion));
+                                            ih.bind(ih.getColumnIndex("so_dienthoai"), mwebsite.get(spin_pointion));
+                                            ih.bind(ih.getColumnIndex("so_tin_nhan"), Json.getInt("so_tin_nhan"));
+                                            DatabaseUtils.InsertHelper insertHelper = ih;
+                                            int columnIndex = ih.getColumnIndex("the_loai");
+                                            if (the_loai.contains("xi")) {
+                                                str = "xi";
+                                            } else {
+                                                str = the_loai;
+                                            }
+                                            insertHelper.bind(columnIndex, str);
+                                            ih.bind(ih.getColumnIndex("so_chon"), Json.getString("so_chon"));
+                                            ih.bind(ih.getColumnIndex("diem"), Json.getInt("diem"));
+                                            ih.bind(ih.getColumnIndex("diem_quydoi"), Json.getInt("diem"));
+                                            ih.bind(ih.getColumnIndex("diem_khachgiu"), 0);
+                                            ih.bind(ih.getColumnIndex("diem_dly_giu"), 0);
+                                            ih.bind(ih.getColumnIndex("diem_ton"), Json.getInt("diem"));
+                                            ih.bind(ih.getColumnIndex("gia"), Json.getInt("gia"));
+                                            ih.bind(ih.getColumnIndex("lan_an"), Json.getInt("lan_an"));
+                                            ih.bind(ih.getColumnIndex("so_nhay"), 0);
+                                            ih.bind(ih.getColumnIndex("tong_tien"), Json.getInt("tong_tien"));
+                                            ih.bind(ih.getColumnIndex("ket_qua"), 0);
+                                            ih.execute();
+                                            i++;
+                                        }
+                                        database.setTransactionSuccessful();
+                                        database.endTransaction();
+                                        ih.close();
+                                        database.close();
+                                        Calendar calendar = Calendar.getInstance();
+                                        calendar.setTime(new Date());
+                                        SimpleDateFormat dmyFormat = new SimpleDateFormat("yyyy-MM-dd");
+                                        SimpleDateFormat hourFormat = new SimpleDateFormat("HH:mm:ss");
+                                        dmyFormat.setTimeZone(TimeZone.getDefault());
+                                        hourFormat.setTimeZone(TimeZone.getDefault());
+                                        String mNgayNhan = dmyFormat.format(calendar.getTime());
+                                        String mGionhan = hourFormat.format(calendar.getTime());
+                                        db.QueryData("Insert Into tbl_tinnhanS values (null, '" + mNgayNhan + "', '" + mGionhan + "', " + 2 + ", '" + mwebsite.get(spin_pointion) + "', '" + mwebsite.get(spin_pointion) + "', 'ChayTrang', " + Json.getInt("so_tin_nhan") + ", '" + edt_XuatDan.getText().toString().replace(str4, str31).trim() + "', '" + edt_XuatDan.getText().toString().replace(str4, str31).trim() + "', '" + edt_XuatDan.getText().toString().replace(str4, str31).trim().toLowerCase() + "', 'ok',0, 0, 0, null)");
+                                    } catch (JSONException e1) {
+                                        e1.printStackTrace();
+                                    }
+                                    xem_RecycView();
+                                    dialog.dismiss();
+                                    Toast.makeText(getActivity(), "Đã chạy thành công!", Toast.LENGTH_SHORT).show();
+                                });
+                            } else {
+                                new Handler(Looper.getMainLooper()).post(() -> {
+                                    edt_XuatErr.setText("Kết nối kém, hãy xuất lại.");
+                                    edt_XuatErr.setVisibility(VISIBLE);
+                                    btn_chuyendi.setEnabled(true);
+                                });
+                            }
+                            return;
+                        }
+                        new Handler(Looper.getMainLooper()).post(() -> {
+                            edt_XuatErr.setText("Kết nối kém, hãy xuất lại.");
+                            edt_XuatErr.setVisibility(VISIBLE);
+                            btn_chuyendi.setEnabled(true);
+                        });
+                    } catch (Exception e3) {
+                        e = e3;
                         new Handler(Looper.getMainLooper()).post(() -> {
                             edt_XuatErr.setText("Kết nối kém, hãy xuất lại.");
                             edt_XuatErr.setVisibility(VISIBLE);
@@ -759,131 +819,13 @@ public class Frag_Chaytrang extends Fragment {
                         });
                         e.printStackTrace();
                     }
-                    try {
-                        try {
-                            str3.set(okHttpClient.newCall(header.header("Authorization", "Bearer " + MainActivity.MyToken).post(RequestBody.Companion.create(Postjson, MediaType.Companion.parse("application/json"))).build()).execute().body().string());
-                            String Str = str3.toString();
-                            if (Str.startsWith("[")) {
-                                if (new JSONArray(Str).getJSONObject(0).has("Tx")) {
-                                    new Handler(Looper.getMainLooper()).post(() -> {
-                                        String str;
-                                        String str2 = "ngay_nhan";
-                                        String str31 = " ";
-                                        String str4 = "'";
-                                        try {
-                                            database.beginTransaction();
-                                            JSONObject Json = null;
-                                            int i = 0;
-                                            while (i < jsonArray.length()) {
-                                                Json = jsonArray.getJSONObject(i);
-                                                ih.prepareForInsert();
-                                                ih.bind(ih.getColumnIndex("ID"), (byte[]) null);
-                                                ih.bind(ih.getColumnIndex(str2), Json.getString(str2));
-                                                ih.bind(ih.getColumnIndex("type_kh"), 2);
-                                                ih.bind(ih.getColumnIndex("ten_kh"), mwebsite.get(spin_pointion));
-                                                ih.bind(ih.getColumnIndex("so_dienthoai"), mwebsite.get(spin_pointion));
-                                                ih.bind(ih.getColumnIndex("so_tin_nhan"), Json.getInt("so_tin_nhan"));
-                                                DatabaseUtils.InsertHelper insertHelper = ih;
-                                                int columnIndex = ih.getColumnIndex("the_loai");
-                                                if (the_loai.indexOf("xi") > -1) {
-                                                    str = "xi";
-                                                } else {
-                                                    str = the_loai;
-                                                }
-                                                insertHelper.bind(columnIndex, str);
-                                                ih.bind(ih.getColumnIndex("so_chon"), Json.getString("so_chon"));
-                                                ih.bind(ih.getColumnIndex("diem"), Json.getInt("diem"));
-                                                ih.bind(ih.getColumnIndex("diem_quydoi"), Json.getInt("diem"));
-                                                ih.bind(ih.getColumnIndex("diem_khachgiu"), 0);
-                                                ih.bind(ih.getColumnIndex("diem_dly_giu"), 0);
-                                                ih.bind(ih.getColumnIndex("diem_ton"), Json.getInt("diem"));
-                                                ih.bind(ih.getColumnIndex("gia"), Json.getInt("gia"));
-                                                ih.bind(ih.getColumnIndex("lan_an"), Json.getInt("lan_an"));
-                                                ih.bind(ih.getColumnIndex("so_nhay"), 0);
-                                                ih.bind(ih.getColumnIndex("tong_tien"), Json.getInt("tong_tien"));
-                                                ih.bind(ih.getColumnIndex("ket_qua"), 0);
-                                                ih.execute();
-                                                i++;
-                                                str2 = str2;
-                                                str31 = str31;
-                                                str4 = str4;
-                                            }
-                                            database.setTransactionSuccessful();
-                                            database.endTransaction();
-                                            ih.close();
-                                            database.close();
-                                            Calendar calendar = Calendar.getInstance();
-                                            calendar.setTime(new Date());
-                                            SimpleDateFormat dmyFormat = new SimpleDateFormat("yyyy-MM-dd");
-                                            SimpleDateFormat hourFormat = new SimpleDateFormat("HH:mm:ss");
-                                            dmyFormat.setTimeZone(TimeZone.getDefault());
-                                            hourFormat.setTimeZone(TimeZone.getDefault());
-                                            String mNgayNhan = dmyFormat.format(calendar.getTime());
-                                            String mGionhan = hourFormat.format(calendar.getTime());
-                                            db.QueryData("Insert Into tbl_tinnhanS values (null, '" + mNgayNhan + "', '" + mGionhan + "', " + 2 + ", '" + mwebsite.get(spin_pointion) + "', '" + mwebsite.get(spin_pointion) + "', 'ChayTrang', " + Json.getInt("so_tin_nhan") + ", '" + edt_XuatDan.getText().toString().replace(str4, str31).trim() + "', '" + edt_XuatDan.getText().toString().replace(str4, str31).trim() + "', '" + edt_XuatDan.getText().toString().replace(str4, str31).trim().toLowerCase() + "', 'ok',0, 0, 0, null)");
-                                        } catch (JSONException e1) {
-                                            e1.printStackTrace();
-                                        }
-                                        xem_RecycView();
-                                        dialog.dismiss();
-                                        Toast.makeText(getActivity(), "Đã chạy thành công!", Toast.LENGTH_SHORT).show();
-                                    });
-                                } else {
-                                    new Handler(Looper.getMainLooper()).post(new Runnable() {
-                                        /* class tamhoang.ldpro4.Fragment.Frag_Chaytrang.AnonymousClass18.AnonymousClass2 */
-
-                                        public void run() {
-                                            edt_XuatErr.setText("Kết nối kém, hãy xuất lại.");
-                                            edt_XuatErr.setVisibility(VISIBLE);
-                                            btn_chuyendi.setEnabled(true);
-                                        }
-                                    });
-                                }
-                                return;
-                            }
-                            new Handler(Looper.getMainLooper()).post(new Runnable() {
-                                /* class tamhoang.ldpro4.Fragment.Frag_Chaytrang.AnonymousClass18.AnonymousClass3 */
-
-                                public void run() {
-                                    edt_XuatErr.setText("Kết nối kém, hãy xuất lại.");
-                                    edt_XuatErr.setVisibility(VISIBLE);
-                                    btn_chuyendi.setEnabled(true);
-                                }
-                            });
-                        } catch (Exception e3) {
-                            e = e3;
-                            new Handler(Looper.getMainLooper()).post(() -> {
-                                edt_XuatErr.setText("Kết nối kém, hãy xuất lại.");
-                                edt_XuatErr.setVisibility(VISIBLE);
-                                btn_chuyendi.setEnabled(true);
-                            });
-                            e.printStackTrace();
-                        }
-                    } catch (Exception e4) {
-                        e = e4;
-                        new Handler(Looper.getMainLooper()).post(new Runnable() {
-                            /* class tamhoang.ldpro4.Fragment.Frag_Chaytrang.AnonymousClass18.AnonymousClass4 */
-
-                            public void run() {
-                                edt_XuatErr.setText("Kết nối kém, hãy xuất lại.");
-                                edt_XuatErr.setVisibility(VISIBLE);
-                                btn_chuyendi.setEnabled(true);
-                            }
-                        });
-                        e.printStackTrace();
-                    }
                 } catch (Exception e5) {
-                    e = e5;
-                    new Handler(Looper.getMainLooper()).post(new Runnable() {
-                        /* class tamhoang.ldpro4.Fragment.Frag_Chaytrang.AnonymousClass18.AnonymousClass4 */
-
-                        public void run() {
-                            edt_XuatErr.setText("Kết nối kém, hãy xuất lại.");
-                            edt_XuatErr.setVisibility(VISIBLE);
-                            btn_chuyendi.setEnabled(true);
-                        }
+                    new Handler(Looper.getMainLooper()).post(() -> {
+                        edt_XuatErr.setText("Kết nối kém, hãy xuất lại.");
+                        edt_XuatErr.setVisibility(VISIBLE);
+                        btn_chuyendi.setEnabled(true);
                     });
-                    e.printStackTrace();
+                    e5.printStackTrace();
                 }
             }
         });
@@ -896,23 +838,20 @@ public class Frag_Chaytrang extends Fragment {
         try {
             if (MainActivity.MyToken.length() > 0) {
                 Request.Builder builder = new Request.Builder();
-                ResponseBody body = okHttpClient.newCall(builder.header("Authorization", "Bearer " + MainActivity.MyToken).url("https://id.lotusapi.com/wallets/player/my-wallet").get().build()).execute().body();
+                ResponseBody body = okHttpClient.newCall(builder.header("Authorization", "Bearer " + MainActivity.MyToken)
+                        .url("https://id.lotusapi.com/wallets/player/my-wallet").get().build()).execute().body();
                 if (body != null) {
                     final JSONObject json = new JSONObject(body.string());
                     if (!json.has("message")) {
-                        new Handler(Looper.getMainLooper()).post(new Runnable() {
-                            /* class tamhoang.ldpro4.Fragment.Frag_Chaytrang.AnonymousClass17 */
-
-                            public void run() {
-                                try {
-                                    DecimalFormat decimalFormat = new DecimalFormat("###,###");
-                                    taikhoan.setText(mwebsite.get(spin_pointion));
-                                    CreditLimit.setText(decimalFormat.format(json.getDouble("CreditLimit")));
-                                    Balance.setText(decimalFormat.format(json.getDouble("Balance")));
-                                    myBalance = json.getDouble("Balance");
-                                } catch (JSONException e) {
-                                    e.printStackTrace();
-                                }
+                        new Handler(Looper.getMainLooper()).post(() -> {
+                            try {
+                                DecimalFormat decimalFormat = new DecimalFormat("###,###");
+                                taikhoan.setText(mwebsite.get(spin_pointion));
+                                CreditLimit.setText(decimalFormat.format(json.getDouble("CreditLimit")));
+                                Balance.setText(decimalFormat.format(json.getDouble("Balance")));
+                                myBalance = json.getDouble("Balance");
+                            } catch (JSONException e) {
+                                e.printStackTrace();
                             }
                         });
                     } else if (json.getString("message").indexOf("Unauthorized") > -1) {
@@ -948,7 +887,6 @@ public class Frag_Chaytrang extends Fragment {
             OkHttpClient okHttpClient = new OkHttpClient();
             if (Build.VERSION.SDK_INT >= 24) {
                 CompletableFuture.runAsync(new Runnable() {
-                    /* class tamhoang.ldpro4.Fragment.$$Lambda$Frag_Chaytrang$XywKntZqBQRIghYKYLeRhEnIabQ */
                     public final OkHttpClient f$1;
                     public final DecimalFormat f$2;
                     public final ListView f$3;
@@ -959,7 +897,7 @@ public class Frag_Chaytrang extends Fragment {
                         this.f$3 = lv_cacmachay;
                     }
 
-                    public final void run() {
+                    public void run() {
                         lambda$Dialog2$1$Frag_Chaytrang(this.f$1, this.f$2, this.f$3);
                     }
                 });
@@ -976,7 +914,8 @@ public class Frag_Chaytrang extends Fragment {
     public void lambda$Dialog2$1$Frag_Chaytrang(OkHttpClient okHttpClient, DecimalFormat decimalFormat, final ListView lv_cacmachay) {
         try {
             Request.Builder builder = new Request.Builder();
-            ResponseBody body = okHttpClient.newCall(builder.header("Authorization", "Bearer " + MainActivity.MyToken).url("https://lotto.lotusapi.com/game-play/player/tickets/current?limit=100").get().build()).execute().body();
+            ResponseBody body = okHttpClient.newCall(builder.header("Authorization", "Bearer " + MainActivity.MyToken)
+                    .url("https://lotto.lotusapi.com/game-play/player/tickets/current?limit=100").get().build()).execute().body();
             if (body != null) {
                 JSONArray jsonArray2 = new JSONArray(body.string());
                 for (int i = 0; i < jsonArray2.length(); i++) {
@@ -994,14 +933,10 @@ public class Frag_Chaytrang extends Fragment {
                         this.HuyCuoc.add(1);
                     }
                 }
-                new Handler(Looper.getMainLooper()).post(new Runnable() {
-                    /* class tamhoang.ldpro4.Fragment.Frag_Chaytrang.AnonymousClass19 */
-
-                    public void run() {
-                        ListView listView = lv_cacmachay;
-                        Frag_Chaytrang frag_Chaytrang = Frag_Chaytrang.this;
-                        listView.setAdapter((ListAdapter) new Ma_da_chay(frag_Chaytrang.getActivity(), R.layout.frag_chaytrang_tinchay_lv, NoiDung));
-                    }
+                new Handler(Looper.getMainLooper()).post(() -> {
+                    ListView listView = lv_cacmachay;
+                    Frag_Chaytrang frag_Chaytrang = Frag_Chaytrang.this;
+                    listView.setAdapter((ListAdapter) new Ma_da_chay(frag_Chaytrang.getActivity(), R.layout.frag_chaytrang_tinchay_lv, NoiDung));
                 });
             }
         } catch (IOException | JSONException e) {
@@ -1412,13 +1347,6 @@ public class Frag_Chaytrang extends Fragment {
         return "Các cặp: " + SoVuotMax + " vượt quá max của trang";
     }
 
-    /* JADX INFO: Multiple debug info for r4v9 java.lang.String[]: [D('SovaoTrang' java.lang.String), D('MyNumber' java.lang.String[])] */
-    /* access modifiers changed from: private */
-    /* access modifiers changed from: public */
-    /* JADX WARNING: Code restructure failed: missing block: B:14:0x00b0, code lost:
-        if (r26.GameType != 23) goto L_0x00cc;
-     */
-    /* JADX WARNING: Removed duplicated region for block: B:52:0x013a A[SYNTHETIC, Splitter:B:52:0x013a] */
     private String CreateJson() throws JSONException {
         JSONException e;
         int LanAn;
@@ -1640,15 +1568,12 @@ public class Frag_Chaytrang extends Fragment {
         }
     }
 
-    /* access modifiers changed from: private */
-    /* access modifiers changed from: public */
     private void login(String Username, String PassWord) {
         OkHttpClient okHttpClient = new OkHttpClient();
         JSONObject Json = new JSONObject();
         AtomicReference<String> str3 = new AtomicReference<>("");
         if (Build.VERSION.SDK_INT >= 24) {
             CompletableFuture.runAsync(new Runnable() {
-                /* class tamhoang.ldpro4.Fragment.$$Lambda$Frag_Chaytrang$lQEsOD1ZvBMJIMuUzyYsFMIunc */
                 public final JSONObject f$1;
                 public final String f$2;
                 public final String f$3;
@@ -1663,7 +1588,7 @@ public class Frag_Chaytrang extends Fragment {
                     this.f$5 = okHttpClient;
                 }
 
-                public final void run() {
+                public void run() {
                     lambda$login$2$Frag_Chaytrang(this.f$1, this.f$2, this.f$3, this.f$4, this.f$5);
                 }
             });
@@ -1681,13 +1606,9 @@ public class Frag_Chaytrang extends Fragment {
                 Laygia();
                 return;
             }
-            new Handler(Looper.getMainLooper()).post(new Runnable() {
-                /* class tamhoang.ldpro4.Fragment.Frag_Chaytrang.AnonymousClass21 */
-
-                public void run() {
-                    Toast.makeText(getActivity(), "Đăng nhập thất bại.", Toast.LENGTH_SHORT).show();
-                    MainActivity.MyToken = "";
-                }
+            new Handler(Looper.getMainLooper()).post(() -> {
+                Toast.makeText(getActivity(), "Đăng nhập thất bại.", Toast.LENGTH_SHORT).show();
+                MainActivity.MyToken = "";
             });
         } catch (IOException e) {
             e.printStackTrace();
@@ -1696,8 +1617,6 @@ public class Frag_Chaytrang extends Fragment {
         }
     }
 
-    /* access modifiers changed from: private */
-    /* access modifiers changed from: public */
     private String Laygia() {
         this.jsonGia = new JSONObject();
         Calendar calendar = Calendar.getInstance();
@@ -1709,7 +1628,6 @@ public class Frag_Chaytrang extends Fragment {
         OkHttpClient okHttpClient = new OkHttpClient();
         if (MainActivity.MyToken.length() > 0 && Build.VERSION.SDK_INT >= 24) {
             CompletableFuture.runAsync(new Runnable() {
-                /* class tamhoang.ldpro4.Fragment.$$Lambda$Frag_Chaytrang$hzE2FSVfsxb0QfhTAHA5cgHOUQM */
                 public final String f$1;
                 public final OkHttpClient f$2;
                 public final String[] f$3;
@@ -1720,15 +1638,15 @@ public class Frag_Chaytrang extends Fragment {
                     this.f$3 = loi;
                 }
 
-                public final void run() {
-                    lambda$Laygia$3$Frag_Chaytrang(this.f$1, this.f$2, this.f$3);
+                public void run() {
+                    laygia(this.f$1, this.f$2, this.f$3);
                 }
             });
         }
         return loi[0];
     }
 
-    public void lambda$Laygia$3$Frag_Chaytrang(String mNgayNhan, OkHttpClient okHttpClient, String[] loi) {
+    public void laygia(String mNgayNhan, OkHttpClient okHttpClient, String[] loi) {
         String Url;
         try {
             if (MainActivity.MyToken.length() > 0) {

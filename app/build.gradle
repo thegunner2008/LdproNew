@@ -1,6 +1,11 @@
 plugins {
     id 'com.android.application'
     id 'kotlin-android'
+    // Make sure that you have the Google services Gradle plugin
+    id 'com.google.gms.google-services'
+
+    // Add the Crashlytics Gradle plugin
+    id 'com.google.firebase.crashlytics'
 }
 
 android {
@@ -8,16 +13,30 @@ android {
 
     defaultConfig {
         applicationId "tamhoang.ldpro4.dev"
-        minSdk 23
+        minSdk 24
         targetSdk 30
-        versionCode 1
-        versionName "1.0"
+        versionCode 20221026
+        versionName "2.92"
 
         ndk {
             abiFilters "armeabi", "armeabi-v7a", "x86", "mips"
         }
 
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
+        signingConfig signingConfigs.debug
+    }
+
+    signingConfigs {
+        // You must set up an environment var before release signing
+        // Run: export APP_KEY={password}
+        // TODO Add your release keystore in /keystore folder
+        release {
+            storeFile file('keystore/ldprokey')
+            keyAlias 'Ldpro'
+            storePassword 'ld_pro'
+            keyPassword 'ld_pro'
+        }
+
     }
 
     sourceSets.main {
@@ -67,5 +86,19 @@ dependencies {
         exclude group: 'com.android.support', module: 'support-annotations'
     }
     implementation "com.squareup.sqlbrite2:sqlbrite-kotlin:2.0.0"
+
+    implementation("org.greenrobot:eventbus:3.3.1")
+
+    //crashlytics
+
+    // Import the BoM for the Firebase platform
+    implementation platform('com.google.firebase:firebase-bom:30.4.1')
+
+    // Add the dependencies for the Crashlytics and Analytics libraries
+    // When using the BoM, you don't specify versions in Firebase library dependencies
+    implementation 'com.google.firebase:firebase-crashlytics'
+    implementation 'com.google.firebase:firebase-analytics'
+
+    implementation project(':libtd')
 
 }

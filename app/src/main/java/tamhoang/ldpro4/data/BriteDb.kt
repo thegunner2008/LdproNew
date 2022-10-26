@@ -99,6 +99,17 @@ object BriteDb {
         }
     }
 
+    fun selectChats(mDate: String): List<Chat>{
+        val query = "Select * From ${Chat.TABLE_NAME} WHERE ngay_nhan = '" + mDate + "' ORDER BY Gio_nhan DESC, ID DESC"
+
+        val list = mutableListOf<Chat>()
+        val cursor: Cursor = db.query(query)
+        while (cursor.moveToNext()) {
+            list.add(Chat.parseCursor(cursor))
+        }
+        return list
+    }
+
     fun insertChat(chat: Chat) {
         val transaction = db.newTransaction()
         try {

@@ -1,11 +1,11 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    android:background="@color/white"
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:orientation="vertical">
 
     <LinearLayout
+        android:id="@+id/llTop"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:orientation="horizontal">
@@ -66,15 +66,17 @@
     </LinearLayout>
 
     <LinearLayout
+        android:id="@+id/ll2"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
+        android:layout_below="@+id/llTop"
         android:orientation="horizontal">
 
         <TextView
             android:layout_width="80dp"
             android:layout_height="match_parent"
             android:gravity="center"
-            android:text="TỔNG\10GIỮ"
+            android:text="TỔNG GIỮ"
             android:textColor="@color/black"
             android:textSize="18dp"
             android:textStyle="bold" />
@@ -693,12 +695,36 @@
     </LinearLayout>
 
     <View
+        android:id="@+id/view"
         android:layout_width="match_parent"
         android:layout_height="2dp"
+        android:layout_below="@+id/ll2"
         android:background="@android:color/black" />
 
     <ListView
         android:id="@+id/no_rp2_lv"
         android:layout_width="match_parent"
-        android:layout_height="match_parent" />
-</LinearLayout>
+        android:layout_height="match_parent"
+        android:layout_below="@+id/btn_nt" />
+
+    <Button
+        android:id="@+id/btn_nt"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/view"
+        android:minWidth="0dp"
+        android:minHeight="0dp"
+        android:text="Nhắn tin chốt tiền tất cả"
+        android:textSize="14dp" />
+
+    <ProgressBar
+        android:id="@+id/progressBar"
+        style="?android:attr/progressBarStyleLarge"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_centerHorizontal="true"
+        android:layout_centerVertical="true"
+        android:indeterminate="true"
+        android:theme="@style/AppTheme.Custom"
+        android:visibility="gone" />
+</RelativeLayout>

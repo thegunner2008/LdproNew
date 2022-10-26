@@ -8,9 +8,12 @@ import android.content.DialogInterface;
 import android.database.Cursor;
 import android.database.DatabaseUtils;
 import android.database.sqlite.SQLiteDatabase;
+import android.database.sqlite.SQLiteException;
+import android.net.Uri;
 import android.os.Bundle;
 import android.os.Handler;
 import android.text.Html;
+import android.text.format.DateFormat;
 import android.util.Log;
 import android.view.ContextMenu;
 import android.view.LayoutInflater;
@@ -34,6 +37,7 @@ import androidx.core.app.ActivityCompat;
 import androidx.core.content.ContextCompat;
 import androidx.fragment.app.Fragment;
 
+import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
@@ -41,12 +45,16 @@ import java.util.Date;
 import java.util.List;
 import java.util.TimeZone;
 
+import org.greenrobot.eventbus.EventBus;
 import org.json.JSONException;
+import org.json.JSONObject;
 
+import okhttp3.internal.cache.DiskLruCache;
 import tamhoang.ldpro4.Congthuc.Congthuc;
 import tamhoang.ldpro4.MainActivity;
 import tamhoang.ldpro4.R;
 import tamhoang.ldpro4.data.BriteDb;
+import tamhoang.ldpro4.data.BusEvent;
 import tamhoang.ldpro4.data.Database;
 
 public class Frag_Suatin extends Fragment {
@@ -131,6 +139,7 @@ public class Frag_Suatin extends Fragment {
                 cur.moveToFirst();
                 try {
                     db.Update_TinNhanGoc(mID.get(lv_position), cur.getInt(0));
+                    EventBus.getDefault().post(new BusEvent.SetupErrorBagde(0));
                 } catch (Throwable e) {
                     db.QueryData("Update tbl_tinnhanS set phat_hien_loi = 'ko' WHERE id = " + mID.get(lv_position));
                     db.QueryData("Delete From tbl_soctS WHERE ngay_nhan = '" + mNgay.get(lv_position) + "' AND so_dienthoai = '" + mSDT.get(lv_position) + "' AND so_tin_nhan = " + mSoTinNhan.get(lv_position) + " AND type_kh = " + cur.getString(0));
@@ -274,9 +283,12 @@ public class Frag_Suatin extends Fragment {
                 AlertDialog.Builder bui = new AlertDialog.Builder(getActivity());
                 bui.setTitle("Tải lại tin nhắn khách này?");
                 bui.setPositiveButton("YES", (dialog, which) -> {
-                    //getFullSms(mMobile.get(spin_pointion));
-                    Database database = db;
-                    database.QueryData("Update chat_database set del_sms = 1 WHERE ten_kh = '" + mContact.get(spin_pointion) + "' AND ngay_nhan = '" + mDate + "'");
+                    try {
+                        getFullSms(mMobile.get(spin_pointion));
+                    } catch (ParseException e) {
+                        e.printStackTrace();
+                    }
+                    db.QueryData("Update chat_database set del_sms = 1 WHERE ten_kh = '" + mContact.get(spin_pointion) + "' AND ngay_nhan = '" + mDate + "'");
                 });
                 bui.setNegativeButton("No", (dialog, which) -> dialog.cancel());
                 bui.create().show();
@@ -284,7 +296,7 @@ public class Frag_Suatin extends Fragment {
                 AlertDialog.Builder bui2 = new AlertDialog.Builder(getActivity());
                 bui2.setTitle("Tải lại tin nhắn khách này?");
                 bui2.setPositiveButton("YES", (dialog, which) -> {
-                    getAllChat(mType_kh.get(spin_pointion).intValue());
+                    getAllChat(mType_kh.get(spin_pointion));
                     Database database = db;
                     database.QueryData("Update chat_database set del_sms = 1 WHERE ten_kh = '" + mContact.get(spin_pointion) + "' AND ngay_nhan = '" + mDate + "'");
                 });
@@ -296,9 +308,12 @@ public class Frag_Suatin extends Fragment {
             AlertDialog.Builder bui = new AlertDialog.Builder(getActivity());
             bui.setTitle("Tải lại tin nhắn của tất cả khách?");
             bui.setPositiveButton("YES", (dialog, which) -> {
-                //getFullSms("Full");
-                Database database = db;
-                database.QueryData("Update chat_database set del_sms = 1 WHERE ngay_nhan = '" + mDate + "'");
+                try {
+                    getFullSms("Full");
+                } catch (ParseException e) {
+                    e.printStackTrace();
+                }
+                db.QueryData("Update chat_database set del_sms = 1 WHERE ngay_nhan = '" + mDate + "'");
             });
             bui.setNegativeButton("No", (dialog, which) -> dialog.cancel());
             bui.create().show();
@@ -668,721 +683,454 @@ public class Frag_Suatin extends Fragment {
         cur1.close();
     }
 
-//    public void getFullSms(String mName) throws ParseException {
-//        JSONException e;
-//        Cursor cur1;
-//        String str2;
-//        String str3;
-//        String str4;
-//        DatabaseUtils.InsertHelper ih;
-//        SQLiteDatabase database;
-//        String str5;
-//        String Ngay;
-//        String mDate;
-//        String str6;
-//        Cursor cur2;
-//        SQLiteDatabase database2;
-//        DatabaseUtils.InsertHelper ih2;
-//        Throwable th;
-//        Exception e2;
-//        String str7;
-//        String str8;
-//        Cursor cur22;
-//        String str9;
-//        String str10;
-//        String str11;
-//        boolean KT_type;
-//        String typeKT;
-//        boolean KT_type2;
-//        SQLiteDatabase database3;
-//        DatabaseUtils.InsertHelper ih3;
-//        Throwable th2;
-//        String str12;
-//        SQLiteDatabase sQLiteDatabase;
-//        DatabaseUtils.InsertHelper ih4;
-//        Exception e3;
-//        String str13;
-//        DatabaseUtils.InsertHelper insertHelper;
-//        String str14;
-//        DatabaseUtils.InsertHelper ih5;
-//        String str15;
-//        String mDate2;
-//        String str16;
-//        Exception e4;
-//        String r37;
-//        DatabaseUtils.InsertHelper ih6;
-//        Object obj;
-//        String str17;
-//        String Ngay2;
-//        String str18;
-//        boolean KT_type3;
-//        int columnIndex;
-//        String str19 = " ";
-//        String str20 = "";
-//        new MainActivity();
-//        String Get_ngay = MainActivity.Get_ngay();
-//        String mDate3 = MainActivity.Get_date();
-//        String str21 = "'";
-//        if (!MainActivity.jSon_Setting.has("tin_trung")) {
-//            try {
-//                MainActivity.jSon_Setting.put("tin_trung", 0);
-//                this.db.QueryData("Update tbl_Setting set Setting = '" + MainActivity.jSon_Setting.toString() + str21);
-//            } catch (JSONException e5) {
-//                e5.printStackTrace();
-//            }
-//        }
-//        if (ContextCompat.checkSelfPermission(getActivity(), "android.permission.READ_SMS") == 0) {
-//            try {
-//                Date dateStart = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss").parse(mDate3 + "T00:00:00");
-//                String filter = "date>=" + dateStart.getTime();
-//                if (mName.indexOf("Full") > -1) {
-//                    try {
-//                        this.db.QueryData("DELETE FROM tbl_soctS WHERE ngay_nhan = '" + mDate3 + str21);
-//                        this.db.QueryData("DELETE FROM tbl_tinnhanS WHERE ngay_nhan = '" + mDate3 + str21);
-//                        cur1 = this.db.GetData("Select * From tbl_kh_new");
-//                    } catch (SQLiteException e6) {
-//                        return;
-//                    } catch (JSONException e7) {
-//                        e = e7;
-//                        e.printStackTrace();
-//                    }
-//                } else {
-//                    try {
-//                        this.db.QueryData("DELETE FROM tbl_soctS WHERE ngay_nhan = '" + mDate3 + "' AND so_dienthoai = '" + this.mMobile.get(this.spin_pointion) + str21);
-//                        this.db.QueryData("DELETE FROM tbl_tinnhanS WHERE ngay_nhan = '" + mDate3 + "' AND so_dienthoai = '" + this.mMobile.get(this.spin_pointion) + str21);
-//                        Database database4 = this.db;
-//                        StringBuilder sb = new StringBuilder();
-//                        sb.append("Select * From tbl_kh_new Where sdt = '");
-//                        sb.append(this.mMobile.get(this.spin_pointion));
-//                        sb.append(str21);
-//                        cur1 = database4.GetData(sb.toString());
-//                    } catch (SQLiteException e8) {
-//                        return;
-//                    } catch (JSONException e9) {
-//                        e = e9;
-//                        e.printStackTrace();
-//                    }
-//                }
-//                JSONObject jSONObject = new JSONObject();
-//                while (true) {
-//                    str2 = "so_tn";
-//                    str3 = "type_kh";
-//                    if (!cur1.moveToNext()) {
-//                        break;
-//                    }
-//                    JSONObject json_kh = new JSONObject();
-//                    json_kh.put(str3, cur1.getString(3));
-//                    json_kh.put("ten_kh", cur1.getString(0));
-//                    json_kh.put(str2, 0);
-//                    jSONObject.put(cur1.getString(1), json_kh);
-//                    dateStart = dateStart;
-//                }
-//                Cursor c = getActivity().getContentResolver().query(Uri.parse("content://sms"), null, filter, null, "date ASC");
-//                getActivity().startManagingCursor(c);
-//                int totalSMS = c.getCount();
-//                SQLiteDatabase database5 = this.db.getWritableDatabase();
-//                String str22 = "tin_trung";
-//                DatabaseUtils.InsertHelper ih7 = new DatabaseUtils.InsertHelper(database5, "tbl_tinnhanS");
-//                SQLiteDatabase sQLiteDatabase2 = "so_dienthoai";
-//                String str23 = "ten_kh";
-//                String str24 = "3";
-//                String str25 = "gio_nhan";
-//                String mGioNhan = "Ok Tin";
-//                String mDate4 = mDate3;
-//                String mDate5 = "1";
-//                String str26 = "ngay_nhan";
-//                String str27 = "2";
-//                if (c.moveToFirst()) {
-//                    try {
-//                        database5.beginTransaction();
-//                        database3 = database5;
-//                        StringBuilder ih8 = new StringBuilder();
-//                        String mDate6 = str19;
-//                        String Ngay3 = Get_ngay;
-//                        String str28 = ih7;
-//                        SQLiteDatabase str29 = sQLiteDatabase2;
-//                        while (ih8 < totalSMS) {
-//                            String str30 = "date";
-//                            try {
-//                                str30 = Long.valueOf(c.getLong(c.getColumnIndexOrThrow(str30)));
-//                                ih8 = new StringBuilder();
-//                                ih6 = str28;
-//                                str28 = "dd/MM/yyyy HH:mm:ss";
-//                                r37 = str2;
-//                            } catch (Exception e10) {
-//                                str6 = mGioNhan;
-//                                ih = mDate5;
-//                                str21 = str2;
-//                                str20 = str24;
-//                                ih4 = str28;
-//                                mGioNhan = str29;
-//                                Ngay = str23;
-//                                mDate = mDate4;
-//                                str4 = str26;
-//                                str5 = str3;
-//                                str26 = str22;
-//                                mDate4 = str25;
-//                                str25 = str27;
-//                                e3 = e10;
-//                                sQLiteDatabase = str29;
-//                                try {
-//                                    e3.printStackTrace();
-//                                    database3.endTransaction();
-//                                    ih4.close();
-//                                    str12 = sQLiteDatabase;
-//                                    database3.close();
-//                                    database = str12;
-//                                    cur2 = this.db.GetData("Select * From Chat_database Where ngay_nhan = '" + mDate + "' And use_app <> 'sms'");
-//                                    database2 = this.db.getWritableDatabase();
-//                                    ih2 = new DatabaseUtils.InsertHelper(database2, "tbl_tinnhanS");
-//                                    database2.beginTransaction();
-//                                    while (cur2.moveToNext()) {
-//                                    }
-//                                    database = database2;
-//                                    database.setTransactionSuccessful();
-//                                    database.endTransaction();
-//                                    ih2.close();
-//                                    database.close();
-//                                    xem_lv();
-//                                    Toast.makeText(getActivity(), "Đã tải xong tin nhắn!", 1).show();
-//                                } catch (Throwable th3) {
-//                                    th2 = th3;
-//                                    ih3 = ih4;
-//                                    database3.endTransaction();
-//                                    ih3.close();
-//                                    database3.close();
-//                                    throw th2;
-//                                }
-//                            } catch (Throwable th4) {
-//                            }
-//                            try {
-//                                ih8.append(DateFormat.format((CharSequence) str28, new Date(str30.longValue())));
-//                                ih8.append(str20);
-//                                ih8 = ih8.toString();
-//                                StringBuilder sb2 = new StringBuilder();
-//                                str28 = mGioNhan;
-//                                sb2.append((Object) DateFormat.format("HH:mm:ss", new Date(str30.longValue())));
-//                                sb2.append(str20);
-//                                mGioNhan = sb2.toString();
-//                                String mSDT2 = c.getString(c.getColumnIndexOrThrow("address")).replaceAll(mDate6, str20);
-//                                String body = c.getString(c.getColumnIndexOrThrow("body")).toString().replaceAll(str21, mDate6).replaceAll("\"", mDate6);
-//                                ??string = c.getString(c.getColumnIndexOrThrow("type"));
-//                                if (mSDT2.length() < 12) {
-//                                    try {
-//                                        StringBuilder sb3 = new StringBuilder();
-//                                        sb3.append("+84");
-//                                        obj = mDate6;
-//                                        sb3.append(mSDT2.substring(1));
-//                                        mSDT2 = sb3.toString();
-//                                    } catch (Exception e11) {
-//                                    } catch (Throwable th5) {
-//                                    }
-//                                } else {
-//                                    obj = mDate6;
-//                                }
-//                                if (jSONObject.has(mSDT2)) {
-//                                    mDate6 = -1;
-//                                    if (ih8.indexOf(Ngay3) > -1) {
-//                                        str30 = str28;
-//                                        if (body.indexOf((String) str30) == -1) {
-//                                            mDate6 = 0;
-//                                            JSONObject jSONObject2 = jSONObject.getJSONObject(mSDT2);
-//                                            str28 = str3;
-//                                            str17 = str20;
-//                                            str20 = str24;
-//                                            Ngay2 = Ngay3;
-//                                            Ngay3 = -1;
-//                                            if (jSONObject2.getString(str28).indexOf(str20) > -1) {
-//                                                KT_type3 = true;
-//                                                Ngay3 = str27;
-//                                            } else {
-//                                                try {
-//                                                    Ngay3 = str27;
-//                                                    if (jSONObject2.getString(str28).indexOf(Ngay3) > -1) {
-//                                                        try {
-//                                                            if (string.indexOf(Ngay3) > -1) {
-//                                                                KT_type3 = true;
-//                                                                Ngay3 = Ngay3;
-//                                                            }
-//                                                        } catch (Exception e12) {
-//                                                        } catch (Throwable th6) {
-//                                                        }
-//                                                    }
-//                                                    if (jSONObject2.getString(str28).indexOf(mDate5) <= -1 || string.indexOf(mDate5) <= -1) {
-//                                                        KT_type3 = false;
-//                                                        Ngay3 = Ngay3;
-//                                                    } else {
-//                                                        KT_type3 = true;
-//                                                        Ngay3 = Ngay3;
-//                                                    }
-//                                                } catch (Exception e13) {
-//                                                } catch (Throwable th7) {
-//                                                }
-//                                            }
-//                                            ih8 = MainActivity.jSon_Setting;
-//                                            mDate6 = str22;
-//                                            str18 = str21;
-//                                            if (ih8.getInt(mDate6) == 1) {
-//                                                if (jSONObject2.has(body)) {
-//                                                    ih8 = 0;
-//                                                    if (ih8 != 1) {
-//                                                        str21 = r37;
-//                                                        r37 = jSONObject2.getInt(str21);
-//                                                        jSONObject2.put(str21, r37 + 1);
-//                                                        jSONObject2.put(body, body);
-//                                                        ih6.prepareForInsert();
-//                                                        ih8 = ih6;
-//                                                        ih6 = mDate5;
-//                                                        str26 = mDate6;
-//                                                        mDate6 = str26;
-//                                                        columnIndex = ih8.getColumnIndex(mDate6);
-//                                                        r37 = mDate6;
-//                                                        mDate6 = mDate4;
-//                                                        ih8.bind(columnIndex, mDate6);
-//                                                        str25 = Ngay3;
-//                                                        ih8.bind(ih8.getColumnIndex(str25), mGioNhan);
-//                                                        ih8.bind(ih8.getColumnIndex(str28), string);
-//                                                        Ngay3 = str23;
-//                                                        mDate4 = str25;
-//                                                        ih8.bind(ih8.getColumnIndex(Ngay3), jSONObject2.getString(Ngay3));
-//                                                        mGioNhan = str29;
-//                                                        ih8.bind(ih8.getColumnIndex(mGioNhan), mSDT2);
-//                                                        ih8.bind(ih8.getColumnIndex("use_app"), "sms");
-//                                                        ih8.bind(ih8.getColumnIndex("so_tin_nhan"), jSONObject2.getInt(str21));
-//                                                        ih8.bind(ih8.getColumnIndex("nd_goc"), body);
-//                                                        ih8.bind(ih8.getColumnIndex("nd_sua"), body);
-//                                                        ih8.bind(ih8.getColumnIndex("nd_phantich"), body);
-//                                                        ih8.bind(ih8.getColumnIndex("phat_hien_loi"), "ko");
-//                                                        ih8.bind(ih8.getColumnIndex("tinh_tien"), 0);
-//                                                        ih8.bind(ih8.getColumnIndex("ok_tn"), 0);
-//                                                        ih8.bind(ih8.getColumnIndex("del_sms"), 0);
-//                                                        ih8.execute();
-//                                                        jSONObject.put(mSDT2, jSONObject2);
-//                                                    } else {
-//                                                        ih8 = ih6;
-//                                                        str21 = r37;
-//                                                        ih6 = mDate5;
-//                                                        r37 = str26;
-//                                                        str26 = mDate6;
-//                                                        mDate6 = mDate4;
-//                                                        mDate4 = str25;
-//                                                        str25 = Ngay3;
-//                                                        Ngay3 = str23;
-//                                                        mGioNhan = str29;
-//                                                    }
-//                                                    c.moveToNext();
-//                                                    str29 = mGioNhan;
-//                                                    mGioNhan = str30;
-//                                                    str24 = str20;
-//                                                    str23 = Ngay3;
-//                                                    str2 = str21;
-//                                                    str3 = str28;
-//                                                    str21 = str18;
-//                                                    totalSMS = totalSMS;
-//                                                    str22 = str26;
-//                                                    mDate5 = ih6;
-//                                                    str26 = r37;
-//                                                    Ngay3 = Ngay2;
-//                                                    str20 = str17;
-//                                                    str28 = ih8;
-//                                                    ih8 = (ih8 == true ? 1 : 0) + 1;
-//                                                    str27 = str25;
-//                                                    str25 = mDate4;
-//                                                    mDate4 = mDate6;
-//                                                    mDate6 = obj;
-//                                                }
-//                                            }
-//                                            ih8 = KT_type3;
-//                                            if (ih8 != 1) {
-//                                            }
-//                                            c.moveToNext();
-//                                            str29 = mGioNhan;
-//                                            mGioNhan = str30;
-//                                            str24 = str20;
-//                                            str23 = Ngay3;
-//                                            str2 = str21;
-//                                            str3 = str28;
-//                                            str21 = str18;
-//                                            totalSMS = totalSMS;
-//                                            str22 = str26;
-//                                            mDate5 = ih6;
-//                                            str26 = r37;
-//                                            Ngay3 = Ngay2;
-//                                            str20 = str17;
-//                                            str28 = ih8;
-//                                            ih8 = (ih8 == true ? 1 : 0) + 1;
-//                                            str27 = str25;
-//                                            str25 = mDate4;
-//                                            mDate4 = mDate6;
-//                                            mDate6 = obj;
-//                                        } else {
-//                                            str17 = str20;
-//                                            str30 = str30;
-//                                            mDate6 = mDate4;
-//                                            str28 = str3;
-//                                            str20 = str24;
-//                                            Ngay2 = Ngay3;
-//                                            Ngay3 = str23;
-//                                            mDate4 = str25;
-//                                            str25 = str27;
-//                                            mGioNhan = str29;
-//                                            ih8 = ih6;
-//                                            ih6 = mDate5;
-//                                            str18 = str21;
-//                                            str21 = r37;
-//                                            r37 = str26;
-//                                            str26 = str22;
-//                                            c.moveToNext();
-//                                            str29 = mGioNhan;
-//                                            mGioNhan = str30;
-//                                            str24 = str20;
-//                                            str23 = Ngay3;
-//                                            str2 = str21;
-//                                            str3 = str28;
-//                                            str21 = str18;
-//                                            totalSMS = totalSMS;
-//                                            str22 = str26;
-//                                            mDate5 = ih6;
-//                                            str26 = r37;
-//                                            Ngay3 = Ngay2;
-//                                            str20 = str17;
-//                                            str28 = ih8;
-//                                            ih8 = (ih8 == true ? 1 : 0) + 1;
-//                                            str27 = str25;
-//                                            str25 = mDate4;
-//                                            mDate4 = mDate6;
-//                                            mDate6 = obj;
-//                                        }
-//                                    }
-//                                }
-//                                str17 = str20;
-//                                str30 = str28;
-//                                mDate6 = mDate4;
-//                                str28 = str3;
-//                                str20 = str24;
-//                                Ngay2 = Ngay3;
-//                                Ngay3 = str23;
-//                                mDate4 = str25;
-//                                str25 = str27;
-//                                mGioNhan = str29;
-//                                ih8 = ih6;
-//                                ih6 = mDate5;
-//                                str18 = str21;
-//                                str21 = r37;
-//                                r37 = str26;
-//                                str26 = str22;
-//                                c.moveToNext();
-//                                str29 = mGioNhan;
-//                                mGioNhan = str30;
-//                                str24 = str20;
-//                                str23 = Ngay3;
-//                                str2 = str21;
-//                                str3 = str28;
-//                                str21 = str18;
-//                                totalSMS = totalSMS;
-//                                str22 = str26;
-//                                mDate5 = ih6;
-//                                str26 = r37;
-//                                Ngay3 = Ngay2;
-//                                str20 = str17;
-//                                str28 = ih8;
-//                                ih8 = (ih8 == true ? 1 : 0) + 1;
-//                                str27 = str25;
-//                                str25 = mDate4;
-//                                mDate4 = mDate6;
-//                                mDate6 = obj;
-//                            } catch (Exception e21) {
-//                            } catch (Throwable th9) {
-//                            }
-//                        }
-//                        ih = mDate5;
-//                        str21 = str2;
-//                        str20 = str24;
-//                        Ngay = str23;
-//                        mDate = mDate4;
-//                        str4 = str26;
-//                        str6 = mGioNhan;
-//                        str5 = str3;
-//                        str26 = str22;
-//                        mGioNhan = str29;
-//                        mDate4 = str25;
-//                        str25 = str27;
-//                        database3.setTransactionSuccessful();
-//                        try {
-//                            database3.endTransaction();
-//                            str28.close();
-//                            str12 = str29;
-//                        } catch (SQLiteException e23) {
-//                            return;
-//                        } catch (JSONException e24) {
-//                            e = e24;
-//                            e.printStackTrace();
-//                        }
-//                    } catch (Exception e25) {
-//                        ih = mDate5;
-//                        database3 = database5;
-//                        str21 = str2;
-//                        str20 = str24;
-//                        ih4 = ih7;
-//                        Ngay = str23;
-//                        mDate = mDate4;
-//                        str4 = str26;
-//                        str6 = mGioNhan;
-//                        str5 = str3;
-//                        str26 = str22;
-//                        mGioNhan = sQLiteDatabase2;
-//                        mDate4 = str25;
-//                        str25 = str27;
-//                        e3 = e25;
-//                        sQLiteDatabase = sQLiteDatabase2;
-//                        e3.printStackTrace();
-//                        database3.endTransaction();
-//                        ih4.close();
-//                        str12 = sQLiteDatabase;
-//                        database3.close();
-//                        database = str12;
-//                        cur2 = this.db.GetData("Select * From Chat_database Where ngay_nhan = '" + mDate + "' And use_app <> 'sms'");
-//                        database2 = this.db.getWritableDatabase();
-//                        ih2 = new DatabaseUtils.InsertHelper(database2, "tbl_tinnhanS");
-//                        database2.beginTransaction();
-//                        while (cur2.moveToNext()) {
-//                        }
-//                        database = database2;
-//                        database.setTransactionSuccessful();
-//                        database.endTransaction();
-//                        ih2.close();
-//                        database.close();
-//                        xem_lv();
-//                        Toast.makeText(getActivity(), "Đã tải xong tin nhắn!", 1).show();
-//                    } catch (Throwable th10) {
-//                        database3 = database5;
-//                        ih3 = ih7;
-//                        th2 = th10;
-//                        database3.endTransaction();
-//                        ih3.close();
-//                        database3.close();
-//                        throw th2;
-//                    }
-//                    database3.close();
-//                    database = str12;
-//                } else {
-//                    ih = mDate5;
-//                    str21 = str2;
-//                    str20 = str24;
-//                    Ngay = str23;
-//                    mDate = mDate4;
-//                    str4 = str26;
-//                    str6 = mGioNhan;
-//                    str5 = str3;
-//                    str26 = str22;
-//                    mGioNhan = sQLiteDatabase2;
-//                    mDate4 = str25;
-//                    str25 = str27;
-//                    database = sQLiteDatabase2;
-//                }
-//                cur2 = this.db.GetData("Select * From Chat_database Where ngay_nhan = '" + mDate + "' And use_app <> 'sms'");
-//                database2 = this.db.getWritableDatabase();
-//                ih2 = new DatabaseUtils.InsertHelper(database2, "tbl_tinnhanS");
-//                try {
-//                    database2.beginTransaction();
-//                    while (cur2.moveToNext()) {
-//                        String NgayTinNhan = cur2.getString(1);
-//                        String mGioNhan2 = cur2.getString(2);
-//                        try {
-//                            String mSDT3 = cur2.getString(4);
-//                            database = database2;
-//                            try {
-//                                String body2 = cur2.getString(7);
-//                                String str45 = mGioNhan;
-//                                String typeKT2 = cur2.getString(3);
-//                                if (!jSONObject.has(mSDT3)) {
-//                                    str8 = str6;
-//                                    str7 = str25;
-//                                    str11 = str4;
-//                                    str9 = str20;
-//                                    str10 = ih;
-//                                    cur22 = cur2;
-//                                } else if (NgayTinNhan.indexOf(mDate) <= -1 || body2.indexOf(str6) != -1) {
-//                                    str8 = str6;
-//                                    str7 = str25;
-//                                    str11 = str4;
-//                                    str9 = str20;
-//                                    str10 = ih;
-//                                    cur22 = cur2;
-//                                } else {
-//                                    JSONObject Gia_khach = jSONObject.getJSONObject(mSDT3);
-//                                    str8 = str6;
-//                                    if (Gia_khach.getString(str5).indexOf(str20) > -1) {
-//                                        KT_type = true;
-//                                        str7 = str25;
-//                                        typeKT = typeKT2;
-//                                        str9 = str20;
-//                                        cur22 = cur2;
-//                                        str10 = ih;
-//                                    } else {
-//                                        int indexOf = Gia_khach.getString(str5).indexOf(str25);
-//                                        str9 = str20;
-//                                        if (indexOf > -1) {
-//                                            typeKT = typeKT2;
-//                                            try {
-//                                                str7 = str25;
-//                                                if (typeKT.indexOf(str25) > -1) {
-//                                                    KT_type = true;
-//                                                    cur22 = cur2;
-//                                                    str10 = ih;
-//                                                }
-//                                            } catch (Exception e26) {
-//                                                e2 = e26;
-//                                                try {
-//                                                    e2.printStackTrace();
-//                                                    database.endTransaction();
-//                                                    ih2.close();
-//                                                    database.close();
-//                                                    xem_lv();
-//                                                    Toast.makeText(getActivity(), "Đã tải xong tin nhắn!", 1).show();
-//                                                } catch (Throwable th11) {
-//                                                    th = th11;
-//                                                    database.endTransaction();
-//                                                    ih2.close();
-//                                                    database.close();
-//                                                    throw th;
-//                                                }
-//                                            } catch (Throwable th12) {
-//                                                th = th12;
-//                                                database.endTransaction();
-//                                                ih2.close();
-//                                                database.close();
-//                                                throw th;
-//                                            }
-//                                        } else {
-//                                            str7 = str25;
-//                                            typeKT = typeKT2;
-//                                        }
-//                                        str10 = ih;
-//                                        cur22 = cur2;
-//                                        if (Gia_khach.getString(str5).indexOf(str10) > -1) {
-//                                            try {
-//                                                if (typeKT.indexOf(str10) > -1) {
-//                                                    KT_type = true;
-//                                                }
-//                                            } catch (Exception e27) {
-//                                                e2 = e27;
-//                                                e2.printStackTrace();
-//                                                database.endTransaction();
-//                                                ih2.close();
-//                                                database.close();
-//                                                xem_lv();
-//                                                Toast.makeText(getActivity(), "Đã tải xong tin nhắn!", 1).show();
-//                                            }
-//                                        }
-//                                        KT_type = false;
-//                                    }
-//                                    int i = MainActivity.jSon_Setting.getInt(str26);
-//                                    str26 = str26;
-//                                    if (i != 1 || !Gia_khach.has(body2)) {
-//                                        KT_type2 = KT_type;
-//                                    } else {
-//                                        KT_type2 = false;
-//                                    }
-//                                    if (KT_type2) {
-//                                        Gia_khach.put(str21, Gia_khach.getInt(str21) + 1);
-//                                        Gia_khach.put(body2, body2);
-//                                        ih2.prepareForInsert();
-//                                        str11 = str4;
-//                                        ih2.bind(ih2.getColumnIndex(str11), mDate);
-//                                        ih2.bind(ih2.getColumnIndex(mDate4), mGioNhan2);
-//                                        ih2.bind(ih2.getColumnIndex(str5), typeKT);
-//                                        ih2.bind(ih2.getColumnIndex(Ngay), Gia_khach.getString(Ngay));
-//                                        ih2.bind(ih2.getColumnIndex(str45), mSDT3);
-//                                        str45 = str45;
-//                                        ih2.bind(ih2.getColumnIndex("use_app"), "sms");
-//                                        ih2.bind(ih2.getColumnIndex("so_tin_nhan"), Gia_khach.getInt(str21));
-//                                        ih2.bind(ih2.getColumnIndex("nd_goc"), body2);
-//                                        ih2.bind(ih2.getColumnIndex("nd_sua"), body2);
-//                                        ih2.bind(ih2.getColumnIndex("nd_phantich"), body2);
-//                                        ih2.bind(ih2.getColumnIndex("phat_hien_loi"), "ko");
-//                                        ih2.bind(ih2.getColumnIndex("tinh_tien"), 0);
-//                                        ih2.bind(ih2.getColumnIndex("ok_tn"), 0);
-//                                        ih2.bind(ih2.getColumnIndex("del_sms"), 0);
-//                                        ih2.execute();
-//                                        jSONObject.put(mSDT3, Gia_khach);
-//                                    } else {
-//                                        str11 = str4;
-//                                    }
-//                                }
-//                                str4 = str11;
-//                                ih = str10;
-//                                c = c;
-//                                database2 = database;
-//                                mGioNhan = str45;
-//                                str20 = str9;
-//                                cur2 = cur22;
-//                                str6 = str8;
-//                                str25 = str7;
-//                            } catch (Exception e28) {
-//                                e2 = e28;
-//                                e2.printStackTrace();
-//                                database.endTransaction();
-//                                ih2.close();
-//                                database.close();
-//                                xem_lv();
-//                                Toast.makeText(getActivity(), "Đã tải xong tin nhắn!", 1).show();
-//                            } catch (Throwable th13) {
-//                                th = th13;
-//                                database.endTransaction();
-//                                ih2.close();
-//                                database.close();
-//                                throw th;
-//                            }
-//                        } catch (Exception e29) {
-//                            database = database2;
-//                            e2 = e29;
-//                            e2.printStackTrace();
-//                            database.endTransaction();
-//                            ih2.close();
-//                            database.close();
-//                            xem_lv();
-//                            Toast.makeText(getActivity(), "Đã tải xong tin nhắn!", 1).show();
-//                        } catch (Throwable th14) {
-//                            database = database2;
-//                            th = th14;
-//                            database.endTransaction();
-//                            ih2.close();
-//                            database.close();
-//                            throw th;
-//                        }
-//                    }
-//                    database = database2;
-//                    database.setTransactionSuccessful();
-//                    database.endTransaction();
-//                    ih2.close();
-//                } catch (Exception e30) {
-//                    database = database2;
-//                    e2 = e30;
-//                    e2.printStackTrace();
-//                    database.endTransaction();
-//                    ih2.close();
-//                    database.close();
-//                    xem_lv();
-//                    Toast.makeText(getActivity(), "Đã tải xong tin nhắn!", 1).show();
-//                } catch (Throwable th15) {
-//                    database = database2;
-//                    th = th15;
-//                    database.endTransaction();
-//                    ih2.close();
-//                    database.close();
-//                    throw th;
-//                }
-//                database.close();
-//                xem_lv();
-//                Toast.makeText(getActivity(), "Đã tải xong tin nhắn!", 1).show();
-//            } catch (SQLiteException e31) {
-//            } catch (JSONException e32) {
-//                e = e32;
-//                e.printStackTrace();
-//            }
-//        }
-//    }
+    public void getFullSms(String str) throws ParseException {
+        Database database;
+        String sb;
+        DatabaseUtils.InsertHelper insertHelper;
+        DatabaseUtils.InsertHelper insertHelper3;
+
+        String ngay_nhan;
+        boolean z;
+        SQLiteDatabase sQLiteDatabase5;
+
+        Cursor GetData;
+        SQLiteDatabase writableDatabase;
+        SQLiteDatabase sQLiteDatabase6;
+        String str15;
+        String str17;
+        String str18;
+        boolean z2;
+        boolean z3;
+        String str20 = " ";
+        String str21 = "";
+        new MainActivity();
+        String Get_ngay = MainActivity.Get_ngay();
+        String Get_date = MainActivity.Get_date();
+        String tin_trung = "tin_trung";
+        String str23 = "'";
+        if (!MainActivity.jSon_Setting.has("tin_trung")) {
+            try {
+                MainActivity.jSon_Setting.put("tin_trung", 0);
+                this.db.QueryData("Update tbl_Setting set Setting = '" + MainActivity.jSon_Setting.toString() + "'");
+            } catch (JSONException e) {
+                e.printStackTrace();
+            }
+        }
+        if (ContextCompat.checkSelfPermission(getActivity(), "android.permission.READ_SMS") != 0) {
+            return;
+        }
+        try {
+            Date parse = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss").parse(Get_date + "T00:00:00");
+            String str24 = "date>=" + parse.getTime();
+            if (str.contains("Full")) {
+                this.db.QueryData("DELETE FROM tbl_soctS WHERE ngay_nhan = '" + Get_date + "'");
+                this.db.QueryData("DELETE FROM tbl_tinnhanS WHERE ngay_nhan = '" + Get_date + "'");
+                database = this.db;
+                sb = "Select * From tbl_kh_new";
+            } else {
+                this.db.QueryData("DELETE FROM tbl_soctS WHERE ngay_nhan = '" + Get_date + "' AND so_dienthoai = '" + this.mMobile.get(this.spin_pointion) + "'");
+                this.db.QueryData("DELETE FROM tbl_tinnhanS WHERE ngay_nhan = '" + Get_date + "' AND so_dienthoai = '" + this.mMobile.get(this.spin_pointion) + "'");
+                database = this.db;
+                StringBuilder sb2 = new StringBuilder();
+                sb2.append("Select * From tbl_kh_new Where sdt = '");
+                sb2.append(this.mMobile.get(this.spin_pointion));
+                sb2.append("'");
+                sb = sb2.toString();
+            }
+            Cursor GetData2 = database.GetData(sb);
+            JSONObject jSONObject = new JSONObject();
+            while (GetData2.moveToNext()) {
+                JSONObject jSONObject2 = new JSONObject();
+                jSONObject2.put("type_kh", GetData2.getString(3));
+                jSONObject2.put("ten_kh", GetData2.getString(0));
+                jSONObject2.put("so_tn", 0);
+                jSONObject.put(GetData2.getString(1), jSONObject2);
+            }
+            String type_kh = "type_kh";
+            Cursor query = getActivity().getContentResolver().query(Uri.parse("content://sms"), null, str24, null, "date ASC");
+            getActivity().startManagingCursor(query);
+            int count = query.getCount();
+            SQLiteDatabase writableDatabase2 = this.db.getWritableDatabase();
+            insertHelper = new DatabaseUtils.InsertHelper(writableDatabase2, "tbl_tinnhanS");
+            boolean moveToFirst = query.moveToFirst();
+            ngay_nhan = "ngay_nhan";
+            String so_dienthoai = "so_dienthoai";
+            String nd_sua = "nd_sua";
+            String nd_goc = "nd_goc";
+            String so_tin_nhan = "so_tin_nhan";
+            String sms = "sms";
+            String use_app = "use_app";
+            String ten_kh = "ten_kh";
+            String str34 = DiskLruCache.VERSION_1;
+            String gio_nhan = "gio_nhan";
+            String ok_tin = "Ok Tin";
+            String str38 = "3";
+            if (moveToFirst) {
+                try {
+                    writableDatabase2.beginTransaction();
+                    int i = 0;
+                    while (i < count) {
+                        int i2 = count;
+                        try {
+                            try {
+                                Long valueOf = query.getLong(query.getColumnIndexOrThrow("date"));
+                                int i3 = i;
+                                StringBuilder sb3 = new StringBuilder();
+                                try {
+                                    try {
+                                        try {
+                                            sb3.append((Object) DateFormat.format("dd/MM/yyyy HH:mm:ss", new Date(valueOf.longValue())));
+                                            sb3.append(str21);
+                                            String sb4 = sb3.toString();
+                                            String str41 = ((Object) DateFormat.format("HH:mm:ss", new Date(valueOf.longValue()))) + str21;
+                                            str34 = query.getString(query.getColumnIndexOrThrow("address")).replaceAll(str20, str21);
+                                            String replaceAll = query.getString(query.getColumnIndexOrThrow("body")).toString().replaceAll(str23, str20).replaceAll("\"", str20);
+                                            String string = query.getString(query.getColumnIndexOrThrow("type"));
+                                            String str42 = str20;
+                                            String str43 = str21;
+                                            if (str34.length() < 12) {
+                                                str34 = "+84" + str34.substring(1);
+                                            }
+                                            if (jSONObject.has(str34) && sb4.contains(Get_ngay) && !replaceAll.contains("Ok Tin")) {
+                                                JSONObject jSONObject3 = jSONObject.getJSONObject(str34);
+                                                writableDatabase2.endTransaction();
+                                                insertHelper.close();
+                                                writableDatabase = this.db.getWritableDatabase();
+                                                insertHelper3 = new DatabaseUtils.InsertHelper(writableDatabase, "tbl_tinnhanS");
+                                                try {
+                                                    writableDatabase.beginTransaction();
+                                                    sQLiteDatabase6 = writableDatabase;
+                                                    sQLiteDatabase6.setTransactionSuccessful();
+                                                    sQLiteDatabase6.endTransaction();
+                                                } catch (Exception e3) {
+                                                    sQLiteDatabase6 = writableDatabase;
+                                                } catch (Throwable th) {
+                                                    sQLiteDatabase5 = writableDatabase;
+                                                    sQLiteDatabase5.endTransaction();
+                                                    insertHelper3.close();
+                                                    sQLiteDatabase5.close();
+                                                    throw th;
+                                                }
+                                                insertHelper3.close();
+                                                sQLiteDatabase6.close();
+                                                xem_lv();
+                                                Toast.makeText(getActivity(), "Đã tải xong tin nhắn!", Toast.LENGTH_LONG).show();
+                                                try {
+                                                    if (!jSONObject3.getString(type_kh).contains("3")) {
+                                                        if (jSONObject3.getString(type_kh).contains("2")) {
+                                                            writableDatabase2.endTransaction();
+                                                            insertHelper.close();
+                                                            writableDatabase = this.db.getWritableDatabase();
+                                                            insertHelper3 = new DatabaseUtils.InsertHelper(writableDatabase, "tbl_tinnhanS");
+                                                            writableDatabase.beginTransaction();
+                                                            sQLiteDatabase6 = writableDatabase;
+                                                            sQLiteDatabase6.setTransactionSuccessful();
+                                                            sQLiteDatabase6.endTransaction();
+                                                            insertHelper3.close();
+                                                            sQLiteDatabase6.close();
+                                                            xem_lv();
+                                                            Toast.makeText(getActivity(), "Đã tải xong tin nhắn!", Toast.LENGTH_LONG).show();
+                                                        }
+                                                        z = jSONObject3.getString(type_kh).contains(str34) && string.contains(str34);
+                                                        if (!((MainActivity.jSon_Setting.getInt(tin_trung) == 1 || !jSONObject3.has(replaceAll)) && z)) {
+                                                            jSONObject3.put("so_tn", jSONObject3.getInt("so_tn") + 1);
+                                                            jSONObject3.put(replaceAll, replaceAll);
+                                                            insertHelper.prepareForInsert();
+
+                                                            try {
+                                                                try {
+                                                                    try {
+                                                                        insertHelper.bind(insertHelper.getColumnIndex(ngay_nhan), Get_date);
+                                                                    } catch (Exception e5) {
+                                                                        writableDatabase2.endTransaction();
+                                                                        insertHelper.close();
+                                                                        writableDatabase = this.db.getWritableDatabase();
+                                                                        insertHelper3 = new DatabaseUtils.InsertHelper(writableDatabase, "tbl_tinnhanS");
+                                                                        writableDatabase.beginTransaction();
+                                                                        sQLiteDatabase6 = writableDatabase;
+                                                                        sQLiteDatabase6.setTransactionSuccessful();
+                                                                        sQLiteDatabase6.endTransaction();
+                                                                        insertHelper3.close();
+                                                                        sQLiteDatabase6.close();
+                                                                        xem_lv();
+                                                                        Toast.makeText(getActivity(), "Đã tải xong tin nhắn!", Toast.LENGTH_LONG).show();
+                                                                    }
+                                                                    try {
+                                                                        insertHelper.bind(insertHelper.getColumnIndex(gio_nhan), str41);
+                                                                        insertHelper.bind(insertHelper.getColumnIndex(type_kh), string);
+
+                                                                        try {
+                                                                            insertHelper.bind(insertHelper.getColumnIndex(ten_kh), jSONObject3.getString(ten_kh));
+                                                                            String str45 = so_dienthoai;
+                                                                            try {
+                                                                                insertHelper.bind(insertHelper.getColumnIndex(str45), str34);
+                                                                                so_dienthoai = str45;
+                                                                                String str46 = use_app;
+                                                                                try {
+                                                                                    int columnIndex = insertHelper.getColumnIndex(str46);
+                                                                                    use_app = str46;
+                                                                                    String str47 = sms;
+                                                                                    try {
+                                                                                        insertHelper.bind(columnIndex, str47);
+                                                                                        sms = str47;
+                                                                                        String str48 = so_tin_nhan;
+                                                                                        try {
+                                                                                            so_tin_nhan = str48;
+                                                                                            insertHelper.bind(insertHelper.getColumnIndex(str48), jSONObject3.getInt("so_tn"));
+                                                                                            String str49 = nd_goc;
+                                                                                            try {
+                                                                                                insertHelper.bind(insertHelper.getColumnIndex(str49), replaceAll);
+                                                                                                nd_goc = str49;
+
+                                                                                                try {
+                                                                                                    insertHelper.bind(insertHelper.getColumnIndex(nd_sua), replaceAll);
+                                                                                                    insertHelper.bind(insertHelper.getColumnIndex("nd_phantich"), replaceAll);
+                                                                                                    insertHelper.bind(insertHelper.getColumnIndex("phat_hien_loi"), "ko");
+                                                                                                    insertHelper.bind(insertHelper.getColumnIndex("tinh_tien"), 0);
+                                                                                                    insertHelper.bind(insertHelper.getColumnIndex("ok_tn"), 0);
+                                                                                                    insertHelper.bind(insertHelper.getColumnIndex("del_sms"), 0);
+                                                                                                    insertHelper.execute();
+                                                                                                    jSONObject.put(str34, jSONObject3);
+                                                                                                } catch (Exception e6) {
+                                                                                                    writableDatabase2.endTransaction();
+
+                                                                                                    insertHelper.close();
+
+                                                                                                    writableDatabase = this.db.getWritableDatabase();
+                                                                                                    insertHelper3 = new DatabaseUtils.InsertHelper(writableDatabase, "tbl_tinnhanS");
+                                                                                                    writableDatabase.beginTransaction();
+                                                                                                    sQLiteDatabase6 = writableDatabase;
+                                                                                                    sQLiteDatabase6.setTransactionSuccessful();
+                                                                                                    sQLiteDatabase6.endTransaction();
+                                                                                                    insertHelper3.close();
+                                                                                                    sQLiteDatabase6.close();
+                                                                                                    xem_lv();
+                                                                                                    Toast.makeText(getActivity(), "Đã tải xong tin nhắn!", Toast.LENGTH_LONG).show();
+                                                                                                }
+                                                                                            } catch (Exception e7) {
+                                                                                                nd_goc = str49;
+
+                                                                                                writableDatabase2.endTransaction();
+
+                                                                                                insertHelper.close();
+
+                                                                                                writableDatabase = this.db.getWritableDatabase();
+                                                                                                insertHelper3 = new DatabaseUtils.InsertHelper(writableDatabase, "tbl_tinnhanS");
+                                                                                                writableDatabase.beginTransaction();
+                                                                                                sQLiteDatabase6 = writableDatabase;
+                                                                                                sQLiteDatabase6.setTransactionSuccessful();
+                                                                                                sQLiteDatabase6.endTransaction();
+                                                                                                insertHelper3.close();
+                                                                                                sQLiteDatabase6.close();
+                                                                                                xem_lv();
+                                                                                                Toast.makeText(getActivity(), "Đã tải xong tin nhắn!", Toast.LENGTH_LONG).show();
+                                                                                            }
+                                                                                        } catch (Exception e8) {
+                                                                                            so_tin_nhan = str48;
+                                                                                        }
+                                                                                    } catch (Exception e9) {
+                                                                                        sms = str47;
+                                                                                    }
+                                                                                } catch (Exception e10) {
+                                                                                    use_app = str46;
+                                                                                }
+                                                                            } catch (Exception e11) {
+                                                                                so_dienthoai = str45;
+                                                                            }
+                                                                        } catch (Exception e12) {
+                                                                        }
+                                                                    } catch (Exception e13) {
+
+
+                                                                        writableDatabase2.endTransaction();
+
+                                                                        insertHelper.close();
+
+                                                                        writableDatabase = this.db.getWritableDatabase();
+                                                                        insertHelper3 = new DatabaseUtils.InsertHelper(writableDatabase, "tbl_tinnhanS");
+                                                                        writableDatabase.beginTransaction();
+                                                                        sQLiteDatabase6 = writableDatabase;
+                                                                        sQLiteDatabase6.setTransactionSuccessful();
+                                                                        sQLiteDatabase6.endTransaction();
+                                                                        insertHelper3.close();
+                                                                        sQLiteDatabase6.close();
+                                                                        xem_lv();
+                                                                        Toast.makeText(getActivity(), "Đã tải xong tin nhắn!", Toast.LENGTH_LONG).show();
+                                                                    }
+                                                                } catch (Throwable th2) {
+                                                                    insertHelper.close();
+                                                                }
+                                                            } catch (Exception e14) {
+
+
+
+
+                                                                writableDatabase2.endTransaction();
+
+                                                                insertHelper.close();
+
+                                                                writableDatabase = this.db.getWritableDatabase();
+                                                                insertHelper3 = new DatabaseUtils.InsertHelper(writableDatabase, "tbl_tinnhanS");
+                                                                writableDatabase.beginTransaction();
+                                                                sQLiteDatabase6 = writableDatabase;
+                                                                sQLiteDatabase6.setTransactionSuccessful();
+                                                                sQLiteDatabase6.endTransaction();
+                                                                insertHelper3.close();
+                                                                sQLiteDatabase6.close();
+                                                                xem_lv();
+                                                                Toast.makeText(getActivity(), "Đã tải xong tin nhắn!", Toast.LENGTH_LONG).show();
+                                                            }
+                                                        }
+                                                    }
+                                                } catch (Exception e15) {
+
+
+
+
+                                                    writableDatabase2.endTransaction();
+                                                    insertHelper.close();
+
+                                                    writableDatabase = this.db.getWritableDatabase();
+                                                    insertHelper3 = new DatabaseUtils.InsertHelper(writableDatabase, "tbl_tinnhanS");
+                                                    writableDatabase.beginTransaction();
+                                                    sQLiteDatabase6 = writableDatabase;
+                                                    sQLiteDatabase6.setTransactionSuccessful();
+                                                    sQLiteDatabase6.endTransaction();
+                                                    insertHelper3.close();
+                                                    sQLiteDatabase6.close();
+                                                    xem_lv();
+                                                    Toast.makeText(getActivity(), "Đã tải xong tin nhắn!", Toast.LENGTH_LONG).show();
+                                                }
+                                                z = true;
+                                            }
+                                            query.moveToNext();
+                                            count = i2;
+                                            str20 = str42;
+                                            i = i3 + 1;
+                                            str21 = str43;
+                                        } catch (Throwable th3) {
+                                            insertHelper.close();
+                                        }
+                                    } catch (Exception e16) {
+                                    }
+                                } catch (Exception e17) {
+                                    writableDatabase2.endTransaction();
+                                    insertHelper.close();
+                                    writableDatabase = this.db.getWritableDatabase();
+                                    insertHelper3 = new DatabaseUtils.InsertHelper(writableDatabase, "tbl_tinnhanS");
+                                    writableDatabase.beginTransaction();
+                                    sQLiteDatabase6 = writableDatabase;
+                                    sQLiteDatabase6.setTransactionSuccessful();
+                                    sQLiteDatabase6.endTransaction();
+                                    insertHelper3.close();
+                                    sQLiteDatabase6.close();
+                                    xem_lv();
+                                    Toast.makeText(getActivity(), "Đã tải xong tin nhắn!", Toast.LENGTH_LONG).show();
+                                }
+                            } catch (Throwable th4) {
+                            }
+                        } catch (Exception e18) {
+                            writableDatabase2.endTransaction();
+                            insertHelper.close();
+                            writableDatabase = this.db.getWritableDatabase();
+                            insertHelper3 = new DatabaseUtils.InsertHelper(writableDatabase, "tbl_tinnhanS");
+                            writableDatabase.beginTransaction();
+                            sQLiteDatabase6 = writableDatabase;
+                            sQLiteDatabase6.setTransactionSuccessful();
+                            sQLiteDatabase6.endTransaction();
+                            insertHelper3.close();
+                            sQLiteDatabase6.close();
+                            xem_lv();
+                            Toast.makeText(getActivity(), "Đã tải xong tin nhắn!", Toast.LENGTH_LONG).show();
+                        }
+                    }
+                    writableDatabase2.setTransactionSuccessful();
+                    writableDatabase2.endTransaction();
+
+                } catch (Exception e19) {
+                } catch (Throwable th5) {
+                }
+                insertHelper.close();
+
+            } else {
+                str34 = DiskLruCache.VERSION_1;
+            }
+            try {
+                GetData = this.db.GetData("Select * From Chat_database Where ngay_nhan = '" + Get_date + "' And use_app <> 'sms'");
+                writableDatabase = this.db.getWritableDatabase();
+                insertHelper3 = new DatabaseUtils.InsertHelper(writableDatabase, "tbl_tinnhanS");
+                writableDatabase.beginTransaction();
+                while (GetData.moveToNext()) {
+                    String string2 = GetData.getString(1);
+                    String string3 = GetData.getString(2);
+                    sQLiteDatabase6 = writableDatabase;
+                    try {
+                        String string4 = GetData.getString(4);
+                        String string5 = GetData.getString(7);
+                        String string6 = GetData.getString(3);
+                        if (jSONObject.has(string4) && string2.contains(Get_date) && !string5.contains(ok_tin)) {
+                            JSONObject jSONObject4 = jSONObject.getJSONObject(string4);
+                            if (!jSONObject4.getString(type_kh).contains(str38) && (!jSONObject4.getString(type_kh).contains("2") || !string6.contains("2"))) {
+                                z2 = jSONObject4.getString(type_kh).contains(str34) && string6.contains(str34);
+                                z3 = z2;
+                                if (!((MainActivity.jSon_Setting.getInt(tin_trung) == 1 || !jSONObject4.has(string5)) && z3)) {
+                                    jSONObject4.put("so_tn", jSONObject4.getInt("so_tn") + 1);
+                                    jSONObject4.put(string5, string5);
+                                    insertHelper3.prepareForInsert();
+                                    insertHelper3.bind(insertHelper3.getColumnIndex(ngay_nhan), Get_date);
+                                    insertHelper3.bind(insertHelper3.getColumnIndex(gio_nhan), string3);
+                                    insertHelper3.bind(insertHelper3.getColumnIndex(type_kh), string6);
+                                    insertHelper3.bind(insertHelper3.getColumnIndex(ten_kh), jSONObject4.getString(ten_kh));
+                                    str18 = so_dienthoai;
+                                    insertHelper3.bind(insertHelper3.getColumnIndex(str18), string4);
+                                    str15 = use_app;
+                                    String str52 = sms;
+                                    insertHelper3.bind(insertHelper3.getColumnIndex(str15), str52);
+                                    sms = str52;
+                                    String str53 = so_tin_nhan;
+                                    so_tin_nhan = str53;
+                                    insertHelper3.bind(insertHelper3.getColumnIndex(str53), jSONObject4.getInt("so_tn"));
+                                    String str54 = nd_goc;
+                                    insertHelper3.bind(insertHelper3.getColumnIndex(str54), string5);
+                                    nd_goc = str54;
+                                    insertHelper3.bind(insertHelper3.getColumnIndex(nd_sua), string5);
+                                    insertHelper3.bind(insertHelper3.getColumnIndex("nd_phantich"), string5);
+                                    insertHelper3.bind(insertHelper3.getColumnIndex("phat_hien_loi"), "ko");
+                                    insertHelper3.bind(insertHelper3.getColumnIndex("tinh_tien"), 0);
+                                    insertHelper3.bind(insertHelper3.getColumnIndex("ok_tn"), 0);
+                                    insertHelper3.bind(insertHelper3.getColumnIndex("del_sms"), 0);
+                                    insertHelper3.execute();
+                                    jSONObject.put(string4, jSONObject4);
+                                }
+                            }
+                            str17 = str38;
+                        } else {
+                            str17 = str38;
+                        }
+                        writableDatabase = sQLiteDatabase6;
+                        str38 = str17;
+                    } catch (Exception e20) {
+                        sQLiteDatabase6.endTransaction();
+                        insertHelper3.close();
+                        sQLiteDatabase6.close();
+                        xem_lv();
+                        Toast.makeText(getActivity(), "Đã tải xong tin nhắn!", Toast.LENGTH_LONG).show();
+                    }
+                }
+                sQLiteDatabase6 = writableDatabase;
+                sQLiteDatabase6.setTransactionSuccessful();
+                sQLiteDatabase6.endTransaction();
+                insertHelper3.close();
+                sQLiteDatabase6.close();
+                xem_lv();
+                Toast.makeText(getActivity(), "Đã tải xong tin nhắn!", Toast.LENGTH_LONG).show();
+            } catch (Throwable th6) {
+            }
+        } catch (SQLiteException unused) {
+        } catch (JSONException e21) {
+            e21.printStackTrace();
+        }
+    }
 
     public void xem_lv() {
         new MainActivity();

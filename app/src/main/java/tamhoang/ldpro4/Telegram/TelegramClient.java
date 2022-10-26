@@ -5,7 +5,7 @@ import org.drinkless.td.libcore.telegram.TdApi;
 import tamhoang.ldpro4.Util;
 
 public class TelegramClient {
-    private static Client client;
+    public static Client client;
 
     public interface Callback extends Client.ResultHandler {
         void onResult(TdApi.Object object);

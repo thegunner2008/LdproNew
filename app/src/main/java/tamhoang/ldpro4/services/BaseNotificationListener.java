@@ -21,11 +21,11 @@ import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
 
 import tamhoang.ldpro4.BuildConfig;
-import tamhoang.ldpro4.Models.PendingNotification;
-import tamhoang.ldpro4.util.NotificationContentUtils;
-import tamhoang.ldpro4.util.NotificationListenerUtils;
-import tamhoang.ldpro4.util.NotificationUtils;
-import tamhoang.ldpro4.util.VersionUtils;
+import tamhoang.ldpro4.notifLib.models.PendingNotification;
+import tamhoang.ldpro4.notifLib.utils.NotificationContentUtils;
+import tamhoang.ldpro4.notifLib.utils.NotificationListenerUtils;
+import tamhoang.ldpro4.notifLib.utils.NotificationUtils;
+import tamhoang.ldpro4.notifLib.utils.VersionUtils;
 
 @SuppressLint("NewApi")
 public abstract class BaseNotificationListener extends NotificationListenerService {

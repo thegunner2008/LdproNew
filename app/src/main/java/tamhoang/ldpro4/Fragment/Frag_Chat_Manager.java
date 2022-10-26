@@ -40,29 +40,29 @@ import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Objects;
+import java.util.Set;
+import java.util.stream.Collectors;
 
 import tamhoang.ldpro4.Activity.Activity_AddKH;
 import tamhoang.ldpro4.Activity.Chatbox;
 import tamhoang.ldpro4.MainActivity;
-import tamhoang.ldpro4.NotificationReader;
+import tamhoang.ldpro4.NotificationNewReader;
 import tamhoang.ldpro4.R;
+import tamhoang.ldpro4.data.BriteDb;
 import tamhoang.ldpro4.data.Contact;
 import tamhoang.ldpro4.data.Database;
 import tamhoang.ldpro4.data.model.Chat;
 
 public class Frag_Chat_Manager extends Fragment {
-    boolean Running = true;
     Button btn_Thongbao;
     Button btn_login;
     Database db;
     Handler handler;
     ListView listviewKH;
-    private final List<String> mApp = new ArrayList();
-    private final List<String> mNoiDung = new ArrayList();
-    private final List<String> mSDT = new ArrayList();
-    private final List<String> mTenKH = new ArrayList();
+    private final List<Chat> listChat = new ArrayList<>();
     private final Runnable runnable = new Runnable() {
         public void run() {
             if (MainActivity.sms) {
@@ -83,10 +83,12 @@ public class Frag_Chat_Manager extends Fragment {
         this.listviewKH = this.v.findViewById(R.id.listviewKH);
         this.btn_Thongbao.setOnClickListener(v -> startActivity(new Intent("android.settings.ACTION_NOTIFICATION_LISTENER_SETTINGS")));
         this.listviewKH.setOnItemClickListener((adapterView, view, i, l) -> {
+            if (listChat.size() <= i) return;
+            Chat chat = listChat.get(i);
             Intent intent = new Intent(getActivity(), Chatbox.class);
-            intent.putExtra("tenKH", mTenKH.get(i));
-            intent.putExtra("so_dienthoai", mSDT.get(i));
-            intent.putExtra("app", mApp.get(i));
+            intent.putExtra("tenKH", chat.getTen_kh());
+            intent.putExtra("so_dienthoai", chat.getSo_dienthoai());
+            intent.putExtra("app", chat.getUse_app());
             startActivity(intent);
         });
         notificationPermission();
@@ -191,48 +193,39 @@ public class Frag_Chat_Manager extends Fragment {
     }
 
     private void XemListview() {//lay data trong Chat_database (chi lay moi khach hang 1 row) hien thi ra listviewKH
-        mTenKH.clear();
-        mNoiDung.clear();
-        mApp.clear();
-        mSDT.clear();
+        listChat.clear();
         String mDate = MainActivity.Get_date();
-        JSONObject jsonObject = new JSONObject();
-        Cursor cursor = db.GetData("SELECT * FROM Chat_database WHERE ngay_nhan = '" + mDate + "' ORDER BY Gio_nhan DESC, ID DESC");
-        if (cursor != null) {
-            while (cursor.moveToNext()) {
-                String ten_kh = cursor.getString(4);
-                String use_app = cursor.getString(6);
-                
-                if ((MainActivity.contactsMap.containsKey(ten_kh) || use_app.contains("sms") || use_app.contains("ZL") || use_app.contains("TL")|| use_app.contains("VB"))
-                        && !jsonObject.has(ten_kh)) {
-                    try {
-                        jsonObject.put(ten_kh, "OK");
-                        mTenKH.add(cursor.getString(4));
-                        mSDT.add(cursor.getString(5));
-                        mApp.add(cursor.getString(6));
-                        mNoiDung.add(cursor.getString(7));
-                    } catch (JSONException e) {
-                        e.printStackTrace();
-                    }
-                }
+        List<Chat> listChatAll = BriteDb.INSTANCE.selectChats(mDate);
+
+        Set<String> setTen_kh = new HashSet<>();
+        for (Chat chat : listChatAll) {
+            String ten_kh = chat.getTen_kh();
+            String use_app = chat.getUse_app();
+
+            if ((MainActivity.contactsMap.containsKey(ten_kh) || use_app.contains("sms") || use_app.contains("ZL")
+                    || use_app.contains("TL") || use_app.contains("VB")) && !setTen_kh.contains(ten_kh)) {
+                setTen_kh.add(ten_kh);
+                listChat.add(chat);
             }
-            cursor.close();
         }
         for (String ten_kh : MainActivity.contactsMap.keySet()) {
-            if (!this.mTenKH.contains(ten_kh)) {
-                this.mTenKH.add(ten_kh);
-                this.mNoiDung.add("Hôm nay chưa có tin nhắn!");
+            if (!setTen_kh.contains(ten_kh)) {
+                String use_app = "";
                 if (ten_kh.contains("ZL")) {
-                    this.mApp.add("ZL");
+                    use_app = "ZL";
                 } else if (ten_kh.contains("VB")) {
-                    this.mApp.add("VB");
+                    use_app = "VB";
                 } else if (ten_kh.contains("WA")) {
-                    this.mApp.add("WA");
+                    use_app = "WA";
                 }
+                listChat.add(
+                        new Chat(0, "", "", 2, ten_kh, ten_kh, use_app, "Hôm nay chưa có tin nhắn!", 0)
+                );
             }
         }
         if (getActivity() != null) {
-            this.listviewKH.setAdapter(new Chat_Main(getActivity(), R.layout.frag_chat_manager_lv, this.mTenKH));
+            List<String> listTenKH = listChat.stream().map(Chat::getTen_kh).collect(Collectors.toList());
+            this.listviewKH.setAdapter(new Chat_Main(getActivity(), R.layout.frag_chat_manager_lv, listTenKH));
         }
     }
 
@@ -254,25 +247,25 @@ public class Frag_Chat_Manager extends Fragment {
 
         @SuppressLint("WrongConstant")
         public View getView(final int position, View view, ViewGroup parent) {
+            Chat chat = listChat.get(position);
             ViewHolder holder;
-            View view2 = null;
-            view2 = ((LayoutInflater) getContext().getSystemService("layout_inflater")).inflate(R.layout.frag_chat_manager_lv, null);
+            View view2 = ((LayoutInflater) getContext().getSystemService("layout_inflater")).inflate(R.layout.frag_chat_manager_lv, null);
             holder = new ViewHolder();
             holder.add_contacts = view2.findViewById(R.id.add_contacts);
             holder.tv_delete = view2.findViewById(R.id.tv_delete);
             holder.imageView = view2.findViewById(R.id.imv_app);
             holder.TenKH = view2.findViewById(R.id.tv_KhachHang);
             holder.ndChat = view2.findViewById(R.id.tv_NoiDung);
-            if (mApp.get(position).contains("WA")) {
+            if (chat.getUse_app().contains("WA")) {
                 holder.imageView.setBackgroundResource(R.drawable.ic_perm_phone_msg);
-            } else if (mApp.get(position).contains("VI")) {
+            } else if (chat.getUse_app().contains("VI")) {
                 holder.imageView.setBackgroundResource(R.drawable.ic_phone);
-            } else if (mApp.get(position).contains("ZL")) {
+            } else if (chat.getUse_app().contains("ZL")) {
                 holder.imageView.setBackgroundResource(R.drawable.ic_zalo);
-            } else if (mApp.get(position).contains("TL")) {
+            } else if (chat.getUse_app().contains("TL")) {
                 holder.imageView.setBackgroundResource(R.drawable.outline_telegram_20);
                 holder.tv_delete.setVisibility(View.GONE);
-            } else if (mApp.get(position).contains("sms")) {
+            } else if (chat.getUse_app().contains("sms")) {
                 holder.imageView.setBackgroundResource(R.drawable.ic_sms);
                 holder.add_contacts.setVisibility(View.GONE);
                 holder.tv_delete.setVisibility(View.GONE);
@@ -281,12 +274,13 @@ public class Frag_Chat_Manager extends Fragment {
             holder.add_contacts.setFocusableInTouchMode(false);
             holder.add_contacts.setOnClickListener(view1 -> {
                 Intent intent = new Intent(getActivity(), Activity_AddKH.class);
-                intent.putExtra("tenKH", mTenKH.get(position));
-                intent.putExtra("so_dienthoai", mSDT.get(position));
-                intent.putExtra("use_app", mApp.get(position));
+                intent.putExtra("tenKH", chat.getTen_kh());
+                intent.putExtra("so_dienthoai", chat.getSo_dienthoai());
+                intent.putExtra("use_app", chat.getUse_app());
                 startActivity(intent);
             });
-            if (MainActivity.DSkhachhang.contains(mTenKH.get(position))) {
+            Log.e(TAG, "getView: " + MainActivity.DSkhachhang + " " + chat.getTen_kh());
+            if (MainActivity.DSkhachhang.contains(chat.getSo_dienthoai())) {
                 holder.add_contacts.setVisibility(View.GONE);
             }
             holder.tv_delete.setOnClickListener(v -> {
@@ -294,9 +288,9 @@ public class Frag_Chat_Manager extends Fragment {
                 builder.setTitle("Xoá Khách");
                 builder.setMessage("Sẽ xóa hết dữ liệu chat từ khách này, không thể khôi phục và không thể tải lại tin nhắn!");
                 builder.setNegativeButton("Có", (dialog, which) -> {
-                    Contact contact = MainActivity.contactsMap.get(mTenKH.get(position));
+                    Contact contact = MainActivity.contactsMap.get(chat.getTen_kh());
                     if (contact != null) {
-                        MainActivity.contactsMap.remove(mTenKH.get(position));
+                        MainActivity.contactsMap.remove(chat.getTen_kh());
                     }
                     XemListview();
                     dialog.dismiss();
@@ -305,15 +299,15 @@ public class Frag_Chat_Manager extends Fragment {
                 builder.setPositiveButton("Không", (dialog, which) -> dialog.dismiss());
                 builder.show();
             });
-            holder.TenKH.setText(mTenKH.get(position));
-            holder.ndChat.setText(mNoiDung.get(position));
+            holder.TenKH.setText(chat.getTen_kh());
+            holder.ndChat.setText(chat.getNd_goc());
             return view2;
         }
     }
 
     private void notificationPermission() {
         boolean enabled;
-        ComponentName cn = new ComponentName(getActivity(), NotificationReader.class);
+        ComponentName cn = new ComponentName(getActivity(), NotificationNewReader.class);
         String flat = Settings.Secure.getString(getActivity().getContentResolver(), "enabled_notification_listeners");
         enabled = flat != null && flat.contains(cn.flattenToString());
         if (!enabled) {

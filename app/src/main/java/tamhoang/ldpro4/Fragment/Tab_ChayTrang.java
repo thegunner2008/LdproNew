@@ -26,9 +26,9 @@ public class Tab_ChayTrang extends Fragment implements TabHost.OnTabChangeListen
     @Override // android.support.v4.app.Fragment
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         this.v = inflater.inflate(R.layout.frag_mo_report, container, false);
-//        initializeTabHost(savedInstanceState);
+        initializeTabHost(savedInstanceState);
         initializeViewPager();
-//        this.tabHost.setCurrentTab(0);
+        this.tabHost.setCurrentTab(0);
         return this.v;
     }
 
@@ -44,18 +44,18 @@ public class Tab_ChayTrang extends Fragment implements TabHost.OnTabChangeListen
     }
 
     private void initializeTabHost(Bundle savedInstanceState) {
-//        TabHost tabHost2 = (TabHost) this.v.findViewById(16908306);
-//        this.tabHost = tabHost2;
-//        tabHost2.setup();
-//        TabHost.TabSpec tabSpec1 = this.tabHost.newTabSpec("Chạy Trang");
-//        tabSpec1.setIndicator("Vào trang");
-//        tabSpec1.setContent(new FakeContent(getActivity()));
-//        this.tabHost.addTab(tabSpec1);
-//        TabHost.TabSpec tabSpec2 = this.tabHost.newTabSpec("Mã chạy");
-//        tabSpec2.setIndicator("Tài khoản");
-//        tabSpec2.setContent(new FakeContent(getActivity()));
-//        this.tabHost.addTab(tabSpec2);
-//        this.tabHost.setOnTabChangedListener(this);
+        TabHost tabHost2 = (TabHost) this.v.findViewById(R.id.tabhost);
+        this.tabHost = tabHost2;
+        tabHost2.setup();
+        TabHost.TabSpec tabSpec1 = this.tabHost.newTabSpec("Chạy Trang");
+        tabSpec1.setIndicator("Vào trang");
+        tabSpec1.setContent(new FakeContent(getActivity()));
+        this.tabHost.addTab(tabSpec1);
+        TabHost.TabSpec tabSpec2 = this.tabHost.newTabSpec("Mã chạy");
+        tabSpec2.setIndicator("Tài khoản");
+        tabSpec2.setContent(new FakeContent(getActivity()));
+        this.tabHost.addTab(tabSpec2);
+        this.tabHost.setOnTabChangedListener(this);
     }
 
     @Override // android.support.v4.view.ViewPager.OnPageChangeListener

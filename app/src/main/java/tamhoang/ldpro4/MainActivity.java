@@ -1,5 +1,7 @@
 package tamhoang.ldpro4;
 
+import static tamhoang.ldpro4.Congthuc.Congthuc.CheckIsToday;
+
 import android.annotation.SuppressLint;
 import android.app.AlertDialog;
 import android.app.DatePickerDialog;
@@ -56,6 +58,9 @@ import java.util.TimeZone;
 
 import org.drinkless.td.libcore.telegram.Client;
 import org.drinkless.td.libcore.telegram.TdApi;
+import org.greenrobot.eventbus.EventBus;
+import org.greenrobot.eventbus.Subscribe;
+import org.greenrobot.eventbus.ThreadMode;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -65,11 +70,13 @@ import tamhoang.ldpro4.Activity.Activity_GiuSo;
 import tamhoang.ldpro4.Activity.Activity_thaythe;
 import tamhoang.ldpro4.Congthuc.Congthuc;
 import tamhoang.ldpro4.Fragment.Frag_CanChuyen;
+import tamhoang.ldpro4.Fragment.Frag_Change_Password;
 import tamhoang.ldpro4.Fragment.Frag_Chat_Manager;
 import tamhoang.ldpro4.Fragment.Frag_Database;
 import tamhoang.ldpro4.Fragment.Frag_Home;
 import tamhoang.ldpro4.Fragment.Frag_MoRP1;
 import tamhoang.ldpro4.Fragment.Frag_No_new;
+import tamhoang.ldpro4.Fragment.Frag_No_old;
 import tamhoang.ldpro4.Fragment.Frag_SMS_Templates;
 import tamhoang.ldpro4.Fragment.Frag_Setting1;
 import tamhoang.ldpro4.Fragment.Frag_Setting3;
@@ -79,6 +86,7 @@ import tamhoang.ldpro4.Fragment.Tab_Tinnhan;
 import tamhoang.ldpro4.Fragment.TructiepXoso;
 import tamhoang.ldpro4.Telegram.TelegramClient;
 import tamhoang.ldpro4.data.BriteDb;
+import tamhoang.ldpro4.data.BusEvent;
 import tamhoang.ldpro4.data.Contact;
 import tamhoang.ldpro4.data.Database;
 
@@ -86,6 +94,13 @@ public class MainActivity extends AppCompatActivity implements TelegramClient.Ca
     public static Client client;
     public String firstNameTL = "";
     public String lastNameTL = "";
+
+    //string
+    public static final String BO = "Bỏ";
+    public static final String HET_GIO_NHAN = "Hết giờ nhận!";
+    public static final String OK = "Ok";
+    public static final String THIEU = "Thiếu";
+    public static final String TRA_LAI = "Tra lai";
 
     //Acc
     public static JSONObject thongTinAcc;
@@ -98,9 +113,6 @@ public class MainActivity extends AppCompatActivity implements TelegramClient.Ca
     public static String MyToken = "";
     public static NotificationReader Notifi = null;
     static int TIME_REMOVE = 0;
-    public static final int TIPO_DIALOGO = 0;
-    public static ArrayList<String> arr_TenKH = new ArrayList<>();
-    public static ArrayList<Contact> contactslist = new ArrayList<>();
     public static HashMap<String, Contact> contactsMap = new HashMap();
     public static Context context;
     public static ArrayList<HashMap<String, String>> formArray = new ArrayList<>();
@@ -116,46 +128,46 @@ public class MainActivity extends AppCompatActivity implements TelegramClient.Ca
     static Runnable runnable = new Runnable() {
         public void run() {
             try {
-                Iterator<String> keys = MainActivity.json_Tinnhan.keys();
+                Iterator<String> keys = json_Tinnhan.keys();
                 while (true) {
                     if (!keys.hasNext()) {
                         break;
                     }
                     String key = keys.next();
-                    JSONObject dan = new JSONObject(MainActivity.json_Tinnhan.getString(key));
+                    JSONObject dan = new JSONObject(json_Tinnhan.getString(key));
                     dan.put("Time", dan.getInt("Time") + 1);
-                    MainActivity.json_Tinnhan.put(key, dan.toString());
+                    json_Tinnhan.put(key, dan.toString());
                     if (dan.getInt("Time") > 3 && dan.length() > 1) {
                         Iterator<String> tinnhans = dan.keys();
                         while (tinnhans.hasNext()) {
                             String tinnhan = tinnhans.next();
                             if (!tinnhan.contains("Time")) {
-                                NotificationReader notificationReader = new NotificationReader();
+                                NotificationNewReader notificationReader = new NotificationNewReader();
                                 notificationReader.NotificationWearReader(key, tinnhan);
                             }
                         }
                         JSONObject dan2 = new JSONObject();
                         dan2.put("Time", 0);
-                        MainActivity.json_Tinnhan.put(key, dan2.toString());
+                        json_Tinnhan.put(key, dan2.toString());
                     } else if (dan.getInt("Time") > 100) {
-                        MainActivity.json_Tinnhan.remove(key);
+                        json_Tinnhan.remove(key);
                         break;
                     }
                 }
             } catch (JSONException e) {
                 e.printStackTrace();
             }
-            if (MainActivity.json_Tinnhan.length() == 0) {
-                MainActivity.TIME_REMOVE++;
+            if (json_Tinnhan.length() == 0) {
+                TIME_REMOVE++;
             } else {
-                MainActivity.TIME_REMOVE = 0;
+                TIME_REMOVE = 0;
             }
-            if (MainActivity.TIME_REMOVE < 100) {
-                MainActivity.handler.postDelayed(this, 1000);
+            if (TIME_REMOVE < 100) {
+                handler.postDelayed(this, 1000);
                 return;
             }
-            MainActivity.handler.removeCallbacks(MainActivity.runnable);
-            MainActivity.handler = null;
+            handler.removeCallbacks(runnable);
+            handler = null;
         }
     };
     int currentMenuPosition = -1;
@@ -182,8 +194,6 @@ public class MainActivity extends AppCompatActivity implements TelegramClient.Ca
     @SuppressLint("WrongConstant")
     @Override
     public void onCreate(Bundle savedInstanceState) {
-        Object obj;
-        Object obj2;
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
         this.db = new Database(this);
@@ -206,64 +216,50 @@ public class MainActivity extends AppCompatActivity implements TelegramClient.Ca
             }
             cursor.close();
         }
-        @SuppressLint("WrongConstant") View customactionbar = ((LayoutInflater) getSystemService("layout_inflater")).inflate(R.layout.customactionbar, (ViewGroup) null);
+        @SuppressLint("WrongConstant") View customactionbar = ((LayoutInflater) getSystemService("layout_inflater")).inflate(R.layout.customactionbar, null);
         actionBar.setCustomView(customactionbar);
         Calendar calendar = Calendar.getInstance();
         mYear = calendar.get(1);
         mMonth = calendar.get(2);
         mDay = calendar.get(5);
-        this.Text_date = (TextView) customactionbar.findViewById(R.id.myTextDate);
-        this.Text_Menu = (TextView) customactionbar.findViewById(R.id.myTextMenu);
-        TextView textView = this.Text_date;
+        this.Text_date = customactionbar.findViewById(R.id.myTextDate);
+        this.Text_Menu = customactionbar.findViewById(R.id.myTextMenu);
         StringBuilder sb = new StringBuilder();
-        int i = mDay;
-        if (i < 10) {
-            obj = "0" + mDay;
-        } else {
-            obj = Integer.valueOf(i);
+        if (mDay < 10) {
+            sb.append("0");
         }
-        sb.append(obj);
+        sb.append(mDay);
         sb.append("-");
-        int i2 = mMonth;
-        if (i2 + 1 < 10) {
-            obj2 = "0" + (mMonth + 1);
-        } else {
-            obj2 = Integer.valueOf(i2 + 1);
+        if (mMonth + 1 < 10) {
+            sb.append("0");
         }
-        sb.append(obj2);
+        sb.append(mMonth + 1);
         sb.append("-");
         sb.append(mYear);
-        textView.setText(sb.toString());
+        this.Text_date.setText(sb.toString());
         onDateSetListener = (view, year, monthOfYear, dayOfMonth) -> {
-            Object obj1;
-            Object obj21;
-            MainActivity.mYear = year;
-            MainActivity.mMonth = monthOfYear;
-            MainActivity.mDay = dayOfMonth;
-            MainActivity.sms = true;
-            TextView textView1 = MainActivity.this.Text_date;
+            mYear = year;
+            mMonth = monthOfYear;
+            mDay = dayOfMonth;
+            sms = true;
             StringBuilder sb1 = new StringBuilder();
-            if (MainActivity.mDay < 10) {
-                obj1 = "0" + MainActivity.mDay;
-            } else {
-                obj1 = Integer.valueOf(MainActivity.mDay);
+            if (mDay < 10) {
+                sb1.append("0");
             }
-            sb1.append(obj1);
+            sb1.append(mDay);
             sb1.append("-");
-            if (MainActivity.mMonth + 1 < 10) {
-                obj21 = "0" + (MainActivity.mMonth + 1);
-            } else {
-                obj21 = Integer.valueOf(MainActivity.mMonth + 1);
+            if (mMonth + 1 < 10) {
+                sb1.append("0");
             }
-            sb1.append(obj21);
+            sb1.append(mMonth + 1);
             sb1.append("-");
-            sb1.append(MainActivity.mYear);
-            textView1.setText(sb1.toString());
+            sb1.append(mYear);
+            this.Text_date.setText(sb1.toString());
         };
         actionBar.setBackgroundDrawable(new ColorDrawable(getColor(R.color.colorPrimaryDark)));
-        this.drawerLayout = (DrawerLayout) findViewById(R.id.drawer_layout);
-        this.drawerPane = (RelativeLayout) findViewById(R.id.drawer_pane);
-        this.lvNav = (ListView) findViewById(R.id.nav_list);
+        this.drawerLayout = findViewById(R.id.drawer_layout);
+        this.drawerPane = findViewById(R.id.drawer_pane);
+        this.lvNav = findViewById(R.id.nav_list);
         this.listNavItems.add(new NavItem("Trang chủ", "Imei, hạn sử dụng", R.drawable.home));
         this.listNavItems.add(new NavItem("Sửa tin nhắn", "Sửa/tải lại tin nhắn", R.drawable.edit));
         this.listNavItems.add(new NavItem("Quản lý tin nhắn", "SMS, Zalo, Viber, WhatsApp", R.drawable.number_report));
@@ -276,15 +272,25 @@ public class MainActivity extends AppCompatActivity implements TelegramClient.Ca
         this.listNavItems.add(new NavItem("Danh sách khách hàng", "Thông tin khách hàng", R.drawable.contact));
         this.listNavItems.add(new NavItem("Cài đặt", "Cài đặt cho ứng dụng", R.drawable.settings));
         this.listNavItems.add(new NavItem("Các tin nhắn mẫu", "Các cú pháp chuẩn", R.drawable.guilde));
+        this.listNavItems.add(new NavItem("Bảo mật", "Quản lý mật khẩu/Kích hoạt PM", R.drawable.password));
         this.listNavItems.add(new NavItem("Cơ sở dữ liệu", "Cập nhật KQ/Tính tiền", R.drawable.database));
-        this.lvNav.setAdapter((ListAdapter) new NavListAdapter(getApplicationContext(), R.layout.item_nav_list, this.listNavItems));
-        ArrayList arrayList2 = new ArrayList();
-        listFragments = arrayList2;
-        arrayList2.add(new Frag_Home());
+        this.lvNav.setAdapter(new NavListAdapter(getApplicationContext(), R.layout.item_nav_list, this.listNavItems));
+
+        listFragments = new ArrayList<>();
+        listFragments.add(new Frag_Home());
         listFragments.add(new Tab_Tinnhan());
         listFragments.add(new Frag_Chat_Manager());
         listFragments.add(new Frag_CanChuyen());
-        listFragments.add(new Frag_No_new());
+        try {
+            if (jSon_Setting.getInt("kieu_bao_cao") == 1) {
+                listFragments.add(new Frag_No_new());
+            } else {
+                listFragments.add(new Frag_No_old());
+            }
+        } catch (Exception e2) {
+            e2.printStackTrace();
+            listFragments.add(new Frag_No_new());
+        }
         listFragments.add(new Tab_ChayTrang());
         listFragments.add(new Livestream());
         listFragments.add(new TructiepXoso());
@@ -292,29 +298,28 @@ public class MainActivity extends AppCompatActivity implements TelegramClient.Ca
         listFragments.add(new Frag_Setting1());
         listFragments.add(new Frag_Setting3());
         listFragments.add(new Frag_SMS_Templates());
+        listFragments.add(new Frag_Change_Password());
         listFragments.add(new Frag_Database());
         getSupportFragmentManager().beginTransaction().replace(R.id.main_content, listFragments.get(0)).commit();
         setTitle(this.listNavItems.get(0).getTitle());
         this.lvNav.setItemChecked(0, true);
         this.drawerLayout.closeDrawer(this.drawerPane);
         this.lvNav.setOnItemClickListener((adapterView, view, position, id) -> {
-            currentMenuPosition = i;
+            currentMenuPosition = position;
             notifivationNavigated = false;
-            MainActivity.this.getSupportFragmentManager().beginTransaction().replace(R.id.main_content, MainActivity.listFragments.get(position)).commit();
-            MainActivity mainActivity = MainActivity.this;
-            mainActivity.setTitle(mainActivity.listNavItems.get(position).getTitle());
-            MainActivity.this.lvNav.setItemChecked(position, true);
-            MainActivity.this.drawerLayout.closeDrawer(MainActivity.this.drawerPane);
+            getSupportFragmentManager().beginTransaction().replace(R.id.main_content, listFragments.get(position)).commit();
+            setTitle(listNavItems.get(position).getTitle());
+            lvNav.setItemChecked(position, true);
+            drawerLayout.closeDrawer(drawerPane);
         });
 
         ActionBarDrawerToggle r6 = new ActionBarDrawerToggle(this, this.drawerLayout, R.string.drawer_opened, R.string.drawer_closed) {
 
-
             @Override
             public void onDrawerOpened(View drawerView) {
                 super.onDrawerOpened(drawerView);
-                @SuppressLint("WrongConstant") InputMethodManager imm = (InputMethodManager) MainActivity.this.getSystemService("input_method");
-                View view = MainActivity.this.getCurrentFocus();
+                @SuppressLint("WrongConstant") InputMethodManager imm = (InputMethodManager) getSystemService("input_method");
+                View view = getCurrentFocus();
                 if (view == null) {
                     view = new View(MainActivity.this);
                 }
@@ -322,17 +327,15 @@ public class MainActivity extends AppCompatActivity implements TelegramClient.Ca
             }
 
             @Override
-            // android.support.v4.widget.DrawerLayout.DrawerListener, android.support.v7.app.ActionBarDrawerToggle
             public void onDrawerClosed(View drawerView) {
                 super.onDrawerClosed(drawerView);
             }
 
             @Override
-            // android.support.v4.widget.DrawerLayout.DrawerListener, android.support.v7.app.ActionBarDrawerToggle
             public void onDrawerSlide(View drawerView, float slideOffset) {
                 super.onDrawerSlide(drawerView, slideOffset);
-                InputMethodManager imm = (InputMethodManager) MainActivity.this.getSystemService("input_method");
-                View view = MainActivity.this.getCurrentFocus();
+                InputMethodManager imm = (InputMethodManager) getSystemService("input_method");
+                View view = getCurrentFocus();
                 if (view == null) {
                     view = new View(MainActivity.this);
                 }
@@ -342,7 +345,6 @@ public class MainActivity extends AppCompatActivity implements TelegramClient.Ca
         this.actionBarDrawerToggle = r6;
         this.drawerLayout.setDrawerListener(r6);
         this.actionBarDrawerToggle.syncState();
-        Log.e("ContentValues", "onCreate: notificationPermission");
         notificationPermission();
         ((NotificationManager) getSystemService("notification")).cancel(1);
         startService(new Intent(this, ZBroadcast.class));
@@ -352,54 +354,64 @@ public class MainActivity extends AppCompatActivity implements TelegramClient.Ca
         client = TelegramClient.getClient(this);
         client.send(new TdApi.GetMe(), this);
 
-        textErrItemCount = (TextView) customactionbar.findViewById(R.id.error_badge);
-        notification = (RelativeLayout) customactionbar.findViewById(R.id.notification);
+        textErrItemCount = customactionbar.findViewById(R.id.error_badge);
+        notification = customactionbar.findViewById(R.id.notification);
         notification.setOnClickListener(view -> {
             if (!notifivationNavigated || currentMenuPosition == -1) {
                 notifivationNavigated = true;
-                Toast.makeText(MainActivity.this, "Sang màn sửa tin...", 0).show();
-                getSupportFragmentManager().beginTransaction().replace(R.id.main_content, MainActivity.listFragments.get(1)).commit();
+                Toast.makeText(this, "Sang màn sửa tin...", 0).show();
+                getSupportFragmentManager().beginTransaction().replace(R.id.main_content, listFragments.get(1)).commit();
                 setTitle(listNavItems.get(1).getTitle());
                 lvNav.setItemChecked(1, true);
                 drawerLayout.closeDrawer((View) drawerPane);
                 return;
             }
             notifivationNavigated = false;
-            getSupportFragmentManager().beginTransaction().replace(R.id.main_content, MainActivity.listFragments.get(currentMenuPosition)).commit();
+            getSupportFragmentManager().beginTransaction().replace(R.id.main_content, listFragments.get(currentMenuPosition)).commit();
             setTitle(listNavItems.get(currentMenuPosition).getTitle());
             lvNav.setItemChecked(currentMenuPosition, true);
-            drawerLayout.closeDrawer((View) MainActivity.this.drawerPane);
+            drawerLayout.closeDrawer((View) drawerPane);
         });
-        final Handler handler2 = new Handler();
-        handler2.postDelayed((Runnable) () -> {
-            try {
-                String query = "select * from tbl_tinnhanS WHERE phat_hien_loi <> 'ok' AND ngay_nhan = '" + Get_date() + "'";
 
-                Cursor cursor1 = db.GetData(query);
-                mErrItemCount = cursor1.getCount();
-                cursor1.close();
-            } catch (Exception e) {
-                mErrItemCount = 0;
-            }
-
-            setupBadge();
-        }, 3000);
+        postDelayBadge(new BusEvent.SetupErrorBagde(3000));
 
         setupBadge();
     }
 
     private void toggleNotificationReader() {
         PackageManager pm = getPackageManager();
-        pm.setComponentEnabledSetting(new ComponentName(this, tamhoang.ldpro4.NotificationReader.class),
+        pm.setComponentEnabledSetting(new ComponentName(this, tamhoang.ldpro4.NotificationNewReader.class),
                 PackageManager.COMPONENT_ENABLED_STATE_DISABLED, PackageManager.DONT_KILL_APP);
 
-        pm.setComponentEnabledSetting(new ComponentName(this, tamhoang.ldpro4.NotificationReader.class),
+        pm.setComponentEnabledSetting(new ComponentName(this, tamhoang.ldpro4.NotificationNewReader.class),
                 PackageManager.COMPONENT_ENABLED_STATE_ENABLED, PackageManager.DONT_KILL_APP);
     }
 
     public static void setListFragment(int i) {
         listFragments.remove(4);
-        listFragments.add(4, new Frag_No_new());
+        if (i == 1) {
+            listFragments.add(4, new Frag_No_new());
+        } else {
+            listFragments.add(4, new Frag_No_old());
+        }
+    }
+
+    @Subscribe(threadMode = ThreadMode.MAIN)
+    public void postDelayBadge(BusEvent.SetupErrorBagde event) {
+        final Handler handler = new Handler();
+        handler.postDelayed((Runnable) () -> {
+            try {
+                String query = "select * from tbl_tinnhanS WHERE phat_hien_loi <> 'ok' AND ngay_nhan = '" + Get_date() + "'";
+
+                Cursor cursor = db.GetData(query);
+                mErrItemCount = cursor.getCount();
+                cursor.close();
+            } catch (Exception e) {
+                mErrItemCount = 0;
+            }
+
+            setupBadge();
+        }, event.getDelayTime());
     }
 
     public void setupBadge() {
@@ -449,9 +461,7 @@ public class MainActivity extends AppCompatActivity implements TelegramClient.Ca
                         firstNameTL = updateUser.user.firstName;
                         lastNameTL = updateUser.user.lastName;
                         json.put("title", "TL - " + firstNameTL + " " + lastNameTL);
-                        JSONObject jSONObject = Json_Chat_Telegram;
-                        String sb = updateUser.user.id + "";
-                        jSONObject.put(sb, json);
+                        Json_Chat_Telegram.put(updateUser.user.id + "", json);
                         return;
                     }
                     return;
@@ -460,7 +470,7 @@ public class MainActivity extends AppCompatActivity implements TelegramClient.Ca
                     return;
                 }
             case TdApi.UpdateConnectionState.CONSTRUCTOR /*{ENCODED_INT: 1469292078}*/:
-                if (((TdApi.UpdateConnectionState) object).state.getConstructor() == 48608492) {
+                if (((TdApi.UpdateConnectionState) object).state.getConstructor() == TdApi.ConnectionStateReady.CONSTRUCTOR) {
                     Log.d("AuthActivity", "onResult: ConnectionStateReady");
                     return;
                 }
@@ -472,12 +482,12 @@ public class MainActivity extends AppCompatActivity implements TelegramClient.Ca
                 TdApi.UpdateNewChat updateNewChat = (TdApi.UpdateNewChat) object;
                 try {
                     if (!Json_Chat_Telegram.has(updateNewChat.chat.id + "")) {
-                        JSONObject json2 = new JSONObject();
+                        JSONObject json = new JSONObject();
                         String type2 = updateNewChat.chat.type.toString();
-                        json2.put("type", type2.substring(0, type2.indexOf("{")).trim());
-                        json2.put("basicGroupId", updateNewChat.chat.id);
-                        json2.put("title", "TL - " + updateNewChat.chat.title);
-                        Json_Chat_Telegram.put(updateNewChat.chat.id + "", json2);
+                        json.put("type", type2.substring(0, type2.indexOf("{")).trim());
+                        json.put("basicGroupId", updateNewChat.chat.id);
+                        json.put("title", "TL - " + updateNewChat.chat.title);
+                        Json_Chat_Telegram.put(updateNewChat.chat.id + "", json);
                         return;
                     }
                     return;
@@ -495,9 +505,9 @@ public class MainActivity extends AppCompatActivity implements TelegramClient.Ca
             cursor2.close();
         }
         TdApi.UpdateNewMessage newMessage = (TdApi.UpdateNewMessage) object;
-        String senderUserId = newMessage.message.senderUserId + "";
+        String senderUserId = newMessage.message.senderId + "";
         String chatId = newMessage.message.chatId + "";
-        String text = ((TdApi.MessageText) newMessage.message.content).text.replace("'", "");
+        String text = ((TdApi.MessageText) newMessage.message.content).text.text.replace("'", "");
         tinHethong = !newMessage.message.isChannelPost && newMessage.message.chatId != 777000 && newMessage.message.chatId != 93372553;
         if (tinHethong) {
             Calendar calendar = Calendar.getInstance();
@@ -506,17 +516,18 @@ public class MainActivity extends AppCompatActivity implements TelegramClient.Ca
             SimpleDateFormat hourFormat = new SimpleDateFormat("HH:mm:ss");
             dmyFormat.setTimeZone(TimeZone.getDefault());
             hourFormat.setTimeZone(TimeZone.getDefault());
-            String mNgayNhan = dmyFormat.format(calendar.getTime());
+            Date time = new Date((long) newMessage.message.date * 1000);
+            String mNgayNhan = dmyFormat.format(time);
             String mGionhan = hourFormat.format(calendar.getTime());
+
             try {
                 ten_kh = Json_Chat_Telegram.getJSONObject(chatId).getString("title");
             } catch (JSONException e3) {
                 Cursor cursor3 = this.db.GetData("Select * From tbl_kh_new Where sdt = '" + chatId + "'");
                 if (cursor3.getCount() > 0) {
                     cursor3.moveToFirst();
-                    String ten_kh2 = cursor3.getString(0);
+                    ten_kh = cursor3.getString(0);
                     cursor3.close();
-                    ten_kh = ten_kh2;
                 } else {
                     ten_kh = "TL - " + chatId;
                 }
@@ -526,35 +537,27 @@ public class MainActivity extends AppCompatActivity implements TelegramClient.Ca
             } else {
                 type_kh = 1;
             }
-            this.db.QueryData("Insert into Chat_database Values( null,'" + mNgayNhan + "', '" + mGionhan + "', " + type_kh + ", '" + ten_kh + "','" + chatId + "', 'TL','" + text + "',1)");
+            this.db.QueryData("Insert into Chat_database Values( null,'" + mNgayNhan + "', '" + mGionhan + "', "
+                    + type_kh + ", '" + ten_kh + "','" + chatId + "', 'TL','" + text + "',1)");
             sms = true;
-            Database database = this.db;
             String sb2 = "Select * From tbl_tinnhanS WHERE ngay_nhan = '" + mNgayNhan +
-                    "' And Ten_kh = '" + ten_kh +
-                    "' AND nd_goc = '" + text + "'";
-            Cursor cursor111 = database.GetData(sb2);
+                    "' And Ten_kh = '" + ten_kh + "' AND nd_goc = '" + text + "'";
+            Cursor cursor111 = this.db.GetData(sb2);
             if (cursor111.getCount() == 0) {
-                Cursor cursor4 = this.db.GetData("Select * From tbl_kh_new Where sdt = '" + chatId + "'");
-                if (cursor4.getCount() <= 0 || text.length() <= 5) {
-                    cursor = cursor4;
-                } else {
-                    cursor4.moveToFirst();
-                    if (cursor4.getInt(3) == 1 && type_kh == 1) {
+                cursor = this.db.GetData("Select * From tbl_kh_new Where sdt = '" + chatId + "'");
+                if (cursor.getCount() > 0 && text.length() > 5 && CheckIsToday(time)){
+                    cursor.moveToFirst();
+                    if (cursor.getInt(3) == 1 && type_kh == 1) {
                         Xulytin(chatId, text, mNgayNhan, mGionhan, type_kh);
                         return;
                     }
-                    cursor = cursor4;
-                    if (cursor.getInt(3) == 2) {
-                        if (type_kh == 1 && text.indexOf("Tra lai") == 0) {
-                            Xulytin(chatId, text, mNgayNhan, mGionhan, type_kh);
-                            return;
-                        }
+                    if (cursor.getInt(3) == 2 && type_kh == 1 && text.indexOf("Tra lai") == 0) {
+                        Xulytin(chatId, text, mNgayNhan, mGionhan, type_kh);
+                        return;
                     }
-                    if (cursor.getInt(3) == 3) {
-                        if (type_kh == 1) {
-                            Xulytin(chatId, text, mNgayNhan, mGionhan, type_kh);
-                            return;
-                        }
+                    if (cursor.getInt(3) == 3 && type_kh == 1) {
+                        Xulytin(chatId, text, mNgayNhan, mGionhan, type_kh);
+                        return;
                     }
                 }
                 cursor.close();
@@ -569,21 +572,20 @@ public class MainActivity extends AppCompatActivity implements TelegramClient.Ca
         Log.e("ContentValues", "onAuthStateUpdated: constructor" +constructor);
 
         //TODO: fake constructor
-//        if (constructor == 52643073) {
         if (constructor == TdApi.AuthorizationStateWaitCode.CONSTRUCTOR) {
-            new Handler(Looper.getMainLooper()).post(MainActivity.this::showDialog2);
-        } else if (constructor == 612103496) {
+            new Handler(Looper.getMainLooper()).post(this::showDialog2);
+        } else if (constructor == TdApi.AuthorizationStateWaitEncryptionKey.CONSTRUCTOR) {
             client.send(new TdApi.CheckDatabaseEncryptionKey(), this);
-        } else if (constructor == 904720988) {
+        } else if (constructor == TdApi.AuthorizationStateWaitTdlibParameters.CONSTRUCTOR) {
             TdApi.TdlibParameters authStateRequest = new TdApi.TdlibParameters();
-            authStateRequest.apiId = 1855995;
-            authStateRequest.apiHash = "a4a4dcc61215e41de68609fabb28bcb8";
+            authStateRequest.apiId = 10464015;
+            authStateRequest.apiHash = "1f1b9d36ea61c12e771746fc17120173";
             authStateRequest.useMessageDatabase = true;
             authStateRequest.useSecretChats = true;
             authStateRequest.systemLanguageCode = "en";
             authStateRequest.databaseDirectory = getApplicationContext().getFilesDir().getAbsolutePath();
             authStateRequest.deviceModel = "Moto";
-            authStateRequest.systemVersion = "7.0";
+            authStateRequest.systemVersion = "9.0";
             authStateRequest.applicationVersion = "0.1";
             authStateRequest.enableStorageOptimizer = true;
             client.send(new TdApi.SetTdlibParameters(authStateRequest), this);
@@ -616,24 +618,23 @@ public class MainActivity extends AppCompatActivity implements TelegramClient.Ca
                         if (!body.contains("Tra lai")) {
                             try {
                                 S = "Insert Into tbl_tinnhanS values (null, '" + mNgayNhan + "', '" + mGionhan + "'," + type_kh + ", '" + Ten_KH + "', '" + getTenKH.getString(1) + "','TL', " + soTN + ", '" + body + "',null,'" + body + "', 'ko',0,1,1, null)";
+                                this.db.QueryData(S);
                                 str = "Tra lai";
-                            } catch (SQLException e3) {
-                            }
+                            } catch (SQLException e3) {}
                         } else {
                             str = "Tra lai";
                             try {
                                 S = "Insert Into tbl_tinnhanS values (null, '" + mNgayNhan + "', '" + mGionhan + "'," + type_kh + ", '" + Ten_KH + "', '" + getTenKH.getString(1) + "','TL', " + soTN + ", '" + body + "',null,'" + body + "', 'ko',0,0,0, null)";
                                 this.db.QueryData(S);
-                            } catch (SQLException e5) {
-                            }
+                            } catch (SQLException e5) {}
                         }
+
                         if (Congthuc.CheckDate(hanSuDung)) {
-                            Database database = this.db;
                             String sb = "Select * from tbl_tinnhanS WHERE ngay_nhan = '" + mNgayNhan +
                                     "' AND so_dienthoai = '" + mSDT +
                                     "' AND so_tin_nhan = " + soTN +
                                     " AND type_kh = " + type_kh;
-                            Cursor c = database.GetData(sb);
+                            Cursor c = this.db.GetData(sb);
                             c.moveToFirst();
                             try {
                                 this.db.Update_TinNhanGoc(c.getInt(0), 1);
@@ -650,7 +651,7 @@ public class MainActivity extends AppCompatActivity implements TelegramClient.Ca
                         }
                     } catch (SQLException e8) {
                     }
-                    if (getTenKH != null && !getTenKH.isClosed()) {
+                    if (!getTenKH.isClosed()) {
                         getTenKH.close();
                         return;
                     }
@@ -672,8 +673,13 @@ public class MainActivity extends AppCompatActivity implements TelegramClient.Ca
     }
 
     public static void sendMessage(long chatId, String message) {
-//        TdApi.InlineKeyboardButton[] row = {new TdApi.InlineKeyboardButton("https://telegram.org?1", new TdApi.InlineKeyboardButtonTypeUrl()), new TdApi.InlineKeyboardButton("https://telegram.org?2", new TdApi.InlineKeyboardButtonTypeUrl()), new TdApi.InlineKeyboardButton("https://telegram.org?3", new TdApi.InlineKeyboardButtonTypeUrl())};
-//        client.send(new TdApi.SendMessage(chatId, 0, null, new TdApi.ReplyMarkupInlineKeyboard(new TdApi.InlineKeyboardButton[][]{row, row, row}), new TdApi.InputMessageText(new TdApi.FormattedText(message, null), false, true)), null);
+
+      TdApi.InlineKeyboardButton[] row = {new TdApi.InlineKeyboardButton("https://telegram.org?1", new TdApi.InlineKeyboardButtonTypeUrl()), new TdApi.InlineKeyboardButton("https://telegram.org?2", new TdApi.InlineKeyboardButtonTypeUrl()), new TdApi.InlineKeyboardButton("https://telegram.org?3", new TdApi.InlineKeyboardButtonTypeUrl())};
+        client.send(
+                new TdApi.SendMessage(chatId, 0L, 0L, null,
+                        new TdApi.ReplyMarkupInlineKeyboard(new TdApi.InlineKeyboardButton[][]{row, row, row}),
+                        new TdApi.InputMessageText(new TdApi.FormattedText(message, null), false, true)),
+                null);
     }
 
     public void Suagia() {
@@ -709,31 +715,15 @@ public class MainActivity extends AppCompatActivity implements TelegramClient.Ca
 
     private void notificationPermission() {
         boolean enabled;
-        ComponentName cn = new ComponentName(this, NotificationReader.class);
+        ComponentName cn = new ComponentName(this, NotificationNewReader.class);
         String flat = Settings.Secure.getString(getContentResolver(), "enabled_notification_listeners");
-        if (flat == null || !flat.contains(cn.flattenToString())) {
-            enabled = false;
-        } else {
-            enabled = true;
-        }
+        enabled = flat != null && flat.contains(cn.flattenToString());
         if (!enabled) {
-            showAlertBox("Truy cập thông báo!", "Hãy cho phép phần mềm được truy cập thông báo của điện thoại để kích hoạt chức năng nhắn tin.").setPositiveButton("Ok", new DialogInterface.OnClickListener() {
-                /* class tamhoang.ldpro4.MainActivity.AnonymousClass7 */
-
-                public void onClick(DialogInterface dialogInterface, int i) {
-                    if (Build.VERSION.SDK_INT >= 22) {
-                        MainActivity.this.startActivity(new Intent("android.settings.ACTION_NOTIFICATION_LISTENER_SETTINGS"));
-                    } else {
-                        MainActivity.this.startActivity(new Intent("android.settings.ACTION_NOTIFICATION_LISTENER_SETTINGS"));
-                    }
-                }
-            }).setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
-                /* class tamhoang.ldpro4.MainActivity.AnonymousClass6 */
-
-                public void onClick(DialogInterface dialogInterface, int i) {
-                    dialogInterface.dismiss();
-                }
-            }).show().setCanceledOnTouchOutside(false);
+            showAlertBox("Truy cập thông báo!", "Hãy cho phép phần mềm được truy cập thông báo của điện thoại để kích hoạt chức năng nhắn tin.")
+                    .setPositiveButton("Ok", (dialogInterface, i) -> {
+                        startActivity(new Intent("android.settings.ACTION_NOTIFICATION_LISTENER_SETTINGS"));
+                    }).setNegativeButton("Cancel", (dialogInterface, i) -> dialogInterface.dismiss())
+                    .show().setCanceledOnTouchOutside(false);
         }
     }
 
@@ -755,7 +745,6 @@ public class MainActivity extends AppCompatActivity implements TelegramClient.Ca
     }
 
     public static boolean deleteDir(File dir) {
-        String[] children;
         if (dir != null && dir.isDirectory()) {
             for (String str : dir.list()) {
                 if (!deleteDir(new File(dir, str))) {
@@ -849,25 +838,26 @@ public class MainActivity extends AppCompatActivity implements TelegramClient.Ca
             notifivationNavigated = false;
             int order = item.getOrder();
             if (order == 0) {
-                MainActivity.this.startActivity(new Intent(MainActivity.this,  Activity_thaythe.class));
+                startActivity(new Intent(this,  Activity_thaythe.class));
             } else if (order == 1) {
-                MainActivity.this.startActivity(new Intent(MainActivity.this, Activity_GiuSo.class));
+                this.startActivity(new Intent(this, Activity_GiuSo.class));
             } else if (order == 2) {
-                MainActivity.this.startActivity(new Intent(MainActivity.this, Activity_ChuyenThang.class));
+                this.startActivity(new Intent(this, Activity_ChuyenThang.class));
             } else if (order == 3) {
-                if (MainActivity.this.my_id != "") {
-                    AlertDialog.Builder bui = new AlertDialog.Builder(MainActivity.this);
+                if (this.my_id != "") {
+                    AlertDialog.Builder bui = new AlertDialog.Builder(this);
                     bui.setTitle("Thoát Telegram?");
                     bui.setPositiveButton("OK", (dialog, which) -> {
-                        MainActivity.this.db.QueryData("Update So_om set  Sphu1 ='' where ID = 1");
-                        MainActivity.client.send(new TdApi.LogOut(), this, null);
-                        MainActivity.this.my_id = "";
-                        Toast.makeText(MainActivity.this, "Đã thoát Telegram", Toast.LENGTH_SHORT).show();
+                        db.QueryData("Update So_om set  Sphu1 ='' where ID = 1");
+                        client.send(new TdApi.LogOut(), this, null);
+                        TelegramClient.client = null;
+                        my_id = "";
+                        Toast.makeText(this, "Đã thoát Telegram", Toast.LENGTH_SHORT).show();
                     });
                     bui.setNegativeButton("Cancel", (dialog, which) -> dialog.cancel());
                     bui.create().show();
                 } else {
-                    MainActivity.this.showDialog1();
+                    showDialog1();
                 }
             }
             return true;
@@ -884,12 +874,12 @@ public class MainActivity extends AppCompatActivity implements TelegramClient.Ca
         ((Button) dialog.findViewById(R.id.loginBtn)).setOnClickListener(view -> {
             String PhoneNumber = authPhone.getText().toString();
             if (PhoneNumber.length() == 10) {
-                client = TelegramClient.getClient(MainActivity.this);
-                client.send(new TdApi.SetAuthenticationPhoneNumber("+84" + PhoneNumber.substring(1), false, false), MainActivity.this);
+                client = TelegramClient.getClient(this);
+                client.send(new TdApi.SetAuthenticationPhoneNumber("+84" + PhoneNumber.substring(1), null), this);
                 dialog.dismiss();
                 return;
             }
-            Toast.makeText(MainActivity.this, "Hãy nhập 10 số của số điện thoại!", Toast.LENGTH_SHORT).show();
+            Toast.makeText(this, "Hãy nhập 10 số của số điện thoại!", Toast.LENGTH_SHORT).show();
         });
         dialog.setCancelable(true);
         dialog.show();
@@ -900,17 +890,14 @@ public class MainActivity extends AppCompatActivity implements TelegramClient.Ca
         dialog.setContentView(R.layout.activity_auth);
         dialog.getWindow().setLayout(-1, -2);
         final EditText authPhone = (EditText) dialog.findViewById(R.id.authCode);
-        ((Button) dialog.findViewById(R.id.checkBtn)).setOnClickListener(new View.OnClickListener() {
-
-            public void onClick(View view) {
-                String code = authPhone.getText().toString();
-                if (code.length() == 5) {
-                    client.send(new TdApi.CheckAuthenticationCode(code, firstNameTL, lastNameTL), MainActivity.this);
-                    dialog.dismiss();
-                    return;
-                }
-                Toast.makeText(MainActivity.this, "Hãy nhập đủ 5 số được gửi về Telegram!", Toast.LENGTH_SHORT).show();
+        ((Button) dialog.findViewById(R.id.checkBtn)).setOnClickListener(view -> {
+            String code = authPhone.getText().toString();
+            if (code.length() == 5) {
+                client.send(new TdApi.CheckAuthenticationCode(code), this);
+                dialog.dismiss();
+                return;
             }
+            Toast.makeText(this, "Hãy nhập đủ 5 số được gửi về Telegram!", Toast.LENGTH_SHORT).show();
         });
         dialog.setCancelable(true);
         dialog.show();
@@ -918,16 +905,11 @@ public class MainActivity extends AppCompatActivity implements TelegramClient.Ca
 
     @Override // android.support.v4.app.FragmentActivity
     public void onBackPressed() {
-        new AlertDialog.Builder(this).setMessage("Bạn có muốn thoát không?").setCancelable(true).setPositiveButton("Thoát", new DialogInterface.OnClickListener() {
-            /* class tamhoang.ldpro4.MainActivity.AnonymousClass11 */
-
-            @SuppressLint("WrongConstant")
-            public void onClick(DialogInterface dialog, int id) {
-                Intent homeIntent = new Intent("android.intent.action.MAIN");
-                homeIntent.addCategory("android.intent.category.HOME");
-                homeIntent.setFlags(67108864);
-                MainActivity.this.startActivity(homeIntent);
-            }
+        new AlertDialog.Builder(this).setMessage("Bạn có muốn thoát không?").setCancelable(true).setPositiveButton("Thoát", (dialog, id) -> {
+            Intent homeIntent = new Intent("android.intent.action.MAIN");
+            homeIntent.addCategory("android.intent.category.HOME");
+            homeIntent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
+            startActivity(homeIntent);
         }).setNegativeButton("Không", (DialogInterface.OnClickListener) null).show();
     }
 
@@ -955,7 +937,6 @@ public class MainActivity extends AppCompatActivity implements TelegramClient.Ca
         }
     }
 
-    /* access modifiers changed from: protected */
     public Dialog onCreateDialog(int id) {
         if (id != 0) {
             return null;
@@ -975,7 +956,6 @@ public class MainActivity extends AppCompatActivity implements TelegramClient.Ca
         return super.onOptionsItemSelected(item);
     }
 
-    /* access modifiers changed from: protected */
     @Override // android.support.v7.app.AppCompatActivity
     public void onPostCreate(Bundle savedInstanceState) {
         super.onPostCreate(savedInstanceState);
@@ -1001,5 +981,17 @@ public class MainActivity extends AppCompatActivity implements TelegramClient.Ca
         if (grantResults.length <= 0 || grantResults[0] != 0) {
             Toast.makeText(getApplicationContext(), "Can't access messages.", Toast.LENGTH_SHORT).show();
         }
+    }
+
+    @Override
+    public void onStart() {
+        super.onStart();
+        EventBus.getDefault().register(this);
+    }
+
+    @Override
+    public void onStop() {
+        super.onStop();
+        EventBus.getDefault().unregister(this);
     }
 }
