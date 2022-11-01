@@ -126,7 +126,7 @@ public class Database extends SQLiteOpenHelper {
         new Intent(context, MainActivity.class).addFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK);
         PendingIntent pendingIntent = taskStackBuilder.getPendingIntent(Constants.ALL_SMS_LOADER, 134217728);
         NotificationCompat.Builder nBuider = new NotificationCompat.Builder(context);
-        nBuider.setContentTitle("Ld.pro");
+        nBuider.setContentTitle("LdPro");
         nBuider.setContentText(aMessage);
         nBuider.setSmallIcon(R.drawable.icon);
         nBuider.setContentIntent(pendingIntent);

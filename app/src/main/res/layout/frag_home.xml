@@ -123,8 +123,7 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:orientation="vertical"
-                android:visibility="gone"
-                tools:visibility="visible">
+                android:visibility="visible">
 
                 <View
                     android:layout_width="match_parent"
@@ -196,11 +195,11 @@
                         android:orientation="horizontal">
 
                         <TextView
-                            android:layout_width="120dp"
+                            android:layout_width="100dp"
                             android:layout_height="match_parent"
                             android:padding="5dp"
                             android:paddingLeft="10dp"
-                            android:text="Trang chủ:"
+                            android:text="Link tải demo:"
                             android:textAlignment="viewEnd"
                             android:textColor="@color/blue"
                             android:textSize="14dp"
@@ -215,15 +214,16 @@
                             android:minWidth="0dp"
                             android:minHeight="0dp"
                             android:paddingLeft="10dp"
-                            android:text="http://ldpro.pro"
+                            android:text="Click để tải app demo mới"
                             android:textAlignment="center"
                             android:textColor="@color/blue"
                             android:textSize="14dp"
-                            android:textStyle="bold"
+                            android:textStyle="italic"
                             tools:ignore="RtlCompat" />
                     </LinearLayout>
 
                     <LinearLayout
+                        android:visibility="gone"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:orientation="horizontal">
@@ -278,11 +278,12 @@
                 </LinearLayout>
 
                 <TextView
+                    android:id="@+id/tv_version"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_weight="1"
                     android:paddingTop="10dp"
-                    android:text="  LdPro - Version 2.9"
+                    android:text="  LdPro - Version 2.93 (30/10/22)."
                     android:textColor="@color/red"
                     android:textSize="20dp"
                     android:textStyle="bold" />
@@ -300,7 +301,7 @@
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:padding="2dp"
-                    android:text="  - Sửa khống độ dài tin chuyển đi, Max là 2000 ký tự."
+                    android:text="  - Cài đặt bảo mật."
                     android:textColor="@color/red"
                     android:textSize="15dp"
                     android:textStyle="bold" />
@@ -309,7 +310,7 @@
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:padding="2dp"
-                    android:text="  - Tính giá từng xiên phần chạy trang."
+                    android:text="  - Cập nhật phiên bản mới trực tiếp trên app"
                     android:textColor="@color/red"
                     android:textSize="15dp"
                     android:textStyle="bold" />
@@ -318,11 +319,37 @@
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:padding="2dp"
-                    android:text="  - Sửa lại phần chạy Lô Live vì trang sửa đường link API."
+                    android:text="  - Thêm nguồn lấy kết quả trực tiếp."
                     android:textColor="@color/red"
                     android:textSize="15dp"
                     android:textStyle="bold" />
 
+                <TextView
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:paddingTop="10dp"
+                    android:text="  Quy định sử dụng phần mềm:"
+                    android:textColor="@color/blue"
+                    android:textSize="14dp"
+                    android:textStyle="bold" />
+
+                <TextView
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:padding="2dp"
+                    android:text=" - Phần mềm này được viết nhằm phục vụ cho các đại lý xổ số tính toán số liệu khách hàng. Tác giả hoàn toàn không chịu trách nhiệm nếu người dùng sử dụng phần mềm vào mục đích khác."
+                    android:textColor="@color/red"
+                    android:textSize="15dp"
+                    android:textStyle="bold" />
+
+                <TextView
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:padding="2dp"
+                    android:text="  - Cảm ơn quý khách hàng đã tin tưởng và sử dụng sản phẩm của chúng tôi !"
+                    android:textColor="@color/red"
+                    android:textSize="15dp"
+                    android:textStyle="bold" />
                 <TextView
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
@@ -334,7 +361,7 @@
                     android:layout_width="wrap_content"
                     android:layout_height="match_parent"
                     android:padding="2dp"
-                    android:text="  * Mong mọi người đóng góp ý kiến để phần mềm ngày càng hoàn thiện hơn."
+                    android:text="  * Lưu ý: Hãy cài Zalo bản cũ, ( Liên hệ đại lý để lấy Zalo bản cũ) và tắt tự động cập nhật ứng dụng để khắc phục lỗi thiếu tin trên Zalo bản mới."
                     android:textColor="@color/blue"
                     android:textSize="15dp"
                     android:textStyle="bold" />

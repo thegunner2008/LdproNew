@@ -39,7 +39,7 @@ import tamhoang.ldpro4.R;
 import tamhoang.ldpro4.data.Database;
 
 public class Frag_Setting1 extends Fragment {
-    Button btn_themKH;
+    ImageButton btn_themKH;
     Database db;
     ListView lview;
     public List<String> mAddress = new ArrayList();
@@ -58,10 +58,8 @@ public class Frag_Setting1 extends Fragment {
         this.v = inflater.inflate(R.layout.frag_setting1, container, false);
         this.db = new Database(getActivity());
         this.lview = (ListView) this.v.findViewById(R.id.lv_setting1);
-        Button button = (Button) this.v.findViewById(R.id.btn_them_KH);
-        FloatingActionButton fab_add = (FloatingActionButton) this.v.findViewById(R.id.fab_add);
-        this.btn_themKH = button;
-        fab_add.setOnClickListener(v -> {
+        this.btn_themKH = this.v.findViewById(R.id.btn_them_KH);
+        this.btn_themKH.setOnClickListener(v -> {
             Intent intent = new Intent(getActivity(), Activity_AddKH.class);
             intent.putExtra("tenKH", "");
             intent.putExtra("use_app", "sms");

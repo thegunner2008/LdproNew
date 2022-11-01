@@ -73,9 +73,8 @@ public class NotificationReader extends NotificationListenerService {
 
         NotificationCompat.Builder notificationBuilder = new NotificationCompat.Builder(this, channelId);
         Notification notification = notificationBuilder.setOngoing(true)
-                .setSmallIcon(R.drawable.icon)
-                .setContentTitle("LDPro")
-                .setContentText("Đang chạy")
+                .setSmallIcon(R.drawable.change)
+                .setContentTitle("LdPro - Đang chạy")
                 .setPriority(PRIORITY_MAX)
                 .setCategory(Notification.CATEGORY_SERVICE).build();
         startForeground(101, notification);
@@ -355,26 +354,28 @@ public class NotificationReader extends NotificationListenerService {
 
     public void NotificationWearReader(String mName, String message) {
         Contact contact = MainActivity.contactsMap.get(mName);
-        Log.e(TAG, "NotificationWearReader: name: " + mName + " - Message: " + message + " isAppOnForeground ");
+        Log.e(TAG, "NotificationWearReader: name: " + mName + " - Message: " + message + " contact " + contact);
 
         if (contact != null) {
             try {
+                if (contact.remoteInput == null && contact.name.contains("ZL - ")) {
+                    contact.action.sendReply(MainActivity.Notifi, message);
+                } else {
+                    Intent intent = new Intent();
+                    Bundle bundle = contact.remoteExtras;
 
-                Intent intent = new Intent();
-                Bundle bundle = contact.remoteExtras;
+                    RemoteInput[] remoteInputArr = {contact.remoteInput};
 
-                RemoteInput[] remoteInputArr = {contact.remoteInput};
+                    bundle.putCharSequence(remoteInputArr[0].getResultKey(), message);
+                    RemoteInput.addResultsToIntent(remoteInputArr, intent, bundle);
 
-                bundle.putCharSequence(remoteInputArr[0].getResultKey(), message);
-                RemoteInput.addResultsToIntent(remoteInputArr, intent, bundle);
-
-                contact.pendingIntent.send(MainActivity.Notifi, 0, intent);
+                    contact.pendingIntent.send(MainActivity.Notifi, 0, intent);
+                }
 
                 if (MainActivity.Json_Tinnhan.has(mName)) MainActivity.Json_Tinnhan.remove(mName);
 
             } catch (Exception e) {
                 Log.e(TAG, "aaaa onNotificationPosted: error " + e);
-//                Toast.makeText(context, "Notification Error " + e.getMessage(), Toast.LENGTH_LONG).show();
                 e.printStackTrace();
             }
         }

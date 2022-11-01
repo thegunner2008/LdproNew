@@ -7,6 +7,7 @@ import android.app.AlertDialog;
 import android.app.DatePickerDialog;
 import android.app.Dialog;
 import android.app.NotificationManager;
+import android.app.ProgressDialog;
 import android.content.ComponentName;
 import android.content.Context;
 import android.content.DialogInterface;
@@ -55,6 +56,7 @@ import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.TimeZone;
+import java.util.function.Function;
 
 import org.drinkless.td.libcore.telegram.Client;
 import org.drinkless.td.libcore.telegram.TdApi;
@@ -125,6 +127,8 @@ public class MainActivity extends AppCompatActivity implements TelegramClient.Ca
     public static int mMonth;
     public static int mYear;
     private static DatePickerDialog.OnDateSetListener onDateSetListener;
+    private ProgressDialog progressDialog;
+
     static Runnable runnable = new Runnable() {
         public void run() {
             try {
@@ -964,6 +968,19 @@ public class MainActivity extends AppCompatActivity implements TelegramClient.Ca
 
     public String Get_link() {
         return "https://api.ldpro.us/";
+    }
+
+    public void showLoadingDialog() {
+        progressDialog = new ProgressDialog(this);
+        progressDialog.setMessage("Đang tải dữ liệu...");
+        progressDialog.setCancelable(false);
+        progressDialog.show();
+    }
+
+    public void hideLoadingDialog() {
+        if (progressDialog != null) {
+            progressDialog.dismiss();
+        }
     }
 
     @Override // android.support.v4.app.ActivityCompat.OnRequestPermissionsResultCallback, android.support.v4.app.FragmentActivity

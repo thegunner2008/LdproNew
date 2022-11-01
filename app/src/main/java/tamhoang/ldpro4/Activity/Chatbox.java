@@ -254,11 +254,11 @@ public class Chatbox extends BaseToolBarActivity {
         Database database = this.db;
         Cursor cursor = database.GetData("Select * From tbl_kh_new Where ten_kh = '" + this.ten_kh + "'");
         if (cursor.getCount() != 0) {
-            menu.add("Sửa tin");
-            menu.add("Xem chi tiết");
+            menu.add(SUA_TIN);
+            menu.add(XEM_CHI_TIET);
         }
-        menu.add("Copy");
-        menu.add("Xóa");
+        menu.add(COPY);
+        menu.add(XOA);
         cursor.close();
     }
 
@@ -266,25 +266,23 @@ public class Chatbox extends BaseToolBarActivity {
         super.onContextItemSelected(item);
         @SuppressLint("WrongConstant")
         ClipboardManager clipboard = (ClipboardManager) getSystemService("clipboard");
-        if (item.getTitle() == "Sửa tin") {
+        if (item.getTitle() == SUA_TIN) {
             if (this.mXulytin.get(this.position).length() > 0) {
                 Intent intent = new Intent(this, Activity_Tinnhan.class);
                 intent.putExtra("m_ID", this.mID_TinNhan.get(this.position));
                 startActivity(intent);
             }
-        } else if (item.getTitle() == "Xem chi tiết") {
+        } else if (item.getTitle() == XEM_CHI_TIET) {
             if (this.mXulytin.get(this.position).indexOf("ok") == 0) {
                 Intent intent2 = new Intent(this, Activity_CTTinnhan.class);
                 intent2.putExtra("m_ID", this.mID_TinNhan.get(this.position));
                 intent2.putExtra("type_kh", this.type_kh.get(this.position));
                 startActivity(intent2);
             }
-        } else if (item.getTitle() == "Copy") {
+        } else if (item.getTitle() == COPY) {
             clipboard.setPrimaryClip(ClipData.newPlainText("Tin nhắn:", this.nd_goc.get(this.position)));
             Toast.makeText(this, "Đã copy vào bộ nhớ tạm!", Toast.LENGTH_LONG).show();
-        } else if (item.getTitle() == "Xóa") {
-            new MainActivity();
-            MainActivity.Get_date();
+        } else if (item.getTitle() == XOA) {
             AlertDialog.Builder bui = new AlertDialog.Builder(this);
             bui.setTitle("Xóa tin này");
             bui.setPositiveButton("YES", (dialog, which) -> {
@@ -348,4 +346,9 @@ public class Chatbox extends BaseToolBarActivity {
             return convertView;
         }
     }
+
+    final String SUA_TIN = "Sửa tin";
+    final String XEM_CHI_TIET = "Xem chi tiết";
+    final String COPY = "Copy";
+    final String XOA = "Xóa";
 }

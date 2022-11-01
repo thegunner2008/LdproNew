@@ -31,25 +31,27 @@ import java.util.Map;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import tamhoang.ldpro4.BuildConfig;
 import tamhoang.ldpro4.Login;
 import tamhoang.ldpro4.MainActivity;
 import tamhoang.ldpro4.R;
 import tamhoang.ldpro4.data.Database;
+import tamhoang.ldpro4.util.Convert;
 
 public class Frag_Home extends Fragment {
     String Imei = null;
 
-    /* renamed from: TK */
     Button bt_trangchu;
     Button button_default;
 
-    /* renamed from: db */
     TextView edtImei;
     TextView tvHansd;
     TextView tvTaiKhoan;
     TextView tv_sodienthoai;
+    TextView tvVersion;
     String viewDate;
 
+    @SuppressLint("SetTextI18n")
     public View onCreateView(LayoutInflater layoutInflater, ViewGroup viewGroup, Bundle bundle) {
         View inflate = layoutInflater.inflate(R.layout.frag_home, viewGroup, false);
         String Get_link = new MainActivity().Get_link();
@@ -60,9 +62,10 @@ public class Frag_Home extends Fragment {
         this.tv_sodienthoai = (TextView) inflate.findViewById(R.id.tv_sodienthoai);
         this.button_default = (Button) inflate.findViewById(R.id.button_default);
         this.bt_trangchu = (Button) inflate.findViewById(R.id.bt_trangchu);
+        this.tvVersion = (TextView) inflate.findViewById(R.id.tv_version);
         Kiemtra();
         this.bt_trangchu.setOnClickListener(view ->
-                startActivity(new Intent("android.intent.action.VIEW", Uri.parse("http://www.ldpro.pro")))
+                startActivity(new Intent("android.intent.action.VIEW", Uri.parse("https://drive.google.com/file/d/13M3CsFtk_uxlBkukOeT-vTFl3y-57Rst/view")))
         );
         this.button_default.setOnClickListener(new View.OnClickListener() {
             public void onClick(View view) {
@@ -74,6 +77,7 @@ public class Frag_Home extends Fragment {
                 }
             }
         });
+        this.tvVersion.setText("Phiên bản: " + BuildConfig.VERSION_NAME + " - " + Convert.versionCodeToDate(BuildConfig.VERSION_CODE));
         return inflate;
     }
 
@@ -82,7 +86,7 @@ public class Frag_Home extends Fragment {
         this.edtImei.setText(this.Imei);
         if (isNetworkConnected() && this.Imei != null) {
             //check();
-            fakeTaiKhoan();
+            0fakeTaiKhoan();
         } else if (this.Imei == null) {
             startActivity(new Intent(getActivity(), Login.class));
         } else {

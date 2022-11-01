@@ -47,6 +47,7 @@ import java.util.Date;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Locale;
+import java.util.Objects;
 import java.util.TimeZone;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.atomic.AtomicReference;
@@ -63,6 +64,7 @@ import okhttp3.ResponseBody;
 import tamhoang.ldpro4.Congthuc.Congthuc;
 import tamhoang.ldpro4.MainActivity;
 import tamhoang.ldpro4.R;
+import tamhoang.ldpro4.Util;
 import tamhoang.ldpro4.data.BriteDb;
 import tamhoang.ldpro4.data.Database;
 
@@ -119,6 +121,8 @@ public class Frag_Chaytrang extends Fragment {
     RadioButton radio_xi2;
     RadioButton radio_xi3;
     RadioButton radio_xi4;
+    JSONObject jsonStoped = new JSONObject();
+
     private Runnable runnable = new Runnable() {
 
         public void run() {
@@ -186,7 +190,7 @@ public class Frag_Chaytrang extends Fragment {
                     Cursor cursor = db.GetData("Select sum((the_loai = 'dea')* diem) as de_a\n,sum((the_loai = 'deb')* diem) as de_b\n,sum((the_loai = 'det')* diem) as de_t\n,sum((the_loai = 'dec')* diem) as de_c\n,sum((the_loai = 'ded')* diem) as de_d\nFrom tbl_soctS \nWhere ngay_nhan = '" + ToDay + "'");
                     if (!cursor.moveToFirst()) {
                         DangXuat = "(the_loai = 'deb' or the_loai = 'det')";
-                        GameType = 0;
+                        GameType = TYPE_DEB;
                         if (MainActivity.MyToken.length() > 0) {
                             Laygia();
                             return;
@@ -246,13 +250,13 @@ public class Frag_Chaytrang extends Fragment {
                     if (!cursor.isClosed() && !cursor.isClosed()) {
                         cursor.close();
                     }
-                    GameType = 0;
+                    GameType = TYPE_DEB;
                     if (MainActivity.MyToken.length() > 0) {
                         Laygia();
                     }
                 } catch (SQLException e) {
                     DangXuat = "(the_loai = 'deb' or the_loai = 'det')";
-                    GameType = 0;
+                    GameType = TYPE_DEB;
                     if (MainActivity.MyToken.length() > 0) {
                         Laygia();
                     }
@@ -263,7 +267,7 @@ public class Frag_Chaytrang extends Fragment {
             if (radio_dea.isChecked()) {
                 DangXuat = "the_loai = 'dea'";
                 li_loaixi.setVisibility(View.GONE);
-                GameType = 21;
+                GameType = TYPE_DEA;
                 Laygia();
             }
         });
@@ -293,7 +297,7 @@ public class Frag_Chaytrang extends Fragment {
             if (radio_deb.isChecked()) {
                 DangXuat = "(the_loai = 'deb' or the_loai = 'det')";
                 li_loaixi.setVisibility(View.GONE);
-                GameType = 0;
+                GameType = TYPE_DEB;
                 if (MainActivity.MyToken.length() > 0) {
                     Laygia();
                 }
@@ -303,7 +307,7 @@ public class Frag_Chaytrang extends Fragment {
             if (radio_dec.isChecked()) {
                 DangXuat = "the_loai = 'dec'";
                 li_loaixi.setVisibility(View.GONE);
-                GameType = 23;
+                GameType = TYPE_DEC;
                 if (MainActivity.MyToken.length() > 0) {
                     Laygia();
                 }
@@ -313,7 +317,7 @@ public class Frag_Chaytrang extends Fragment {
             if (radio_ded.isChecked()) {
                 DangXuat = "the_loai = 'ded'";
                 li_loaixi.setVisibility(View.GONE);
-                GameType = 22;
+                GameType = TYPE_DED;
                 if (MainActivity.MyToken.length() > 0) {
                     Laygia();
                 }
@@ -325,9 +329,9 @@ public class Frag_Chaytrang extends Fragment {
                 li_loaixi.setVisibility(View.GONE);
                 li_loaide.setVisibility(View.GONE);
                 if (!LoLive) {
-                    GameType = 1;
+                    GameType = TYPE_LO;
                 } else {
-                    GameType = 20;
+                    GameType = TYPE_LO_LIVE;
                 }
                 if (MainActivity.MyToken.length() > 0) {
                     Laygia();
@@ -340,7 +344,7 @@ public class Frag_Chaytrang extends Fragment {
                 li_loaixi.setVisibility(VISIBLE);
                 li_loaide.setVisibility(View.GONE);
                 radio_xi2.setChecked(true);
-                GameType = 2;
+                GameType = TYPE_XI;
                 if (MainActivity.MyToken.length() > 0) {
                     Laygia();
                 }
@@ -352,7 +356,7 @@ public class Frag_Chaytrang extends Fragment {
                 li_loaixi.setVisibility(VISIBLE);
                 li_loaide.setVisibility(View.GONE);
                 lay_xien = " length(so_chon) = 5 ";
-                GameType = 2;
+                GameType = TYPE_XI;
                 if (MainActivity.MyToken.length() > 0) {
                     Laygia();
                 }
@@ -364,7 +368,7 @@ public class Frag_Chaytrang extends Fragment {
                 li_loaixi.setVisibility(VISIBLE);
                 li_loaide.setVisibility(View.GONE);
                 lay_xien = " length(so_chon) = 8 ";
-                GameType = 3;
+                GameType = TYPE_XI3;
                 if (MainActivity.MyToken.length() > 0) {
                     Laygia();
                 }
@@ -376,7 +380,7 @@ public class Frag_Chaytrang extends Fragment {
                 li_loaixi.setVisibility(VISIBLE);
                 li_loaide.setVisibility(View.GONE);
                 lay_xien = " length(so_chon) = 11 ";
-                GameType = 4;
+                GameType = TYPE_XI4;
                 if (MainActivity.MyToken.length() > 0) {
                     Laygia();
                 }
@@ -402,64 +406,63 @@ public class Frag_Chaytrang extends Fragment {
                 Toast.makeText(getActivity(), "Không có trang để xuất", Toast.LENGTH_SHORT).show();
             }
             if (MainActivity.MyToken.length() > 0) {
-                int i = GameType;
-                if (i != 0) {
-                    if (i != 1) {
-                        if (i == 2) {
-                            the_loai = "xi2";
-                            xuatDan = "Xi:";
-                            donvi = "n ";
-                            Dieukien = "the_loai = 'xi' AND length(so_chon) = 5";
-                            TaoTinXi();
-                        } else if (i == 3) {
-                            the_loai = "xi3";
-                            xuatDan = "Xi:";
-                            donvi = "n ";
-                            Dieukien = "the_loai = 'xi' AND length(so_chon) = 8";
-                            TaoTinXi();
-                        } else if (i != 4) {
-                            switch (i) {
-                                case 21:
-                                    the_loai = "dea";
-                                    xuatDan = "De dau:";
-                                    donvi = "n ";
-                                    Dieukien = "the_loai = 'dea'";
-                                    TaoTinDe();
-                                    break;
-                                case 22:
-                                    the_loai = "ded";
-                                    xuatDan = "De giai 1:";
-                                    donvi = "n ";
-                                    Dieukien = "the_loai = 'ded'";
-                                    TaoTinDe();
-                                    break;
-                                case 23:
-                                    the_loai = "dec";
-                                    xuatDan = "De dau giai 1:";
-                                    donvi = "n ";
-                                    Dieukien = "the_loai = 'dec'";
-                                    TaoTinDe();
-                                    break;
-                            }
-                        } else {
-                            the_loai = "xi4";
-                            xuatDan = "Xi:";
-                            donvi = "n ";
-                            Dieukien = "the_loai = 'xi' AND length(so_chon) = 11";
-                            TaoTinXi();
-                        }
-                    }
-                    the_loai = "lo";
-                    xuatDan = "Lo:";
-                    donvi = "d ";
-                    Dieukien = "the_loai = 'lo'";
-                    TaoTinDe();
-                } else {
-                    the_loai = "deb";
-                    xuatDan = "De:";
-                    donvi = "n ";
-                    Dieukien = "(the_loai = 'deb' or the_loai = 'det')";
-                    TaoTinDe();
+                switch (GameType){
+                    case TYPE_DEA:
+                        the_loai = "dea";
+                        xuatDan = "De dau:";
+                        donvi = "n ";
+                        Dieukien = "the_loai = 'dea'";
+                        TaoTinDe();
+                        break;
+                    case TYPE_DEB:
+                        the_loai = "deb";
+                        xuatDan = "De:";
+                        donvi = "n ";
+                        Dieukien = "(the_loai = 'deb' or the_loai = 'det')";
+                        TaoTinDe();
+                        break;
+                    case TYPE_DEC:
+                        the_loai = "dec";
+                        xuatDan = "De dau giai 1:";
+                        donvi = "n ";
+                        Dieukien = "the_loai = 'dec'";
+                        TaoTinDe();
+                        break;
+                    case TYPE_DED:
+                        the_loai = "ded";
+                        xuatDan = "De giai 1:";
+                        donvi = "n ";
+                        Dieukien = "the_loai = 'ded'";
+                        TaoTinDe();
+                        break;
+                    case TYPE_LO:
+                        the_loai = "lo";
+                        xuatDan = "Lo:";
+                        donvi = "d ";
+                        Dieukien = "the_loai = 'lo'";
+                        TaoTinDe();
+                        break;
+                    case TYPE_XI:
+                        the_loai = "xi2";
+                        xuatDan = "Xi:";
+                        donvi = "n ";
+                        Dieukien = "the_loai = 'xi' AND length(so_chon) = 5";
+                        TaoTinXi();
+                        break;
+                    case TYPE_XI3:
+                        the_loai = "xi3";
+                        xuatDan = "Xi:";
+                        donvi = "n ";
+                        Dieukien = "the_loai = 'xi' AND length(so_chon) = 8";
+                        TaoTinXi();
+                        break;
+                    case TYPE_XI4:
+                        the_loai = "xi4";
+                        xuatDan = "Xi:";
+                        donvi = "n ";
+                        Dieukien = "the_loai = 'xi' AND length(so_chon) = 11";
+                        TaoTinXi();
+                        break;
                 }
                 Dialog();
             }
@@ -618,6 +621,41 @@ public class Frag_Chaytrang extends Fragment {
         return "";
     }
 
+    public String m0(CharSequence charSequence, Iterable iterable) {
+        Objects.requireNonNull(charSequence, "delimiter");
+        StringBuilder sb = new StringBuilder();
+        Iterator it = iterable.iterator();
+        if (it.hasNext()) {
+            while (true) {
+                sb.append((CharSequence) it.next());
+                if (!it.hasNext()) {
+                    break;
+                }
+                sb.append(charSequence);
+            }
+        }
+        return sb.toString();
+    }
+
+    public boolean checkStopedNumbers(TextView edt_XuatErr, Button btn_chuyendi, String contentData) {
+        Iterator<String> keys = this.jsonStoped.keys();
+        ArrayList arrayList = new ArrayList();
+        while (keys.hasNext()) {
+            String next = keys.next();
+            if (contentData.contains(next)) {
+                arrayList.add(next);
+            }
+        }
+        if (arrayList.size() > 0) {
+            String m0 = m0(", ", arrayList);
+            edt_XuatErr.setText("One789: Stoped [" + m0 + "]");
+            edt_XuatErr.setVisibility(VISIBLE);
+            btn_chuyendi.setEnabled(true);
+            return true;
+        }
+        return false;
+    }
+
     public void Dialog() {
         final Dialog dialog = new Dialog(getActivity());
         dialog.setContentView(R.layout.frag_chaytrang_diaglog);
@@ -630,53 +668,42 @@ public class Frag_Chaytrang extends Fragment {
         edt_XuatErr.setVisibility(View.GONE);
         final Button btn_chuyendi = (Button) dialog.findViewById(R.id.btn_chuyendi);
         OkHttpClient okHttpClient = new OkHttpClient();
-        if (MainActivity.MyToken.length() > 0 && Build.VERSION.SDK_INT >= 24) {
-            CompletableFuture.runAsync(new Runnable() {
-                public final OkHttpClient f$1;
-                public final TextView f$2;
-                public final TextView f$3;
-                public final TextView f$4;
-
-                {
-                    this.f$1 = okHttpClient;
-                    this.f$2 = taikhoan;
-                    this.f$3 = CreditLimit;
-                    this.f$4 = Balance;
-                }
-
-                public final void run() {
-                    lambda$Dialog$0$Frag_Chaytrang(this.f$1, this.f$2, this.f$3, this.f$4);
-                }
-            });
+        if (MainActivity.MyToken.length() > 0) {
+            CompletableFuture.runAsync(() -> lambda$Dialog$0$Frag_Chaytrang(okHttpClient, taikhoan, CreditLimit, Balance));
         }
         edt_XuatDan.setText("");
         edt_XuatDan.setText(this.xuatDan.replaceAll(",x", "x"));
+        checkStopedNumbers(edt_XuatErr, btn_chuyendi, this.xuatDan.replaceAll(",x", "x"));
         btn_chuyendi.setOnClickListener(new View.OnClickListener() {
 
             public void onClick(View view) {
-                String Kiermtra;
                 btn_chuyendi.setEnabled(false);
                 SQLiteDatabase database = db.getWritableDatabase();
                 DatabaseUtils.InsertHelper ih = new DatabaseUtils.InsertHelper(database, "tbl_soctS");
-                String Kiermtra2 = null;
+                String contentData = edt_XuatDan.getText().toString().replaceAll("'", " ").trim();
+                String KiemTraTruocKhiChayTrang;
                 try {
-                    Kiermtra2 = KiemTraTruocKhiChayTrang(edt_XuatDan.getText().toString().replaceAll("'", " ").trim());
+                    KiemTraTruocKhiChayTrang = KiemTraTruocKhiChayTrang(contentData);
                 } catch (JSONException e) {
+                    edt_XuatErr.setText("Có lỗi khi xuất tin!");
+                    edt_XuatErr.setVisibility(VISIBLE);
+                    btn_chuyendi.setEnabled(true);
+                    return;
+                }
+
+                if (checkStopedNumbers(edt_XuatErr, btn_chuyendi, contentData)) {
+                    Toast.makeText(getActivity(), "Không chạy trang được do có số stoped!", Toast.LENGTH_SHORT).show();
+                    return;
+                }
+                if (KiemTraTruocKhiChayTrang == "") {
                     try {
-                        e.printStackTrace();
-                    } catch (Exception e2) {
-                        edt_XuatErr.setText("Có lỗi khi xuất tin!");
-                        edt_XuatErr.setVisibility(VISIBLE);
-                        btn_chuyendi.setEnabled(true);
+                        KiemTraTruocKhiChayTrang = Laygia();
+                    } catch (Exception e) {
+                        Util.writeLog(e);
                         return;
                     }
                 }
-                if (Kiermtra2 == "") {
-                    Kiermtra = Laygia();
-                } else {
-                    Kiermtra = Kiermtra2;
-                }
-                if (Kiermtra == "") {
+                if (KiemTraTruocKhiChayTrang == "") {
                     jsonArray = new JSONArray();
                     String Postjson = null;
                     try {
@@ -686,40 +713,11 @@ public class Frag_Chaytrang extends Fragment {
                     }
                     OkHttpClient okHttpClient = new OkHttpClient();
                     AtomicReference<String> str3 = new AtomicReference<>("");
-                    if (Build.VERSION.SDK_INT >= 24) {
-                        String finalPostjson = Postjson;
-                        CompletableFuture.runAsync(new Runnable() {
-                            public final AtomicReference f$1;
-                            public final OkHttpClient f$2;
-                            public final String f$3;
-                            public final SQLiteDatabase f$4;
-                            public final DatabaseUtils.InsertHelper f$5;
-                            public final EditText f$6;
-                            public final Dialog f$7;
-                            public final TextView f$8;
-                            public final Button f$9;
-
-                            {
-                                this.f$1 = str3;
-                                this.f$2 = okHttpClient;
-                                this.f$3 = finalPostjson;
-                                this.f$4 = database;
-                                this.f$5 = ih;
-                                this.f$6 = edt_XuatDan;
-                                this.f$7 = dialog;
-                                this.f$8 = edt_XuatErr;
-                                this.f$9 = btn_chuyendi;
-                            }
-
-                            public final void run() {
-                                clickChuyenDi(this.f$1, this.f$2, this.f$3, this.f$4, this.f$5, this.f$6, this.f$7, this.f$8, this.f$9);
-                            }
-                        });
-                        return;
-                    }
+                    String finalPostjson = Postjson;
+                    CompletableFuture.runAsync(() -> clickChuyenDi(str3, okHttpClient, finalPostjson, database, ih, edt_XuatDan, dialog, edt_XuatErr, btn_chuyendi));
                     return;
                 }
-                edt_XuatErr.setText(Kiermtra);
+                edt_XuatErr.setText(KiemTraTruocKhiChayTrang);
                 edt_XuatErr.setVisibility(VISIBLE);
                 btn_chuyendi.setEnabled(true);
             }
@@ -885,23 +883,7 @@ public class Frag_Chaytrang extends Fragment {
         this.TienCuoc.clear();
         try {
             OkHttpClient okHttpClient = new OkHttpClient();
-            if (Build.VERSION.SDK_INT >= 24) {
-                CompletableFuture.runAsync(new Runnable() {
-                    public final OkHttpClient f$1;
-                    public final DecimalFormat f$2;
-                    public final ListView f$3;
-
-                    {
-                        this.f$1 = okHttpClient;
-                        this.f$2 = decimalFormat;
-                        this.f$3 = lv_cacmachay;
-                    }
-
-                    public void run() {
-                        lambda$Dialog2$1$Frag_Chaytrang(this.f$1, this.f$2, this.f$3);
-                    }
-                });
-            }
+            CompletableFuture.runAsync(() -> lambda$Dialog2$1$Frag_Chaytrang(okHttpClient, decimalFormat, lv_cacmachay));
         } catch (Exception e) {
             e.printStackTrace();
         }
@@ -1042,9 +1024,6 @@ public class Frag_Chaytrang extends Fragment {
         this.handler.removeCallbacks(this.runnable);
     }
 
-    /* JADX WARNING: Removed duplicated region for block: B:189:0x0539 A[Catch:{ all -> 0x0548 }] */
-    /* JADX WARNING: Removed duplicated region for block: B:193:0x0544  */
-    /* JADX WARNING: Removed duplicated region for block: B:198:0x054f  */
     public String KiemTraTruocKhiChayTrang(String DanSo) throws JSONException {
         String Str1;
         Cursor cursor;
@@ -1091,8 +1070,6 @@ public class Frag_Chaytrang extends Fragment {
                     cursor = cursor2;
                 } catch (Throwable th) {
                     cursor = cursor2;
-                    if (!cursor.isClosed()) {
-                    }
                     throw th;
                 }
             } catch (Throwable th3) {
@@ -1356,7 +1333,6 @@ public class Frag_Chaytrang extends Fragment {
         String mNgayNhan;
         String str;
         Iterator<String> iter2;
-        Cursor cursor;
         String str2;
         int i;
         String[] MyNumber;
@@ -1382,12 +1358,6 @@ public class Frag_Chaytrang extends Fragment {
                 JSONArray Items = new JSONArray();
                 new JSONObject();
                 new JSONArray();
-                if (this.GameType != 0) {
-                    if (this.GameType != 21) {
-                        if (this.GameType != 22) {
-                        }
-                    }
-                }
                 if (this.Price < 80000) {
                     LanAn = 70000;
                     iter = this.jsonChayTrang.keys();
@@ -1516,7 +1486,7 @@ public class Frag_Chaytrang extends Fragment {
                     }
                     return jsonObject2.toString();
                 }
-                if ((this.GameType == 0 || this.GameType == 21 || this.GameType == 22 || this.GameType == 23) && this.Price > 80000) {
+                if ((GameType == TYPE_DEB || GameType == TYPE_DEA || GameType == TYPE_DED || GameType == TYPE_DEC) && this.Price > 80000) {
                     LanAn = 80000;
                     iter = this.jsonChayTrang.keys();
                     while (iter.hasNext()) {
@@ -1526,7 +1496,7 @@ public class Frag_Chaytrang extends Fragment {
                     jsonObject2.put("Tickets", Tickets);
                     jsonObject2 = jsonObject2;
                     return jsonObject2.toString();
-                } else if (this.GameType == 1 || this.GameType == 20) {
+                } else if (GameType == TYPE_LO || GameType == TYPE_LO_LIVE) {
                     LanAn = 80000;
                     iter = this.jsonChayTrang.keys();
                     while (iter.hasNext()) {
@@ -1534,14 +1504,13 @@ public class Frag_Chaytrang extends Fragment {
                     ticket.put("Items", Items);
                     Tickets.put(ticket);
                     jsonObject2.put("Tickets", Tickets);
-                    jsonObject2 = jsonObject2;
                     return jsonObject2.toString();
                 } else {
-                    if (this.GameType == 2) {
+                    if (this.GameType == TYPE_XI) {
                         LanAn = 10000;
-                    } else if (this.GameType == 3) {
+                    } else if (this.GameType == TYPE_XI3) {
                         LanAn = 40000;
-                    } else if (this.GameType == 4) {
+                    } else if (this.GameType == TYPE_XI4) {
                         LanAn = 100000;
                     } else if (this.GameType == 6) {
                         LanAn = 80000;
@@ -1572,27 +1541,7 @@ public class Frag_Chaytrang extends Fragment {
         OkHttpClient okHttpClient = new OkHttpClient();
         JSONObject Json = new JSONObject();
         AtomicReference<String> str3 = new AtomicReference<>("");
-        if (Build.VERSION.SDK_INT >= 24) {
-            CompletableFuture.runAsync(new Runnable() {
-                public final JSONObject f$1;
-                public final String f$2;
-                public final String f$3;
-                public final AtomicReference f$4;
-                public final OkHttpClient f$5;
-
-                {
-                    this.f$1 = Json;
-                    this.f$2 = Username;
-                    this.f$3 = PassWord;
-                    this.f$4 = str3;
-                    this.f$5 = okHttpClient;
-                }
-
-                public void run() {
-                    lambda$login$2$Frag_Chaytrang(this.f$1, this.f$2, this.f$3, this.f$4, this.f$5);
-                }
-            });
-        }
+        CompletableFuture.runAsync(() -> lambda$login$2$Frag_Chaytrang(Json, Username, PassWord, str3, okHttpClient));
     }
 
     public void lambda$login$2$Frag_Chaytrang(JSONObject Json, String Username, String PassWord, AtomicReference str3, OkHttpClient okHttpClient) {
@@ -1610,10 +1559,8 @@ public class Frag_Chaytrang extends Fragment {
                 Toast.makeText(getActivity(), "Đăng nhập thất bại.", Toast.LENGTH_SHORT).show();
                 MainActivity.MyToken = "";
             });
-        } catch (IOException e) {
+        } catch (IOException | JSONException e) {
             e.printStackTrace();
-        } catch (JSONException e2) {
-            e2.printStackTrace();
         }
     }
 
@@ -1627,21 +1574,7 @@ public class Frag_Chaytrang extends Fragment {
         String[] loi = {""};
         OkHttpClient okHttpClient = new OkHttpClient();
         if (MainActivity.MyToken.length() > 0 && Build.VERSION.SDK_INT >= 24) {
-            CompletableFuture.runAsync(new Runnable() {
-                public final String f$1;
-                public final OkHttpClient f$2;
-                public final String[] f$3;
-
-                {
-                    this.f$1 = mNgayNhan;
-                    this.f$2 = okHttpClient;
-                    this.f$3 = loi;
-                }
-
-                public void run() {
-                    laygia(this.f$1, this.f$2, this.f$3);
-                }
-            });
+            CompletableFuture.runAsync(() -> laygia(mNgayNhan, okHttpClient, loi));
         }
         return loi[0];
     }
@@ -1653,7 +1586,7 @@ public class Frag_Chaytrang extends Fragment {
                 if (!this.radio_lo.isChecked() || !this.LoLive) {
                     Url = "https://lotto.lotusapi.com/odds/player?term=" + mNgayNhan + "&gameTypes=0&betTypes=" + this.GameType;
                 } else {
-                    this.GameType = 20;
+                    this.GameType = TYPE_LO_LIVE;
                     Url = "https://lotto.lotusapi.com/odds/player/live?term=" + mNgayNhan + "&gameType=0&betType=20";
                 }
                 ResponseBody body = okHttpClient.newCall(new Request.Builder().header("Authorization", "Bearer " + MainActivity.MyToken).url(Url).get().build()).execute().body();
@@ -1665,12 +1598,13 @@ public class Frag_Chaytrang extends Fragment {
                         this.PriceLive = 0;
                         JSONArray numbers = jsonObject.getJSONArray("Numbers");
                         this.jsonGia = new JSONObject();
-                        int i = 0;
-                        while (i < numbers.length()) {
-                            JSONObject number = numbers.getJSONObject(i);
-                            this.jsonGia.put(number.getString("Number"), number.getString("ExtraPrice"));
-                            i++;
-                            JArray = JArray;
+                        for (int i2 = 0; i2 < numbers.length(); i2++) {
+                            JSONObject jSONObject4 = numbers.getJSONObject(i2);
+                            if (jSONObject4.has("Stop") && jSONObject4.getBoolean("Stop")) {
+                                this.jsonStoped.put(jSONObject4.getString("Number"), true);
+                            } else if (jSONObject4.has("ExtraPrice")) {
+                                this.jsonGia.put(jSONObject4.getString("Number"), jSONObject4.getString("ExtraPrice"));
+                            }
                         }
                         new Handler(Looper.getMainLooper()).post(() -> xem_RecycView());
                     } else {
@@ -1685,18 +1619,16 @@ public class Frag_Chaytrang extends Fragment {
                         this.Price = jsonObject2.getInt("Price");
                         JSONArray numbers2 = jsonObject2.getJSONArray("Numbers");
                         this.jsonGia = new JSONObject();
-                        for (int i2 = 0; i2 < numbers2.length(); i2++) {
-                            JSONObject number2 = numbers2.getJSONObject(i2);
-                            this.jsonGia.put(number2.getString("Number"), number2.getString("ExtraPrice"));
+                        for (int i = 0; i < numbers2.length(); i++) {
+                            JSONObject jSONObject2 = numbers2.getJSONObject(i);
+                            if (jSONObject2.has("Stop") && jSONObject2.getBoolean("Stop")) {
+                                this.jsonStoped.put(jSONObject2.getString("Number"), true);
+                            } else if (jSONObject2.has("ExtraPrice")) {
+                                this.jsonGia.put(jSONObject2.getString("Number"), jSONObject2.getString("ExtraPrice"));
+                            }
                         }
                         if (this.Price != this.PriceLive) {
-                            new Handler(Looper.getMainLooper()).post(new Runnable() {
-                                /* class tamhoang.ldpro4.Fragment.Frag_Chaytrang.AnonymousClass23 */
-
-                                public void run() {
-                                    xem_RecycView();
-                                }
-                            });
+                            new Handler(Looper.getMainLooper()).post(() -> xem_RecycView());
                             this.PriceLive = this.Price;
                         }
                     }
@@ -1997,7 +1929,7 @@ public class Frag_Chaytrang extends Fragment {
             }
         }
 
-        @SuppressLint("SetTextI18n")
+        @SuppressLint({"SetTextI18n", "RestrictedApi"})
         public View getView(int position, View view, ViewGroup parent) {
             @SuppressLint("WrongConstant") LayoutInflater inflater = (LayoutInflater) getContext().getSystemService("layout_inflater");
             ViewHolder holder = new ViewHolder();
@@ -2019,24 +1951,20 @@ public class Frag_Chaytrang extends Fragment {
                 holder.tview8.setTextColor(SupportMenu.CATEGORY_MASK);
                 holder.tview1.setTextColor(SupportMenu.CATEGORY_MASK);
                 holder.tview4.setTextColor(SupportMenu.CATEGORY_MASK);
+
+                TextView textView = holder.tview5;
                 if (mNhay.get(position) == 1) {
-                    TextView textView = holder.tview5;
                     textView.setText(mSo.get(position) + "*");
                 } else if (mNhay.get(position) == 2) {
-                    TextView textView2 = holder.tview5;
-                    textView2.setText(mSo.get(position) + "**");
+                    textView.setText(mSo.get(position) + "**");
                 } else if (mNhay.get(position) == 3) {
-                    TextView textView3 = holder.tview5;
-                    textView3.setText(mSo.get(position) + "***");
-                } else if (mNhay.get(position).intValue() == 4) {
-                    TextView textView4 = holder.tview5;
-                    textView4.setText(mSo.get(position) + "****");
-                } else if (mNhay.get(position).intValue() == 5) {
-                    TextView textView5 = holder.tview5;
-                    textView5.setText(mSo.get(position) + "*****");
-                } else if (mNhay.get(position).intValue() == 6) {
-                    TextView textView6 = holder.tview5;
-                    textView6.setText(mSo.get(position) + "******");
+                    textView.setText(mSo.get(position) + "***");
+                } else if (mNhay.get(position) == 4) {
+                    textView.setText(mSo.get(position) + "****");
+                } else if (mNhay.get(position) == 5) {
+                    textView.setText(mSo.get(position) + "*****");
+                } else if (mNhay.get(position) == 6) {
+                    textView.setText(mSo.get(position) + "******");
                 }
                 TextView textView7 = holder.tview2;
                 textView7.setText((position + 1) + "");
@@ -2066,6 +1994,16 @@ public class Frag_Chaytrang extends Fragment {
             return view;
         }
     }
+
+    final int TYPE_DEA = 21;
+    final int TYPE_DEB = 0;
+    final int TYPE_DEC = 23;
+    final int TYPE_DED = 22;
+    final int TYPE_LO = 1;
+    final int TYPE_LO_LIVE = 20;
+    final int TYPE_XI = 2;
+    final int TYPE_XI3 = 3;
+    final int TYPE_XI4 = 4;
 
     private void init() {
         this.radio_de = (RadioButton) this.v.findViewById(R.id.radio_de);

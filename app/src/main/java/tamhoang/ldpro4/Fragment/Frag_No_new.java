@@ -563,6 +563,18 @@ public class Frag_No_new extends Fragment {
     private void Tinhtien() throws JSONException {
         String Get_date = MainActivity.Get_date();
         Cursor GetData = db.GetData("Select * From Ketqua WHERE ngay = '" + Get_date + "'");
+
+        if (GetData == null || GetData.getCount() == 0) {
+            AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
+            builder.setTitle("Không tìm thấy dữ liệu kết quả ngày " + Get_date);
+            builder.setMessage("Đi đến trang cơ sở dữ liệu để tính lại?");
+            builder.setNegativeButton("Có", (dialog, which) -> {
+                getActivity().getSupportFragmentManager().beginTransaction().replace(R.id.main_content, new Frag_Database()).commit();
+            });
+            builder.setPositiveButton("Không", (dialog, which) -> dialog.dismiss());
+            builder.show();
+            return;
+        }
         GetData.moveToFirst();
         int i = 2;
         while (true) {
@@ -598,7 +610,7 @@ public class Frag_No_new extends Fragment {
         super.onDestroy();
     }
 
-    /* access modifiers changed from: private */
+    @SuppressLint("SetTextI18n")
     public void lv_baoCao() throws JSONException {
         final String DEC = "dec";
         final String DET = "det";
@@ -622,7 +634,7 @@ public class Frag_No_new extends Fragment {
                     d += cursor.getDouble(3);
                     d2 += cursor.getDouble(6);
                     jSONObject.put(cursor.getString(0), jSONObject2.toString());
-                } catch (JSONException unused) {}
+                } catch (JSONException ignored) {}
             }
             if (jSONObject.length() > 0) {
                 if (jSONObject.has("dea")) {
@@ -643,7 +655,7 @@ public class Frag_No_new extends Fragment {
                             dea_Chuyen.setText(jSONObject3.getString("DiemChuyen") + "(" + jSONObject3.getString("AnChuyen") + ")");
                             dea_ChuyenAn.setText(jSONObject3.getString("KQChuyen"));
                         }
-                    } catch (JSONException unused3) {}
+                    } catch (JSONException ignored) {}
                 }
                 if (jSONObject.has(DED)) {
                     JSONObject jSONObject4 = new JSONObject(jSONObject.getString(DED));

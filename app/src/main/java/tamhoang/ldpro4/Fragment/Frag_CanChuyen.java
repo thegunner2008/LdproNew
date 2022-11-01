@@ -280,8 +280,7 @@ public class Frag_CanChuyen extends Fragment {
                         check_xn.setVisibility(View.VISIBLE);
                     }
                     xem_RecycView();
-                } catch (SQLException e) {
-                }
+                } catch (SQLException ignored) {}
             }
         });
         this.radio_bc.setOnCheckedChangeListener((buttonView, isChecked) -> {
@@ -620,16 +619,7 @@ public class Frag_CanChuyen extends Fragment {
                 jSon.put(cursor.getString(0), jsonSoCt);
             } catch (JSONException e) {
                 e.printStackTrace();
-            } catch (Throwable th2) {
-                th = th2;
-//                if (!cursor.isClosed()) {
-//                }
-                try {
-                    throw th;
-                } catch (Throwable throwable) {
-                    throwable.printStackTrace();
-                }
-            }
+            } catch (Throwable ignored) {}
         }
         return str;
     }
@@ -650,12 +640,7 @@ public class Frag_CanChuyen extends Fragment {
                 jSon.put(cursor.getString(0), jsonSoCt);
             } catch (JSONException e) {
                 e.printStackTrace();
-            } catch (Throwable th2) {
-                th = th2;
-//                if (!cursor.isClosed()) {
-//                }
-                throw th;
-            }
+            } catch (Throwable ignored) {}
         }
         return str;
     }
@@ -701,16 +686,12 @@ public class Frag_CanChuyen extends Fragment {
                 jSon.put(cursor.getString(0), jsonSoCt);
             } catch (JSONException e) {
                 e.printStackTrace();
-            } catch (Throwable th2) {
-                th = th2;
-//                if (!cursor.isClosed()) {
-//                }
-                throw th;
-            }
+            } catch (Throwable ignored) {}
         }
         return str;
     }
 
+    @SuppressLint("RestrictedApi")
     public void Dialog(int poin) {
         final Dialog dialog = new Dialog(getActivity());
         dialog.setContentView(R.layout.frag_canchuyen1);
@@ -781,9 +762,6 @@ public class Frag_CanChuyen extends Fragment {
             }
         });
         btn_chuyendi.setOnClickListener(v -> {
-            String str;
-            String str2;
-            new MainActivity();
             String mDate = MainActivity.Get_date();
             int NganDai = 0;
             try {
@@ -792,22 +770,27 @@ public class Frag_CanChuyen extends Fragment {
                 e.printStackTrace();
             }
             int dodai = 2000;
-            if (NganDai == 1) {
-                dodai = PathInterpolatorCompat.MAX_NUM_POINTS;
-            } else if (NganDai == 2) {
-                dodai = 155;
-            } else if (NganDai == 3) {
-                dodai = 315;
-            } else if (NganDai == 4) {
-                dodai = 475;
-            } else if (NganDai == 5) {
-                dodai = 995;
-            } else if (NganDai == 6) {
-                dodai = 2000;
+            switch (NganDai) {
+                case 1:
+                    dodai = PathInterpolatorCompat.MAX_NUM_POINTS;
+                    break;
+                case 2:
+                    dodai = 155;
+                    break;
+                case 3:
+                    dodai = 315;
+                    break;
+                case 4:
+                    dodai = 475;
+                    break;
+                case 5:
+                    dodai = 995;
+                    break;
+                case 6:
+                    dodai = 2000;
+                    break;
             }
-            String str3 = "";
             if (mMobile.size() <= 0 || edt_XuatDan.getText().toString().length() <= 0 || Dachuyen) {
-                str = str3;
                 if (edt_XuatDan.getText().toString().length() != 0) {
                     if (Dachuyen) {
                         dialog.cancel();
@@ -818,13 +801,12 @@ public class Frag_CanChuyen extends Fragment {
             } else {
                 Dachuyen = true;
                 String TinNhan = edt_XuatDan.getText().toString().replaceAll("'", " ").trim();
-                edt_XuatDan.setText(str3);
+                edt_XuatDan.setText("");
                 dialog.dismiss();
                 if (TinNhan.trim().length() < dodai) {
                     int maxSoTn = BriteDb.INSTANCE.getMaxSoTinNhan(mDate, 2, "so_dienthoai = '"+ mMobile.get(mSpiner) +"'");
 
                     Xulytin(maxSoTn + 1, TinNhan.replaceAll("'", " ").trim(), 1);
-                    str = str3;
                 } else {
                     int maxSoTn = BriteDb.INSTANCE.getMaxSoTinNhan(mDate, 2, "so_dienthoai = '"+ mMobile.get(mSpiner) +"'");
 
@@ -833,21 +815,21 @@ public class Frag_CanChuyen extends Fragment {
                     String[] Chitiet = null;
                     if (TinNhan.substring(0, 3).contains("De")) {
                         DangGi = "De:";
-                        TinNhan = TinNhan.replaceAll("De:", str3);
+                        TinNhan = TinNhan.replaceAll("De:", "");
                         Chitiet = TinNhan.split(" ");
                     } else if (TinNhan.substring(0, 3).contains("Lo")) {
                         DangGi = "Lo:";
-                        TinNhan = TinNhan.replaceAll("Lo:", str3);
+                        TinNhan = TinNhan.replaceAll("Lo:", "");
                         Chitiet = TinNhan.split(" ");
                     } else if (TinNhan.substring(0, 5).contains("Cang")) {
                         DangGi = "Cang:";
-                        TinNhan = TinNhan.replaceAll("Cang:\n", str3);
+                        TinNhan = TinNhan.replaceAll("Cang:\n", "");
                         Chitiet = TinNhan.split(" ");
                     } else {
                         if (!TinNhan.substring(0, 3).contains("Xi")) {
                         } else {
                             DangGi = "Xien:";
-                            TinNhan = TinNhan.replaceAll("Xien:\n", str3).replaceAll("d:", "0").replaceAll("\n", " ");
+                            TinNhan = TinNhan.replaceAll("Xien:\n", "").replaceAll("d:", "0").replaceAll("\n", " ");
                             Chitiet = TinNhan.split(" ");
                         }
                     }
@@ -855,15 +837,13 @@ public class Frag_CanChuyen extends Fragment {
                     if (!DangGi.equals("Xien:")) {
                         int k = 0;
                         while (k < Chitiet.length) {
-                            String str4 = "x";
-                            String DanChiTiet = Chitiet[k].substring(0, Chitiet[k].indexOf(str4));
-                            String TienChiTiet2 = Chitiet[k].substring(Chitiet[k].indexOf(str4)).replaceAll(",", str3);
+                            String DanChiTiet = Chitiet[k].substring(0, Chitiet[k].indexOf("x"));
+                            String TienChiTiet2 = Chitiet[k].substring(Chitiet[k].indexOf("x")).replaceAll(",", "");
                             String[] str_so = DanChiTiet.split(",");
                             int j = 0;
                             while (j < str_so.length) {
-                                String ndung2 = ndung.toString().replaceAll(",x", str4);
+                                String ndung2 = ndung.toString().replaceAll(",x", "x");
                                 if (ndung2.length() != 0) {
-                                    str2 = str4;
                                     if (ndung2.length() + TienChiTiet2.length() + TienChiTiet2.length() < dodai) {
                                         if (j >= str_so.length - 1) {
                                             ndung = new StringBuilder(ndung2 + str_so[j] + "," + TienChiTiet2 + " ");
@@ -883,17 +863,13 @@ public class Frag_CanChuyen extends Fragment {
                                         ndung = new StringBuilder(DangGi + "\n" + str_so[j] + ",");
                                     }
                                 } else {
-                                    str2 = str4;
                                     ndung = new StringBuilder(str_so.length == 1 ? DangGi + "\n" + str_so[j] + "," + TienChiTiet2 + " " : DangGi + "\n" + str_so[j] + ",");
                                 }
                                 j++;
-                                str4 = str2;
                             }
                             k++;
                         }
-                        str = str3;
                     } else {
-                        str = str3;
                         for (String s : Chitiet) {
                             if (ndung.length() == 0) {
                                 ndung = new StringBuilder(DangGi + "\n" + s + " ");
@@ -917,7 +893,7 @@ public class Frag_CanChuyen extends Fragment {
             max = 100;
             rangeSeekBar.setSelectedMinValue(0);
             rangeSeekBar.setSelectedMaxValue(100);
-            edt_tien.setText(str);
+            edt_tien.setText("");
         });
         dialog.getWindow().setLayout(-1, -2);
         dialog.setCancelable(true);
@@ -1106,7 +1082,7 @@ public class Frag_CanChuyen extends Fragment {
             ViewHolder() {}
         }
 
-        @SuppressLint("SetTextI18n")
+        @SuppressLint({"SetTextI18n", "RestrictedApi"})
         public View getView(int position, View view, ViewGroup parent) {
             @SuppressLint("WrongConstant") LayoutInflater inflater = (LayoutInflater) getContext().getSystemService("layout_inflater");
             ViewHolder holder = new ViewHolder();

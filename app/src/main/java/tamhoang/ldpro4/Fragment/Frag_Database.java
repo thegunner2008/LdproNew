@@ -62,7 +62,7 @@ public class Frag_Database extends Fragment {
     Database db;
     RadioGroup gr1;
     RadioGroup gr2;
-    RadioButton ketquanet;
+    RadioButton xosothienphu;
     WebView mWebView;
     RadioButton minhngoc;
     RadioButton nazzy;
@@ -81,7 +81,7 @@ public class Frag_Database extends Fragment {
         this.xosome = v2.findViewById(R.id.xosome);
         this.minhngoc = v2.findViewById(R.id.minhngoc);
         this.nazzy = v2.findViewById(R.id.nazzy);
-        this.ketquanet = v2.findViewById(R.id.ketquanet);
+        this.xosothienphu = v2.findViewById(R.id.xosothienphu);
         this.xsme = v2.findViewById(R.id.xsme);
         this.xsmn = v2.findViewById(R.id.xsmn);
         this.gr1 = v2.findViewById(R.id.gr1);
@@ -208,9 +208,9 @@ public class Frag_Database extends Fragment {
                 DisplayKQnet();
             }
         });
-        this.ketquanet.setOnCheckedChangeListener((buttonView, isChecked) -> {
+        this.xosothienphu.setOnCheckedChangeListener((buttonView, isChecked) -> {
             gr2.clearCheck();
-            if (ketquanet.isChecked()) {
+            if (xosothienphu.isChecked()) {
                 DisplayKQnetNew();
             }
         });
@@ -291,7 +291,7 @@ public class Frag_Database extends Fragment {
         this.mWebView.setVisibility(View.GONE);
         new MainActivity();
         String mDate = MainActivity.Get_ngay().replaceAll("/", "-");
-        this.mWebView.loadUrl("https://ketqua.net/xo-so-mien-bac.php?ngay=" + mDate);
+        this.mWebView.loadUrl("https://xosothienphu.com/ma-nhung/xsmb-" + mDate + ".html");
         this.mWebView.setWebViewClient(new WebViewClient() {
             public void onPageFinished(WebView view, String url) {
                 mWebView.setVisibility(View.VISIBLE);
