@@ -90,6 +90,7 @@ public class Frag_Chaytrang extends Fragment {
     Database db;
     String donvi = "n ";
     EditText edt_tien;
+    TextView tv_balance;
     Handler handler;
     JSONArray jsonArray = new JSONArray();
     JSONObject jsonChayTrang = new JSONObject();
@@ -406,7 +407,7 @@ public class Frag_Chaytrang extends Fragment {
                 Toast.makeText(getActivity(), "Không có trang để xuất", Toast.LENGTH_SHORT).show();
             }
             if (MainActivity.MyToken.length() > 0) {
-                switch (GameType){
+                switch (GameType) {
                     case TYPE_DEA:
                         the_loai = "dea";
                         xuatDan = "De dau:";
@@ -436,6 +437,7 @@ public class Frag_Chaytrang extends Fragment {
                         TaoTinDe();
                         break;
                     case TYPE_LO:
+                    case TYPE_LO_LIVE:
                         the_loai = "lo";
                         xuatDan = "Lo:";
                         donvi = "d ";
@@ -464,7 +466,11 @@ public class Frag_Chaytrang extends Fragment {
                         TaoTinXi();
                         break;
                 }
-                Dialog();
+                if (!xuatDan.endsWith(":")) {
+                    Dialog();
+                } else {
+                    Toast.makeText(getActivity(), "Không có dữ liệu để xuất", Toast.LENGTH_SHORT).show();
+                }
             }
         });
         this.btn_MaXuat.setOnClickListener(view -> Dialog2());
@@ -495,28 +501,30 @@ public class Frag_Chaytrang extends Fragment {
             maxDang2 = Integer.parseInt(this.edt_tien.getText().toString());
         }
         int i = 0;
-        while (true) {
+        while (i < this.mSo.size() && dem < 50) {
+            if(i >= this.mTienTon.size()) break;
             try {
-                if (i >= this.mSo.size()) {
-                    break;
-                }
-                String Ktra = this.mSo.get(i);
-                if (dem >= 50) {
-                    break;
-                }
-                if (this.jsonGia.has(Ktra)) {
-                    if (this.jsonGia.getInt(Ktra) + this.Price > this.MaxChay) {
+                String so = this.mSo.get(i);
+                if (this.jsonGia.has(so)) {
+                    if (this.jsonGia.getInt(so) + this.Price > this.MaxChay) {
                         i++;
+                        continue;
                     }
                 } else if (this.Price > this.MaxChay) {
                     i++;
+                    continue;
                 }
+
                 int TienTon = Integer.parseInt(this.mTienTon.get(i).replace(".", ""));
                 JSONObject soCT = new JSONObject();
-                soCT.put("So_chon", Ktra);
-                soCT.put("Da_chuyen", jSon.has(Ktra) ? jSon.getJSONObject(Ktra).getInt("Da_chuyen") + TienTon : 0);
-                soCT.put(SE_CHUYEN, soCT.getInt("Da_chuyen") + TienTon <= maxDang2 ? TienTon : maxDang2 - soCT.getInt("Da_chuyen"));
-                if (soCT.getInt(SE_CHUYEN) > 0) {
+                soCT.put("So_chon", so);
+                soCT.put("Da_chuyen", jSon.has(so) ? jSon.getJSONObject(so).getInt("Da_chuyen") + TienTon : 0);
+
+                if (soCT.getInt("Da_chuyen") + TienTon > maxDang2) {
+                    TienTon = maxDang2 - soCT.getInt("Da_chuyen");
+                }
+                soCT.put("Se_chuyen", TienTon);
+                if (soCT.getInt("Se_chuyen") > 0) {
                     jsonValues.add(soCT);
                     dem++;
                 }
@@ -959,37 +967,33 @@ public class Frag_Chaytrang extends Fragment {
             }
             holder.tv_HuyCuoc.setFocusable(false);
             holder.tv_HuyCuoc.setFocusableInTouchMode(false);
-            holder.tv_HuyCuoc.setOnClickListener(new View.OnClickListener() {
-                /* class tamhoang.ldpro4.Fragment.Frag_Chaytrang.Ma_da_chay.AnonymousClass1 */
-
-                public void onClick(View view) {
-                }
+            holder.tv_HuyCuoc.setOnClickListener(view1 -> {
             });
-            if (TheLoai.get(position).intValue() == 0) {
+            if (TheLoai.get(position) == TYPE_DEB) {
                 TextView textView = holder.tv_NoiDung;
                 textView.setText("Đề: " + NoiDung.get(position));
-            } else if (TheLoai.get(position).intValue() == 1) {
+            } else if (TheLoai.get(position) == TYPE_LO) {
                 TextView textView2 = holder.tv_NoiDung;
                 textView2.setText("Lô: " + NoiDung.get(position));
-            } else if (TheLoai.get(position).intValue() == 2) {
+            } else if (TheLoai.get(position) == TYPE_XI) {
                 TextView textView3 = holder.tv_NoiDung;
                 textView3.setText("Xiên 2: " + NoiDung.get(position));
-            } else if (TheLoai.get(position).intValue() == 3) {
+            } else if (TheLoai.get(position) == TYPE_XI3) {
                 TextView textView4 = holder.tv_NoiDung;
                 textView4.setText("Xiên 3: " + NoiDung.get(position));
-            } else if (TheLoai.get(position).intValue() == 4) {
+            } else if (TheLoai.get(position) == TYPE_XI4) {
                 TextView textView5 = holder.tv_NoiDung;
                 textView5.setText("Xiên 4: " + NoiDung.get(position));
-            } else if (TheLoai.get(position).intValue() == 20) {
+            } else if (TheLoai.get(position) == TYPE_LO_LIVE) {
                 TextView textView6 = holder.tv_NoiDung;
                 textView6.setText("Lô Live: " + NoiDung.get(position));
-            } else if (TheLoai.get(position).intValue() == 21) {
+            } else if (TheLoai.get(position) == TYPE_DEA) {
                 TextView textView7 = holder.tv_NoiDung;
                 textView7.setText("Đề đầu: " + NoiDung.get(position));
-            } else if (TheLoai.get(position).intValue() == 22) {
+            } else if (TheLoai.get(position) == TYPE_DED) {
                 TextView textView8 = holder.tv_NoiDung;
                 textView8.setText("Giải nhất: " + NoiDung.get(position));
-            } else if (TheLoai.get(position).intValue() == 23) {
+            } else if (TheLoai.get(position) == TYPE_DEC) {
                 TextView textView9 = holder.tv_NoiDung;
                 textView9.setText("Đầu giải nhất: " + NoiDung.get(position));
             }
@@ -998,7 +1002,7 @@ public class Frag_Chaytrang extends Fragment {
             TextView textView11 = holder.tv_TienCuoc;
             textView11.setText("Tổng: " + TienCuoc.get(position));
             holder.tv_SoTin.setText(SoTin.get(position));
-            if (HuyCuoc.get(position).intValue() == 0) {
+            if (HuyCuoc.get(position) == 0) {
                 holder.tv_HuyCuoc.setTextColor(-7829368);
                 holder.tv_HuyCuoc.setEnabled(false);
                 holder.tv_HuyCuoc.setText("Đã huỷ");
@@ -1090,13 +1094,6 @@ public class Frag_Chaytrang extends Fragment {
                 int i3 = 0;
                 while (i3 < ListDan.length) {
                     try {
-                    } catch (Throwable th4) {
-                        cursor = cursor2;
-                        if (!cursor.isClosed()) {
-                        }
-                        throw th4;
-                    }
-                    try {
                         String Dayso2 = ListDan[i3].substring(ListDan[i3].indexOf(":") + 1);
                         try {
                             String Dayso3 = Dayso2.substring(0, Dayso2.indexOf("x"));
@@ -1116,14 +1113,9 @@ public class Frag_Chaytrang extends Fragment {
                                             } catch (JSONException e7) {
                                                 e2 = e7;
                                             } catch (Throwable th5) {
-                                                if (!cursor.isClosed()) {
-                                                }
                                                 throw th5;
                                             }
                                         } catch (Throwable th6) {
-                                            cursor = cursor2;
-                                            if (!cursor.isClosed()) {
-                                            }
                                             throw th6;
                                         }
                                     } else {
@@ -1343,7 +1335,7 @@ public class Frag_Chaytrang extends Fragment {
         SimpleDateFormat dmyFormat = new SimpleDateFormat("yyyy-MM-dd");
         dmyFormat.setTimeZone(TimeZone.getDefault());
         String mNgayNhan2 = dmyFormat.format(calendar.getTime());
-        int maxSoTn = BriteDb.INSTANCE.getMaxSoTinNhan(mNgayNhan2, null, "ten_kh = '"+ mwebsite.get(this.spin_pointion) +"'");
+        int maxSoTn = BriteDb.INSTANCE.getMaxSoTinNhan(mNgayNhan2, null, "ten_kh = '" + mwebsite.get(this.spin_pointion) + "'");
 
         int Sotinnhan = maxSoTn + 1;
         try {
@@ -1494,7 +1486,6 @@ public class Frag_Chaytrang extends Fragment {
                     ticket.put("Items", Items);
                     Tickets.put(ticket);
                     jsonObject2.put("Tickets", Tickets);
-                    jsonObject2 = jsonObject2;
                     return jsonObject2.toString();
                 } else if (GameType == TYPE_LO || GameType == TYPE_LO_LIVE) {
                     LanAn = 80000;
@@ -1523,7 +1514,6 @@ public class Frag_Chaytrang extends Fragment {
                     ticket.put("Items", Items);
                     Tickets.put(ticket);
                     jsonObject2.put("Tickets", Tickets);
-                    jsonObject2 = jsonObject2;
                     return jsonObject2.toString();
                 }
             } catch (JSONException e14) {
@@ -1633,11 +1623,27 @@ public class Frag_Chaytrang extends Fragment {
                         }
                     }
                 }
-                ResponseBody body2 = okHttpClient.newCall(new Request.Builder().header("Authorization", "Bearer " + MainActivity.MyToken).url("https://comm.lotusapi.com/servers/current-date-time").get().build()).execute().body();
+                ResponseBody body2 = okHttpClient.newCall(new Request.Builder().header("Authorization", "Bearer " + MainActivity.MyToken)
+                        .url("https://comm.lotusapi.com/servers/current-date-time").get().build()).execute().body();
                 if (body2 != null) {
                     JSONObject json = new JSONObject(body2.string());
                     if (json.has("Timestamp")) {
                         Curent_date_time = json.getLong("Timestamp");
+                    }
+                }
+
+                ResponseBody body3 = okHttpClient.newCall(new Request.Builder().header("Authorization", "Bearer " + MainActivity.MyToken)
+                        .url("https://id.lotusapi.com/wallets/player/my-wallet").get().build()).execute().body();
+                if (body3 != null) {
+                    final JSONObject json = new JSONObject(body3.string());
+                    if (!json.has("message")) {
+                        new Handler(Looper.getMainLooper()).post(() -> {
+                            try {
+                                DecimalFormat decimalFormat = new DecimalFormat("###,###");
+                                tv_balance.setText(decimalFormat.format(json.getDouble("Balance")));
+                            } catch (JSONException ignored) {
+                            }
+                        });
                     }
                 }
             }
@@ -1769,7 +1775,7 @@ public class Frag_Chaytrang extends Fragment {
             sb6.append(this.lay_xien);
             sb6.append("  GROUP by so_chon Order by ton DESC, diem DESC");
             str7 = sb6.toString();
-            if (c1 != null && !c1.isClosed()) {
+            if (!c1.isClosed()) {
                 c1.close();
             }
         }
@@ -1781,40 +1787,39 @@ public class Frag_Chaytrang extends Fragment {
             Laymax.moveToFirst();
             try {
                 JSONObject jsonMax = new JSONObject(Laymax.getString(2));
-                int i2 = this.GameType;
-                if (i2 != 0) {
-                    if (i2 != 1) {
-                        if (i2 == 2) {
-                            this.myMax = decimalFormat.format((long) jsonMax.getInt("max_xi2"));
-                            this.MaxChay = jsonMax.has("gia_xi2") ? jsonMax.getInt("gia_xi2") : 560;
-                        } else if (i2 == 3) {
-                            this.myMax = decimalFormat.format((long) jsonMax.getInt("max_xi3"));
-                            this.MaxChay = jsonMax.has("gia_xi3") ? jsonMax.getInt("gia_xi3") : 520;
-                        } else if (i2 != 4) {
-                            switch (i2) {
-                                case 21:
-                                    this.myMax = decimalFormat.format((long) jsonMax.getInt("max_dea"));
-                                    this.MaxChay = jsonMax.getInt("gia_dea");
-                                    break;
-                                case 22:
-                                    this.myMax = decimalFormat.format((long) jsonMax.getInt("max_ded"));
-                                    this.MaxChay = jsonMax.getInt("gia_ded");
-                                    break;
-                                case 23:
-                                    this.myMax = decimalFormat.format((long) jsonMax.getInt("max_dec"));
-                                    this.MaxChay = jsonMax.getInt("gia_dec");
-                                    break;
-                            }
-                        } else {
-                            this.myMax = decimalFormat.format((long) jsonMax.getInt("max_xi4"));
-                            this.MaxChay = jsonMax.has("gia_xi4") ? jsonMax.getInt("gia_xi4") : 450;
-                        }
-                    }
-                    this.myMax = decimalFormat.format((long) jsonMax.getInt("max_lo"));
-                    this.MaxChay = jsonMax.getInt("gia_lo");
-                } else {
-                    this.myMax = decimalFormat.format((long) jsonMax.getInt("max_deb"));
-                    this.MaxChay = jsonMax.getInt("gia_deb");
+                switch (this.GameType) {
+                    case TYPE_DEA:
+                        this.myMax = decimalFormat.format((long) jsonMax.getInt("max_dea"));
+                        this.MaxChay = jsonMax.getInt("gia_dea");
+                        break;
+                    case TYPE_DEB:
+                        this.myMax = decimalFormat.format((long) jsonMax.getInt("max_deb"));
+                        this.MaxChay = jsonMax.getInt("gia_deb");
+                        break;
+                    case TYPE_DEC:
+                        this.myMax = decimalFormat.format((long) jsonMax.getInt("max_dec"));
+                        this.MaxChay = jsonMax.getInt("gia_dec");
+                        break;
+                    case TYPE_DED:
+                        this.myMax = decimalFormat.format((long) jsonMax.getInt("max_ded"));
+                        this.MaxChay = jsonMax.getInt("gia_ded");
+                        break;
+                    case TYPE_LO_LIVE:
+                    case TYPE_LO:
+                        this.myMax = decimalFormat.format((long) jsonMax.getInt("max_lo"));
+                        this.MaxChay = jsonMax.getInt("gia_lo");
+                        break;
+                    case TYPE_XI:
+                        this.myMax = decimalFormat.format((long) jsonMax.getInt("max_xi2"));
+                        this.MaxChay = jsonMax.has("gia_xi2") ? jsonMax.getInt("gia_xi2") : 560;
+                    case TYPE_XI3:
+                        this.myMax = decimalFormat.format((long) jsonMax.getInt("max_xi3"));
+                        this.MaxChay = jsonMax.has("gia_xi3") ? jsonMax.getInt("gia_xi3") : 520;
+                        break;
+                    case TYPE_XI4:
+                        this.myMax = decimalFormat.format((long) jsonMax.getInt("max_xi4"));
+                        this.MaxChay = jsonMax.has("gia_xi4") ? jsonMax.getInt("gia_xi4") : 450;
+                        break;
                 }
             } catch (JSONException e) {
                 e.printStackTrace();
@@ -1836,7 +1841,7 @@ public class Frag_Chaytrang extends Fragment {
                         this.mTienOm.add(decimalFormat.format((long) cursor.getInt(2)));
                         this.mTienchuyen.add(decimalFormat.format((long) cursor.getInt(3)));
                         this.mTienTon.add(decimalFormat.format((long) cursor.getInt(4)));
-                        this.mNhay.add(Integer.valueOf(cursor.getInt(GiaSo1)));
+                        this.mNhay.add(cursor.getInt(GiaSo1));
                         this.mMax.add(this.myMax);
                         if (this.radio_xi2.isChecked()) {
                             String[] SoXien = cursor.getString(0).split(",");
@@ -1902,7 +1907,7 @@ public class Frag_Chaytrang extends Fragment {
                     this.mMax.add(this.myMax);
                 }
             }
-            if (cursor != null && !cursor.isClosed()) {
+            if (!cursor.isClosed()) {
                 cursor.close();
             }
         }
@@ -1911,7 +1916,6 @@ public class Frag_Chaytrang extends Fragment {
         }
     }
 
-    /* access modifiers changed from: package-private */
     public class So_OmAdapter extends ArrayAdapter {
         public So_OmAdapter(Context context, int resource, List<String> objects) {
             super(context, resource, objects);
@@ -2024,5 +2028,6 @@ public class Frag_Chaytrang extends Fragment {
         this.spr_trang = (Spinner) this.v.findViewById(R.id.spr_trang);
         this.btn_MaXuat = (Button) this.v.findViewById(R.id.btn_MaXuat);
         this.edt_tien = (EditText) this.v.findViewById(R.id.edt_tien);
+        this.tv_balance = (TextView) this.v.findViewById(R.id.tv_balance);
     }
 }

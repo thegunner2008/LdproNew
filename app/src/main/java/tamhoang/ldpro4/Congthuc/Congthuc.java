@@ -652,265 +652,158 @@ public class Congthuc {
         return DaySo;
     }
 
-    public static String XulyXien(String str) {
+    public static String XulyXien(String str) {//format: "12,34 56,78" "121,232" -> "12,21,23,32"
         str = str.replace(", ", ",");
-        String _p = " ,";
-
-        String str2 = "";
-        int i = 0;
-        String sss = "";
+        String replace;
         String strKQ = "";
-        int j = 0;
-        boolean Ktra = false;
-        String strKQ2 = "";
-        int i2 = 0;
-        int j2 = 0;
-        StringBuilder strKQ3 = new StringBuilder();
-        boolean Ktra2 = true;
-        int i3 = 0;
         if (str.length() > 6) {
-            String sss2 = str.trim().replaceAll("[,.;-]", " ");
-            if (sss2.startsWith("2 ") || sss2.startsWith("3 ") || sss2.startsWith("4 ")) {
-                if (sss2.startsWith("2 ")) {
-                    j2 = 5;
-                } else if (sss2.startsWith("3 ")) {
-                    j2 = 8;
-                } else if (sss2.startsWith("4 ")) {
-                    j2 = 11;
-                }
-                String sss3 = XulySo(sss2.substring(2));
-                while (true) {
-                    if (sss3.length() - i2 <= j2) {
+            String replaceAll = str.trim().replaceAll("[,.;-]", " ");
+            if (replaceAll.startsWith("2 ") || replaceAll.startsWith("3 ") || replaceAll.startsWith("4 ")) {
+                int i4 = replaceAll.startsWith("2 ") ? 5 : replaceAll.startsWith("3 ") ? 8 : replaceAll.startsWith("4 ") ? 11 : 0;
+                String XulySo = XulySo(replaceAll.substring(2));
+                int i5 = 0;
+                while (XulySo.length() - i5 > i4) {
+                    int i6 = i5 + i4;
+                    i5 = i6 + 1;
+
+                    XulySo = XulySo.substring(0, i6) + " " + XulySo.substring(i5);
+                    if (XulySo.substring(i5).length() < i4 && XulySo.substring(i5).length() > 2) {
+                        XulySo = "Không hiểu " + XulySo.substring(i5);
                         break;
                     }
-                    int i4 = i2 + j2;
-                    sss3 = sss3.substring(0, i4) + " " + sss3.substring(i4 + 1);
-                    if (sss3.substring(i4 + 1).length() < j2 && sss3.substring(i4 + 1).length() > 2) {
-                        sss3 = "Không hiểu " + sss3.substring(i4 + 1);
-                        break;
-                    }
-                    i2 = i4 + 1;
                 }
-                return sss3.trim();
+                return XulySo.trim();
             }
-            str2 = str;
-        } else if (str.trim().startsWith("2 ")) {
-            str2 = str.trim().replace("2 ", "");
-        } else {
-            str2 = str;
         }
-        int i5 = 3;
-        int i6 = 1;
-        if (str2.indexOf(";") > -1) {
-            String sss4 = str2;
-            String[] ArrSS = sss4.split(";");
-            int i7 = 0;
-            while (i7 < ArrSS.length) {
-                ArrSS[i7] = ArrSS[i7].replaceAll(" ", ",");
-                ArrSS[i7] = ArrSS[i7].replaceAll(",,", ",");
-                String[] Arrx = ArrSS[i7].split(",");
-                int i1 = 0;
-                while (true) {
-                    if (i1 >= Arrx.length) {
-                        j = j2;
-                        break;
-                    }
-                    if (Arrx[i1].length() != i5 || !isNumeric(Arrx[i1])) {
-                        j = j2;
-                        strKQ2 = strKQ3.toString();
-                        Ktra = Ktra2;
-                        if ((Arrx[i1].length() != 2 || !isNumeric(Arrx[i1])) && Arrx[i1].length() > 1) {
-                            strKQ3 = new StringBuilder();
-                            Ktra2 = false;
+        replace = (str.trim().startsWith("2 ")) ? str.trim().replace("2 ", "") : str.trim();
+        if (replace.contains(";")) {
+            String[] splitArr = replace.split(";");
+            strKQ = "";
+            boolean kiemtra = true;
+            for (String split : splitArr) {
+                split = split.replaceAll(" ", ",");
+                split = split.replaceAll(",,", ",");
+                String[] split2Arr = split.split(",");
+                for (String s : split2Arr) {
+                    if (s.length() == 3 && isNumeric(s)) {
+                        String So1 = s.charAt(0) + "";
+                        String So2 = s.charAt(1) + "";
+                        String So3 = s.charAt(2) + "";
+                        if(!So1.equals(So2) && So1.equals(So3)) {
+                            String sb = So1 + So2 + "," + So2 + So1;
+                            replace = replace.replaceAll(s, sb);
+                        } else {
+                            strKQ = "";
+                            kiemtra = false;
                             break;
                         }
                     } else {
-                        String So1 = Arrx[i1].substring(i3, i6);
-                        String So2 = Arrx[i1].substring(i6, 2);
-                        j = j2;
-                        String So3 = Arrx[i1].substring(2, 3);
-                        if (So1.indexOf(So2) != -1 || So1.indexOf(So3) <= -1) {
-                            strKQ3 = new StringBuilder();
-                            Ktra2 = false;
-                        } else {
-                            String str3 = Arrx[i1];
-                            StringBuilder sb = new StringBuilder();
-                            strKQ2 = strKQ3.toString();
-                            Ktra = Ktra2;
-                            sb.append(Arrx[i1].substring(0, 1));
-                            sb.append(Arrx[i1].substring(1, 2));
-                            sb.append(",");
-                            sb.append(Arrx[i1].substring(1, 2));
-                            sb.append(Arrx[i1].substring(0, 1));
-                            sss4 = sss4.replaceAll(str3, sb.toString());
+                        if (s.length() != 2 || !isNumeric(s)) {
+                            if (s.length() > 1) {
+                                strKQ = "";
+                                kiemtra = false;
+                                break;
+                            }
                         }
                     }
-                    i1++;
-                    j2 = j;
-                    strKQ3 = new StringBuilder(strKQ2);
-                    Ktra2 = Ktra;
-                    i3 = 0;
-                    i6 = 1;
-                    i5 = 3;
                 }
-                if (Ktra2) {
-                    strKQ3.append(ArrSS[i7]).append(" ");
+                if (kiemtra) {
+                    strKQ = strKQ + split + " ";
                 }
-                i7++;
-                j2 = j;
-                i3 = 0;
-                i6 = 1;
-                i5 = 3;
             }
         } else {
-//            String sss5 = str2.replaceAll(" ", "");
-            String[] Arrx2 = str2.split(",");
-            int i12 = 0;
-            while (true) {
-                if (i12 >= Arrx2.length) {
-                    i = i2;
-                    break;
-                }
-                if (Arrx2[i12].length() != 3 || !isNumeric(Arrx2[i12])) {
-                    i = i2;
-                    strKQ = strKQ3.toString();
-                    if ((Arrx2[i12].length() != 2 || !isNumeric(Arrx2[i12])) && Arrx2[i12].length() > 1) {
-                        Ktra2 = false;
-                        strKQ3 = new StringBuilder();
-                        break;
+            strKQ = replace.replaceAll(" ", "");
+            boolean reCaculate = false;
+            String[] split3 = strKQ.split(",");
+            for (String s : split3) {
+                if (s.length() == 3 && isNumeric(s)) {
+                    String So1 = s.charAt(0) + "";
+                    String So2 = s.charAt(1) + "";
+                    String So3 = s.charAt(2) + "";
+                    if(!So1.equals(So2) && So1.equals(So3)) {
+                        String sb = So1 + So2 + "," + So2 + So1;
+                        strKQ = strKQ.replaceAll(s, sb);
+                        reCaculate = true;
                     }
                 } else {
-                    String So12 = Arrx2[i12].substring(0, 1);
-                    String So22 = Arrx2[i12].substring(1, 2);
-                    String So32 = Arrx2[i12].substring(2, 3);
-                    if (So12.indexOf(So22) != -1 || So12.indexOf(So32) <= -1) {
-                        i = i2;
-                        strKQ = strKQ3.toString();
-                    } else {
-                        String str4 = Arrx2[i12];
-                        StringBuilder sb2 = new StringBuilder();
-                        i = i2;
-                        strKQ = strKQ3.toString();
-                        sb2.append(Arrx2[i12].substring(0, 1));
-                        sb2.append(Arrx2[i12].substring(1, 2));
-                        sb2.append(",");
-                        sb2.append(Arrx2[i12].substring(1, 2));
-                        sb2.append(Arrx2[i12].substring(0, 1));
-                        str2 = str2.replaceAll(str4, sb2.toString());
-                    }
-                }
-                i12++;
-                i2 = i;
-                strKQ3 = new StringBuilder(strKQ);
-            }
-            String[] Arrx3 = str2.split(",");
-            if (Arrx3.length < 2 || Arrx3.length > 4) {
-                Ktra2 = false;
-            }
-            if (!Ktra2) {
-                String sss6 = str2;
-                int j3 = 0;
-                while (true) {
-                    if (j3 >= _p.length()) {
+                    if ((s.length() != 2 || !isNumeric(s)) && s.length() > 1) {
                         break;
                     }
-                    boolean Ktra3 = true;
-                    String[] ArrSS2 = sss6.split(",");
-                    int i8 = 0;
-                    while (true) {
-                        if (i8 >= ArrSS2.length) {
-                            sss = sss6;
+                }
+            }
+
+            String kQTmp = reCaculate? strKQ : "";
+            strKQ = "";
+
+            String[] spaces = {" ", ","};
+            for (String Space: spaces) {
+                String[] splits = replace.split(Space);
+                boolean kiemtra = true;
+                for (String spl: splits) {
+                    String trim = spl.trim();
+                    if(trim.length() == 0) break;
+
+                    if (trim.split(" ").length == 1) {
+                        String[] split2 = trim.split(",");
+                        if (split2.length == 1) {
+                            strKQ = kQTmp.split(",").length > 1 ? kQTmp : "";
                             break;
-                        } else if (ArrSS2[i8].trim().length() == 0) {
-                            sss = sss6;
-                            break;
-                        } else {
-                            String str22 = ArrSS2[i8].trim();
-                            if (str22.split(" ").length == 1) {
-                                String[] Arrx4 = str22.split(",");
-                                if (Arrx4.length == 1) {
-                                    strKQ3 = new StringBuilder();
-                                    sss = sss6;
-                                    break;
-                                }
-                                int i13 = 0;
-                                while (true) {
-                                    if (i13 >= Arrx4.length) {
-                                        sss = sss6;
-                                        break;
-                                    }
-                                    if (Arrx4[i13].length() != 3 || !isNumeric(Arrx4[i13])) {
-                                        sss = sss6;
-                                        if ((Arrx4[i13].length() != 2 || !isNumeric(Arrx4[i13])) && Arrx4[i13].length() > 1) {
-                                            Ktra3 = false;
-                                            strKQ3 = new StringBuilder();
-                                            break;
-                                        }
-                                    } else {
-                                        if (Arrx4[i13].substring(0, 1) == Arrx4[i13].substring(1, 2)) {
-                                            sss = sss6;
-                                        } else if (Arrx4[i13].substring(0, 1) == Arrx4[i13].substring(2, 3)) {
-                                            String str5 = Arrx4[i13];
-                                            StringBuilder sb3 = new StringBuilder();
-                                            sss = sss6;
-                                            sb3.append(Arrx4[i13].substring(0, 1));
-                                            sb3.append(Arrx4[i13].substring(1, 2));
-                                            sb3.append(",");
-                                            sb3.append(Arrx4[i13].substring(1, 2));
-                                            sb3.append(Arrx4[i13].substring(0, 1));
-                                            str22 = str22.replaceAll(str5, sb3.toString());
-                                        } else {
-                                            sss = sss6;
-                                        }
-                                    }
-                                    i13++;
-                                    sss6 = sss;
-                                }
-                                if (Ktra3 && str22.length() > 4) {
-                                    strKQ3.append(str22.replaceAll(" ", ",")).append(" ");
+                        }
+                        String str4 = trim;
+                        for (String s: split2) {
+                            if (s.length() == 3 && isNumeric(s)) {
+                                String So1 = s.charAt(0) + "";
+                                String So2 = s.charAt(1) + "";
+                                String So3 = s.charAt(2) + "";
+                                if(!So1.equals(So2) && So1.equals(So3)) {
+                                    String sb = So1 + So2 + "," + So2 + So1;
+                                    str4 = str4.replaceAll(s, sb);
                                 }
                             } else {
-                                sss = sss6;
-                                String[] Arrx5 = str22.split(" ");
-                                if (Arrx5.length == 1) {
-                                    strKQ3 = new StringBuilder();
+                                if ((s.length() != 2 || !isNumeric(s)) && s.length() > 1) {
+                                    strKQ = "";
+                                    kiemtra = false;
                                     break;
                                 }
-                                int i14 = 0;
-                                while (i14 < Arrx5.length) {
-                                    if (Arrx5[i14].length() != 3 || !isNumeric(Arrx5[i14])) {
-                                        if (Arrx5[i14].length() != 2 || !isNumeric(Arrx5[i14])) {
-                                            Ktra3 = false;
-                                        }
-                                    } else if (!Arrx5[i14].substring(0, 1).equals(Arrx5[i14].substring(1, 2))) {
-                                        if (Arrx5[i14].substring(0, 1).equals(Arrx5[i14].substring(2, 3))) {
-                                            str22 = str22.replaceAll(Arrx5[i14], Arrx5[i14].substring(0, 1) + Arrx5[i14].substring(1, 2) + "," + Arrx5[i14].substring(1, 2) + Arrx5[i14].substring(0, 1));
-                                        }
-                                    }
-                                    i14++;
+                            }
+                        }
+                        if (kiemtra && str4.length() > 4) {
+                            strKQ = strKQ + str4.replaceAll(" ", ",") + " ";
+                        }
+                    } else {
+                        String[] split7 = trim.split(" ");
+                        if (split7.length == 1) {
+                            strKQ = "";
+                            break;
+                        }
+                        for (String s : split7) {
+                            if (s.length() == 3 && isNumeric(s)) {
+                                String So1 = s.charAt(0) + "";
+                                String So2 = s.charAt(1) + "";
+                                String So3 = s.charAt(2) + "";
+                                if(!So1.equals(So2) && So1.equals(So3)) {
+                                    String sb = So1 + So2 + "," + So2 + So1;
+                                    trim = trim.replaceAll(s, sb);
                                 }
-                                if (Ktra3) {
-                                    if (str22.length() > 4) {
-                                        strKQ3.append(str22.replaceAll(" ", ",")).append(" ");
-                                    }
+                            } else {
+                                if ((s.length() != 2 || !isNumeric(s)) && s.length() > 1) {
+                                    strKQ = "";
+                                    kiemtra = false;
+                                    break;
                                 }
                             }
-                            i8++;
-                            sss6 = sss;
+                        }
+                        if (kiemtra && trim.length() > 4) {
+                            strKQ = strKQ + trim.replaceAll(" ", ",") + " ";
                         }
                     }
-                    if (strKQ3.length() > 0) {
-                        break;
-                    }
-                    j3++;
-                    i = i8;
-                    sss6 = sss;
                 }
-            } else {
-                strKQ3 = new StringBuilder(str2);
+                if (strKQ.length() > 0) {
+                    break;
+                }
             }
         }
-        return strKQ3.toString().trim();
+        return strKQ.trim();
     }
 
     public static String sortXien(String xien) {

@@ -1,8 +1,33 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    android:background="@color/white" xmlns:app="http://schemas.android.com/apk/res-auto" xmlns:aapt="http://schemas.android.com/aapt" android:orientation="vertical" android:layout_width="match_parent" android:layout_height="match_parent" android:weightSum="1">
-    <LinearLayout android:orientation="vertical" android:layout_width="match_parent" android:layout_height="wrap_content">
-        <TextView android:textSize="14dp" android:textColor="@color/material_blue_grey_800" android:id="@+id/tv_suatin_nd" android:padding="3dp" android:layout_width="match_parent" android:layout_height="match_parent" android:text="Noi dung tin nhan"/>
-        <TextView android:textSize="14dp" android:textColor="#e11a1a" android:id="@+id/tv_suatin_err" android:padding="3dp" android:layout_width="match_parent" android:layout_height="wrap_content" android:text="Các lỗi"/>
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@color/white"
+    android:orientation="vertical"
+    android:weightSum="1">
+
+    <LinearLayout
+        android:id="@+id/ll_suatin_lv"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical">
+
+        <TextView
+            android:id="@+id/tv_suatin_nd"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:padding="3dp"
+            android:text="Noi dung tin nhan"
+            android:textColor="@color/material_blue_grey_800"
+            android:textSize="14dp" />
+
+        <TextView
+            android:id="@+id/tv_suatin_err"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:padding="3dp"
+            android:text="Các lỗi"
+            android:textColor="#e11a1a"
+            android:textSize="14dp" />
     </LinearLayout>
 </LinearLayout>

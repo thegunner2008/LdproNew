@@ -38,11 +38,14 @@ import tamhoang.ldpro4.data.model.KhachHang;
 import tamhoang.ldpro4.data.model.TinNhanS;
 import tamhoang.ldpro4.notifLib.models.Action;
 import tamhoang.ldpro4.notifLib.utils.NotificationUtils;
+import tamhoang.ldpro4.util.Convert;
 
 public class NotificationReader extends NotificationListenerService {
     public static final String VIBER = "com.viber.voip";
     public static final String WHATSAPP = "com.whatsapp";
     public static final String ZALO = "com.zing.zalo";
+
+    public static final String CHANNEL_ID = "ld_service";
 
     String ID = "";
     String Ten_KH;
@@ -68,10 +71,7 @@ public class NotificationReader extends NotificationListenerService {
             createNotificationChannel();
         }
 
-        String channelId = Build.VERSION.SDK_INT >= Build.VERSION_CODES.O ?
-                createNotificationChannel() : "";
-
-        NotificationCompat.Builder notificationBuilder = new NotificationCompat.Builder(this, channelId);
+        NotificationCompat.Builder notificationBuilder = new NotificationCompat.Builder(this, CHANNEL_ID);
         Notification notification = notificationBuilder.setOngoing(true)
                 .setSmallIcon(R.drawable.change)
                 .setContentTitle("LdPro - Đang chạy")
@@ -81,13 +81,12 @@ public class NotificationReader extends NotificationListenerService {
     }
 
     @RequiresApi(Build.VERSION_CODES.O)
-    private String createNotificationChannel() {
-        NotificationChannel channel = new NotificationChannel("ld_service", "Ld Background Service", NotificationManager.IMPORTANCE_HIGH);
+    private void createNotificationChannel() {
+        NotificationChannel channel = new NotificationChannel(CHANNEL_ID, "Ld Background Service", NotificationManager.IMPORTANCE_HIGH);
         channel.setLightColor(Color.BLUE);
         channel.setLockscreenVisibility(Notification.VISIBILITY_PUBLIC);
         NotificationManager service = (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
         service.createNotificationChannel(channel);
-        return "ld_service";
     }
 
     public void onNotificationPosted(StatusBarNotification sbn) {
@@ -97,6 +96,7 @@ public class NotificationReader extends NotificationListenerService {
         if (this.context == null) this.context = this;
 
         Bundle extras = sbn.getNotification().extras;
+        if(extras.getCharSequence(NotificationCompat.EXTRA_TEXT) == null) return;
         String text = extras.getCharSequence(NotificationCompat.EXTRA_TEXT).toString();//nội dung tin nhắn hoặc số(tin nhắn)
 
         if (!text.isEmpty()) processText(sbn, text, 1, 1);
@@ -126,7 +126,7 @@ public class NotificationReader extends NotificationListenerService {
             if (sbn.getPackageName().equals(ZALO)) {
                 if (!text.contains("tin nhắn chưa đọc.") && !text.contains("đã gửi tập tin cho bạn") && !text.contains("cảm xúc với tin nhắn bạn gửi")
                         && !text.contains("hình động cho bạn") && !text.contains("thành viên của nhóm") && !text.contains("thêm vào nhóm")
-                        && !text.contains("gửi ảnh cho bạn") && !text.contains("cuộc trò chuyện")) {
+                        && !text.contains("gửi ảnh cho bạn") && !text.contains("cuộc trò chuyện") && !text.contains("ang gọi đến")) {
                     this.ID = title;
                     if (title.contains(" (")) {
                         this.ID = this.ID.substring(0, this.ID.indexOf("(")).trim(); // 2/ = Tên người nhắn
@@ -164,10 +164,8 @@ public class NotificationReader extends NotificationListenerService {
                 if (this.ID.contains(" (")) {
                     this.ID = this.ID.substring(0, this.ID.indexOf("(")).trim();
                 }
-                this.ID = this.ID.trim();
-                for (int i = 0; i < "aaaaaaaaaaaaaaaaaeeeeeeeeeeeooooooooooooooooouuuuuuuuuuuiiiiiyyyyydx".length(); i++) {
-                    this.ID = this.ID.replace("ăâàằầáắấảẳẩãẵẫạặậễẽểẻéêèềếẹệôòồơờóốớỏổởõỗỡọộợưúùứừủửũữụựìíỉĩịỳýỷỹỵđ×".charAt(i), "aaaaaaaaaaaaaaaaaeeeeeeeeeeeooooooooooooooooouuuuuuuuuuuiiiiiyyyyydx".charAt(i));
-                }
+                this.ID = Convert.convertToLatin(this.ID.trim());
+
                 for (int i2 = 0; i2 < this.ID.length(); i2++) {
                     if (this.ID.charAt(i2) > 127 || this.ID.charAt(i2) < 31) {
                         this.ID = this.ID.substring(0, i2) + this.ID.substring(i2 + 1);
@@ -198,27 +196,24 @@ public class NotificationReader extends NotificationListenerService {
                 }
             }
 
-            if ( !GhepTen.contains("null")) {
-                Notification.Action[] actions = notification.actions;
-
+            if (!GhepTen.contains("null")) {
                 Notification.WearableExtender wearableExtender = new Notification.WearableExtender(notification);
-                ArrayList arrayList = new ArrayList();
-                arrayList.addAll(wearableExtender.getActions());
-                it = arrayList.iterator();
+                it = wearableExtender.getActions().iterator();
                 while (it.hasNext()) {
                     Notification.Action act = (Notification.Action) it.next();
                     if (act.title.toString().contains("Trả lời") || act.title.toString().contains("Reply")) {
                         Action action = NotificationUtils.getQuickReplyAction(sbn.getNotification(), getPackageName());
                         if (MainActivity.contactsMap.containsKey(GhepTen)) {
-                            if (MainActivity.contactsMap.get(GhepTen) != null) {
-                                MainActivity.contactsMap.get(GhepTen).process = process;
-                                MainActivity.contactsMap.get(GhepTen).number = number;
-                                MainActivity.contactsMap.get(GhepTen).name = GhepTen;
-                                MainActivity.contactsMap.get(GhepTen).app = app;
-                                MainActivity.contactsMap.get(GhepTen).pendingIntent = act.actionIntent;
-                                MainActivity.contactsMap.get(GhepTen).remoteInput = act.getRemoteInputs()[0];
-                                MainActivity.contactsMap.get(GhepTen).remoteExtras = sbn.getNotification().extras;
-                                MainActivity.contactsMap.get(GhepTen).action = action;
+                            Contact cont = MainActivity.contactsMap.get(GhepTen);
+                            if (cont != null) {
+                                cont.process = process;
+                                cont.number = number;
+                                cont.name = GhepTen;
+                                cont.app = app;
+                                cont.pendingIntent = act.actionIntent;
+                                cont.remoteInput = act.getRemoteInputs()[0];
+                                cont.remoteExtras = sbn.getNotification().extras;
+                                cont.action = action;
                             }
                         } else {
                             Contact cont = new Contact();
@@ -246,7 +241,7 @@ public class NotificationReader extends NotificationListenerService {
 
             if (app != null) {
                 try {
-                    if (!GhepTen.contains("null") && app != "") {
+                    if (!GhepTen.contains("null")) {
                         String query = "Select * From Chat_database WHERE " +
                                 "ngay_nhan = '" + mNgayNhan + "' And Ten_kh = '" + GhepTen + "' AND nd_goc = '" + text + "'";
                         Cursor cursor = db.GetData(query);
@@ -262,77 +257,75 @@ public class NotificationReader extends NotificationListenerService {
                                 return;
                             }
                         } else {
-                            app = null;
+                            return;
                         }
 
                         cursor.close();
-                        if (app != null) {
-                            if (!GhepTen.contains("null") && app != "" && text.length() > 5) {
-                                this.body = text.replaceAll("'", " ");
-                                this.Ten_KH = GhepTen;
-                                if (!(!MainActivity.DSkhachhang.contains(GhepTen) || this.body.startsWith("Ok") || this.body.startsWith("Bỏ")
-                                        || this.body.toLowerCase().startsWith("ldpro") || this.body.startsWith("Thiếu")
-                                        || this.body.startsWith("Success")) || this.body.contains("Tra lai")) {
+                        if (!GhepTen.contains("null") && text.length() > 5) {
+                            this.body = text.replaceAll("'", " ");
+                            this.Ten_KH = GhepTen;
+                            if (!(!MainActivity.DSkhachhang.contains(GhepTen) || this.body.startsWith("Ok") || this.body.startsWith("Bỏ")
+                                    || this.body.toLowerCase().startsWith("ldpro") || this.body.startsWith("Thiếu")
+                                    || this.body.startsWith("Success")) || this.body.contains("Tra lai")) {
 
-                                    KhachHang khachHang_s = BriteDb.INSTANCE.selectKhachHang(Ten_KH);
-                                    json = new JSONObject(khachHang_s.getTbl_MB());
-                                    caidat_tg = json.getJSONObject("caidat_tg");
+                            KhachHang khachHang_s = BriteDb.INSTANCE.selectKhachHang(Ten_KH);
+                            json = new JSONObject(khachHang_s.getTbl_MB());
+                            caidat_tg = json.getJSONObject("caidat_tg");
 
-                                    if (!Congthuc.CheckTime(caidat_tg.getString("tg_debc"))) {
-                                        int maxSoTn = BriteDb.INSTANCE.getMaxSoTinNhan(mNgayNhan, 1, "ten_kh = '" + Ten_KH + "'");
-                                        soTN = maxSoTn + 1;
+                            if (!Congthuc.CheckTime(caidat_tg.getString("tg_debc"))) {
+                                int maxSoTn = BriteDb.INSTANCE.getMaxSoTinNhan(mNgayNhan, 1, "ten_kh = '" + Ten_KH + "'");
+                                soTN = maxSoTn + 1;
 
-                                        boolean isTraLai = body.contains("Tra lai");
-                                        int okTn = isTraLai ? 0 : 1;
-                                        int del_sms = okTn;
-                                        TinNhanS tinNhanS_i = new TinNhanS(null, mNgayNhan, mGionhan, 1, Ten_KH, khachHang_s.getSdt(), app,
-                                                soTN, body, null, body, "ko", 0, okTn, del_sms, null);
-                                        BriteDb.INSTANCE.insertTinNhanS(tinNhanS_i);
+                                boolean isTraLai = body.contains("Tra lai");
+                                int okTn = isTraLai ? 0 : 1;
+                                BriteDb.INSTANCE.insertTinNhanS(
+                                        new TinNhanS(null, mNgayNhan, mGionhan, 1, Ten_KH, khachHang_s.getSdt(), app,
+                                                soTN, body, null, body, "ko", 0, okTn, okTn, null)
+                                );
 
-                                        if (Congthuc.CheckDate(MainActivity.hanSuDung)) {
-                                            TinNhanS tinNhanS_g = BriteDb.INSTANCE.selectTinNhanS(mNgayNhan, Ten_KH, soTN, 1);
-                                            try {
-                                                db.Update_TinNhanGoc(tinNhanS_g.getID(), 1);
-                                            } catch (Exception e) {
-                                                Log.e(TAG, "onNotificationPosted: Exception " +e );
+                                if (Congthuc.CheckDate(MainActivity.hanSuDung)) {
+                                    TinNhanS tinNhanS_g = BriteDb.INSTANCE.selectTinNhanS(mNgayNhan, Ten_KH, soTN, 1);
+                                    try {
+                                        db.Update_TinNhanGoc(tinNhanS_g.getID(), 1);
+                                    } catch (Exception e) {
+                                        Log.e(TAG, "onNotificationPosted: Exception " + e);
 
-                                                db.QueryData("Update tbl_tinnhanS set phat_hien_loi = 'ko' WHERE id = " + tinNhanS_g.getID());
-                                                db.QueryData("Delete From tbl_soctS WHERE ngay_nhan = '" + mNgayNhan + "' AND ten_kh = '" + this.Ten_KH + "' AND so_tin_nhan = " + this.soTN + " AND type_kh = 1");
-                                            } catch (Throwable throwable) {
-                                                Log.e(TAG, "onNotificationPosted: throwable " +throwable );
-                                            }
-                                            if (!Congthuc.CheckTime("18:30") && !isTraLai) {
-                                                Log.e(TAG, "onNotificationPosted: !CheckTime(18:30) " +  MainActivity.json_Tinnhan.has(Ten_KH) + " - "+ Ten_KH);
-                                                if (MainActivity.handler == null) {
-                                                    MainActivity.handler = new Handler();
-                                                    MainActivity.handler.postDelayed(MainActivity.runnable, 1000);
-                                                }
-                                                if (!MainActivity.json_Tinnhan.has(Ten_KH)) {
-                                                    JSONObject jsontinnan = new JSONObject();
-                                                    jsontinnan.put("Time", 0);
-                                                    MainActivity.json_Tinnhan.put(Ten_KH, jsontinnan.toString());
-                                                } else {
-                                                    JSONObject jsontinnan = new JSONObject(MainActivity.json_Tinnhan.getString(Ten_KH));
-                                                    jsontinnan.put("Time", 0);
-                                                    MainActivity.json_Tinnhan.put(Ten_KH, jsontinnan.toString());
-                                                }
-
-                                                db.Gui_Tin_Nhan(tinNhanS_g.getID());
-                                            }
-
+                                        db.QueryData("Update tbl_tinnhanS set phat_hien_loi = 'ko' WHERE id = " + tinNhanS_g.getID());
+                                        db.QueryData("Delete From tbl_soctS WHERE ngay_nhan = '" + mNgayNhan + "' AND ten_kh = '" + this.Ten_KH + "' AND so_tin_nhan = " + this.soTN + " AND type_kh = 1");
+                                    } catch (Throwable throwable) {
+                                        Log.e(TAG, "onNotificationPosted: throwable " + throwable);
+                                    }
+                                    if (!Congthuc.CheckTime("18:30") && !isTraLai) {
+                                        Log.e(TAG, "onNotificationPosted: !CheckTime(18:30) " + MainActivity.json_Tinnhan.has(Ten_KH) + " - " + Ten_KH);
+                                        if (MainActivity.handler == null) {
+                                            MainActivity.handler = new Handler();
+                                            MainActivity.handler.postDelayed(MainActivity.runnable, 1000);
+                                        }
+                                        if (!MainActivity.json_Tinnhan.has(Ten_KH)) {
+                                            JSONObject jsontinnan = new JSONObject();
+                                            jsontinnan.put("Time", 0);
+                                            MainActivity.json_Tinnhan.put(Ten_KH, jsontinnan.toString());
+                                        } else {
+                                            JSONObject jsontinnan = new JSONObject(MainActivity.json_Tinnhan.getString(Ten_KH));
+                                            jsontinnan.put("Time", 0);
+                                            MainActivity.json_Tinnhan.put(Ten_KH, jsontinnan.toString());
                                         }
 
-                                    } else {
-                                        int maxSoTn = BriteDb.INSTANCE.getMaxSoTinNhan(mNgayNhan, null, "ten_kh = '"+ Ten_KH +"'");
-                                        soTN = maxSoTn + 1;
+                                        db.Gui_Tin_Nhan(tinNhanS_g.getID());
+                                    }
 
-                                        TinNhanS tinNhanS_i = new TinNhanS(null, mNgayNhan, mGionhan, 1, Ten_KH, khachHang_s.getSdt(), app,
-                                                soTN, body, null, body, "Hết giờ nhận số!", 0, 1, 1, null);
-                                        BriteDb.INSTANCE.insertTinNhanS(tinNhanS_i);
+                                }
 
-                                        if (!Congthuc.CheckTime("18:30") && MainActivity.jSon_Setting.getInt("tin_qua_gio") == 1) {
-                                            NotificationWearReader(this.Ten_KH, "Hết giờ nhận!");
-                                        }
+                            } else {
+                                int maxSoTn = BriteDb.INSTANCE.getMaxSoTinNhan(mNgayNhan, null, "ten_kh = '" + Ten_KH + "'");
+                                soTN = maxSoTn + 1;
+
+                                TinNhanS tinNhanS_i = new TinNhanS(null, mNgayNhan, mGionhan, 1, Ten_KH, khachHang_s.getSdt(), app,
+                                        soTN, body, null, body, "Hết giờ nhận số!", 0, 1, 1, null);
+                                BriteDb.INSTANCE.insertTinNhanS(tinNhanS_i);
+
+                                    if (!Congthuc.CheckTime("18:30") && MainActivity.jSon_Setting.getInt("tin_qua_gio") == 1) {
+                                        NotificationWearReader(this.Ten_KH, "Hết giờ nhận!");
                                     }
                                 }
                             }

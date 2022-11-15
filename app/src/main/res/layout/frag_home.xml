@@ -282,10 +282,10 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_weight="1"
-                    android:paddingTop="10dp"
+                    android:paddingTop="6dp"
                     android:text="  LdPro - Version 2.93 (30/10/22)."
                     android:textColor="@color/red"
-                    android:textSize="20dp"
+                    android:textSize="16sp"
                     android:textStyle="bold" />
 
                 <TextView
@@ -310,7 +310,7 @@
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:padding="2dp"
-                    android:text="  - Cập nhật phiên bản mới trực tiếp trên app"
+                    android:text="  - Cập nhật phiên bản mới trên app"
                     android:textColor="@color/red"
                     android:textSize="15dp"
                     android:textStyle="bold" />
@@ -361,7 +361,15 @@
                     android:layout_width="wrap_content"
                     android:layout_height="match_parent"
                     android:padding="2dp"
-                    android:text="  * Lưu ý: Hãy cài Zalo bản cũ, ( Liên hệ đại lý để lấy Zalo bản cũ) và tắt tự động cập nhật ứng dụng để khắc phục lỗi thiếu tin trên Zalo bản mới."
+                    android:text="  * Lưu ý: Phần mềm hỗ trợ chạy trang ( Không khuyến khích khách dùng nếu không hiểu rõ cách dùng). Sai sót có thể do thao tác của quý khách hoặc do trang One789 do đó nếu quý khách dùng chức năng này mọi sai lệch chúng tôi không chịu trách nhiệm."
+                    android:textColor="@color/blue"
+                    android:textSize="15dp"
+                    android:textStyle="bold" />
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="match_parent"
+                    android:padding="2dp"
+                    android:text=" - Hãy cài Zalo bản cũ và tắt tự động cập nhật ứng dụng để khắc phục lỗi thiếu tin trên Zalo bản mới."
                     android:textColor="@color/blue"
                     android:textSize="15dp"
                     android:textStyle="bold" />

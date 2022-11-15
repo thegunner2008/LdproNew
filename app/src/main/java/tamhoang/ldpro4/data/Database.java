@@ -50,7 +50,6 @@ import tamhoang.ldpro4.data.model.KhachHang;
 import tamhoang.ldpro4.data.model.TinNhanS;
 
 public class Database extends SQLiteOpenHelper {
-//    static final /* synthetic */ boolean $assertionsDisabled = false;
     protected static SQLiteDatabase db;
     JSONObject caidat_gia;
     JSONObject caidat_tg;
@@ -118,6 +117,7 @@ public class Database extends SQLiteOpenHelper {
         }
     }
 
+    @SuppressLint("RestrictedApi")
     public void createNotification(String aMessage, Context context) {
         Intent intent = new Intent(context, MainActivity.class);
         TaskStackBuilder taskStackBuilder = TaskStackBuilder.create(context);
@@ -165,16 +165,13 @@ public class Database extends SQLiteOpenHelper {
         int Dem_error = 0;
         StringBuilder ndPhantichLoi;
         JSONObject jsonDan = null;
-        String Bor;
-        int k;
         int k2 = 0;
-        mang = (String[][]) Array.newInstance(String.class, 1000, 6);
+        mang = new String[200][6];
         Cursor cursor2 = GetData("Select nd_phantich, ten_kh, ok_tn, ngay_nhan From tbl_tinnhanS WHERE id = " + id);
         cursor2.moveToFirst();
-        int rw = 0;
         String str44 = " ";
         boolean quaGioLo = false;
-        String dayso = null;
+        String theLoai = null;
         String nd_phantich = cursor2.getString(0).replace("ldpro", "").replace(FONT, "").replaceAll("-", ",").replaceAll("/", ";")
                 .replaceAll("\n", " ").replaceAll("\\.", ",").replaceAll("x ", " x ").replaceAll("ba bc", "bc").replaceAll(";,", ";")
                 .replaceAll("; ,", ";").replaceAll("; lo", LO).replaceAll(";lo", LO).replaceAll("; de", "de").replaceAll(";de", "de")
@@ -194,6 +191,7 @@ public class Database extends SQLiteOpenHelper {
         nd_phantich = Congthuc.fixTinNhan(nd_phantich);
         nd_phantich = nd_phantich + " ";
         int i1 = -1;
+        int k = 0;
         while (true) {// nd_phantich : "abc tin 123456 def" => "abc def"
 
             int indexOf = nd_phantich.indexOf("tin", i1 + 1);
@@ -210,39 +208,34 @@ public class Database extends SQLiteOpenHelper {
             }
         }
 
-        Log.e("aaaa", "NhanTinNhan " + nd_phantich );
-
         nd_phantich = nd_phantich.trim();
-        for (int i7 = 6; i7 > 0 ; i7--) { // nd_phantich: "T 123 abc" => " abc"
-            String Sss = nd_phantich.substring(0, i7);
+        for (int i = 6; i > 0; i--) { // nd_phantich: "T 123 abc" => " abc"
+            String Sss = nd_phantich.substring(0, i);
             if (Sss.trim().contains(T)) {
                 String Sss2 = Sss.replaceAll(T, "").replaceAll(" ", "").replaceAll(",", "");
                 if (Congthuc.isNumeric(Sss2)) {
-                    nd_phantich = nd_phantich.substring(i7);
+                    nd_phantich = nd_phantich.substring(i);
                 }
             }
         }
 
-        Log.e("aaaa", "NhanTinNhan 1 " + nd_phantich );
+        Log.e("aaaa", "NhanTinNhan 1 " + nd_phantich);
 
         if (nd_phantich.contains(KHONG_HIEU)) return;
-
 
         if (nd_phantich.length() < 8) {
             str_Err1 = KHONG_HIEU_ + nd_phantich;
         } else {
             String substring = nd_phantich.substring(0, 5);
-            if (!substring.contains("de") && !substring.contains(LO) && !substring.contains(XI) && !substring.contains(FONT)
-                    && !substring.contains("hc") && !substring.contains("xn")
-                    && !substring.contains("bc") && !substring.contains("xg"))
+            if (!substring.contains("de") && !substring.contains(LO) && !substring.contains(XI) && !substring.contains("hc")
+                    && !substring.contains("xn") && !substring.contains("bc") && !substring.contains("xg"))
                 str_Err1 = "Không hiểu dạng";
 
             if (nd_phantich.contains(" bo "))
                 str_Err1 = "Không hiểu bo ";
         }
 
-        Log.e("aaaa", "NhanTinNhan 2 " + nd_phantich );
-
+        Log.e("aaaa", "NhanTinNhan 2 " + nd_phantich);
 
         String phanTichTN = Congthuc.PhanTichTinNhan(nd_phantich);
         if (!phanTichTN.contains(KHONG_HIEU))
@@ -252,13 +245,12 @@ public class Database extends SQLiteOpenHelper {
             quaGioLo = true;
         }
 
-        Log.e("aaaa", "NhanTinNhan 3 " + nd_phantich );
-        Log.e("aaaa", "NhanTinNhan 3st " + Arrays.deepToString(mang));
+        Log.e("aaaa", "NhanTinNhan 3 " + nd_phantich);
 
         if (!str_Err1.contains(KHONG_HIEU)) {
             phanTichTN = phanTichTN.replaceAll(" , ", " ").replaceAll(" ,", " ");
 
-            for(int i = 1; i < 10; i++) {
+            for (int i = 1; i < 10; i++) {
                 phanTichTN = phanTichTN.replaceAll(" {2}", " ").replaceAll(",,", ",");
             }
             phanTichTN = phanTichTN.trim() + " ";
@@ -272,101 +264,96 @@ public class Database extends SQLiteOpenHelper {
 
                 String tien = "";
                 int i22 = indexX;
-                while (true) {
-                    if (i22 >= phanTichTN.length()) break;
+                while (i22 < phanTichTN.length()) {
+                    String charAt = phanTichTN.charAt(i22) + "";
+                    if (charAt.equals(" ") && tien.length() > 0) break;
 
-                    if (phanTichTN.charAt(i22) == ' ' && tien.length() > 0) break;
-
-                    if ("0123456789,tr".contains(phanTichTN.substring(i22, i22 + 1))) {
-                        tien = tien + phanTichTN.charAt(i22);
+                    if ("0123456789,tr".contains(charAt)) {
+                        tien = tien + charAt;
                     }
                     i22++;
                 }
                 String dtien = "";
                 int i33 = i22;
-                while (i33 < phanTichTN.length() && (Character.isLetter(phanTichTN.charAt(i33)) || dtien.length() <= 0)) {
-                    dtien = dtien + phanTichTN.charAt(i33);
+                while (i33 < phanTichTN.length()) {
+                    char charAt = phanTichTN.charAt(i33);
+                    if (!Character.isLetter(charAt) && dtien.length() > 0) break;
+                    dtien = dtien + charAt;
                     i33++;
                 }
                 if (i22 == i33) {
                     i33--;
                 }
 
-                Log.e("aaaa", "NhanTinNhan 4 (mang = null) " + nd_phantich );
-                Log.e("aaaa", "NhanTinNhan 4 dtien = " + dtien  + " ;phanTichTN ="+phanTichTN);
+                Log.e("aaaa", "NhanTinNhan 4 dtien = " + dtien + " ;phanTichTN =" + phanTichTN);
 
-
-                if ( dtien.contains("lo") || dtien.contains("de") || dtien.contains("xi") || dtien.contains("xn") || dtien.contains("hc") || dtien.contains("xg") || dtien.contains("cang") || dtien.contains("bc")
-                    || dtien.contains("dau") || dtien.contains("dit") || dtien.contains("tong") || dtien.contains("cham") || dtien.contains("dan") || dtien.contains("boj")
-                    || dtien.contains(" x") || dtien.contains("kep") || dtien.contains("sat") || dtien.contains("to") || dtien.contains("nho") || dtien.contains("chan")
-                    || dtien.contains("le") || dtien.contains("ko") || dtien.contains("chia") || dtien.contains("duoi") || dtien.contains("be")) {
+                if (dtien.contains("lo") || dtien.contains("de") || dtien.contains("xi") || dtien.contains("xn") || dtien.contains("hc") || dtien.contains("xg") || dtien.contains("cang") || dtien.contains("bc")
+                        || dtien.contains("dau") || dtien.contains("dit") || dtien.contains("tong") || dtien.contains("cham") || dtien.contains("dan") || dtien.contains("boj")
+                        || dtien.contains(" x") || dtien.contains("kep") || dtien.contains("sat") || dtien.contains("to") || dtien.contains("nho") || dtien.contains("chan")
+                        || dtien.contains("le") || dtien.contains("ko") || dtien.contains("chia") || dtien.contains("duoi") || dtien.contains("be")) {
                     i33 -= dtien.length();
                 }
 
                 if (dtien.contains("x ")) {// impossible
                     int i44 = i22 - 1;
-                    while (true) {
-                        if (i44 <= 0) {
-                            break;
-                        } else if (!Congthuc.isNumeric(phanTichTN.substring(i44, i44 + 1))) {
-                            dayso = phanTichTN.substring(k4, i44 + 1);
+                    while (i44 > 0) {
+                        if (!Congthuc.isNumeric(phanTichTN.substring(i44, i44 + 1))) {
+                            theLoai = phanTichTN.substring(k4, i44 + 1);
+                            theodoi7 = phanTichTN.substring(i44 +1);
                             k4 = i44 + 1;
-                            theodoi7 = phanTichTN.substring(k4);
                             break;
-                        } else {
-                            i44--;
                         }
+                        i44--;
                     }
                 } else {
-                    dayso = phanTichTN.substring(k4, i33);
+                    theLoai = phanTichTN.substring(k4, i33);
                     k4 = i33;
                 }
-                k = rw + 1;
-                String dayso_c = dayso.trim();
-                Log.e("aaaa", "NhanTinNhan: k = " +k +" dayso_c "+ dayso_c  );
+                String dayso_trim = theLoai.trim();
 
-                if (!dayso_c.startsWith(T)) {
-                    if (dayso_c.length() > 6) {
+                if (!dayso_trim.startsWith(T)) {
+
+                    if (dayso_trim.length() > 6) {
                         for (int i = 6; i > 0; i--) {
-                            String ss = dayso_c.substring(0, i);
-                            if (ss.trim().contains(T)) {
-                                if (Congthuc.isNumeric(ss.replaceAll(T, "").replaceAll(" ", "").replaceAll(",", "")))
-                                    dayso = " " + dayso_c.substring(i + 1) + " ";
+                            String ss = dayso_trim.substring(0, i);
+                            if (ss.trim().contains(T)
+                                    && Congthuc.isNumeric(ss.replaceAll(T, "").replaceAll(" ", "").replaceAll(",", ""))) {
+                                theLoai = " " + dayso_trim.substring(i + 1) + " ";
                             }
                         }
                     }
 
-                    mang[k][0] = dayso;
+                    mang[k][0] = theLoai;
                     k2 = k4;
-                    if (dayso.contains("loa")) mang[k][1] = "lo dau";
-                    else if (dayso.contains(LO)) mang[k][1] = LO;
-                    else if (dayso.contains("dea")) mang[k][1] = "de dau db";
-                    else if (dayso.contains("deb")) mang[k][1] = "de dit db";
-                    else if (dayso.contains("det")) mang[k][1] = "de 8";
-                    else if (dayso.contains("hc")) mang[k][1] = "hai cua";
-                    else if (dayso.contains("xn")) mang[k][1] = "xn";
-                    else if (dayso.contains("dec")) mang[k][1] = "de dau nhat";
-                    else if (dayso.contains("ded")) mang[k][1] = "de dit nhat";
-                    else if (dayso.contains("de ")) mang[k][1] = "de dit db";
-                    else if (dayso.contains("bc")) mang[k][1] = "bc";
-                    else if (dayso.contains("cang")) mang[k][1] = "bc";
-                    else if (dayso.contains("bca")) mang[k][1] = "bc dau";
-                    else if (dayso.contains("xia")) mang[k][1] = "xien dau";
-                    else if (dayso.contains("xi")) mang[k][1] = "xi";
-                    else if (dayso.contains("xg 2")) mang[k][1] = "xg 2";
-                    else if (dayso.contains("xg 3")) mang[k][1] = "xg 3";
-                    else if (dayso.contains("xg 4")) mang[k][1] = "xg 4";
-                    else if (dayso.contains("xq")) mang[k][1] = "xq";
-                    else if (dayso.contains("xqa")) mang[k][1] = "xqa";
+                    if (theLoai.contains("loa")) mang[k][1] = "lo dau";
+                    else if (theLoai.contains(LO)) mang[k][1] = LO;
+                    else if (theLoai.contains("dea")) mang[k][1] = "de dau db";
+                    else if (theLoai.contains("deb")) mang[k][1] = "de dit db";
+                    else if (theLoai.contains("det")) mang[k][1] = "de 8";
+                    else if (theLoai.contains("hc")) mang[k][1] = "hai cua";
+                    else if (theLoai.contains("xn")) mang[k][1] = "xn";
+                    else if (theLoai.contains("dec")) mang[k][1] = "de dau nhat";
+                    else if (theLoai.contains("ded")) mang[k][1] = "de dit nhat";
+                    else if (theLoai.contains("de ")) mang[k][1] = "de dit db";
+                    else if (theLoai.contains("bc")) mang[k][1] = "bc";
+                    else if (theLoai.contains("cang")) mang[k][1] = "bc";
+                    else if (theLoai.contains("bca")) mang[k][1] = "bc dau";
+                    else if (theLoai.contains("xia")) mang[k][1] = "xien dau";
+                    else if (theLoai.contains("xi")) mang[k][1] = "xi";
+                    else if (theLoai.contains("xg 2")) mang[k][1] = "xg 2";
+                    else if (theLoai.contains("xg 3")) mang[k][1] = "xg 3";
+                    else if (theLoai.contains("xg 4")) mang[k][1] = "xg 4";
+                    else if (theLoai.contains("xq")) mang[k][1] = "xq";
+                    else if (theLoai.contains("xqa")) mang[k][1] = "xqa";
                     else {
-                        mang[k][1] = dayso.contains(FONT) ? FONT : mang[k - 1][1];
+                        mang[k][1] = theLoai.contains(FONT) ? FONT : mang[k - 1][1];
                     }
-                    if (dayso.contains(" x ")) {
-                        if (dayso.trim().indexOf("x ") < 2) {
+                    if (theLoai.contains(" x ")) {
+                        if (theLoai.trim().indexOf("x ") < 2) {
                             str44 = KHONG_HIEU_;
                         } else {
-                            mang[k][2] = dayso.substring(0, dayso.indexOf(" x ")).trim(); //  "deb 25"
-                            mang[k][3] = dayso.substring(dayso.indexOf(" x ")); // " x 5"
+                            mang[k][2] = theLoai.substring(0, theLoai.indexOf(" x ")).trim(); //  "deb 25"
+                            mang[k][3] = theLoai.substring(theLoai.indexOf(" x ")); // " x 5"
 
                             XulyMang(k);
                             BaoLoiTien(k);
@@ -398,78 +385,69 @@ public class Database extends SQLiteOpenHelper {
                         }
                     }
                 }
-                mang[k][0] = dayso;
-                rw = k;
+                mang[k][0] = theLoai;
+                ++k;
                 k4 = k2;
             }
 
-            Log.e("aaaa", "NhanTinNhan 5 theodoi7 " + theodoi7 );
-            Log.e("aaaa", "NhanTinNhan 5st " + Arrays.deepToString(mang));
+            Log.e("aaaa", "NhanTinNhan 5 theodoi7 " + theodoi7);
 
             if (theodoi7.length() > 0) {
                 String theodoi2 = theodoi7.replaceAll(str44, "").replaceAll("\\.", "").replaceAll(",", "").replaceAll(";", "");
                 if (theodoi2.length() > 0) {
-                    mang[rw + 1][0] = theodoi7;
-                    mang[rw + 1][2] = theodoi7;
-                    mang[rw + 1][3] = theodoi7;
-                    mang[rw + 1][4] = KHONG_HIEU_ + theodoi7;
-                    BaoLoiDan(rw + 1);
+                    mang[k][0] = theodoi7;
+                    mang[k][2] = theodoi7;
+                    mang[k][3] = theodoi7;
+                    mang[k][4] = KHONG_HIEU_ + theodoi7;
+                    BaoLoiDan(k);
                 }
             }
 
-            Log.e("aaaa", "NhanTinNhan 6 " + nd_phantich );
-            Log.e("aaaa", "NhanTinNhan 6st " + Arrays.deepToString(mang));
-
-
         } else {
-            mang[1][0] = nd_phantich;
-            mang[1][4] = str_Err1;
+            mang[0][0] = nd_phantich;
+            mang[0][4] = str_Err1;
             if (str_Err1.contains("Không hiểu dạng")) {
                 Log.e("aaaa", "NhanTinNhan error " + Arrays.deepToString(mang));
 
-                mang[1][4] = KHONG_HIEU_ + nd_phantich.substring(0, 5);
+                mang[0][4] = KHONG_HIEU_ + nd_phantich.substring(0, 5);
             }
-            mang[1][2] = nd_phantich;
-            mang[1][3] = "";
+            mang[0][2] = nd_phantich;
+            mang[0][3] = "";
 
             BaoLoiDan(1);
 
         }
 
         ndPhantichLoi = new StringBuilder();
-        int k322 = 0;
+        int key = 0;
 
-        Log.e("aaaa", "NhanTinNhan 71 " + nd_phantich );
-        Log.e("aaaa", "NhanTinNhan 7st " + Arrays.deepToString(mang));
+        Log.e("aaaa", "NhanTinNhan 6 nd_phantich" + nd_phantich);
 
-
-        for (int i2 = 1; i2 < 1000; i2++) {
-            Log.e("aaaa", "NhanTinNhan for " +i2 );
-            if (mang[i2][0] == null) break;
-            if (mang[i2][4] == null || mang[i2][4].equals("")) {
-                mang[i2][4] = KHONG_HIEU + mang[i2][0];
+        for (String[] aMang : mang) {
+            if (aMang[0] == null) break;
+            if (aMang[4] == null || aMang[4].equals("")) {
+                aMang[4] = KHONG_HIEU + aMang[0];
             }
-            if (mang[i2][5] == null) mang[i2][5] = "";
+            if (aMang[5] == null) aMang[5] = "";
 
-            if (mang[i2][4].contains(KHONG_HIEU) || mang[i2][5].contains(KHONG_HIEU)) {
+            if (aMang[4].contains(KHONG_HIEU) || aMang[5].contains(KHONG_HIEU)) {
                 Dem_error++;
-                if (mang[i2][4].contains(KHONG_HIEU))
-                    phatHienLoi = mang[i2][4];
+                if (aMang[4].contains(KHONG_HIEU))
+                    phatHienLoi = aMang[4];
                 else
-                    phatHienLoi = mang[i2][5];
+                    phatHienLoi = aMang[5];
 
-                if (!mang[i2][0].contains(LDPRO)) {
+                if (!aMang[0].contains(LDPRO)) {
                     String str = phatHienLoi.replaceAll(KHONG_HIEU, "").trim();
-                    mang[i2][0] = mang[i2][0].replaceAll(str, LDPRO + str + FONT);
+                    aMang[0] = aMang[0].replaceAll(str, LDPRO + str + FONT);
                 }
             }
 
-            ndPhantichLoi = ndPhantichLoi.append(mang[i2][0]);
+            ndPhantichLoi = ndPhantichLoi.append(aMang[0]);
 
         }
 
-        Log.e("aaaa", "NhanTinNhan 7 " + nd_phantich );
-
+        Log.e("aaaa", "NhanTinNhan 7 " + nd_phantich);
 
         if (Dem_error == 0) {
             boolean lo = false;
@@ -480,95 +458,84 @@ public class Database extends SQLiteOpenHelper {
 
             Log.e("aaaa", "NhanTinNhan 8 " + Arrays.deepToString(mang));
 
-            int kk = 1;
-            while (kk < 1000 && mang[kk][0] != null) {
+            for (String[] aMang : mang) {
+                if (aMang[0] == null) break;
                 JSONObject json_ct = new JSONObject();
-                json_ct.put("du_lieu", mang[kk][0]);
-                json_ct.put("the_loai", mang[kk][1]);
-                json_ct.put("dan_so", mang[kk][4]);
-                json_ct.put("so_tien", mang[kk][5]);
-                if (mang[kk][1].contains(LO)) {
+                json_ct.put("du_lieu", aMang[0]);
+                json_ct.put("the_loai", aMang[1]);
+                json_ct.put("dan_so", aMang[4]);
+                json_ct.put("so_tien", aMang[5]);
+                if (aMang[1].contains(LO)) {
                     lo = true;
                 } else {
-                    if (mang[kk][1].contains(XI) || mang[kk][1].contains(XQ) || mang[kk][1].contains(XN) || mang[kk][1].contains("xg")) {
+                    if (aMang[1].contains(XI) || aMang[1].contains(XQ) || aMang[1].contains(XN) || aMang[1].contains("xg")) {
                         xien = true;
-                    } else if (mang[kk][1].contains("de dau nhat") || mang[kk][1].contains("de dit nhat") || mang[kk][1].contains("hai cua")) {
+                    } else if (aMang[1].contains("de dau nhat") || aMang[1].contains("de dit nhat") || aMang[1].contains("hai cua")) {
                         nhat = true;
                     }
                 }
 
                 if (quaGioLo && type_kh == 1) {
-                    if (!mang[kk][1].contains("de dit db") && !mang[kk][1].contains("de dau db")
-                            && !mang[kk][1].contains("bc") && !mang[kk][1].contains("de 8")) {
-                        if (mang[kk][1].contains("hai cua")) {
-                            nd_phantich_b = nd_phantich_b + "de dit db:" + mang[kk][4].trim() + "x" + mang[kk][5] + _N;
+                    if (!aMang[1].contains("de dit db") && !aMang[1].contains("de dau db")
+                            && !aMang[1].contains("bc") && !aMang[1].contains("de 8")) {
+                        if (aMang[1].contains("hai cua")) {
+                            nd_phantich_b = nd_phantich_b + "de dit db:" + aMang[4].trim() + "x" + aMang[5] + _N;
                             json_ct.put("the_loai", "de dit db");
-                            String[] So = mang[kk][4].split(",");
+                            String[] So = aMang[4].split(",");
                             json_ct.put("so_luong", So.length + " số.");
-                            jsonDan.put(String.valueOf(k322), json_ct);
+                            jsonDan.put(String.valueOf(key), json_ct);
                         }
-                        k322++;
-                        kk++;
+                        key++;
                         continue;
                     }
                 }
 
-                if (mang[kk][1].equals("hai cua")) {
-                    nd_phantich_b = nd_phantich_b + "de dit db:" + mang[kk][4].trim() + "x" + mang[kk][5] + _N;
-                    String[] So = mang[kk][4].split(",");
+                if (aMang[1].equals("hai cua")) {
+                    nd_phantich_b = nd_phantich_b + "de dit db:" + aMang[4].trim() + "x" + aMang[5] + _N;
+                    nd_phantich_b = nd_phantich_b + "de dit nhat:" + aMang[4].trim() + "x" + aMang[5] + _N;
+
+                    String[] So = aMang[4].split(",");
                     JSONObject json_hc = new JSONObject();
-                    json_hc.put("du_lieu", mang[kk][0].replaceFirst("hc", "de"));
+                    json_hc.put("du_lieu", aMang[0].replaceFirst("hc", "de"));
                     json_hc.put("the_loai", "de dit db");
-                    json_hc.put("dan_so", mang[kk][4]);
-                    json_hc.put("so_tien", mang[kk][5]);
+                    json_hc.put("dan_so", aMang[4]);
+                    json_hc.put("so_tien", aMang[5]);
                     json_hc.put("so_luong", So.length + " số.");
-                    jsonDan.put(String.valueOf(k322), json_hc);
-                    k322++;
-                    json_ct.put("du_lieu", mang[kk][0].replaceFirst("hc", "nhat"));
+                    jsonDan.put(String.valueOf(key), json_hc);
+                    key++;
+                    json_ct.put("du_lieu", aMang[0].replaceFirst("hc", "nhat"));
                     json_ct.put("the_loai", "de dit nhat");
                     json_ct.put("so_luong", So.length + " số.");
-                    jsonDan.put(String.valueOf(k322), json_ct);
-                    nd_phantich_b = nd_phantich_b + "de dit nhat:" + mang[kk][4].trim() + "x" + mang[kk][5] + _N;
-                } else if (mang[kk][1].contains(XI) || mang[kk][1].contains(XQ) || mang[kk][1].contains("xg")) {
+                    jsonDan.put(String.valueOf(key), json_ct);
+                } else if (aMang[1].contains(XI) || aMang[1].contains(XQ) || aMang[1].contains("xg")) {
 
-                    String[] mArr = mang[kk][4].split(str44);
+                    String[] mArr = aMang[4].split(" ");
                     for (String s : mArr) {
-                        nd_phantich_b = nd_phantich_b + mang[kk][1] + ":" + s + "x" + mang[kk][5] + _N;
-                        if (mang[kk][1].contains(XQ)) {
-                            String[] XienQuay = xuly_Xq(s).split(str44);
+                        nd_phantich_b = nd_phantich_b + aMang[1] + ":" + s + "x" + aMang[5] + _N;
+                        if (aMang[1].contains(XQ)) {
+                            String[] capXienQuay = xuly_Xq(s).split(" ");
                             JSONObject json_xq = new JSONObject();
-                            String du_lieu = mang[kk][1] + ":" + s + "x" + mang[kk][5];
+                            String du_lieu = aMang[1] + ":" + s + "x" + aMang[5];
                             json_xq.put("du_lieu", du_lieu);
-                            if (mang[kk][1].contains("xq dau")) {
-                                json_xq.put("the_loai", "xien dau");
-                            } else {
-                                json_xq.put("the_loai", XI);
-                            }
+                            json_xq.put("the_loai", aMang[1].contains("xq dau") ? "xien dau" : XI);
                             json_xq.put("dan_so", xuly_Xq(s));
-                            json_xq.put("so_tien", mang[kk][5]);
-                            json_xq.put("so_luong", XienQuay.length + " cặp.");
-                            jsonDan.put(String.valueOf(k322), json_xq);
-                            k322++;
+                            json_xq.put("so_tien", aMang[5]);
+                            json_xq.put("so_luong", capXienQuay.length + " cặp.");
+                            jsonDan.put(String.valueOf(key), json_xq);
+                            key++;
                         } else {
-                            if (mang[kk][1].contains("xg")) {
-                                String[] So4 = mang[kk][4].split(str44);
-                                json_ct.put("so_luong", So4.length + " cặp.");
-                                jsonDan.put(String.valueOf(k322), json_ct);
-                            } else {
-                                String[] So5 = mang[kk][4].split(str44);
-                                json_ct.put("so_luong", So5.length + " cặp.");
-                                jsonDan.put(String.valueOf(k322), json_ct);
-                            }
+                            String[] cap = mArr;
+                            json_ct.put("so_luong", cap.length + " cặp.");
+                            jsonDan.put(String.valueOf(key), json_ct);
                         }
                     }
                 } else {
-                    String[] So6 = mang[kk][4].split(",");
-                    json_ct.put("so_luong", So6.length + " số.");
-                    jsonDan.put(String.valueOf(k322), json_ct);
-                    nd_phantich_b = nd_phantich_b + mang[kk][1] + ":" + mang[kk][4].trim() + "x" + mang[kk][5] + _N;
+                    String[] So = aMang[4].split(",");
+                    json_ct.put("so_luong", So.length + " số.");
+                    jsonDan.put(String.valueOf(key), json_ct);
+                    nd_phantich_b = nd_phantich_b + aMang[1] + ":" + aMang[4].trim() + "x" + aMang[5] + _N;
                 }
-                k322++;
-                kk++;
+                key++;
             }
 
             if (lo || xien || nhat)
@@ -576,41 +543,37 @@ public class Database extends SQLiteOpenHelper {
 
             if (quaGioLo && type_kh == 1) {
                 if (lo || xien || nhat) {
-                    if (lo) {
-                        Bor = "Bỏ " + "lô,";
-                    } else {
-                        Bor = "Bỏ ";
-                    }
-                    if (xien) {
-                        Bor = Bor + "xiên,";
-                    }
-                    if (nhat) {
-                        Bor = Bor + "giải nhất";
-                    }
+                    String Bor = "Bỏ ";
+
+                    if (lo) Bor = Bor + "lô,";
+                    if (xien) Bor = Bor + "xiên,";
+                    if (nhat) Bor = Bor + "giải nhất";
+
                     nd_phantich_b = Bor + " vì quá giờ!\n" + nd_phantich_b;
 
                     QueryData("Update tbl_tinnhanS set nd_phantich='" + nd_phantich_b + "', phan_tich = '" + jsonDan + "', phat_hien_loi ='ok' Where id =" + id);
+                    if (!getKhachHang.isClosed()) getKhachHang.close();
+                    if (!cursor2.isClosed()) cursor2.close();
+                    return;
                 }
             }
-            Log.e("aaaa", "NhanTinNhan 10 " + jsonDan );
+            Log.e("aaaa", "NhanTinNhan 10 " + jsonDan);
             if (jsonDan.length() > 0)
                 QueryData("Update tbl_tinnhanS set nd_phantich='" + nd_phantich_b + "', phan_tich = '" + jsonDan + "', phat_hien_loi ='ok' Where id =" + id);
             else {
-                boolean has_Bo = nd_phantich_b.contains("Bỏ ");
-                String nd_pt = has_Bo? nd_phantich : (LDPRO + nd_phantich + FONT);
-                String ph_loi = has_Bo? nd_phantich_b : (KHONG_HIEU_ + nd_phantich);
-                QueryData("Update tbl_tinnhanS set nd_phantich ='" + nd_pt + "', phat_hien_loi = '"+ ph_loi + "'  Where id =" + id);
+                String nd_pt = LDPRO + nd_phantich + FONT;
+                String ph_loi = KHONG_HIEU_ + nd_phantich;
+                QueryData("Update tbl_tinnhanS set nd_phantich ='" + nd_pt + "', phat_hien_loi = '" + ph_loi + "'  Where id =" + id);
             }
         } else {
-            QueryData("Update tbl_tinnhanS set nd_phantich ='" + ndPhantichLoi + "', phat_hien_loi = '"+ phatHienLoi + "'  Where id =" + id);
+            QueryData("Update tbl_tinnhanS set nd_phantich ='" + ndPhantichLoi + "', phat_hien_loi = '" + phatHienLoi + "'  Where id =" + id);
         }
 
         if (!getKhachHang.isClosed()) getKhachHang.close();
-
         if (!cursor2.isClosed()) cursor2.close();
     }
 
-    
+
     public void TralaiSO(int ID) {
         String Tralai = "";
         this.json_Tralai = new JSONObject();
@@ -658,7 +621,7 @@ public class Database extends SQLiteOpenHelper {
                     hourFormat.setTimeZone(TimeZone.getDefault());
                     String mNgayNhan = dmyFormat.format(calendar.getTime());
                     String mGionhan = hourFormat.format(calendar.getTime());
-                    int maxSoTn = BriteDb.INSTANCE.getMaxSoTinNhan(mNgayNhan, 2, "ten_kh = '"+ Thongtin.getString(0) +"'");
+                    int maxSoTn = BriteDb.INSTANCE.getMaxSoTinNhan(mNgayNhan, 2, "ten_kh = '" + Thongtin.getString(0) + "'");
                     int soTN = maxSoTn + 1;
                     final String Tralai2 = "Tra lai " + soTN + ":" + Tralai;
                     QueryData("Insert Into tbl_tinnhanS values (null, '" + mNgayNhan + "', '" + mGionhan + "',2, '" + Thongtin.getString(0) + "', '" + Thongtin.getString(1) + "','" + Thongtin.getString(2) + "', " + soTN + ", '" + Tralai2.trim() + "','" + Tralai2.substring(Tralai2.indexOf(":") + 1) + "','" + Tralai2.substring(Tralai2.indexOf(":") + 1) + "', 'ko',0,0,0, '" + this.json_Tralai.toString() + "')");
@@ -696,8 +659,6 @@ public class Database extends SQLiteOpenHelper {
         }
         cursor.close();
     }
-
-
 
 
     public String TraDe(String TenKH, String DanDe) {
@@ -1005,8 +966,6 @@ public class Database extends SQLiteOpenHelper {
     }
 
 
-
-
     public String TraXi(String TenKH, String KhongXien) {
         JSONException e;
         Cursor cursor;
@@ -1102,7 +1061,7 @@ public class Database extends SQLiteOpenHelper {
                             json_Tra.put("so_luong", sss.length);
                             this.json_Tralai.put(String.valueOf(this.json_Tralai.length() + 1), json_Tra.toString());
                             Str222 = Str222 + soCT.getString("So_chon") + "x" + soCT.getInt("Se_tra") + "n\n";
-                            Str = Str2 +  Str111 + "x" + tien + "n\n";
+                            Str = Str2 + Str111 + "x" + tien + "n\n";
                             try {
                                 Str111 = soCT.getString("So_chon") + " ";
                                 tien = soCT.getInt("Se_tra");
@@ -1151,9 +1110,7 @@ public class Database extends SQLiteOpenHelper {
         }
     }
 
-    
-    
-    
+
     public String TraCang(String TenKH, int maxDang) {
         JSONException e;
         String str;
@@ -1294,13 +1251,10 @@ public class Database extends SQLiteOpenHelper {
         }
     }
 
-    
-    
 
     private void XulyMang(int k) {
         String[] Danxi;
         String[] Danxi3;
-        String[] danlayS;
         if (mang[k][1].contains("lo dau")) {
             if (!mang[k][2].contains("loa") || mang[k][2].trim().indexOf("loa") <= 0) {
                 mang[k][4] = mang[k][2].replaceFirst("loa :", "");
@@ -1373,7 +1327,7 @@ public class Database extends SQLiteOpenHelper {
                 mang[k][4] = mang[k][4].replaceFirst("det", "");
                 mang[k][4] = Congthuc.XulyLoDe(mang[k][4]);
             } else {
-                mang[k][4] ="Không hiểu " + mang[k][2].substring(0, mang[k][2].indexOf("de"));
+                mang[k][4] = "Không hiểu " + mang[k][2].substring(0, mang[k][2].indexOf("de"));
             }
         } else if (mang[k][1].contains("hai cua")) {
             if (!mang[k][2].contains("hc") || mang[k][2].trim().indexOf("hc") <= 0) {
@@ -1476,200 +1430,189 @@ public class Database extends SQLiteOpenHelper {
                 mang[k][4] = "Không hiểu " + mang[k][2].substring(0, mang[k][2].indexOf("bca"));
             }
         } else if (mang[k][1].contains("xi")) {
-                if (!mang[k][2].contains("xi") || mang[k][2].trim().indexOf("xi") <= 0) {
-                    if (mang[k][2].contains("xia")) {
-                        Danxi3 = mang[k][2].split("xia");
-                    } else {
-                        Danxi3 = mang[k][2].split("xi");
-                    }
-                    String Danxienghep4 = "";
-                    if (Danxi3.length > 2) {
-                        for (int i43 = 1; i43 < Danxi3.length; i43++) {
-                            if (Danxi3[i43].length() > 4) {
-                                Danxienghep4 = Danxienghep4 + Congthuc.XulySo(Danxi3[i43]) + " ";
-                                if (Congthuc.XulySo(Danxi3[i43]).contains("Không hiểu")) {
-                                    mang[k][4] = "Không hiểu " + Danxi3[i43];
-                                }
-                            }
-                        }
-                        mang[k][4] = Danxienghep4;
-                    } else {
-                        if (mang[k][2].contains("xia")) {
-                            mang[k][4] = mang[k][2].replaceFirst("xia", "");
-                        } else {
-                            mang[k][4] = mang[k][2].replaceFirst("xi", "");
-                        }
-                    }
+            if (!mang[k][2].contains("xi") || mang[k][2].trim().indexOf("xi") <= 0) {
+                Danxi3 = mang[k][2].contains("xia") ? mang[k][2].split("xia")
+                        : mang[k][2].split("xi");
 
-                    if (Danxi3.length < 3) {
-                        mang[k][4] = Congthuc.XulyXien(mang[k][4].trim());
-                    }
-                    String[] ArrXien3 = mang[k][4].split(" ");
-                    boolean ktra2 = false;
-                    for (String item : ArrXien3 ) {
-                        if (item.replaceAll(",", "").length() != 2 || !Congthuc.isNumeric(item.replaceAll(",", "")))
-                            ktra2 = true;
-                    }
-                    if (!ktra2 && ArrXien3.length < 5) { 
-                        mang[k][4] = Congthuc.XulySo(mang[k][4]);
-                    }
-                    String[] ArrXien4 = mang[k][4].split(" ");
-                    for (String item : ArrXien4 ) {
-                        String ss2 = Congthuc.XulySo(item);
-                        if (ss2.length() >= 5 && ss2.length() <= 12) {
-                            if (!ss2.contains("Không hiểu")) {
-                                if (mang[k][1] != "xq" || ss2.length() >= 8) {
-                                    String[] danlayS3 = ss2.split(",");
-                                    int i44 = 0;
-                                    while (i44 < danlayS3.length) {
-                                        if (danlayS3[i44].length() == 2 && Congthuc.isNumeric(danlayS3[i44])) {
-                                            danlayS = danlayS3;
-                                        } else if (mang[k][4].length() > 4) {
-                                            danlayS = danlayS3;
-                                            mang[k][4] = "Không hiểu " + mang[k][2];
-                                        } else {
-                                            danlayS = danlayS3;
-                                            mang[k][4] = "Không hiểu " + mang[k][0];
-                                        }
-                                        i44++;
-                                        danlayS3 = danlayS;
-                                    }
-                                } else {
-                                    mang[k][4] = "Không hiểu " + mang[k][0];
-                                }
+                String Danxienghep4 = "";
+                if (Danxi3.length > 2) {
+                    for (String s : Danxi3) {
+                        if (s.length() > 4) {
+                            Danxienghep4 = Danxienghep4 + Congthuc.XulySo(s) + " ";
+                            if (Congthuc.XulySo(s).contains("Không hiểu")) {
+                                mang[k][4] = "Không hiểu " + s;
                             }
                         }
-                        if (item.length() < 4) {
-                            mang[k][4] = "Không hiểu " + mang[k][2];
+                    }
+                    mang[k][4] = Danxienghep4;
+                } else {
+                    if (mang[k][2].contains("xia")) {
+                        mang[k][4] = mang[k][2].replaceFirst("xia", "");
+                    } else {
+                        mang[k][4] = mang[k][2].replaceFirst("xi", "");
+                    }
+                }
+
+                if (Danxi3.length < 3) {
+                    mang[k][4] = Congthuc.XulyXien(mang[k][4].trim());
+                }
+                String[] ArrXien3 = mang[k][4].split(" ");
+                boolean ktra2 = false;
+                for (String item : ArrXien3) {
+                    if (item.replaceAll(",", "").length() != 2 || !Congthuc.isNumeric(item.replaceAll(",", "")))
+                        ktra2 = true;
+                }
+                if (!ktra2 && ArrXien3.length < 5) {
+                    mang[k][4] = Congthuc.XulySo(mang[k][4]);
+                }
+                String[] ArrXien4 = mang[k][4].split(" ");
+                for (String item : ArrXien4) {
+                    String ss2 = Congthuc.XulySo(item);
+                    if (ss2.length() >= 5 && ss2.length() <= 12) {
+                        if (!ss2.contains("Không hiểu")) {
+                            if (mang[k][1] != "xq" || ss2.length() >= 8) {
+                                String[] danlayS3 = ss2.split(",");
+                                for (String str : danlayS3) {
+                                    if (str.length() == 2 && Congthuc.isNumeric(str)) continue;
+                                    if (mang[k][4].length() > 4) {
+                                        mang[k][4] = "Không hiểu " + mang[k][2];
+                                    } else {
+                                        mang[k][4] = "Không hiểu " + mang[k][0];
+                                    }
+                                }
+                            } else {
+                                mang[k][4] = "Không hiểu " + mang[k][0];
+                            }
                         }
+                    }
+                    if (item.length() < 4) {
+                        mang[k][4] = "Không hiểu " + mang[k][2];
+                    }
+                    if (!mang[k][4].contains("Không hiểu")) {
+                        mang[k][4] = "";
+                        int i10 = 0;
+                        String soxien2 = "";
+                        while (i10 < ArrXien4.length) {
+                            try {
+                                soxien2 = Congthuc.XulySo(ArrXien4[i10]);
+                            } catch (Exception e2) {
+                                mang[k][4] = "Không hiểu " + ArrXien4[i10];
+                            }
+                            if (soxien2.contains("Không hiểu")) {
+                                break;
+                            }
+                            boolean checkTrung = false;
+                            for (String str2 : soxien2.split(",")) {
+                                if (soxien2.length() - soxien2.replaceAll(str2, "").length() > 2) {
+                                    checkTrung = true;
+                                }
+                            }
+                            if (soxien2.length() < 5 || soxien2.length() > 12 || checkTrung) {
+                                mang[k][4] = "Không hiểu " + mang[k][2];
+                                break;
+                            } else {
+                                mang[k][4] = mang[k][4] + Congthuc.sortXien(soxien2) + " ";
+                                i10++;
+                            }
+                        }
+                    }
+                }
+            } else {
+                mang[k][4] = "Không hiểu " + mang[k][2].substring(0, mang[k][2].indexOf("xi"));
+            }
+        } else if (mang[k][1].contains("xq")) {
+            if (mang[k][2].contains("xq") || mang[k][2].trim().indexOf("xq") <= 0) {
+                if (mang[k][2].contains("xqa")) {
+                    mang[k][1] = "xq dau";
+                    Danxi = mang[k][2].split("xqa");
+                } else {
+                    Danxi = mang[k][2].split("xq");
+                }
+
+                String Danxienghep5 = "";
+                if (Danxi.length > 2) {
+                    for (int i = 1; i < Danxi.length; i++) {
+                        if (Danxi[i].length() > 4) {
+                            Danxienghep5 = Danxienghep5 + Congthuc.XulySo(Danxi[i]) + " ";
+                            if (Congthuc.XulySo(Danxi[i]).contains("Không hiểu")) {
+                                mang[k][4] = "Không hiểu " + Danxi[i];
+                            }
+                        }
+                    }
+                    mang[k][4] = Danxienghep5;
+                } else {
+                    if (mang[k][2].contains("xqa")) {
+                        mang[k][4] = mang[k][2].replaceFirst("xqa", "");
+                    } else {
+                        mang[k][4] = mang[k][2].replaceFirst("xq", "");
+                    }
+                }
+
+                mang[k][4] = Congthuc.XulyXien(mang[k][4].trim());
+
+                String[] ArrXien6 = mang[k][4].split(" ");
+                int i11 = 0;
+                while (i11 < ArrXien6.length) {
+                    String ss3 = Congthuc.XulySo(ArrXien6[i11]);
+
+                    if (ss3.length() >= 8 && ss3.length() <= 12 && !ss3.contains("Không hiểu")) {
+                        String[] danlayS4 = ss3.split(",");
+
+                        for (String so : danlayS4) {
+                            if (so.length() == 2 && Congthuc.isNumeric(so)) {
+                            } else if (mang[k][4].length() > 4) {
+                                mang[k][4] = "Không hiểu " + mang[k][2];
+                            } else {
+                                mang[k][4] = "Không hiểu " + mang[k][0];
+                            }
+                        }
+                        i11++;
+                    } else {
+                        mang[k][4] = "Không hiểu " + mang[k][0];
+                        break;
+                    }
+                    try {
                         if (!mang[k][4].contains("Không hiểu")) {
                             mang[k][4] = "";
-                            int i10 = 0;
-                            String soxien2 = "";
+                            int i12 = 0;
+                            String soxien3 = "";
                             while (true) {
-                                if (i10 >= ArrXien4.length) {
+                                if (i12 >= ArrXien6.length) {
                                     break;
                                 }
                                 try {
-                                    soxien2 = Congthuc.XulySo(ArrXien4[i10]);
-                                } catch (Exception e2) {
-                                    mang[k][4] = "Không hiểu " + ArrXien4[i10];
+                                    soxien3 = Congthuc.XulySo(ArrXien6[i12]);
+                                } catch (Exception e3) {
+                                    mang[k][4] = "Không hiểu " + ArrXien6[i12];
+                                    break;
                                 }
-                                if (soxien2.contains("Không hiểu")) {
+                                if (soxien3.contains("Không hiểu")) {
                                     break;
                                 }
                                 boolean checkTrung = false;
-                                for (String str2 : soxien2.split(",")) {
-                                    if (soxien2.length() - soxien2.replaceAll(str2, "").length() > 2) {
+                                for (String str3 : soxien3.split(",")) {
+                                    if (soxien3.length() - soxien3.replaceAll(str3, "").length() > 2) {
                                         checkTrung = true;
                                     }
                                 }
-                                if (soxien2.length() < 5 || soxien2.length() > 12 || checkTrung) {
+                                if (soxien3.length() < 5 || soxien3.length() > 12 || checkTrung) {
                                     mang[k][4] = "Không hiểu " + mang[k][2];
                                     break;
                                 } else {
-                                    mang[k][4] = mang[k][4] + Congthuc.sortXien(soxien2) + " ";
-                                    i10++;
+                                    mang[k][4] = mang[k][4] + Congthuc.sortXien(soxien3) + " ";
+                                    i12++;
                                 }
                             }
                         }
+                    } catch (Throwable throwable) {
+                        Log.e("Class: Database, Func: XulyMang, Line: 2585", throwable.getMessage());
                     }
-                } else {
-                    mang[k][4] = "Không hiểu " + mang[k][2].substring(0, mang[k][2].indexOf("xi"));
                 }
-            } else if (mang[k][1].contains("xq")) {
-                if (mang[k][2].contains("xq") || mang[k][2].trim().indexOf("xq") <= 0) {
-                    if (mang[k][2].contains("xqa")) {
-                        mang[k][1] = "xq dau";
-                        Danxi = mang[k][2].split("xqa");
-                    } else {
-                        Danxi = mang[k][2].split("xq");
-                    }
-
-                    String Danxienghep5 = "";
-                    if (Danxi.length > 2) {
-                        for (int i = 1; i < Danxi.length; i++) {
-                            if (Danxi[i].length() > 4) {
-                                Danxienghep5 = Danxienghep5 + Congthuc.XulySo(Danxi[i]) + " ";
-                                if (Congthuc.XulySo(Danxi[i]).contains("Không hiểu")) {
-                                    mang[k][4] = "Không hiểu " + Danxi[i];
-                                }
-                            }
-                        }
-                        mang[k][4] = Danxienghep5;
-                    } else {
-                        if (mang[k][2].contains("xqa")) {
-                            mang[k][4] = mang[k][2].replaceFirst("xqa", "");
-                        } else {
-                            mang[k][4] = mang[k][2].replaceFirst("xq", "");
-                        }
-                    }
-
-                    mang[k][4] = Congthuc.XulyXien(mang[k][4].trim());
-
-                    String[] ArrXien6 = mang[k][4].split(" ");
-                    int i11 = 0;
-                    while (i11 < ArrXien6.length) {
-                        String ss3 = Congthuc.XulySo(ArrXien6[i11]);
-
-                        if (ss3.length() >= 8 && ss3.length() <= 12 && !ss3.contains("Không hiểu")) {
-                            String[] danlayS4 = ss3.split(",");
-
-                            for (String so: danlayS4 ) {
-                                if (so.length() == 2 && Congthuc.isNumeric(so)) {
-                                } else if (mang[k][4].length() > 4) {
-                                    mang[k][4] = "Không hiểu " + mang[k][2];
-                                } else {
-                                    mang[k][4] = "Không hiểu " + mang[k][0];
-                                }
-                            }
-                            i11++;
-                        } else {
-                            mang[k][4] = "Không hiểu " + mang[k][0];
-                            break;
-                        }
-                        try {
-                            if (!mang[k][4].contains("Không hiểu")) {
-                                mang[k][4] = "";
-                                int i12 = 0;
-                                String soxien3 = "";
-                                while (true) {
-                                    if (i12 >= ArrXien6.length) {
-                                        break;
-                                    }
-                                    try {
-                                        soxien3 = Congthuc.XulySo(ArrXien6[i12]);
-                                    } catch (Exception e3) {
-                                        mang[k][4] = "Không hiểu " + ArrXien6[i12];
-                                        break;
-                                    }
-                                    if (soxien3.contains("Không hiểu")) {
-                                        break;
-                                    }
-                                    boolean checkTrung = false;
-                                    for (String str3 : soxien3.split(",")) {
-                                        if (soxien3.length() - soxien3.replaceAll(str3, "").length() > 2) {
-                                            checkTrung = true;
-                                        }
-                                    }
-                                    if (soxien3.length() < 5 || soxien3.length() > 12 || checkTrung) {
-                                        mang[k][4] = "Không hiểu " + mang[k][2];
-                                        break;
-                                    } else {
-                                        mang[k][4] = mang[k][4] + Congthuc.sortXien(soxien3) + " ";
-                                        i12++;
-                                    }
-                                }
-                            }
-                        }catch (Throwable throwable){
-                            Log.e("Class: Database, Func: XulyMang, Line: 2585", throwable.getMessage());
-                        }
-                    }
-                } else {
-                    mang[k][4] = "Không hiểu " + mang[k][2].substring(0, mang[k][2].indexOf("xq"));
-                }
-            } else if (mang[k][1].contains("xg")) {
-              if (!mang[k][2].contains("xg") || mang[k][2].trim().indexOf("xg") <= 0) {
+            } else {
+                mang[k][4] = "Không hiểu " + mang[k][2].substring(0, mang[k][2].indexOf("xq"));
+            }
+        } else if (mang[k][1].contains("xg")) {
+            if (!mang[k][2].contains("xg") || mang[k][2].trim().indexOf("xg") <= 0) {
                 if (mang[k][1].contains("xg 2")) {
                     mang[k][4] = mang[k][2].replaceFirst("xg 2 ", "");
                 } else if (mang[k][1].contains("xg 3")) {
@@ -1681,6 +1624,17 @@ public class Database extends SQLiteOpenHelper {
                 ArrayList<String> listXienGhep = null;
                 StringBuilder XienGhep2 = new StringBuilder();
                 mang[k][4] = Congthuc.XulySo(mang[k][4]);
+
+                boolean checkTrung = false;
+                for (String str2 : mang[k][4].split(",")) {
+                    if (mang[k][4].length() - mang[k][4].replaceAll(str2, "").length() > 2) {
+                        checkTrung = true;
+                    }
+                }
+                if (checkTrung) {
+                    mang[k][4] = "Không hiểu " + mang[k][2];
+                }
+
                 if (!mang[k][4].contains("Không hiểu")) {
                     if (mang[k][1].contains("xg 2")) {
                         listXienGhep = Congthuc.XulyXienGhep(mang[k][4], 2);
@@ -1744,7 +1698,7 @@ public class Database extends SQLiteOpenHelper {
             mang[k][5] = "Không hiểu " + mang[k][3];
     }
 
-    
+
     public void NhapSoChiTiet(int id) throws Throwable {
         final String XI = "xi";
         final String THE_LOAI = "the_loai";
@@ -2164,7 +2118,7 @@ public class Database extends SQLiteOpenHelper {
                 TienChuyen += jsonDang.getInt(KQChuyen);
                 jsonKhach.put(cur_Tin_nhan.getString(2), jsonDang.toString());
             } catch (JSONException e19) {
-                Log.e(TAG, "Tin_Chottien: JSONException " +e19 );
+                Log.e(TAG, "Tin_Chottien: JSONException " + e19);
             }
         }
         CongNo_Nhan2 = CongNo_Nhan;
@@ -2467,7 +2421,8 @@ public class Database extends SQLiteOpenHelper {
                             ")\n";
                 }
             }
-        } catch (JSONException e8) {}
+        } catch (JSONException e8) {
+        }
         if (cursor != null && !cursor.isClosed()) {
             cursor.close();
         }
@@ -2478,7 +2433,7 @@ public class Database extends SQLiteOpenHelper {
     }
 
     private void sendAndInsertDB(TinNhanS tinNhanS, String mSoDT4, String nd_tra_loi,
-                   String mNgayNhan, String mGioNhan, String mNgay5, int mSoTN5) throws JSONException {
+                                 String mNgayNhan, String mGioNhan, String mNgay5, int mSoTN5) throws JSONException {
 
         if (tinNhanS.getUse_app().contains("sms")) {
             SendSMS(mSoDT4, nd_tra_loi);
@@ -2488,7 +2443,7 @@ public class Database extends SQLiteOpenHelper {
         } else {
             JSONObject jsonObject = new JSONObject(MainActivity.json_Tinnhan.getString(mSoDT4));
 
-            Log.e(TAG, "Gui_Tin_Nhan: sendAndInsertDB: " + jsonObject + " - "+ MainActivity.json_Tinnhan);
+            Log.e(TAG, "Gui_Tin_Nhan: sendAndInsertDB: " + jsonObject + " - " + MainActivity.json_Tinnhan);
             if (jsonObject.getInt("Time") < 3) {
                 new NotificationNewReader().NotificationWearReader(tinNhanS.getSo_dienthoai(), nd_tra_loi);
             } else {
@@ -2508,7 +2463,7 @@ public class Database extends SQLiteOpenHelper {
         final String TIME = "Time";
         final String SMS = "sms";
         final String OK_TIN_ = "Ok Tin ";
-        final String TL = "TL ";
+        final String TL = "TL";
 
         int kieu_tra_loi = 2;
 
@@ -2527,39 +2482,30 @@ public class Database extends SQLiteOpenHelper {
         final String mSoDT4 = tinNhanS.getSo_dienthoai();
         String mNgay5 = tinNhanS.getNgay_nhan();
         try {
-            KhachHang khachHang = BriteDb.INSTANCE.selectKhachHangQuery(KhachHang.SDT + " = '" + tinNhanS.getSo_dienthoai() + "'");
+            KhachHang khachHang = BriteDb.INSTANCE.selectKhachHangQuery("WHERE " + KhachHang.SDT + " = '" + tinNhanS.getSo_dienthoai() + "'");
             JSONObject jSONObject = new JSONObject(khachHang.getTbl_MB());
             this.json = jSONObject;
             caidat_tg = jSONObject.getJSONObject("caidat_tg");
             kieu_tra_loi = caidat_tg.getInt("ok_tin") + 1;//bat dau = 1
         } catch (JSONException e) {
-            Log.e(TAG, "Gui_Tin_Nhan: error 1 " + e );
+            Log.e(TAG, "Gui_Tin_Nhan: error 1 " + e);
         }
 
         if (tinNhanS.getOk_tn() == 1) {
             String nd_tra_loi = "";
-            switch (kieu_tra_loi) {// "1. Ok tin và nd phân tích", "2. Chỉ ok tin", "3. Không trả lời", "4. Ok tin nguyên mẫu", "5. Chỉ ok tin (ngay khi nhận)", "6. OK nguyên mẫu (ngay khi nhận)"};
-//                case 1: nd_tra_loi = OK_TIN_ + mSoTN5 + tinNhanS.getNd_phantich();
-//                    break;
-//                case 2: nd_tra_loi = OK_TIN_ + mSoTN5;
-//                    break;
-//                case 3: nd_tra_loi = "";
-//                    break;
-//                case 4: nd_tra_loi = OK_TIN_ + mSoTN5 + "\n" + tinNhanS.getNd_goc();
-//                    break;
-                case 5: nd_tra_loi = OK_TIN_ + mSoTN5;
+            switch (kieu_tra_loi) {
+                // "1. Ok tin và nd phân tích", "2. Chỉ ok tin", "3. Không trả lời", "4. Ok tin nguyên mẫu", "5. Chỉ ok tin (ngay khi nhận)", "6. OK nguyên mẫu (ngay khi nhận)"};
+                case 5:
+                    nd_tra_loi = OK_TIN_ + mSoTN5;
                     break;
-                case 6: nd_tra_loi = OK_TIN_ + mSoTN5+ "\n" + tinNhanS.getNd_goc();
+                case 6:
+                    nd_tra_loi = OK_TIN_ + mSoTN5 + "\n" + tinNhanS.getNd_goc();
             }
 
-            Log.e(TAG, "Gui_Tin_Nhan: ok kieu_tra_loi: " + kieu_tra_loi + " tin nhăn " + nd_tra_loi );
-            if(nd_tra_loi != "")
+            Log.e(TAG, "Gui_Tin_Nhan: ok kieu_tra_loi: " + kieu_tra_loi + " tin nhăn " + nd_tra_loi);
+            if (nd_tra_loi != "")
                 sendAndInsertDB(tinNhanS, mSoDT4, nd_tra_loi, mNgayNhan, mGioNhan, mNgay5, mSoTN5);
         }
-
-        Log.e(TAG, "Gui_Tin_Nhan: tinNhanS: " + tinNhanS);
-
-        Log.e(TAG, "Gui_Tin_Nhan: indexOf(ok): " + tinNhanS.getPhat_hien_loi().indexOf("ok") +" phat hien loi: "+ tinNhanS.getPhat_hien_loi() + " getOk_tn " + tinNhanS.getOk_tn());
 
         if (tinNhanS.getPhat_hien_loi().indexOf("ok") == 0 && tinNhanS.getPhat_hien_loi().length() == 2 && tinNhanS.getOk_tn() == 1) {
             if (kieu_tra_loi == 4) {
@@ -2576,7 +2522,7 @@ public class Database extends SQLiteOpenHelper {
                 final String tinNhan10 = OK_TIN_ + mSoTN5;
                 sendAndInsertDB(tinNhanS, mSoDT4, tinNhan10, mNgayNhan, mGioNhan, mNgay5, mSoTN5);
             } else if (kieu_tra_loi == 1) {
-                final String tinNhan11 = "Ok tin " + mSoTN5 + "\n" +tinNhanS.getNd_phantich();
+                final String tinNhan11 = "Ok tin " + mSoTN5 + "\n" + tinNhanS.getNd_phantich();
                 sendAndInsertDB(tinNhanS, mSoDT4, tinNhan11, mNgayNhan, mGioNhan, mNgay5, mSoTN5);
             }
 
@@ -2585,7 +2531,7 @@ public class Database extends SQLiteOpenHelper {
             int count = cur2.getCount();
             if (count > 0) {
                 if (tinNhanS.getDel_sms() == 1) {
-                    int maxSoTn = BriteDb.INSTANCE.getMaxSoTinNhan(mNgay5, 2, "so_dienthoai = '"+ cur2.getString(4) +"'");
+                    int maxSoTn = BriteDb.INSTANCE.getMaxSoTinNhan(mNgay5, 2, "so_dienthoai = '" + cur2.getString(4) + "'");
 
                     int sotin3 = maxSoTn + 1;
                     if (cur2.getString(3).contains(TL)) {
@@ -2603,7 +2549,7 @@ public class Database extends SQLiteOpenHelper {
                     TinNhanS tinNhanS_i = new TinNhanS(null, tinNhanS.getNgay_nhan(), tinNhanS.getGio_nhan(), 2, cur2.getString(3), cur2.getString(4),
                             myApp, sotin3, tinNhanS.getNd_goc(), tinNhanS.getNd_sua(), tinNhanS.getNd_phantich(), "ok", 0, 0, 1, tinNhanS.getPhan_tich());
                     BriteDb.INSTANCE.insertTinNhanS(tinNhanS_i);
-                    TinNhanS tinNhanS_s = BriteDb.INSTANCE.selectTinNhanS(tinNhanS.getNgay_nhan(), cur2.getString(4), sotin3, 2);
+                    TinNhanS tinNhanS_s = BriteDb.INSTANCE.selectTinNhanS(tinNhanS.getNgay_nhan(), cur2.getString(3), sotin3, 2);
 
                     String updateDel_sms = "Update tbl_tinnhanS set del_sms = 0 WHERE ngay_nhan = '" + mNgay5 +
                             "' AND so_dienthoai = '" + mSoDT4 + "' AND so_tin_nhan = " + mSoTN5;
@@ -2641,8 +2587,9 @@ public class Database extends SQLiteOpenHelper {
                     if (tinNhanS_s.getUse_app().contains(SMS)) {
                         SendSMS(cur2.getString(4), tinNhan12);
                     } else if (tinNhanS_s.getUse_app().contains(TL)) {
+                        String finalTinNhan12 = tinNhan12;
                         new Handler(Looper.getMainLooper()).post(() -> {
-//                                MainActivity.sendMessage(cur2.getLong(4), tinNhan12);
+                            MainActivity.sendMessage(cur2.getLong(4), finalTinNhan12);
                         });
                     } else {
                         new NotificationNewReader().NotificationWearReader(cur2.getString(4), tinNhan12);
@@ -2656,11 +2603,11 @@ public class Database extends SQLiteOpenHelper {
 
             if (tinNhanS.getType_kh() != 2 && MainActivity.jSon_Setting.getInt("baotinthieu") > 0) {
 
-                List<TinNhanS> listTinNhans = BriteDb.INSTANCE.selectListTinNhanS("ngay_nhan = '" + mNgay5 +
+                List<TinNhanS> listTinNhans = BriteDb.INSTANCE.selectListTinNhanS("Where ngay_nhan = '" + mNgay5 +
                         "' AND so_dienthoai = '" + mSoDT4 + "' AND type_kh = 1 ORDER BY so_tin_nhan");
                 JSONObject jsonTinnhan = new JSONObject();
                 int maxTin = 0;
-                for( TinNhanS tin : listTinNhans) {
+                for (TinNhanS tin : listTinNhans) {
                     int so_tin_nhan = tin.getSo_tin_nhan();
                     jsonTinnhan.put(so_tin_nhan + "-", so_tin_nhan);
                     maxTin = so_tin_nhan;
@@ -2693,7 +2640,8 @@ public class Database extends SQLiteOpenHelper {
                                 jsonObject8.put(NoIDungThieu, "OK");
                                 MainActivity.json_Tinnhan.put(mSoDT4, jsonObject8);
                             }
-                        } catch (Exception ignored) { }
+                        } catch (Exception ignored) {
+                        }
                         Chat chat = new Chat(null, mNgayNhan, mGioNhan, 2, tinNhanS.getTen_kh(),
                                 tinNhanS.getSo_dienthoai(), tinNhanS.getUse_app(), NoIDungThieu, 1);
                         BriteDb.INSTANCE.insertChat(chat);
@@ -2715,7 +2663,7 @@ public class Database extends SQLiteOpenHelper {
         if (cur.getCount() > 0 && chuyen32.getInt(0) == 0) {
             if (tinNhanS2.getDel_sms() == 1) {
 
-                int maxSoTn = BriteDb.INSTANCE.getMaxSoTinNhan(mNgay5, null, "so_dienthoai = '"+ cur.getString(4) +"'");
+                int maxSoTn = BriteDb.INSTANCE.getMaxSoTinNhan(mNgay5, null, "so_dienthoai = '" + cur.getString(4) + "'");
                 int sotin4 = maxSoTn + 1;
 
                 try {
@@ -2750,7 +2698,7 @@ public class Database extends SQLiteOpenHelper {
                                 + "', 2, '" + cur.getString(3) + "', '" + cur.getString(4) + "', '" + my_app
                                 + "','" + tinNhan15 + "',1)");
                     }
-                } catch (Exception exception){
+                } catch (Exception exception) {
                     Log.e(TAG, "Gui_Tin_Nhan: error" + exception.getMessage());
                 }
 
@@ -2763,7 +2711,7 @@ public class Database extends SQLiteOpenHelper {
 
         TralaiSO(mID);
 
-        Log.e(TAG, "Gui_Tin_Nhan: end function " + mID );
+        Log.e(TAG, "Gui_Tin_Nhan: end function " + mID);
 
     }
 

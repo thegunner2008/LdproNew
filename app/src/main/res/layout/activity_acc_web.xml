@@ -30,7 +30,7 @@
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:hint="Tài khoản"
-                    android:text="Ac66888"
+                    android:text=""
                     android:textColor="@color/red"
                     android:textSize="15dp"
                     android:textStyle="bold" />
@@ -68,7 +68,7 @@
                                 android:layout_width="match_parent"
                                 android:layout_height="wrap_content"
                                 android:hint="Mật khẩu"
-                                android:text="Anhmin15"
+                                android:text=""
                                 android:textColor="@color/red"
                                 android:textSize="15dp"
                                 android:textStyle="bold" />

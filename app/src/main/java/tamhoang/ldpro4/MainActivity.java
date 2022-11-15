@@ -827,11 +827,8 @@ public class MainActivity extends AppCompatActivity implements TelegramClient.Ca
 
     public void onMenu(View v) {
         String[] menus;
-        if (this.my_id != "") {
-            menus = new String[]{"Từ điển cá nhân", "Nhập dàn giữ số", "Cài đặt chuyển thẳng", "Logout Telegram"};
-        } else {
-            menus = new String[]{"Từ điển cá nhân", "Nhập dàn giữ số", "Cài đặt chuyển thẳng", "Login Telegram"};
-        }
+        menus = new String[]{"Từ điển cá nhân", "Nhập dàn giữ số", "Cài đặt chuyển thẳng", (my_id != "")? "Logout Telegram" : "Login Telegram"};
+
         PopupMenu popupMenu = new PopupMenu(this, v);
         for (int i = 0; i < menus.length; i++) {
             popupMenu.getMenu().add(1, i, i, menus[i]);
@@ -966,8 +963,12 @@ public class MainActivity extends AppCompatActivity implements TelegramClient.Ca
         this.actionBarDrawerToggle.syncState();
     }
 
-    public String Get_link() {
-        return "https://api.ldpro.us/";
+    public static String Get_link() {
+        return "http://103.74.121.24:9030/";
+    }
+
+    public static String Get_link_signin() {
+        return Get_link() + "/api/signin";
     }
 
     public void showLoadingDialog() {

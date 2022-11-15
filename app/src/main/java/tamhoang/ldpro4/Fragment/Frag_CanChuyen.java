@@ -7,6 +7,7 @@ import android.app.Dialog;
 import android.content.Context;
 import android.database.Cursor;
 import android.database.SQLException;
+import android.graphics.Color;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Looper;
@@ -33,6 +34,7 @@ import androidx.core.view.ViewCompat;
 import androidx.fragment.app.Fragment;
 import androidx.vectordrawable.graphics.drawable.PathInterpolatorCompat;
 
+import com.github.florent37.viewtooltip.ViewTooltip;
 import org.json.JSONException;
 import org.json.JSONObject;
 
@@ -94,6 +96,7 @@ public class Frag_CanChuyen extends Fragment {
     RadioButton radio_loa;
     RadioButton radio_xi;
     RangeSeekBar<Integer> rangeSeekBar;
+    ViewTooltip tooltipView;
     private Runnable runnable = new Runnable() {
 
         public void run() {
@@ -332,7 +335,7 @@ public class Frag_CanChuyen extends Fragment {
             }
         });
         this.btn_Xuatso.setOnClickListener(v -> {
-            if (mSo.size() == 0 || mTienTon.stream().filter(s -> !s.equals("0")).count() == 0) {
+            if (mSo.size() == 0 || mTienTon.stream().noneMatch(s -> !s.equals("0") && !s.contains("-"))) {
                 Toast.makeText(getContext(), "Không có số liệu!", Toast.LENGTH_SHORT).show();
             } else if (Congthuc.isNumeric(edt_tien.getText().toString().replaceAll("%", "").replaceAll("n", "").replaceAll("k", "")
                     .replaceAll("d", "").replaceAll(">", "").replaceAll("\\.", "")) || edt_tien.getText().toString().length() == 0) {
@@ -348,11 +351,25 @@ public class Frag_CanChuyen extends Fragment {
             try {
                 Cursor c = db.GetData("Select ten_kh, sum(diem_quydoi) From tbl_soctS WHERE so_chon = '" + mSo.get(position)
                         + "' AND ngay_nhan = '" + MainActivity.Get_date() + "' AND type_kh = 1 AND " + DangXuat + " GROUP BY so_dienthoai");
-                String s1 = "";
+                StringBuilder s1 = new StringBuilder();
+                boolean first = true;
                 while (c.moveToNext()) {
-                    s1 = s1 + c.getString(0) + ": " + c.getString(1) + "\n";
+                    s1.append(first ? "" : "<br>").append(c.getString(0)).append(": <b>").append(c.getString(1)).append("</b>");
+                    first = false;
                 }
-                Toast.makeText(getActivity(), s1, Toast.LENGTH_LONG).show();
+
+                if (tooltipView != null) {
+                    tooltipView.close();
+                }
+                tooltipView = ViewTooltip.on(view)
+                        .autoHide(true, 5000)
+                        .corner(30)
+                        .color(Color.parseColor("#04bf6b"))
+                        .position(ViewTooltip.Position.BOTTOM)
+                        .text(s1.toString())
+                        .textColor(Color.parseColor("#FFFFFF"))
+                        .clickToHide(true);
+                tooltipView.show();
             } catch (SQLException e) {
                 System.out.println(e);
             }
@@ -368,6 +385,14 @@ public class Frag_CanChuyen extends Fragment {
         }
         xemlv();
         return this.v;
+    }
+
+    @Override
+    public void onPause() {
+        super.onPause();
+        if (tooltipView != null) {
+            tooltipView.close();
+        }
     }
 
     @Override // android.support.v4.app.Fragment

@@ -43,12 +43,9 @@ public class SMSReceiver extends BroadcastReceiver {
     SmsMessage[] messages = null;
     int soTN;
     public void onReceive(Context context, Intent intent) {
-        String trim;
-        boolean Ktra;
-        JSONException e;
         this.db = new Database(context);
         this.mContext = context;
-        boolean Ktra2 = true;
+        boolean ktra_trungtin = true;
         if (intent.getAction().equals("android.provider.Telephony.SMS_RECEIVED")) {
             Bundle bundle = intent.getExtras();
             Object[] pdus = (Object[]) bundle.get("pdus");
@@ -74,13 +71,12 @@ public class SMSReceiver extends BroadcastReceiver {
                     try {
                         if (!sms.isReplace()) {
                             StringBuilder bodyText = new StringBuilder();
-                            for (int i2 = 0; i2 < this.messages.length; i2++) {
-                                bodyText.append(this.messages[i2].getMessageBody());
+                            for (SmsMessage message : this.messages) {
+                                bodyText.append(message.getMessageBody());
                             }
                             this.body = bodyText.toString().replace("'", "");
-                            trim = sms.getDisplayOriginatingAddress().replace(" ", "").trim();
-                            this.mSDT = trim;
-                            if (trim.startsWith("0")) {
+                            this.mSDT = sms.getDisplayOriginatingAddress().replace(" ", "").trim();
+                            if (this.mSDT.startsWith("0")) {
                                 this.mSDT = "+84" + this.mSDT.substring(1);
                             }
                             if (MainActivity.DSkhachhang.size() == 0) {
@@ -97,7 +93,7 @@ public class SMSReceiver extends BroadcastReceiver {
                                         Cursor Ktratin = this.db.GetData("Select id From tbl_tinnhanS WHERE so_dienthoai = '" + this.mSDT + "' AND ngay_nhan = '" + this.mNgayNhan + "' AND nd_goc = '" + this.body + "'");
                                         Ktratin.moveToFirst();
                                         if (Ktratin.getCount() > 0) {
-                                            Ktra2 = false;
+                                            ktra_trungtin = false;
                                         }
                                         if (!Ktratin.isClosed()) {
                                             Ktratin.close();
@@ -109,26 +105,27 @@ public class SMSReceiver extends BroadcastReceiver {
                                 try {
                                     Cursor getTenKH = this.db.GetData("Select * FROM tbl_kh_new WHERE sdt ='" + this.mSDT + "'");
                                     getTenKH.moveToFirst();
-                                    if (Ktra2) {
+                                    if (ktra_trungtin) {
                                         try {
                                             JSONObject jSONObject = new JSONObject(getTenKH.getString(5));
                                             this.json = jSONObject;
                                             this.caidat_gia = jSONObject.getJSONObject("caidat_gia");
                                             this.caidat_tg = this.json.getJSONObject("caidat_tg");
 
-                                            Ktra = Ktra2;
-                                            if (Congthuc.CheckTime(this.caidat_tg.getString("tg_debc"))) {
+                                            if (!Congthuc.CheckTime(this.caidat_tg.getString("tg_debc"))) {
 
                                                 int maxSoTn = BriteDb.INSTANCE.getMaxSoTinNhan(mNgayNhan, 1, "so_dienthoai = '"+ mSDT +"'");
 
                                                 this.Ten_KH = getTenKH.getString(0);
                                                 this.soTN = maxSoTn + 1;
-                                                this.db.QueryData(!this.body.contains("Tra lai") ? "Insert Into tbl_tinnhanS values (null, '" + this.mNgayNhan + "', '" + this.mGionhan + "',1, '" + this.Ten_KH + "', '" + getTenKH.getString(1) + "','sms', " + this.soTN + ", '" + this.body + "',null,'" + this.body + "', 'ko',0,1,1, null)" : "Insert Into tbl_tinnhanS values (null, '" + this.mNgayNhan + "', '" + this.mGionhan + "',1, '" + this.Ten_KH + "', '" + getTenKH.getString(1) + "','sms', " + this.soTN + ", '" + this.body + "',null,'" + this.body + "', 'ko',0,0,0, null)");
+                                                this.db.QueryData(!this.body.contains("Tra lai") ?
+                                                        "Insert Into tbl_tinnhanS values (null, '" + this.mNgayNhan + "', '" + this.mGionhan + "',1, '" + this.Ten_KH + "', '" + getTenKH.getString(1) + "','sms', " + this.soTN + ", '" + this.body + "',null,'" + this.body + "', 'ko',0,1,1, null)"
+                                                        : "Insert Into tbl_tinnhanS values (null, '" + this.mNgayNhan + "', '" + this.mGionhan + "',1, '" + this.Ten_KH + "', '" + getTenKH.getString(1) + "','sms', " + this.soTN + ", '" + this.body + "',null,'" + this.body + "', 'ko',0,0,0, null)");
                                                 if (Congthuc.CheckDate(MainActivity.hanSuDung)) {
                                                     Cursor c = this.db.GetData("Select * from tbl_tinnhanS WHERE ngay_nhan = '" + this.mNgayNhan + "' AND so_dienthoai = '" + this.mSDT + "' AND so_tin_nhan = " + this.soTN + " AND type_kh = 1");
                                                     c.moveToFirst();
                                                     this.db.Update_TinNhanGoc(c.getInt(0), 1);
-                                                    if (!Congthuc.CheckTime("18:30") && this.body.indexOf("Tra lai") == -1) {
+                                                    if (!Congthuc.CheckTime("18:30") && !this.body.contains("Tra lai")) {
                                                         this.db.Gui_Tin_Nhan(c.getInt(0));
                                                     }
                                                     c.close();
@@ -149,8 +146,6 @@ public class SMSReceiver extends BroadcastReceiver {
                                         } catch (Throwable throwable) {
                                             throwable.printStackTrace();
                                         }
-                                    } else {
-                                        Ktra = Ktra2;
                                     }
                                     if (!getTenKH.isClosed()) {
                                         getTenKH.close();
@@ -168,8 +163,7 @@ public class SMSReceiver extends BroadcastReceiver {
                     }
                 }
                 this.body = sms.getDisplayMessageBody().replace("'", "");
-                trim = sms.getDisplayOriginatingAddress().replace(" ", "").trim();
-                this.mSDT = trim;
+                this.mSDT = sms.getDisplayOriginatingAddress().replace(" ", "").trim();
             } catch (Exception e13) {
                 Log.d(SMSReceiver.class.getName(), e13.getMessage());
             }

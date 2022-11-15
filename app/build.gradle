@@ -15,8 +15,8 @@ android {
         applicationId "tamhoang.ldpro4.dev"
         minSdk 24
         targetSdk 30
-        versionCode 20221101
-        versionName "2.94"
+        versionCode 20221115
+        versionName "2.912"
 
         ndk {
             abiFilters "armeabi", "armeabi-v7a", "x86", "mips"
@@ -103,6 +103,7 @@ dependencies {
     // When using the BoM, you don't specify versions in Firebase library dependencies
     implementation 'com.google.firebase:firebase-crashlytics'
     implementation 'com.google.firebase:firebase-analytics'
+    implementation 'com.github.florent37:viewtooltip:1.2.0'
 
     implementation project(':libtd')
 

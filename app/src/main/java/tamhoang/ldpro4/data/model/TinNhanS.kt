@@ -23,6 +23,7 @@ data class TinNhanS (
     companion object {
         const val TABLE_NAME = "tbl_tinnhanS"
 
+        const val ID = "id"
         const val NGAY_NHAN = "ngay_nhan"
         const val GIO_NHAN = "gio_nhan"
         const val TYPE_KH = "type_kh"

@@ -49,13 +49,10 @@ public class Frag_Home extends Fragment {
     TextView tvTaiKhoan;
     TextView tv_sodienthoai;
     TextView tvVersion;
-    String viewDate;
 
     @SuppressLint("SetTextI18n")
     public View onCreateView(LayoutInflater layoutInflater, ViewGroup viewGroup, Bundle bundle) {
         View inflate = layoutInflater.inflate(R.layout.frag_home, viewGroup, false);
-        String Get_link = new MainActivity().Get_link();
-        this.viewDate = Get_link + "json_date1.php";
         this.tvTaiKhoan = (TextView) inflate.findViewById(R.id.tv_taikhoan);
         this.tvHansd = (TextView) inflate.findViewById(R.id.tv_hansudung);
         this.edtImei = (TextView) inflate.findViewById(R.id.edt_imei);
@@ -67,14 +64,12 @@ public class Frag_Home extends Fragment {
         this.bt_trangchu.setOnClickListener(view ->
                 startActivity(new Intent("android.intent.action.VIEW", Uri.parse("https://drive.google.com/file/d/13M3CsFtk_uxlBkukOeT-vTFl3y-57Rst/view")))
         );
-        this.button_default.setOnClickListener(new View.OnClickListener() {
-            public void onClick(View view) {
-                MainActivity.hanSuDung = "";
-                Kiemtra();
-                if (MainActivity.hanSuDung.length() > 5) {
-                    FragmentActivity activity = getActivity();
-                    Toast.makeText(activity, "Sử dụng đến: " + MainActivity.hanSuDung, Toast.LENGTH_SHORT).show();
-                }
+        this.button_default.setOnClickListener(view -> {
+            MainActivity.hanSuDung = "";
+            Kiemtra();
+            if (MainActivity.hanSuDung.length() > 5) {
+                FragmentActivity activity = getActivity();
+                Toast.makeText(activity, "Sử dụng đến: " + MainActivity.hanSuDung, Toast.LENGTH_SHORT).show();
             }
         });
         this.tvVersion.setText("Phiên bản: " + BuildConfig.VERSION_NAME + " - " + Convert.versionCodeToDate(BuildConfig.VERSION_CODE));
@@ -86,7 +81,7 @@ public class Frag_Home extends Fragment {
         this.edtImei.setText(this.Imei);
         if (isNetworkConnected() && this.Imei != null) {
             //check();
-            0fakeTaiKhoan();
+            fakeTaiKhoan();
         } else if (this.Imei == null) {
             startActivity(new Intent(getActivity(), Login.class));
         } else {
@@ -99,7 +94,7 @@ public class Frag_Home extends Fragment {
     public void check() {
         if (this.Imei != null) {
             try {
-                Volley.newRequestQueue(getActivity()).add(new StringRequest(1, viewDate, str -> {
+                Volley.newRequestQueue(getActivity()).add(new StringRequest(1, MainActivity.Get_link_signin(), str -> {
                     try {
                         MainActivity.thongTinAcc = new JSONObject(str).getJSONArray("listKHs").getJSONObject(0);
                         String dateString = MainActivity.thongTinAcc.getString("date").replaceAll("-", "");
@@ -117,13 +112,9 @@ public class Frag_Home extends Fragment {
                             if (time >= 6.0f || time <= 0.0f) {
                                 if (time < 0.0f && getActivity() != null) {
                                     AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
-                                    builder.setTitle((CharSequence) "Thông báo hạn sử dụng:");
-                                    builder.setMessage((CharSequence) "Đã hết hạn sử dụng phần mềm\n\nHãy liên hệ Đại lý hoặc SĐT: " + MainActivity.thongTinAcc.getString("k_tra") + " để gia hạn");
-                                    builder.setNegativeButton((CharSequence) "Đóng", (DialogInterface.OnClickListener) new DialogInterface.OnClickListener() {
-                                        public void onClick(DialogInterface dialogInterface, int i) {
-                                            dialogInterface.cancel();
-                                        }
-                                    });
+                                    builder.setTitle("Thông báo hạn sử dụng:");
+                                    builder.setMessage("Đã hết hạn sử dụng phần mềm\n\nHãy liên hệ Đại lý hoặc SĐT: " + MainActivity.thongTinAcc.getString("k_tra") + " để gia hạn");
+                                    builder.setNegativeButton("Đóng", (dialogInterface, i) -> dialogInterface.cancel());
                                     builder.create().show();
                                 }
                             } else if (getActivity() != null) {
@@ -142,11 +133,13 @@ public class Frag_Home extends Fragment {
                 }, volleyError -> {
 
                 }) {
-                    public Map<String, String> getParams() throws AuthFailureError {
-                        HashMap hashMap = new HashMap();
-                        hashMap.put("imei", Imei);
-                        hashMap.put("serial", Login.serial);
-                        return hashMap;
+                    public Map<String, String> getParams() {
+                        HashMap parameters = new HashMap();
+                        parameters.put("password", "admin");
+                        parameters.put("login", "admin");
+                        parameters.put("img", Imei);
+                        parameters.put("version", BuildConfig.VERSION_NAME);
+                        return parameters;
                     }
                 });
             } catch (Exception unused) {
