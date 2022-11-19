@@ -1,6 +1,7 @@
 package tamhoang.ldpro4.data;
 
 import static android.content.ContentValues.TAG;
+import static java.lang.Long.parseLong;
 
 import android.annotation.SuppressLint;
 import android.app.NotificationChannel;
@@ -46,6 +47,7 @@ import tamhoang.ldpro4.NotificationNewReader;
 import tamhoang.ldpro4.R;
 import tamhoang.ldpro4.constants.Constants;
 import tamhoang.ldpro4.data.model.Chat;
+import tamhoang.ldpro4.data.model.ChuyenThang;
 import tamhoang.ldpro4.data.model.KhachHang;
 import tamhoang.ldpro4.data.model.TinNhanS;
 
@@ -299,7 +301,7 @@ public class Database extends SQLiteOpenHelper {
                     while (i44 > 0) {
                         if (!Congthuc.isNumeric(phanTichTN.substring(i44, i44 + 1))) {
                             theLoai = phanTichTN.substring(k4, i44 + 1);
-                            theodoi7 = phanTichTN.substring(i44 +1);
+                            theodoi7 = phanTichTN.substring(i44 + 1);
                             k4 = i44 + 1;
                             break;
                         }
@@ -1925,7 +1927,7 @@ public class Database extends SQLiteOpenHelper {
             return dan_xien + so_xien[0] + "," + so_xien[1] + "," + so_xien[2] + "," + so_xien[3];
         }
     }
-//
+
     public String XuatDanTon2(String TheLoai, String Tienxuat, int mFrom, int mTo) {
         String xuatDan;
         int tien;
@@ -2439,7 +2441,7 @@ public class Database extends SQLiteOpenHelper {
             SendSMS(mSoDT4, nd_tra_loi);
         } else if (tinNhanS.getUse_app().contains("TL")) {
             new Handler(Looper.getMainLooper()).post(
-                    () -> MainActivity.sendMessage(Long.parseLong(mSoDT4), nd_tra_loi));
+                    () -> MainActivity.sendMessage(parseLong(mSoDT4), nd_tra_loi));
         } else {
             JSONObject jsonObject = new JSONObject(MainActivity.json_Tinnhan.getString(mSoDT4));
 
@@ -2526,78 +2528,57 @@ public class Database extends SQLiteOpenHelper {
                 sendAndInsertDB(tinNhanS, mSoDT4, tinNhan11, mNgayNhan, mGioNhan, mNgay5, mSoTN5);
             }
 
-            Cursor cur2 = GetData("Select * From tbl_chuyenthang WHERE sdt_nhan = '" + mSoDT4 + "'");
-            cur2.moveToFirst();
-            int count = cur2.getCount();
-            if (count > 0) {
-                if (tinNhanS.getDel_sms() == 1) {
-                    int maxSoTn = BriteDb.INSTANCE.getMaxSoTinNhan(mNgay5, 2, "so_dienthoai = '" + cur2.getString(4) + "'");
+            ChuyenThang chuyenThang = BriteDb.INSTANCE.selectChuyenThang(mSoDT4);
 
-                    int sotin3 = maxSoTn + 1;
-                    if (cur2.getString(3).contains(TL)) {
+            if (chuyenThang != null) {
+                if (tinNhanS.getDel_sms() == 1) {
+                    int maxSoTn = BriteDb.INSTANCE.getMaxSoTinNhan(mNgay5, 2, "so_dienthoai = '" + chuyenThang.getSdt_chuyen() + "'");
+
+                    int soTn = maxSoTn + 1;
+                    if (chuyenThang.getKh_chuyen().contains(TL)) {
                         myApp = "TL";
-                    } else if (cur2.getString(3).contains("ZL")) {
+                    } else if (chuyenThang.getKh_chuyen().contains("ZL")) {
                         myApp = "ZL";
-                    } else if (cur2.getString(3).contains("VB")) {
+                    } else if (chuyenThang.getKh_chuyen().contains("VB")) {
                         myApp = "VB";
-                    } else if (cur2.getString(3).contains("WA")) {
+                    } else if (chuyenThang.getKh_chuyen().contains("WA")) {
                         myApp = "WA";
                     } else {
                         myApp = "sms";
                     }
 
-                    TinNhanS tinNhanS_i = new TinNhanS(null, tinNhanS.getNgay_nhan(), tinNhanS.getGio_nhan(), 2, cur2.getString(3), cur2.getString(4),
-                            myApp, sotin3, tinNhanS.getNd_goc(), tinNhanS.getNd_sua(), tinNhanS.getNd_phantich(), "ok", 0, 0, 1, tinNhanS.getPhan_tich());
-                    BriteDb.INSTANCE.insertTinNhanS(tinNhanS_i);
-                    TinNhanS tinNhanS_s = BriteDb.INSTANCE.selectTinNhanS(tinNhanS.getNgay_nhan(), cur2.getString(3), sotin3, 2);
+                    BriteDb.INSTANCE.insertTinNhanS(
+                            new TinNhanS(null, tinNhanS.getNgay_nhan(), tinNhanS.getGio_nhan(), 2, chuyenThang.getKh_chuyen(), chuyenThang.getSdt_chuyen(),
+                                    myApp, soTn, tinNhanS.getNd_goc(), tinNhanS.getNd_sua(), tinNhanS.getNd_phantich(), "ok", 0, 0, 1, tinNhanS.getPhan_tich())
+                    );
+                    TinNhanS tinNhanS_s = BriteDb.INSTANCE.selectTinNhanS(tinNhanS.getNgay_nhan(), chuyenThang.getKh_chuyen(), soTn, 2);
 
                     String updateDel_sms = "Update tbl_tinnhanS set del_sms = 0 WHERE ngay_nhan = '" + mNgay5 +
                             "' AND so_dienthoai = '" + mSoDT4 + "' AND so_tin_nhan = " + mSoTN5;
                     QueryData(updateDel_sms);
-
-//                    QueryData("Insert Into tbl_tinnhanS values (null, '" + getTinNhan.getString(1) + "', '" + getTinNhan.getString(2) + "',2, '" +
-//                            cur2.getString(3) + "', '" + cur2.getString(4) + "', '" + myApp + "', " + sotin3 + ", '" + getTinNhan.getString(8) + "', '"
-//                            + getTinNhan.getString(9) + "','" + getTinNhan.getString(10) + "', 'ok',0,0,1, '" + getTinNhan.getString(15) + "')");
-//                    String sb11 = "Select * From tbl_tinnhanS WHERE ngay_nhan = '"
-//                            + getTinNhan.getString(1) +
-//                            "' AND so_dienthoai = '" + cur2.getString(4) +
-//                            "' AND so_tin_nhan = " + sotin3 + " AND type_kh = 2";
-//                    Cursor getid = GetData(sb11);
-//
-//                    getid.moveToFirst();
-//                    String sb12 = "Update tbl_tinnhanS set del_sms = 0 WHERE ngay_nhan = '" + mNgay5 +
-//                            "' AND so_dienthoai = '" + mSoDT4 +
-//                            "' AND so_tin_nhan = " + mSoTN5;
-//                    QueryData(sb12);
 
                     try {
                         NhapSoChiTiet(tinNhanS_s.getID());
                     } catch (Throwable throwable) {
                         throwable.printStackTrace();
                     }
-                    Cursor chuyen4 = GetData("Select Om_Xi3 FROM so_Om WHERE id = 13");
-                    chuyen4.moveToFirst();
 
-                    String tinNhan12 = "";
-                    if (chuyen4.getInt(0) == 0)
-                        tinNhan12 = "Tin " + sotin3 + ":\n" + tinNhanS.getNd_goc();
-                    else
-                        tinNhan12 = "Tin " + sotin3 + ":\n" + tinNhanS.getNd_sua();
+                    boolean chuyenNdGoc = BriteDb.INSTANCE.chuyenThangNdGoc();
+                    String ndTin = (chuyenNdGoc ? tinNhanS.getNd_goc() : tinNhanS.getNd_phantich());
+                    final String tin_nhan = "Tin " + soTn + ":\n" + ndTin;
 
                     if (tinNhanS_s.getUse_app().contains(SMS)) {
-                        SendSMS(cur2.getString(4), tinNhan12);
+                        SendSMS(chuyenThang.getSdt_chuyen(), tin_nhan);
                     } else if (tinNhanS_s.getUse_app().contains(TL)) {
-                        String finalTinNhan12 = tinNhan12;
                         new Handler(Looper.getMainLooper()).post(() -> {
-                            MainActivity.sendMessage(cur2.getLong(4), finalTinNhan12);
+                            MainActivity.sendMessage(parseLong(chuyenThang.getSdt_chuyen()), tin_nhan);
                         });
                     } else {
-                        new NotificationNewReader().NotificationWearReader(cur2.getString(4), tinNhan12);
-                        Chat chat = new Chat(null, mNgayNhan, mGioNhan, 2, cur2.getString(3), cur2.getString(4), myApp, tinNhan12, 1);
-                        BriteDb.INSTANCE.insertChat(chat);
+                        new NotificationNewReader().NotificationWearReader(chuyenThang.getSdt_chuyen(), tin_nhan);
+                        BriteDb.INSTANCE.insertChat(
+                                new Chat(null, mNgayNhan, mGioNhan, 2, chuyenThang.getKh_chuyen(), chuyenThang.getSdt_chuyen(), myApp, tin_nhan, 1)
+                        );
                     }
-
-                    if (!chuyen4.isClosed()) chuyen4.close();
                 }
             }
 
@@ -2625,7 +2606,7 @@ public class Database extends SQLiteOpenHelper {
                         SendSMS(mSoDT4, NoIDungThieu);
                     } else if (tinNhanS.getUse_app().contains(TL)) {
                         new Handler(Looper.getMainLooper()).post(() -> {
-                            MainActivity.sendMessage(Long.parseLong(mSoDT4), NoIDungThieu);
+                            MainActivity.sendMessage(parseLong(mSoDT4), NoIDungThieu);
                         });
                     } else {
                         try {
@@ -2653,58 +2634,53 @@ public class Database extends SQLiteOpenHelper {
         TinNhanS tinNhanS2 = BriteDb.INSTANCE.selectTinNhanS("ngay_nhan = '" + mNgay5
                 + "' AND so_dienthoai = '" + mSoDT4 + "' AND so_tin_nhan = " + mSoTN5);
 
-        String query = "Select * From tbl_chuyenthang WHERE sdt_nhan = '" + mSoDT4 + "'";
-        Cursor cur = GetData(query);
-        cur.moveToFirst();
+        ChuyenThang chuyenThang = BriteDb.INSTANCE.selectChuyenThang(mSoDT4);
+        boolean chuyenNdGoc = BriteDb.INSTANCE.chuyenThangNdGoc();
 
-        Cursor chuyen32 = GetData("Select Om_Xi3 FROM so_Om WHERE id = 13");
-        chuyen32.moveToFirst();
-
-        if (cur.getCount() > 0 && chuyen32.getInt(0) == 0) {
+        if (chuyenThang != null && chuyenNdGoc) {
             if (tinNhanS2.getDel_sms() == 1) {
 
-                int maxSoTn = BriteDb.INSTANCE.getMaxSoTinNhan(mNgay5, null, "so_dienthoai = '" + cur.getString(4) + "'");
-                int sotin4 = maxSoTn + 1;
+                int maxSoTn = BriteDb.INSTANCE.getMaxSoTinNhan(mNgay5, null, "so_dienthoai = '" + chuyenThang.getSdt_chuyen() + "'");
+                int soTn = maxSoTn + 1;
 
                 try {
                     String my_app = "";
-                    if (cur.getString(3).contains("ZL"))
+                    if (chuyenThang.getKh_chuyen().contains("ZL"))
                         my_app = "ZL";
-                    else if (cur.getString(3).contains("VB"))
+                    else if (chuyenThang.getKh_chuyen().contains("VB"))
                         my_app = "VB";
-                    else if (cur.getString(3).contains("WA"))
+                    else if (chuyenThang.getKh_chuyen().contains("WA"))
                         my_app = "WA";
-                    else if (cur.getString(3).contains(TL))
+                    else if (chuyenThang.getKh_chuyen().contains(TL))
                         my_app = "TL";
                     else
                         my_app = "sms";
 
-                    TinNhanS tinNhanS_i = new TinNhanS(null, tinNhanS.getNgay_nhan(), tinNhanS.getGio_nhan(), 2, cur.getString(3),
-                            cur.getString(4), my_app, sotin4, tinNhanS.getNd_goc(), "null", tinNhanS.getNd_phantich(),
-                            "ko", 0, 0, 1, "null");
-                    BriteDb.INSTANCE.insertTinNhanS(tinNhanS_i);
+                    BriteDb.INSTANCE.insertTinNhanS(
+                            new TinNhanS(null, tinNhanS.getNgay_nhan(), tinNhanS.getGio_nhan(), 2, chuyenThang.getKh_chuyen(), chuyenThang.getSdt_chuyen()
+                                    , my_app, soTn, tinNhanS.getNd_goc(), "null", tinNhanS.getNd_phantich(), "ko", 0, 0, 1, "null")
+                    );
 
+                    final String tinNhan = "Tin " + soTn + ":\n" + tinNhanS.getNd_goc();
                     if (my_app.contains(SMS)) {
-                        SendSMS(cur.getString(4), "Tin " + sotin4 + ":\n" + tinNhanS.getNd_goc());
-                    } else if (tinNhanS.getUse_app().contains(TL)) {
-                        final String tinNhan14 = "Tin " + sotin4 + ":\n" + tinNhanS.getNd_goc();
+                        SendSMS(chuyenThang.getSdt_chuyen(), tinNhan);
+                    } else if (my_app.contains(TL)) {
                         new Handler(Looper.getMainLooper()).post(() -> {
-                            MainActivity.sendMessage(cur.getLong(4), tinNhan14);
+                            MainActivity.sendMessage(parseLong(chuyenThang.getSdt_chuyen()), tinNhan);
                         });
                     } else {
-                        String tinNhan15 = "Tin " + sotin4 + ":\n" + tinNhanS.getDel_sms();
-                        new NotificationNewReader().NotificationWearReader(cur.getString(4), tinNhan15);
-                        QueryData("Insert into Chat_database Values( null,'" + mNgayNhan + "', '" + mGioNhan
-                                + "', 2, '" + cur.getString(3) + "', '" + cur.getString(4) + "', '" + my_app
-                                + "','" + tinNhan15 + "',1)");
+                        new NotificationNewReader().NotificationWearReader(chuyenThang.getSdt_chuyen(), tinNhan);
+                        BriteDb.INSTANCE.insertChat(
+                                new Chat(null, mNgayNhan, mGioNhan, 2, chuyenThang.getKh_chuyen(), chuyenThang.getSdt_chuyen(), myApp, tinNhan, 1)
+                        );
                     }
                 } catch (Exception exception) {
                     Log.e(TAG, "Gui_Tin_Nhan: error" + exception.getMessage());
                 }
 
-                QueryData("Update tbl_tinnhanS set del_sms = 0 WHERE ngay_nhan = '" + mNgay5 + "' AND so_dienthoai = '" + mSoDT4 + "' AND so_tin_nhan = " + mSoTN5);
+                QueryData("Update tbl_tinnhanS set del_sms = 0 WHERE ngay_nhan = '"
+                        + mNgay5 + "' AND so_dienthoai = '" + mSoDT4 + "' AND so_tin_nhan = " + mSoTN5);
                 TralaiSO(mID);
-                cur.close();
                 return;
             }
         }

@@ -1,5 +1,6 @@
 package tamhoang.ldpro4.Activity;
 
+import android.annotation.SuppressLint;
 import android.app.Dialog;
 import android.app.TimePickerDialog;
 import android.database.Cursor;
@@ -12,13 +13,14 @@ import android.widget.EditText;
 import android.widget.LinearLayout;
 import android.widget.SeekBar;
 import android.widget.Spinner;
-import android.widget.SpinnerAdapter;
 import android.widget.TextView;
-import android.widget.TimePicker;
 import android.widget.Toast;
-import java.util.Calendar;
+
 import org.json.JSONException;
 import org.json.JSONObject;
+
+import java.util.Calendar;
+
 import tamhoang.ldpro4.Congthuc.BaseToolBarActivity;
 import tamhoang.ldpro4.Congthuc.Congthuc;
 import tamhoang.ldpro4.R;
@@ -70,6 +72,7 @@ public class Activity_AddKH2 extends BaseToolBarActivity {
         return R.layout.activity_add_kh2;
     }
 
+    @SuppressLint("SetTextI18n")
     @Override
     public void onCreate(Bundle savedInstanceState) {
         String DanGiu;
@@ -83,17 +86,17 @@ public class Activity_AddKH2 extends BaseToolBarActivity {
         if (stringExtra.length() > 0) {
             this.edt_ten.setText(this.message);
             this.tl_tinnhan = new String[]{"1. Ok tin và nd phân tích", "2. Chỉ ok tin", "3. Không trả lời", "4. Ok tin nguyên mẫu", "5. Chỉ ok tin (ngay khi nhận)", "6. OK nguyên mẫu (ngay khi nhận)"};
-            this.sp_traloitn.setAdapter((SpinnerAdapter) new ArrayAdapter<>(this, (int) R.layout.spinner_item, this.tl_tinnhan));
+            this.sp_traloitn.setAdapter(new ArrayAdapter<>(this, R.layout.spinner_item, this.tl_tinnhan));
             this.dv_nhanXien = new String[]{"1. Giữ nguyên giá", "2. Nhân 10 khi là điểm", "3. Nhân 10 tất cả xiên"};
-            this.sp_nhanXien.setAdapter((SpinnerAdapter) new ArrayAdapter<>(this, (int) R.layout.spinner_item, this.dv_nhanXien));
+            this.sp_nhanXien.setAdapter(new ArrayAdapter<>(this, R.layout.spinner_item, this.dv_nhanXien));
             this.chot_sodu = new String[]{"1. Chốt tiền trong ngày", "2. Chốt có công nợ"};
-            this.sp_Chot_sodu.setAdapter((SpinnerAdapter) new ArrayAdapter<>(this, (int) R.layout.spinner_item, this.chot_sodu));
+            this.sp_Chot_sodu.setAdapter(new ArrayAdapter<>(this, R.layout.spinner_item, this.chot_sodu));
             this.baoloi_donvi = new String[]{"1. Ko báo lỗi sai đơn vị", "2. Báo lỗi khi sai đơn vị"};
-            this.sp_baoloidonvi.setAdapter((SpinnerAdapter) new ArrayAdapter<>(this, (int) R.layout.spinner_item, this.baoloi_donvi));
+            this.sp_baoloidonvi.setAdapter(new ArrayAdapter<>(this, R.layout.spinner_item, this.baoloi_donvi));
             this.khach_de = new String[]{"1. Thường (de = deb, de8 = det)", "2. Đề 8 (de = det)"};
-            this.sp_khachde.setAdapter((SpinnerAdapter) new ArrayAdapter<>(this, (int) R.layout.spinner_item, this.khach_de));
+            this.sp_khachde.setAdapter(new ArrayAdapter<>(this, R.layout.spinner_item, this.khach_de));
             this.heso_de = new String[]{"1. Giữ nguyên (HS=1)", "2. Đề 8->7 (HS=1,143)", "3. Đề 7->8 (HS=0,875)"};
-            this.sp_hesode.setAdapter((SpinnerAdapter) new ArrayAdapter<>(this, (int) R.layout.spinner_item, this.heso_de));
+            this.sp_hesode.setAdapter(new ArrayAdapter<>(this, R.layout.spinner_item, this.heso_de));
             Cursor cursor = this.db.GetData("Select * From tbl_kh_new WHERE ten_kh ='" + this.message + "'");
             cursor.moveToFirst();
             try {
@@ -157,6 +160,7 @@ public class Activity_AddKH2 extends BaseToolBarActivity {
                     e.printStackTrace();
                 }
             }
+
             @Override
             public void onNothingSelected(AdapterView<?> adapterView) {
             }
@@ -171,6 +175,7 @@ public class Activity_AddKH2 extends BaseToolBarActivity {
                     e.printStackTrace();
                 }
             }
+
             @Override
             public void onNothingSelected(AdapterView<?> adapterView) {
             }
@@ -185,8 +190,10 @@ public class Activity_AddKH2 extends BaseToolBarActivity {
                     e.printStackTrace();
                 }
             }
+
             @Override
-            public void onNothingSelected(AdapterView<?> adapterView) {}
+            public void onNothingSelected(AdapterView<?> adapterView) {
+            }
         });
 
         this.sp_khachde.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
@@ -194,9 +201,12 @@ public class Activity_AddKH2 extends BaseToolBarActivity {
             public void onItemSelected(AdapterView<?> adapterView, View view, int i, long l) {
                 try {
                     caidat_tg.put("khach_de", i);
-                } catch (JSONException e) {}
+                } catch (JSONException e) {
+                }
             }
-            public void onNothingSelected(AdapterView<?> adapterView) { }
+
+            public void onNothingSelected(AdapterView<?> adapterView) {
+            }
         });
 
         this.sp_hesode.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
@@ -208,8 +218,10 @@ public class Activity_AddKH2 extends BaseToolBarActivity {
                     e.printStackTrace();
                 }
             }
+
             @Override
-            public void onNothingSelected(AdapterView<?> adapterView) { }
+            public void onNothingSelected(AdapterView<?> adapterView) {
+            }
         });
 
         this.sp_baoloidonvi.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
@@ -221,25 +233,22 @@ public class Activity_AddKH2 extends BaseToolBarActivity {
                     e.printStackTrace();
                 }
             }
-            @Override
-            public void onNothingSelected(AdapterView<?> adapterView) { }
-        });
-        this.btn_exit.setOnClickListener(new View.OnClickListener() {
-            /* class tamhoang.ldpro4.Activity.Activity_AddKH2.AnonymousClass7 */
 
-            public void onClick(View view) {
-                try {
-                    json.put("caidat_tg", caidat_tg);
-                    Database database = db;
-                    database.QueryData("update tbl_kh_new set tbl_MB = '" + json.toString() + "', tbl_XS = '" + json_KhongMax.toString() + "' WHERE ten_kh = '" + message + "'");
-                } catch (JSONException e) {
-                    e.printStackTrace();
-                }
-                finish();
+            @Override
+            public void onNothingSelected(AdapterView<?> adapterView) {
             }
         });
+        this.btn_exit.setOnClickListener(view -> {
+            try {
+                json.put("caidat_tg", caidat_tg);
+                Database database = db;
+                database.QueryData("update tbl_kh_new set tbl_MB = '" + json.toString() + "', tbl_XS = '" + json_KhongMax.toString() + "' WHERE ten_kh = '" + message + "'");
+            } catch (JSONException e) {
+                e.printStackTrace();
+            }
+            finish();
+        });
         this.de_khach.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
-            /* class tamhoang.ldpro4.Activity.Activity_AddKH2.AnonymousClass8 */
             int max;
 
             public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {
@@ -262,7 +271,6 @@ public class Activity_AddKH2 extends BaseToolBarActivity {
             }
         });
         this.lo_khach.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
-            /* class tamhoang.ldpro4.Activity.Activity_AddKH2.AnonymousClass9 */
             int max;
 
             public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {
@@ -285,7 +293,6 @@ public class Activity_AddKH2 extends BaseToolBarActivity {
             }
         });
         this.xi_khach.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
-            /* class tamhoang.ldpro4.Activity.Activity_AddKH2.AnonymousClass10 */
             int max;
 
             public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {
@@ -308,7 +315,6 @@ public class Activity_AddKH2 extends BaseToolBarActivity {
             }
         });
         this.bc_khach.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
-            /* class tamhoang.ldpro4.Activity.Activity_AddKH2.AnonymousClass11 */
             int max;
 
             public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {
@@ -354,7 +360,6 @@ public class Activity_AddKH2 extends BaseToolBarActivity {
             }
         });
         this.lo_dly.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
-            /* class tamhoang.ldpro4.Activity.Activity_AddKH2.AnonymousClass13 */
             int max;
 
             public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {
@@ -377,7 +382,6 @@ public class Activity_AddKH2 extends BaseToolBarActivity {
             }
         });
         this.xi_dly.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
-            /* class tamhoang.ldpro4.Activity.Activity_AddKH2.AnonymousClass14 */
             int max;
 
             public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {
@@ -400,7 +404,6 @@ public class Activity_AddKH2 extends BaseToolBarActivity {
             }
         });
         this.bc_dly.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
-            /* class tamhoang.ldpro4.Activity.Activity_AddKH2.AnonymousClass15 */
             int max;
 
             public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {
@@ -422,94 +425,72 @@ public class Activity_AddKH2 extends BaseToolBarActivity {
                 Toast.makeText(activity_AddKH2, "Mình giữ " + this.max + "%", Toast.LENGTH_LONG).show();
             }
         });
-        this.tv_Lo_xien.setOnClickListener(new View.OnClickListener() {
-            /* class tamhoang.ldpro4.Activity.Activity_AddKH2.AnonymousClass16 */
-
-            public void onClick(View view) {
-                Calendar mcurrentTime = Calendar.getInstance();
-                TimePickerDialog mTimePicker = new TimePickerDialog(Activity_AddKH2.this, new TimePickerDialog.OnTimeSetListener() {
-                    /* class tamhoang.ldpro4.Activity.Activity_AddKH2.AnonymousClass16.AnonymousClass1 */
-
-                    public void onTimeSet(TimePicker timePicker, int selectedHour, int selectedMinute) {
-                        if (selectedMinute < 10) {
-                            TextView textView = tv_Lo_xien;
-                            textView.setText(selectedHour + ":0" + selectedMinute);
-                            Activity_AddKH2 activity_AddKH2 = Activity_AddKH2.this;
-                            Toast.makeText(activity_AddKH2, "Đặt không nhận lô, xiên sau: " + selectedHour + ":0" + selectedMinute, Toast.LENGTH_LONG).show();
-                        } else {
-                            TextView textView2 = tv_Lo_xien;
-                            textView2.setText(selectedHour + ":" + selectedMinute);
-                            Activity_AddKH2 activity_AddKH22 = Activity_AddKH2.this;
-                            Toast.makeText(activity_AddKH22, "Đặt không nhận lô, xiên sau: " + selectedHour + ":" + selectedMinute, Toast.LENGTH_LONG).show();
-                        }
-                        try {
-                            caidat_tg.put("tg_loxien", tv_Lo_xien.getText().toString());
-                        } catch (JSONException e) {
-                            e.printStackTrace();
-                        }
-                    }
-                }, mcurrentTime.get(11), mcurrentTime.get(12), true);
-                mTimePicker.setTitle("Select Time");
-                mTimePicker.show();
-            }
+        this.tv_Lo_xien.setOnClickListener(view -> {
+            Calendar mcurrentTime = Calendar.getInstance();
+            TimePickerDialog mTimePicker = new TimePickerDialog(Activity_AddKH2.this, (timePicker, selectedHour, selectedMinute) -> {
+                if (selectedMinute < 10) {
+                    TextView textView = tv_Lo_xien;
+                    textView.setText(selectedHour + ":0" + selectedMinute);
+                    Activity_AddKH2 activity_AddKH2 = Activity_AddKH2.this;
+                    Toast.makeText(activity_AddKH2, "Đặt không nhận lô, xiên sau: " + selectedHour + ":0" + selectedMinute, Toast.LENGTH_LONG).show();
+                } else {
+                    TextView textView2 = tv_Lo_xien;
+                    textView2.setText(selectedHour + ":" + selectedMinute);
+                    Activity_AddKH2 activity_AddKH22 = Activity_AddKH2.this;
+                    Toast.makeText(activity_AddKH22, "Đặt không nhận lô, xiên sau: " + selectedHour + ":" + selectedMinute, Toast.LENGTH_LONG).show();
+                }
+                try {
+                    caidat_tg.put("tg_loxien", tv_Lo_xien.getText().toString());
+                } catch (JSONException e) {
+                    e.printStackTrace();
+                }
+            }, mcurrentTime.get(11), mcurrentTime.get(12), true);
+            mTimePicker.setTitle("Select Time");
+            mTimePicker.show();
         });
-        this.tv_de_cang.setOnClickListener(new View.OnClickListener() {
-            /* class tamhoang.ldpro4.Activity.Activity_AddKH2.AnonymousClass17 */
-
-            public void onClick(View view) {
-                Calendar mcurrentTime = Calendar.getInstance();
-                TimePickerDialog mTimePicker = new TimePickerDialog(Activity_AddKH2.this, new TimePickerDialog.OnTimeSetListener() {
-                    /* class tamhoang.ldpro4.Activity.Activity_AddKH2.AnonymousClass17.AnonymousClass1 */
-
-                    public void onTimeSet(TimePicker timePicker, int selectedHour, int selectedMinute) {
-                        if (selectedMinute < 10) {
-                            TextView textView = tv_de_cang;
-                            textView.setText(selectedHour + ":0" + selectedMinute);
-                            Activity_AddKH2 activity_AddKH2 = Activity_AddKH2.this;
-                            Toast.makeText(activity_AddKH2, "Đặt không nhận đề/càng sau: " + selectedHour + ":0" + selectedMinute, Toast.LENGTH_LONG).show();
-                        } else {
-                            TextView textView2 = tv_de_cang;
-                            textView2.setText(selectedHour + ":" + selectedMinute);
-                            Activity_AddKH2 activity_AddKH22 = Activity_AddKH2.this;
-                            Toast.makeText(activity_AddKH22, "Đặt không nhận đề/càng sau: " + selectedHour + ":" + selectedMinute, Toast.LENGTH_LONG).show();
-                        }
-                        try {
-                            caidat_tg.put("tg_debc", tv_de_cang.getText().toString());
-                        } catch (JSONException e) {
-                            e.printStackTrace();
-                        }
-                    }
-                }, mcurrentTime.get(11), mcurrentTime.get(12), true);
-                mTimePicker.setTitle("Select Time");
-                mTimePicker.show();
-            }
+        this.tv_de_cang.setOnClickListener(view -> {
+            Calendar mcurrentTime = Calendar.getInstance();
+            TimePickerDialog mTimePicker = new TimePickerDialog(Activity_AddKH2.this, (timePicker, selectedHour, selectedMinute) -> {
+                if (selectedMinute < 10) {
+                    TextView textView = tv_de_cang;
+                    textView.setText(selectedHour + ":0" + selectedMinute);
+                    Activity_AddKH2 activity_AddKH2 = Activity_AddKH2.this;
+                    Toast.makeText(activity_AddKH2, "Đặt không nhận đề/càng sau: " + selectedHour + ":0" + selectedMinute, Toast.LENGTH_LONG).show();
+                } else {
+                    TextView textView2 = tv_de_cang;
+                    textView2.setText(selectedHour + ":" + selectedMinute);
+                    Activity_AddKH2 activity_AddKH22 = Activity_AddKH2.this;
+                    Toast.makeText(activity_AddKH22, "Đặt không nhận đề/càng sau: " + selectedHour + ":" + selectedMinute, Toast.LENGTH_LONG).show();
+                }
+                try {
+                    caidat_tg.put("tg_debc", tv_de_cang.getText().toString());
+                } catch (JSONException e) {
+                    e.printStackTrace();
+                }
+            }, mcurrentTime.get(11), mcurrentTime.get(12), true);
+            mTimePicker.setTitle("Select Time");
+            mTimePicker.show();
         });
-        this.tv_KhongMax.setOnClickListener(new View.OnClickListener() {
-            /* class tamhoang.ldpro4.Activity.Activity_AddKH2.AnonymousClass18 */
-
-            public void onClick(View v) {
-                showDialog2();
-            }
-        });
+        this.tv_KhongMax.setOnClickListener(v -> showDialog2());
     }
 
     public void showDialog2() {
         JSONException e;
-        Dialog dialog = new Dialog(this,android.R.style.Theme_Black_NoTitleBar_Fullscreen);
+        Dialog dialog = new Dialog(this, android.R.style.Theme_Black_NoTitleBar_Fullscreen);
         dialog.setContentView(R.layout.frag_khongmax);
 //        dialog.getWindow().setLayout(-1, -2);
-        Button btnThemdanDe = (Button) dialog.findViewById(R.id.btn_KhongDe);
-        Button btnXoaDanDe = (Button) dialog.findViewById(R.id.btn_XoaDe);
-        Button btnThemdanLo = (Button) dialog.findViewById(R.id.btn_KhongLo);
-        Button btnXoaDanLo = (Button) dialog.findViewById(R.id.btn_XoaLo);
-        Button btnThemXien = (Button) dialog.findViewById(R.id.btn_KhongXienCang);
-        Button btnXoaXien = (Button) dialog.findViewById(R.id.btn_XoaXien);
-        final EditText edt_NhapDanDe = (EditText) dialog.findViewById(R.id.edt_NhapDanDe);
-        final EditText edt_NhapDanLo = (EditText) dialog.findViewById(R.id.edt_NhapDanLo);
-        final EditText giuxien2 = (EditText) dialog.findViewById(R.id.giuxien2);
-        final EditText giuxien3 = (EditText) dialog.findViewById(R.id.giuxien3);
-        final EditText giuxien4 = (EditText) dialog.findViewById(R.id.giuxien4);
-        final EditText giu3cang = (EditText) dialog.findViewById(R.id.giu3cang);
+        Button btnThemdanDe = dialog.findViewById(R.id.btn_KhongDe);
+        Button btnXoaDanDe = dialog.findViewById(R.id.btn_XoaDe);
+        Button btnThemdanLo = dialog.findViewById(R.id.btn_KhongLo);
+        Button btnXoaDanLo = dialog.findViewById(R.id.btn_XoaLo);
+        Button btnThemXien = dialog.findViewById(R.id.btn_KhongXienCang);
+        Button btnXoaXien = dialog.findViewById(R.id.btn_XoaXien);
+        final EditText edt_NhapDanDe = dialog.findViewById(R.id.edt_NhapDanDe);
+        final EditText edt_NhapDanLo = dialog.findViewById(R.id.edt_NhapDanLo);
+        final EditText giuxien2 = dialog.findViewById(R.id.giuxien2);
+        final EditText giuxien3 = dialog.findViewById(R.id.giuxien3);
+        final EditText giuxien4 = dialog.findViewById(R.id.giuxien4);
+        final EditText giu3cang = dialog.findViewById(R.id.giu3cang);
         try {
             edt_NhapDanDe.setText(this.json_KhongMax.getString("danDe"));
             edt_NhapDanLo.setText(this.json_KhongMax.getString("danLo"));
@@ -584,113 +565,97 @@ public class Activity_AddKH2 extends BaseToolBarActivity {
                 UPdate();
             }
         });
-        btnThemdanLo.setOnClickListener(new View.OnClickListener() {
-            /* class tamhoang.ldpro4.Activity.Activity_AddKH2.AnonymousClass21 */
-
-            public void onClick(View v) {
-                boolean ktra = true;
-                String str = "de " + edt_NhapDanLo.getText().toString();
-                int i = 1;
-                if (str.length() > 7) {
-                    try {
-                        str = Congthuc.NhanTinNhan(Congthuc.convertKhongDau(str)).replace("de dit db:", "de:");
-                        if (str.indexOf("Không hiểu") > -1) {
-                            Toast.makeText(Activity_AddKH2.this, str, Toast.LENGTH_LONG).show();
-                            ktra = false;
-                        }
-                    } catch (Exception e) {
-                        Toast.makeText(Activity_AddKH2.this, "Thêm bị lỗi, hãy sửa lại", Toast.LENGTH_LONG).show();
+        btnThemdanLo.setOnClickListener(v -> {
+            boolean ktra = true;
+            String str = "de " + edt_NhapDanLo.getText().toString();
+            int i = 1;
+            if (str.length() > 7) {
+                try {
+                    str = Congthuc.NhanTinNhan(Congthuc.convertKhongDau(str)).replace("de dit db:", "de:");
+                    if (str.indexOf("Không hiểu") > -1) {
+                        Toast.makeText(Activity_AddKH2.this, str, Toast.LENGTH_LONG).show();
                         ktra = false;
                     }
+                } catch (Exception e12) {
+                    Toast.makeText(Activity_AddKH2.this, "Thêm bị lỗi, hãy sửa lại", Toast.LENGTH_LONG).show();
+                    ktra = false;
                 }
-                if (ktra) {
-                    try {
-                        if (str.length() > 7) {
-                            json_KhongMax.put("danLo", edt_NhapDanLo.getText().toString().replaceAll("\n", " "));
-                            JSONObject json_sole = new JSONObject();
-                            while (true) {
-                                String str1 = str.substring(0, str.indexOf("\n") + i);
-                                String str6 = str.substring(str1.indexOf(":") + i, str1.indexOf("\n") + i);
-                                String[] str2 = str6.substring(0, str6.indexOf(",x")).split(",");
-                                String str3 = str1.substring(str1.indexOf(",x") + 2, str1.indexOf("\n"));
-                                for (String So_chon : str2) {
-                                    if (!json_sole.has(So_chon)) {
-                                        json_sole.put(So_chon, str3);
-                                    } else if (Integer.parseInt(str3) < json_sole.getInt(So_chon)) {
-                                        json_sole.put(So_chon, str3);
-                                    }
+            }
+            if (ktra) {
+                try {
+                    if (str.length() > 7) {
+                        json_KhongMax.put("danLo", edt_NhapDanLo.getText().toString().replaceAll("\n", " "));
+                        JSONObject json_sole = new JSONObject();
+                        while (true) {
+                            String str1 = str.substring(0, str.indexOf("\n") + i);
+                            String str6 = str.substring(str1.indexOf(":") + i, str1.indexOf("\n") + i);
+                            String[] str2 = str6.substring(0, str6.indexOf(",x")).split(",");
+                            String str3 = str1.substring(str1.indexOf(",x") + 2, str1.indexOf("\n"));
+                            for (String So_chon : str2) {
+                                if (!json_sole.has(So_chon)) {
+                                    json_sole.put(So_chon, str3);
+                                } else if (Integer.parseInt(str3) < json_sole.getInt(So_chon)) {
+                                    json_sole.put(So_chon, str3);
                                 }
-                                str = str.replaceAll(str1, "");
-                                if (str.length() <= 0) {
-                                    break;
-                                }
-                                i = 1;
                             }
-                            json_KhongMax.put("soLo", json_sole.toString());
+                            str = str.replaceAll(str1, "");
+                            if (str.length() <= 0) {
+                                break;
+                            }
+                            i = 1;
                         }
-                    } catch (JSONException e2) {
-                        e2.printStackTrace();
+                        json_KhongMax.put("soLo", json_sole.toString());
                     }
-                    UPdate();
-                }
-            }
-        });
-        btnXoaDanLo.setOnClickListener(new View.OnClickListener() {
-            /* class tamhoang.ldpro4.Activity.Activity_AddKH2.AnonymousClass22 */
-
-            public void onClick(View v) {
-                try {
-                    json_KhongMax.put("danLo", "");
-                    json_KhongMax.put("soLo", new JSONObject().toString());
-                    edt_NhapDanLo.setText("");
-                } catch (JSONException e) {
-                    e.printStackTrace();
-                } catch (Throwable th) {
-                    UPdate();
-                    throw th;
+                } catch (JSONException e2) {
+                    e2.printStackTrace();
                 }
                 UPdate();
             }
         });
-        btnThemXien.setOnClickListener(new View.OnClickListener() {
-            /* class tamhoang.ldpro4.Activity.Activity_AddKH2.AnonymousClass23 */
-
-            public void onClick(View v) {
-                try {
-                    json_KhongMax.put("xien2", giuxien2.getText().toString());
-                    json_KhongMax.put("xien3", giuxien3.getText().toString());
-                    json_KhongMax.put("xien4", giuxien4.getText().toString());
-                    json_KhongMax.put("cang", giu3cang.getText().toString());
-                } catch (JSONException e) {
-                    e.printStackTrace();
-                } catch (Throwable th) {
-                    UPdate();
-                    throw th;
-                }
+        btnXoaDanLo.setOnClickListener(v -> {
+            try {
+                json_KhongMax.put("danLo", "");
+                json_KhongMax.put("soLo", new JSONObject().toString());
+                edt_NhapDanLo.setText("");
+            } catch (JSONException e13) {
+                e13.printStackTrace();
+            } catch (Throwable th) {
                 UPdate();
+                throw th;
             }
+            UPdate();
         });
-        btnXoaXien.setOnClickListener(new View.OnClickListener() {
-            /* class tamhoang.ldpro4.Activity.Activity_AddKH2.AnonymousClass24 */
-
-            public void onClick(View v) {
-                try {
-                    json_KhongMax.put("xien2", 0);
-                    json_KhongMax.put("xien3", 0);
-                    json_KhongMax.put("xien4", 0);
-                    json_KhongMax.put("cang", 0);
-                    giuxien2.setText("0");
-                    giuxien3.setText("0");
-                    giuxien4.setText("0");
-                    giu3cang.setText("0");
-                } catch (JSONException e) {
-                    e.printStackTrace();
-                } catch (Throwable th) {
-                    UPdate();
-                    throw th;
-                }
+        btnThemXien.setOnClickListener(v -> {
+            try {
+                json_KhongMax.put("xien2", giuxien2.getText().toString());
+                json_KhongMax.put("xien3", giuxien3.getText().toString());
+                json_KhongMax.put("xien4", giuxien4.getText().toString());
+                json_KhongMax.put("cang", giu3cang.getText().toString());
+            } catch (JSONException e14) {
+                e14.printStackTrace();
+            } catch (Throwable th) {
                 UPdate();
+                throw th;
             }
+            UPdate();
+        });
+        btnXoaXien.setOnClickListener(v -> {
+            try {
+                json_KhongMax.put("xien2", 0);
+                json_KhongMax.put("xien3", 0);
+                json_KhongMax.put("xien4", 0);
+                json_KhongMax.put("cang", 0);
+                giuxien2.setText("0");
+                giuxien3.setText("0");
+                giuxien4.setText("0");
+                giu3cang.setText("0");
+            } catch (JSONException e15) {
+                e15.printStackTrace();
+            } catch (Throwable th) {
+                UPdate();
+                throw th;
+            }
+            UPdate();
         });
         dialog.setCancelable(true);
         dialog.show();
@@ -717,33 +682,33 @@ public class Activity_AddKH2 extends BaseToolBarActivity {
     }
 
     public void init() {
-        this.edt_ten = (TextView) findViewById(R.id.edt_ten);
-        this.btn_exit = (Button) findViewById(R.id.btn_exit_KH2);
-        this.pt_giu_de_khach = (TextView) findViewById(R.id.pt_giu_de_khach);
-        this.pt_giu_lo_khach = (TextView) findViewById(R.id.pt_giu_lo_khach);
-        this.pt_giu_xi_khach = (TextView) findViewById(R.id.pt_giu_xi_khach);
-        this.pt_giu_bc_khach = (TextView) findViewById(R.id.pt_giu_bc_khach);
-        this.pt_giu_de_dly = (TextView) findViewById(R.id.pt_giu_de_dly);
-        this.pt_giu_lo_dly = (TextView) findViewById(R.id.pt_giu_lo_dly);
-        this.pt_giu_xi_dly = (TextView) findViewById(R.id.pt_giu_xi_dly);
-        this.pt_giu_bc_dly = (TextView) findViewById(R.id.pt_giu_bc_dly);
-        this.de_khach = (SeekBar) findViewById(R.id.seek_GiuDekhach);
-        this.lo_khach = (SeekBar) findViewById(R.id.seek_GiuLokhach);
-        this.xi_khach = (SeekBar) findViewById(R.id.seek_GiuXikhach);
-        this.bc_khach = (SeekBar) findViewById(R.id.seek_Giu3ckhach);
-        this.de_dly = (SeekBar) findViewById(R.id.seek_GiuDedly);
-        this.lo_dly = (SeekBar) findViewById(R.id.seek_GiuLodly);
-        this.xi_dly = (SeekBar) findViewById(R.id.seek_GiuXidly);
-        this.bc_dly = (SeekBar) findViewById(R.id.seek_Giu3cdly);
-        this.sp_traloitn = (Spinner) findViewById(R.id.sp_traloitn);
-        this.sp_nhanXien = (Spinner) findViewById(R.id.sp_nhanXien);
-        this.sp_Chot_sodu = (Spinner) findViewById(R.id.sp_Chot_sodu);
-        this.sp_hesode = (Spinner) findViewById(R.id.sp_hesode);
-        this.sp_baoloidonvi = (Spinner) findViewById(R.id.sp_baoloidonvi);
-        this.sp_khachde = (Spinner) findViewById(R.id.sp_khachde);
-        this.li_nhanxien = (LinearLayout) findViewById(R.id.ln_nhanXien);
-        this.tv_Lo_xien = (TextView) findViewById(R.id.tv_Lo_xien);
-        this.tv_de_cang = (TextView) findViewById(R.id.tv_de_cang);
-        this.tv_KhongMax = (TextView) findViewById(R.id.tv_KhongMax);
+        this.edt_ten = findViewById(R.id.edt_ten);
+        this.btn_exit = findViewById(R.id.btn_exit_KH2);
+        this.pt_giu_de_khach = findViewById(R.id.pt_giu_de_khach);
+        this.pt_giu_lo_khach = findViewById(R.id.pt_giu_lo_khach);
+        this.pt_giu_xi_khach = findViewById(R.id.pt_giu_xi_khach);
+        this.pt_giu_bc_khach = findViewById(R.id.pt_giu_bc_khach);
+        this.pt_giu_de_dly = findViewById(R.id.pt_giu_de_dly);
+        this.pt_giu_lo_dly = findViewById(R.id.pt_giu_lo_dly);
+        this.pt_giu_xi_dly = findViewById(R.id.pt_giu_xi_dly);
+        this.pt_giu_bc_dly = findViewById(R.id.pt_giu_bc_dly);
+        this.de_khach = findViewById(R.id.seek_GiuDekhach);
+        this.lo_khach = findViewById(R.id.seek_GiuLokhach);
+        this.xi_khach = findViewById(R.id.seek_GiuXikhach);
+        this.bc_khach = findViewById(R.id.seek_Giu3ckhach);
+        this.de_dly = findViewById(R.id.seek_GiuDedly);
+        this.lo_dly = findViewById(R.id.seek_GiuLodly);
+        this.xi_dly = findViewById(R.id.seek_GiuXidly);
+        this.bc_dly = findViewById(R.id.seek_Giu3cdly);
+        this.sp_traloitn = findViewById(R.id.sp_traloitn);
+        this.sp_nhanXien = findViewById(R.id.sp_nhanXien);
+        this.sp_Chot_sodu = findViewById(R.id.sp_Chot_sodu);
+        this.sp_hesode = findViewById(R.id.sp_hesode);
+        this.sp_baoloidonvi = findViewById(R.id.sp_baoloidonvi);
+        this.sp_khachde = findViewById(R.id.sp_khachde);
+        this.li_nhanxien = findViewById(R.id.ln_nhanXien);
+        this.tv_Lo_xien = findViewById(R.id.tv_Lo_xien);
+        this.tv_de_cang = findViewById(R.id.tv_de_cang);
+        this.tv_KhongMax = findViewById(R.id.tv_KhongMax);
     }
 }

@@ -12,7 +12,7 @@ data class ChuyenThang (
     var sdt_chuyen: String): Serializable {
 
     companion object {
-        const val TABLE_NAME = "Chat_database"
+        const val TABLE_NAME = "tbl_chuyenthang"
         const val KH_NHAN = "kh_nhan"
         const val SDT_NHAN = "sdt_nhan"
         const val KH_CHUYEN = "kh_chuyen"
