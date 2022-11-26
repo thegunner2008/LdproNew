@@ -10,7 +10,6 @@ import android.app.PendingIntent;
 import android.content.Context;
 import android.content.Intent;
 import android.database.Cursor;
-import android.database.DatabaseUtils;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
 import android.os.Build;
@@ -49,6 +48,7 @@ import tamhoang.ldpro4.constants.Constants;
 import tamhoang.ldpro4.data.model.Chat;
 import tamhoang.ldpro4.data.model.ChuyenThang;
 import tamhoang.ldpro4.data.model.KhachHang;
+import tamhoang.ldpro4.data.model.SoctS;
 import tamhoang.ldpro4.data.model.TinNhanS;
 
 public class Database extends SQLiteOpenHelper {
@@ -570,6 +570,8 @@ public class Database extends SQLiteOpenHelper {
         } else {
             QueryData("Update tbl_tinnhanS set nd_phantich ='" + ndPhantichLoi + "', phat_hien_loi = '" + phatHienLoi + "'  Where id =" + id);
         }
+
+        Log.e("aaaa", "NhanTinNhan end 11");
 
         if (!getKhachHang.isClosed()) getKhachHang.close();
         if (!cursor2.isClosed()) cursor2.close();
@@ -1703,200 +1705,140 @@ public class Database extends SQLiteOpenHelper {
 
     public void NhapSoChiTiet(int id) throws Throwable {
         final String XI = "xi";
-        final String THE_LOAI = "the_loai";
 
-        double mGia;
         String so_tien = null;
-        SQLiteDatabase db2;
-        Iterator<String> keys;
-        DatabaseUtils.InsertHelper ih2 = null;
         String mThe_loai = null;
-        double mKhachGiu = 0;
+        double mDlyGiu = 0;
         String dan_so = null;
-        double mKhachGiu2 = 0;
+        double mKhachGiu = 0;
         double mLanAn = 0;
-        double mGia2 = 0;
+        double mGia = 0;
         double mDiem = 0;
         double mDiemquydoi = 0;
-        double mDlyGiu = 0;
         double mLanAn2 = 0;
-        double mLanAn3 = 0;
         int mDiem_DlyGiu = 0;
         int mDiem_KhachGiu = 0;
-        String[] str2 = new String[0];
-        Database database = this;
-        double mDlyGiu2 = 0.0d;
-        Cursor c = database.GetData("Select * From tbl_tinnhanS WHERE id = " + id);
-        c.moveToFirst();
-        String mThe_loai2 = "Select * From tbl_soctS where ten_kh = '" + c.getString(4) + "' And ngay_nhan = '" + c.getString(1) + "' And type_kh = " + c.getString(3) + " And so_tin_nhan = " + c.getString(7);
-        Cursor c2 = database.GetData(mThe_loai2);
-        if (c2.getCount() > 0) return;
+        String[] dan_so_split;
 
-        database.jsonDanSo = new JSONObject(c.getString(15));
-        String mTenKH = c.getString(4);
-        String mThe_loai3 = "";
-        String mNgay_Nhan = c.getString(1);
-        String sb = "Select * From tbl_KH_new where ten_kh = '" + mTenKH + "'";
-        Cursor cursor3 = database.GetData(sb);
-        cursor3.moveToFirst();
-        mGia = 0.0d;
-        JSONObject jSONObject = new JSONObject(cursor3.getString(5));
-        database.json = jSONObject;
-        database.caidat_gia = jSONObject.getJSONObject("caidat_gia");
-        database.caidat_tg = database.json.getJSONObject("caidat_tg");
-        db2 = getWritableDatabase();
-        db2.beginTransaction();
-        keys = database.jsonDanSo.keys();
+        TinNhanS tinNhanS = BriteDb.INSTANCE.selectTinNhanS(id);
+        if (tinNhanS == null) return;
+
+        String queryCount = "where ten_kh = '" + tinNhanS.getTen_kh() + "' And ngay_nhan = '" + tinNhanS.getNgay_nhan()
+                + "' And type_kh = " + tinNhanS.getType_kh() + " And so_tin_nhan = " + tinNhanS.getSo_tin_nhan();
+        int countSoctS = BriteDb.INSTANCE.countSoctS(queryCount);
+        if (countSoctS > 0) return;
+
+        KhachHang khachHang = BriteDb.INSTANCE.selectKhachHang(tinNhanS.getTen_kh());
+        if (khachHang == null) return;
+        json = new JSONObject(khachHang.getTbl_MB());
+        caidat_gia = json.getJSONObject("caidat_gia");
+        caidat_tg = json.getJSONObject("caidat_tg");
+
+        String mThe_loai_truoc = "";
+        jsonDanSo = new JSONObject(tinNhanS.getPhan_tich());
+        Iterator<String> keys = jsonDanSo.keys();
         while (keys.hasNext()) {
-            JSONObject dan = new JSONObject(database.jsonDanSo.getString(keys.next()));
+            JSONObject dan = new JSONObject(jsonDanSo.getString(keys.next()));
             dan_so = dan.getString("dan_so");
             so_tien = dan.getString("so_tien");
-            ih2 = new DatabaseUtils.InsertHelper(db2, "tbl_soctS");
-            if (dan.getString(THE_LOAI).contains("de dau db")) {
-                mThe_loai = "dea";
-            } else {
-                mThe_loai = dan.getString(THE_LOAI).contains("de dit db") ? "deb" : dan.getString(THE_LOAI).contains("de 8")
-                        ? "det" : dan.getString(THE_LOAI).contains("de dau nhat") ? "dec" : dan.getString(THE_LOAI).contains("de dit nhat")
-                        ? "ded" : dan.getString(THE_LOAI).contains("bc dau") ? "bca" : dan.getString(THE_LOAI).contains("bc")
-                        ? "bc" : dan.getString(THE_LOAI).contains("lo dau") ? "loa" : dan.getString(THE_LOAI).contains("lo")
-                        ? "lo" : dan.getString(THE_LOAI).contains("xien dau") ? "xia" : (dan.getString(THE_LOAI).contains(XI) || dan.getString(THE_LOAI).contains("xg"))
-                        ? XI : dan.getString(THE_LOAI).contains("xn") ? "xn" : mThe_loai3;
-            }
 
-            if (mThe_loai.contains("lo")) {
-                mKhachGiu2 = database.caidat_tg.getInt("khgiu_lo");
-                mKhachGiu = database.caidat_tg.getInt("dlgiu_lo");
-            } else {
-                mKhachGiu2 = database.caidat_tg.getInt("khgiu_xi");
-                mKhachGiu = database.caidat_tg.getInt("dlgiu_xi");
-            }
-            if (mThe_loai.contains("dea")) {
-                mGia2 = database.caidat_gia.getDouble("dea");
-                mLanAn = database.caidat_gia.getDouble("an_dea");
-            } else if (mThe_loai.contains("deb")) {
-                mGia2 = database.caidat_gia.getDouble("deb");
-                mLanAn = database.caidat_gia.getDouble("an_deb");
-            } else if (mThe_loai.contains("dec")) {
-                mGia2 = database.caidat_gia.getDouble("dec");
-                mLanAn = database.caidat_gia.getDouble("an_dec");
-            } else if (mThe_loai.contains("ded")) {
-                mGia2 = database.caidat_gia.getDouble("ded");
-                mLanAn = database.caidat_gia.getDouble("an_ded");
-            } else if (mThe_loai.contains("det")) {
-                mGia2 = database.caidat_gia.getDouble("det");
-                mLanAn = database.caidat_gia.getDouble("an_det");
-            } else if (mThe_loai.contains("lo")) {
-                mGia2 = database.caidat_gia.getDouble("lo");
-                mLanAn = database.caidat_gia.getDouble("an_lo");
-            } else if (mThe_loai.contains(XI) && dan_so.length() == 5) {
-                mGia2 = database.caidat_gia.getDouble("gia_x2");
-                mLanAn = database.caidat_gia.getDouble("an_x2");
-            } else if (mThe_loai.contains(XI) && dan_so.length() == 8) {
-                mGia2 = database.caidat_gia.getDouble("gia_x3");
-                mLanAn = database.caidat_gia.getDouble("an_x3");
-            } else if (mThe_loai.contains(XI) && dan_so.length() == 11) {
-                mGia2 = database.caidat_gia.getDouble("gia_x4");
-                mLanAn = database.caidat_gia.getDouble("an_x4");
-            } else if (mThe_loai.contains("xn")) {
-                mGia2 = database.caidat_gia.getDouble("gia_xn");
-                mLanAn = database.caidat_gia.getDouble("an_xn");
-            } else if (mThe_loai.contains("bc")) {
-                mGia2 = database.caidat_gia.getDouble("gia_bc");
-                mLanAn = database.caidat_gia.getDouble("an_bc");
-            } else {
-                mGia2 = mGia;
-                mLanAn = mDlyGiu2;
-            }
-            mGia = mGia2;
+            String the_loai_dan = dan.getString("the_loai");
+            mThe_loai = the_loai_dan.contains("de dau db") ? "dea"
+                    : the_loai_dan.contains("de dit db") ? "deb"
+                    : the_loai_dan.contains("de 8") ? "det"
+                    : the_loai_dan.contains("de dau nhat") ? "dec"
+                    : the_loai_dan.contains("de dit nhat") ? "ded"
+                    : the_loai_dan.contains("bc dau") ? "bca"
+                    : the_loai_dan.contains("bc") ? "bc"
+                    : the_loai_dan.contains("lo dau") ? "loa"
+                    : the_loai_dan.contains("lo") ? "lo"
+                    : the_loai_dan.contains("xien dau") ? "xia"
+                    : (the_loai_dan.contains(XI) || the_loai_dan.contains("xg")) ? XI
+                    : the_loai_dan.contains("xn") ? "xn"
+                    : mThe_loai_truoc;
+
+            mKhachGiu = DbHelper.getKHGiu(this, mThe_loai);
+            mDlyGiu = DbHelper.getDlyGiu(this, mThe_loai);
+            mGia = DbHelper.getGia(this, mThe_loai, dan_so);
+            mLanAn = DbHelper.getLanAn(this, mThe_loai, dan_so);
             mDiem = Integer.parseInt(so_tien);
-            String str8 = ",";
 
             if (mThe_loai.equals("deb")) {
-                if (database.caidat_tg.getInt("heso_de") == 2)
+                if (caidat_tg.getInt("heso_de") == 2)
                     mDiemquydoi = (int) (0.875d * mDiem);
-                else if (database.caidat_tg.getInt("heso_de") == 1)
+                else if (caidat_tg.getInt("heso_de") == 1)
                     mDiemquydoi = (int) (1.143d * mDiem);
                 else
                     mDiemquydoi = mDiem;
             } else
                 mDiemquydoi = mDiem;
 
-            if (c.getInt(3) == 1) {
-                mDiem_DlyGiu = (int) ((mDiemquydoi * mKhachGiu) / 100.0d);
+            if (tinNhanS.getType_kh() == 1) {
+                mDiem_DlyGiu = (int) ((mDiemquydoi * mDlyGiu) / 100.0d);
                 mLanAn2 = mLanAn;
-                mDiem_KhachGiu = (int) ((mDiemquydoi * mKhachGiu2) / 100.0d);
-                mDlyGiu = mKhachGiu;
-                mLanAn3 = mKhachGiu2;
+                mDiem_KhachGiu = (int) ((mDiemquydoi * mKhachGiu) / 100.0d);
             } else {
                 mLanAn2 = mLanAn;
                 mDlyGiu = 0.0d;
-                mLanAn3 = 0.0d;
+                mKhachGiu = 0.0d;
                 mDiem_DlyGiu = 0;
                 mDiem_KhachGiu = 0;
             }
-            Double.isNaN(mDiem_KhachGiu);
-            double d = mDiemquydoi - mDiem_KhachGiu;
-            Double.isNaN(mDiem_DlyGiu);
-            int mDiemton = (int) (d - mDiem_DlyGiu);
+            int mDiemton = (int) (mDiemquydoi - mDiem_KhachGiu - mDiem_DlyGiu);
             if ("dea,deb,dec,ded,det,lo,loa,bc,bca".contains(mThe_loai)) {
-                str2 = dan_so.split(str8);
+                dan_so_split = dan_so.split(",");
             } else {
-                str2 = dan_so.split(" ");
+                dan_so_split = dan_so.split(" ");
             }
-            int i = 0;
-            while (i < str2.length) {
-                String So_chon = str2[i].trim();
-                if (So_chon.endsWith(str8)) {
+
+            List<SoctS> listInsert = new ArrayList<>();
+            for (String So_chon : dan_so_split) {
+                So_chon = So_chon.trim();
+                if (So_chon.endsWith(",")) {
                     So_chon = So_chon.substring(0, So_chon.length() - 1);
                 }
-                if (mThe_loai.contains(XI) && So_chon.length() == 5) {
-                    mGia = database.caidat_gia.getDouble("gia_x2");
-                    mLanAn2 = database.caidat_gia.getDouble("an_x2");
-                } else if (mThe_loai.contains(XI) && So_chon.length() == 8) {
-                    mGia = database.caidat_gia.getDouble("gia_x3");
-                    mLanAn2 = database.caidat_gia.getDouble("an_x3");
-                } else if (mThe_loai.contains(XI) && So_chon.length() == 11) {
-                    mGia = database.caidat_gia.getDouble("gia_x4");
-                    mLanAn2 = database.caidat_gia.getDouble("an_x4");
+
+                if (mThe_loai.contains(XI)) {
+                    if (So_chon.length() == 5) {
+                        mGia = caidat_gia.getDouble("gia_x2");
+                        mLanAn2 = caidat_gia.getDouble("an_x2");
+                    } else if (So_chon.length() == 8) {
+                        mGia = caidat_gia.getDouble("gia_x3");
+                        mLanAn2 = caidat_gia.getDouble("an_x3");
+                    } else if (So_chon.length() == 11) {
+                        mGia = caidat_gia.getDouble("gia_x4");
+                        mLanAn2 = caidat_gia.getDouble("an_x4");
+                    }
                 }
-                Double.isNaN(mDiem);
                 double mThanhTien = mDiem * mGia;
-                ih2.prepareForInsert();
 
-                ih2.bind(ih2.getColumnIndex("ID"), (byte[]) null);
-                ih2.bind(ih2.getColumnIndex("ngay_nhan"), mNgay_Nhan);
-                ih2.bind(ih2.getColumnIndex("type_kh"), c.getInt(3));
-                ih2.bind(ih2.getColumnIndex("ten_kh"), cursor3.getString(0));
-                ih2.bind(ih2.getColumnIndex("so_dienthoai"), c.getString(5));
-                ih2.bind(ih2.getColumnIndex("so_tin_nhan"), c.getInt(7));
-                ih2.bind(ih2.getColumnIndex("the_loai"), mThe_loai);
-                ih2.bind(ih2.getColumnIndex("so_chon"), So_chon);
-                ih2.bind(ih2.getColumnIndex("diem"), mDiem);
-                ih2.bind(ih2.getColumnIndex("diem_quydoi"), mDiemquydoi);
-                ih2.bind(ih2.getColumnIndex("diem_khachgiu"), mLanAn3);
-                ih2.bind(ih2.getColumnIndex("diem_dly_giu"), mDlyGiu);
-                ih2.bind(ih2.getColumnIndex("diem_ton"), mDiemton);
-                ih2.bind(ih2.getColumnIndex("gia"), mGia * 1000.0d);
-                ih2.bind(ih2.getColumnIndex("lan_an"), mLanAn2 * 1000.0d);
-                ih2.bind(ih2.getColumnIndex("so_nhay"), 0);
-                ih2.bind(ih2.getColumnIndex("tong_tien"), mThanhTien * 1000.0d);
-                ih2.bind(ih2.getColumnIndex("ket_qua"), 0);
-                ih2.execute();
-                i++;
+                listInsert.add(
+                        new SoctS(
+                                null,
+                                tinNhanS.getNgay_nhan(),
+                                tinNhanS.getType_kh(),
+                                khachHang.getTen_kh(),
+                                tinNhanS.getSo_dienthoai(),
+                                tinNhanS.getSo_tin_nhan(),
+                                mThe_loai,
+                                So_chon,
+                                mDiem,
+                                mDiemquydoi,
+                                mKhachGiu,
+                                mDlyGiu,
+                                mDiemton,
+                                mGia * 1000.0d,
+                                mLanAn2 * 1000.0d,
+                                0,
+                                mThanhTien * 1000.0d,
+                                0
+                        )
+                );
             }
-            database = this;
-            mThe_loai3 = mThe_loai;
-            mDlyGiu2 = mLanAn2;
-            double mKhachGiu42 = mDiem_KhachGiu;
-            Double.isNaN(mKhachGiu42);
-            double d2 = mDiemquydoi - mKhachGiu42;
-            double mDiemquydoi32 = mDiem_DlyGiu;
-            Double.isNaN(mDiemquydoi32);
 
+            BriteDb.INSTANCE.insertListSoctS(listInsert);
+            mThe_loai_truoc = mThe_loai;
         }
-        db2.setTransactionSuccessful();
-        db2.endTransaction();
-        db2.close();
     }
 
     private String xuly_Xq(String str) {
@@ -2097,24 +2039,17 @@ public class Database extends SQLiteOpenHelper {
                 jsonDang.put(KQChuyen, cur_Tin_nhan.getDouble(8));
                 if (cur_Tin_nhan.getString(2).contains("de")) {
                     jsonDang.put("PhanTram", 100 - database.caidat_tg.getInt("khgiu_de"));
+                } else if (cur_Tin_nhan.getString(2).contains("lo")) {
+                    jsonDang.put("PhanTram", 100 - database.caidat_tg.getInt("khgiu_lo"));
+                } else if (cur_Tin_nhan.getString(2).contains("xi")) {
+                    jsonDang.put("PhanTram", 100 - database.caidat_tg.getInt("khgiu_xi"));
+                } else if (cur_Tin_nhan.getString(2).contains("bc")) {
+                    jsonDang.put("PhanTram", 100 - database.caidat_tg.getInt("khgiu_bc"));
                 } else {
-                    if (cur_Tin_nhan.getString(2).contains("lo")) {
-                        jsonDang.put("PhanTram", 100 - database.caidat_tg.getInt("khgiu_lo"));
-                    } else {
-                        if (cur_Tin_nhan.getString(2).contains("xi")) {
-                            jsonDang.put("PhanTram", 100 - database.caidat_tg.getInt("khgiu_xi"));
-                        } else {
-                            if (cur_Tin_nhan.getString(2).contains("bc")) {
-                                jsonDang.put("PhanTram", 100 - database.caidat_tg.getInt("khgiu_bc"));
-                            } else {
-                                if (cur_Tin_nhan.getString(2).contains("xn")) {
-                                    jsonDang.put("PhanTram", 100 - database.caidat_tg.getInt("khgiu_xn"));
-                                } else {
-                                    jsonDang.put("PhanTram", cur_Tin_nhan.getDouble(9));
-                                }
-                            }
-                        }
-                    }
+                    if (cur_Tin_nhan.getString(2).contains("xn"))
+                        jsonDang.put("PhanTram", 100 - database.caidat_tg.getInt("khgiu_xn"));
+                    else
+                        jsonDang.put("PhanTram", cur_Tin_nhan.getDouble(9));
                 }
                 TienNhan += (jsonDang.getDouble(KQNhan) * jsonDang.getDouble("PhanTram")) / 100;
                 TienChuyen += jsonDang.getInt(KQChuyen);

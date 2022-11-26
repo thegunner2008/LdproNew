@@ -508,7 +508,7 @@ public class Activity_AddKH2 extends BaseToolBarActivity {
             if (str.length() > 7) {
                 try {
                     str = Congthuc.NhanTinNhan(Congthuc.convertKhongDau(str)).replace("de dit db:", "de:");
-                    if (str.indexOf("Không hiểu") > -1) {
+                    if (str.contains("Không hiểu")) {
                         Toast.makeText(Activity_AddKH2.this, str, Toast.LENGTH_LONG).show();
                         ktra = false;
                     }

@@ -8,10 +8,7 @@ import android.util.Log
 import com.squareup.sqlbrite2.BriteDatabase
 import com.squareup.sqlbrite2.SqlBrite
 import io.reactivex.schedulers.Schedulers
-import tamhoang.ldpro4.data.model.Chat
-import tamhoang.ldpro4.data.model.ChuyenThang
-import tamhoang.ldpro4.data.model.KhachHang
-import tamhoang.ldpro4.data.model.TinNhanS
+import tamhoang.ldpro4.data.model.*
 
 object BriteDb {
     lateinit var sqlBrite: SqlBrite
@@ -219,6 +216,48 @@ object BriteDb {
         val cursor = db.query("Select Om_Xi3 FROM so_Om WHERE id = 13");
         return if (cursor != null && cursor.moveToFirst())
             cursor.getInt(0) == 0 else true
+    }
+
+    fun countSoctS(query: String) = db.query("Select count(*) From ${SoctS.TABLE_NAME} $query").use {
+        if (it.moveToFirst()) it.getInt(0) else 0
+    }
+
+    fun selectSoctSQuery(query: String) : SoctS? {
+        val queryRaw = "Select * From ${SoctS.TABLE_NAME} $query"
+
+        val cursor = db.query(queryRaw)
+        return if (cursor != null && cursor.moveToFirst())
+            SoctS.parseCursor(cursor) else null
+    }
+
+    fun insertSoctS(socS: SoctS) {
+        val transaction = db.newTransaction()
+        try {
+            db.insert(SoctS.TABLE_NAME, SoctS.toContentValues(socS), SQLiteDatabase.CONFLICT_REPLACE)
+            transaction.markSuccessful()
+        } catch (e: Exception) {
+            Log.e(TAG, "Error $e")
+        } finally {
+            transaction.end()
+        }
+    }
+
+    fun insertListSoctS(listSoctS: List<SoctS>) {
+        val transaction = db.newTransaction()
+        try {
+            listSoctS.forEach {
+                db.insert(
+                    SoctS.TABLE_NAME,
+                    SoctS.toContentValues(it),
+                    SQLiteDatabase.CONFLICT_REPLACE
+                )
+            }
+            transaction.markSuccessful()
+        } catch (e: Exception) {
+            Log.e(TAG, "Error $e")
+        } finally {
+            transaction.end()
+        }
     }
 
 }

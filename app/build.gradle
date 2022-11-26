@@ -15,8 +15,8 @@ android {
         applicationId "tamhoang.ldpro4.dev"
         minSdk 24
         targetSdk 30
-        versionCode 20221117
-        versionName "2.914"
+        versionCode 20221126
+        versionName "2.916"
 
         ndk {
             abiFilters "armeabi", "armeabi-v7a", "x86", "mips"

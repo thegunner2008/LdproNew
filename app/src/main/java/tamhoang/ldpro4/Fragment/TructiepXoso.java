@@ -2,6 +2,8 @@ package tamhoang.ldpro4.Fragment;
 
 import static android.content.ContentValues.TAG;
 
+import tamhoang.ldpro4.constants.Constants;
+
 import android.annotation.SuppressLint;
 import android.content.Context;
 import android.database.Cursor;
@@ -56,7 +58,7 @@ public class TructiepXoso extends Fragment {
     String DangXuat = "lo";
     int So_giai = 0;
     Switch Switch1;
-    String Url = "https://xoso.me/embedded/kq-mienbac";
+    String Url = Constants.URL_XOSOME_KQMB;
     Database db;
     Handler handler;
     List<JSONObject> jsonValues;
@@ -116,7 +118,7 @@ public class TructiepXoso extends Fragment {
         });
         this.rdb_XsoMe.setOnCheckedChangeListener((compoundButton, z) -> {
             if (rdb_XsoMe.isChecked()) {
-                Url = "https://xoso.me/embedded/kq-mienbac";
+                Url = Constants.URL_XOSOME_KQMB;
                 mWebView.loadUrl(Url);
             }
         });
@@ -142,7 +144,7 @@ public class TructiepXoso extends Fragment {
             this.mWebView.restoreState(savedInstanceState);
         }
         if (this.mWebView.getUrl() == null) {
-            this.mWebView.loadUrl("https://xoso.me/embedded/kq-mienbac");
+            this.mWebView.loadUrl(Constants.URL_XOSOME_KQMB);
         }
         this.mWebView.setWebViewClient(new WebViewClient() {
             public void onPageFinished(WebView view, String url) {

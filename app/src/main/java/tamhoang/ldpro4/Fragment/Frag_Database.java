@@ -53,6 +53,7 @@ import tamhoang.ldpro4.MainActivity;
 import tamhoang.ldpro4.NotificationBindObject;
 import tamhoang.ldpro4.R;
 import tamhoang.ldpro4.akaman.AkaManSec;
+import tamhoang.ldpro4.constants.Constants;
 import tamhoang.ldpro4.data.Database;
 
 public class Frag_Database extends Fragment {
@@ -455,7 +456,7 @@ public class Frag_Database extends Fragment {
         this.mWebView.setVisibility(View.GONE);
         new MainActivity();
         String mDate = MainActivity.Get_ngay().replaceAll("/", "-");
-        this.mWebView.loadUrl("https://xoso.me/embedded/kq-mienbac?ngay_quay=" + mDate);
+        this.mWebView.loadUrl(Constants.URL_XOSOME_KQMB + "?ngay_quay=" + mDate);
         this.mWebView.setWebViewClient(new WebViewClient() {
 
             public void onPageFinished(WebView view, String url) {

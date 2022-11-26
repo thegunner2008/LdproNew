@@ -19,4 +19,5 @@ public class Constants {
     public static final String SMS_JSON = "sms_json";
     public static final int TYPE_BACKUP = 0;
     public static final int TYPE_RESTORE = 1;
+    public static final String URL_XOSOME_KQMB = "https://xoso.mobi/embedded/kq-mienbac";
 }
