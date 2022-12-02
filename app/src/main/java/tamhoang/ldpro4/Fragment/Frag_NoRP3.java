@@ -196,7 +196,7 @@ public class Frag_NoRP3 extends Fragment {
             JSONObject jsonDang;
             JSONObject jsonDang2;
             JSONObject jsonDang3;
-            @SuppressLint("WrongConstant") View mView2 = ((LayoutInflater) getContext().getSystemService("layout_inflater")).inflate(R.layout.activity_tinnhan_lv, (ViewGroup) null);
+            @SuppressLint("WrongConstant") View mView2 = LayoutInflater.from(getContext()).inflate(R.layout.activity_tinnhan_lv, null);
             TextView tv_tongtien = (TextView) mView2.findViewById(R.id.tv_no_Tong);
             TextView tv_ket_qua = (TextView) mView2.findViewById(R.id.tv_ThangThua);
             TextView tv_tenKH = (TextView) mView2.findViewById(R.id.tv_ten_KH);

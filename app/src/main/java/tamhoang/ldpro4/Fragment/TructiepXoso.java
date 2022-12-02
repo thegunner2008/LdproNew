@@ -373,7 +373,7 @@ public class TructiepXoso extends Fragment {
         public View getView(int position, View mView, ViewGroup parent) {
             ViewHolder holder;
             if (mView == null) {
-                mView = ((LayoutInflater) getContext().getSystemService("layout_inflater")).inflate(R.layout.frag_canchuyen_lv, (ViewGroup) null);
+                mView = LayoutInflater.from(getContext()).inflate(R.layout.frag_canchuyen_lv, (ViewGroup) null);
                 holder = new ViewHolder();
                 holder.Tv_so = (TextView) mView.findViewById(R.id.Tv_so);
                 holder.tv_diemNhan = (TextView) mView.findViewById(R.id.tv_diemNhan);

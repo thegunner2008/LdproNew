@@ -1,8 +1,8 @@
 package tamhoang.ldpro4;
 
+import android.Manifest;
 import android.annotation.SuppressLint;
 import android.app.role.RoleManager;
-import android.content.DialogInterface;
 import android.content.Intent;
 import android.database.Cursor;
 import android.database.SQLException;
@@ -13,7 +13,6 @@ import android.provider.Settings;
 import android.provider.Telephony;
 import android.telephony.TelephonyManager;
 import android.util.Xml;
-import android.view.View;
 import android.widget.Button;
 import android.widget.Toast;
 
@@ -30,7 +29,11 @@ import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.StringWriter;
+import java.util.Arrays;
 
+import tamhoang.ldpro4.Activity.ActivityDangNhap;
+import tamhoang.ldpro4.akaman.AkaManSec;
+import tamhoang.ldpro4.data.BriteDb;
 import tamhoang.ldpro4.data.Database;
 
 public class Login extends AppCompatActivity {
@@ -39,54 +42,58 @@ public class Login extends AppCompatActivity {
 
     Database db;
     Intent intent;
-    Button login;
+    Button btn_login;
 
     @RequiresApi(api = Build.VERSION_CODES.R)
     public void onCreate(Bundle bundle) {
         super.onCreate(bundle);
         setContentView(R.layout.activity_login);
-        this.db = new Database(this);
-        this.login = findViewById(R.id.btn_login);
-        int[] iArr = {ContextCompat.checkSelfPermission(this, "android.permission.READ_CONTACTS")};
-        int[] iArr2 = {ContextCompat.checkSelfPermission(this, "android.permission.READ_PHONE_STATE")};
-        int[] iArr3 = {ContextCompat.checkSelfPermission(this, "android.permission.RECEIVE_SMS")};
-        int[] iArr4 = {ContextCompat.checkSelfPermission(this, "android.permission.SEND_SMS")};
-        int[] iArr5 = {ContextCompat.checkSelfPermission(this, "android.permission.WRITE_EXTERNAL_STORAGE")};
-        int[] iArr66 = {ContextCompat.checkSelfPermission(this, "android.permission.READ_EXTERNAL_STORAGE")};
-        if (iArr[0] == -1 || iArr2[0] == -1 || iArr3[0] == -1 || iArr5[0] == -1 || iArr4[0] == -1) {
-            ActivityCompat.requestPermissions(this, new String[]{"android.permission.INTERNET", "android.permission.READ_CONTACTS",
-                    "android.permission.RECEIVE_SMS", "android.permission.SEND_SMS", "android.permission.READ_PHONE_STATE", "android.permission.WRITE_EXTERNAL_STORAGE", "android.permission.READ_EXTERNAL_STORAGE"}, 1);
+        db = new Database(this);
+        BriteDb.INSTANCE.init(getApplication());
+        this.btn_login = findViewById(R.id.btn_login);
+        int[] check = {
+                ContextCompat.checkSelfPermission(this, Manifest.permission.READ_CONTACTS),
+                ContextCompat.checkSelfPermission(this, Manifest.permission.READ_PHONE_STATE),
+                ContextCompat.checkSelfPermission(this, Manifest.permission.RECEIVE_SMS),
+                ContextCompat.checkSelfPermission(this, Manifest.permission.SEND_SMS),
+                ContextCompat.checkSelfPermission(this, Manifest.permission.WRITE_EXTERNAL_STORAGE),
+                ContextCompat.checkSelfPermission(this, Manifest.permission.READ_EXTERNAL_STORAGE)
+        };
+        if (Arrays.stream(check).anyMatch(i -> i == -1)) {
+            ActivityCompat.requestPermissions(this, new String[]{Manifest.permission.INTERNET, Manifest.permission.READ_CONTACTS,
+                    Manifest.permission.RECEIVE_SMS, Manifest.permission.SEND_SMS, Manifest.permission.READ_PHONE_STATE,
+                    Manifest.permission.WRITE_EXTERNAL_STORAGE, Manifest.permission.READ_EXTERNAL_STORAGE}, 1);
         }
-        Button button = this.login;
-        final int[] iArr6 = iArr;
-        final int[] iArr7 = iArr2;
-        final int[] iArr8 = iArr3;
-        final int[] iArr9 = iArr4;
-        final int[] iArr10 = iArr5;
-        final int[] iArr11 = iArr66;
-        button.setOnClickListener(view -> {
-            iArr6[0] = ContextCompat.checkSelfPermission(Login.this, "android.permission.READ_CONTACTS");
-            iArr7[0] = ContextCompat.checkSelfPermission(Login.this, "android.permission.READ_PHONE_STATE");
-            iArr8[0] = ContextCompat.checkSelfPermission(Login.this, "android.permission.RECEIVE_SMS");
-            iArr9[0] = ContextCompat.checkSelfPermission(Login.this, "android.permission.SEND_SMS");
-            iArr10[0] = ContextCompat.checkSelfPermission(Login.this, "android.permission.WRITE_EXTERNAL_STORAGE");
-            iArr11[0] = ContextCompat.checkSelfPermission(this, "android.permission.READ_EXTERNAL_STORAGE");
-
-            if (iArr6[0] != 0 || iArr7[0] != 0 || iArr8[0] != 0 || iArr10[0] != 0 || iArr9[0] != 0 || iArr11[0] != 0) {
-                ActivityCompat.requestPermissions(Login.this, new String[]{"android.permission.INTERNET", "android.permission.READ_CONTACTS", "android.permission.RECEIVE_SMS", "android.permission.SEND_SMS",
-                        "android.permission.READ_PHONE_STATE", "android.permission.WRITE_EXTERNAL_STORAGE", "android.permission.READ_EXTERNAL_STORAGE"}, 1);
-            } else if (Login.this.getImei() != null) {
-                Login.this.intent = new Intent(Login.this, MainActivity.class);
-                Login login = Login.this;
-                login.startActivities(new Intent[]{login.intent});
+        int[] reCheck = new int[6];
+        btn_login.setOnClickListener(view -> {
+            reCheck[0] = ContextCompat.checkSelfPermission(this, Manifest.permission.READ_CONTACTS);
+            reCheck[1] = ContextCompat.checkSelfPermission(this, Manifest.permission.READ_PHONE_STATE);
+            reCheck[2] = ContextCompat.checkSelfPermission(this, Manifest.permission.RECEIVE_SMS);
+            reCheck[3] = ContextCompat.checkSelfPermission(this, Manifest.permission.SEND_SMS);
+            reCheck[4] = ContextCompat.checkSelfPermission(this, Manifest.permission.WRITE_EXTERNAL_STORAGE);
+            reCheck[5] = ContextCompat.checkSelfPermission(this, Manifest.permission.READ_EXTERNAL_STORAGE);
+            if (Arrays.stream(reCheck).anyMatch(i -> i != 0)) {
+                ActivityCompat.requestPermissions(this, new String[]{Manifest.permission.INTERNET, Manifest.permission.READ_CONTACTS,
+                        Manifest.permission.RECEIVE_SMS, Manifest.permission.SEND_SMS, Manifest.permission.READ_PHONE_STATE,
+                        Manifest.permission.WRITE_EXTERNAL_STORAGE, Manifest.permission.READ_EXTERNAL_STORAGE}, 1);
+            } else if (this.getImei() != null) {
+                intent = new Intent(this, MainActivity.class);
+                startActivities(new Intent[]{intent});
             }
 
             checkFileAccessPermission();
         });
         try {
             Create_Table_database();
-            if (iArr[0] == 0 && iArr2[0] == 0 && iArr3[0] == 0 && iArr5[0] == 0 && iArr4[0] == 0 && getImei() != null) {
-                this.intent = new Intent(this, MainActivity.class);
+            AkaManSec.queryAkaManPwd(db);
+            if (Arrays.stream(check).allMatch(i -> i == 0) && getImei() != null) {
+                String pass = AkaManSec.userPwd;
+                if (pass == null || pass.isEmpty()) {
+                    intent = new Intent(this, MainActivity.class);
+                } else {
+                    intent = new Intent(this, ActivityDangNhap.class);
+                    intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK | Intent.FLAG_ACTIVITY_NEW_TASK);
+                }
                 startActivities(new Intent[]{this.intent});
             }
         } catch (SQLException ignored) {
@@ -95,12 +102,11 @@ public class Login extends AppCompatActivity {
 
     @SuppressLint({"WrongConstant", "HardwareIds"})
     public String getImei() {
-        if (ActivityCompat.checkSelfPermission(this, "android.permission.READ_PHONE_STATE") != -1) {
+        if (ActivityCompat.checkSelfPermission(this, Manifest.permission.READ_PHONE_STATE) != -1) {
             try {
                 Imei = ((TelephonyManager) getSystemService("phone")).getDeviceId();
                 serial = Settings.Secure.getString(getContentResolver(), "android_id");
-            } catch (Exception e) {
-                e.getMessage();
+            } catch (Exception ignored) {
             }
         }
         if (Imei != null) {
@@ -144,14 +150,14 @@ public class Login extends AppCompatActivity {
     }
 
     public void checkPermissions() {
-        if (ContextCompat.checkSelfPermission(this, "android.permission.READ_SMS") != 0 && !ActivityCompat.shouldShowRequestPermissionRationale(this, "android.permission.READ_SMS")) {
-            ActivityCompat.requestPermissions(this, new String[]{"android.permission.READ_SMS"}, 1);
+        if (ContextCompat.checkSelfPermission(this, Manifest.permission.READ_SMS) != 0 && !ActivityCompat.shouldShowRequestPermissionRationale(this, Manifest.permission.READ_SMS)) {
+            ActivityCompat.requestPermissions(this, new String[]{Manifest.permission.READ_SMS}, 1);
         }
     }
 
-    public boolean checkDefaultSettings() {
+    public void checkDefaultSettings() {
         if (Telephony.Sms.getDefaultSmsPackage(getApplicationContext()).equals(getApplicationContext().getPackageName())) {
-            return true;
+            return;
         }
         showAlertBox("Cài đặt mặc định!", "Để ứng dụng thành quản lý tin nhắn mặc định để quản lý tin nhắn tốt hơn!")
                 .setPositiveButton("Ok", (dialogInterface, i) -> {
@@ -167,8 +173,7 @@ public class Login extends AppCompatActivity {
                         startActivityForResult(setSmsAppIntent, 202);
                     }
 
-        }).setNegativeButton("Cancel", (dialogInterface, i) -> dialogInterface.dismiss()).show().setCanceledOnTouchOutside(false);
-        return false;
+                }).setNegativeButton("Cancel", (dialogInterface, i) -> dialogInterface.dismiss()).show().setCanceledOnTouchOutside(false);
     }
 
     @RequiresApi(api = Build.VERSION_CODES.R)
@@ -191,20 +196,19 @@ public class Login extends AppCompatActivity {
         this.db.Another_setting();
         this.db.Creat_Chaytrang_acc();
         this.db.Creat_Chaytrang_ticket();
+        AkaManSec.initSecTable(db);
         try {
             Cursor c = this.db.GetData("Select * From so_om");
             if (c.getCount() < 1) {
-                for (int i = 0; i < 10; i++) {
-                    this.db.QueryData("Insert into so_om Values (null, '0" + i + "', 0, 0, 0, 0, 0, 0, 0, 0, 0, null, null)");
-                }
-                for (int i2 = 10; i2 < 100; i2++) {
-                    this.db.QueryData("Insert into so_om Values (null, '" + i2 + "', 0, 0, 0, 0, 0, 0, 0, 0, 0, null, null)");
+                for (int i = 0; i < 100; i++) {
+                    this.db.QueryData("Insert into so_om Values (null, '"
+                            + (i < 10 ? "0" : "") + i + "', 0, 0, 0, 0, 0, 0, 0, 0, 0, null, null)");
                 }
             }
-            if (c != null && !c.isClosed()) {
+            if (!c.isClosed()) {
                 c.close();
             }
-        } catch (SQLException e) {
+        } catch (SQLException ignored) {
         }
         try {
             Cursor cursor = this.db.GetData("Select Om_Xi3 FROM So_om WHERE So = '05'");
@@ -212,7 +216,7 @@ public class Login extends AppCompatActivity {
             if (cursor.getInt(0) == 0) {
                 this.db.QueryData("UPDATE So_om SET Om_Xi3 = 18, Om_Xi4 = 15 WHERE So = '05'");
             }
-        } catch (SQLException e2) {
+        } catch (SQLException ignored) {
         }
     }
 }

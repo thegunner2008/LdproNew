@@ -1109,7 +1109,7 @@ public class Frag_CanChuyen extends Fragment {
 
         @SuppressLint({"SetTextI18n", "RestrictedApi"})
         public View getView(int position, View view, ViewGroup parent) {
-            @SuppressLint("WrongConstant") LayoutInflater inflater = (LayoutInflater) getContext().getSystemService("layout_inflater");
+            @SuppressLint("WrongConstant") LayoutInflater inflater = LayoutInflater.from(getContext());
             ViewHolder holder = new ViewHolder();
             if (view == null) {
                 view = inflater.inflate(R.layout.frag_canchuyen_lv, (ViewGroup) null);

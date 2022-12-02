@@ -62,10 +62,12 @@ public class NotificationReader extends NotificationListenerService {
 
         super.onCreate();
         this.db = new Database(getBaseContext());
-        startForeground();
+        startForegrounds();
     }
 
-    private void startForeground() {
+    private void startForegrounds() {
+
+        Log.e(TAG, "fatal onNotificationPosted: startForegrounds ");
 
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
             createNotificationChannel();
@@ -90,7 +92,7 @@ public class NotificationReader extends NotificationListenerService {
     }
 
     public void onNotificationPosted(StatusBarNotification sbn) {
-        Log.e(TAG, "onNotificationPosted: " + sbn);
+        Log.e(TAG, "fatal onNotificationPosted: " + sbn);
         if (!sbn.getPackageName().equals(ZALO) && !sbn.getPackageName().equals(WHATSAPP) && !sbn.getPackageName().equals(VIBER))
             return;
         if (this.context == null) this.context = this;

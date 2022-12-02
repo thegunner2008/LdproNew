@@ -2,6 +2,7 @@ package tamhoang.ldpro4;
 
 import static tamhoang.ldpro4.Congthuc.Congthuc.CheckIsToday;
 
+import android.Manifest;
 import android.annotation.SuppressLint;
 import android.app.AlertDialog;
 import android.app.DatePickerDialog;
@@ -16,7 +17,6 @@ import android.content.pm.PackageManager;
 import android.database.Cursor;
 import android.database.SQLException;
 import android.graphics.drawable.ColorDrawable;
-import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Looper;
@@ -26,17 +26,16 @@ import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
-import android.view.ViewGroup;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.Button;
 import android.widget.EditText;
-import android.widget.ListAdapter;
 import android.widget.ListView;
 import android.widget.PopupMenu;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import androidx.annotation.NonNull;
 import androidx.appcompat.app.ActionBar;
 import androidx.appcompat.app.ActionBarDrawerToggle;
 import androidx.appcompat.app.AppCompatActivity;
@@ -44,6 +43,15 @@ import androidx.core.app.ActivityCompat;
 import androidx.core.content.ContextCompat;
 import androidx.drawerlayout.widget.DrawerLayout;
 import androidx.fragment.app.Fragment;
+
+import org.drinkless.td.libcore.telegram.Client;
+import org.drinkless.td.libcore.telegram.TdApi;
+import org.greenrobot.eventbus.EventBus;
+import org.greenrobot.eventbus.Subscribe;
+import org.greenrobot.eventbus.ThreadMode;
+import org.json.JSONArray;
+import org.json.JSONException;
+import org.json.JSONObject;
 
 import java.io.File;
 import java.io.IOException;
@@ -56,16 +64,6 @@ import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.TimeZone;
-import java.util.function.Function;
-
-import org.drinkless.td.libcore.telegram.Client;
-import org.drinkless.td.libcore.telegram.TdApi;
-import org.greenrobot.eventbus.EventBus;
-import org.greenrobot.eventbus.Subscribe;
-import org.greenrobot.eventbus.ThreadMode;
-import org.json.JSONArray;
-import org.json.JSONException;
-import org.json.JSONObject;
 
 import tamhoang.ldpro4.Activity.Activity_ChuyenThang;
 import tamhoang.ldpro4.Activity.Activity_GiuSo;
@@ -201,7 +199,6 @@ public class MainActivity extends AppCompatActivity implements TelegramClient.Ca
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
         this.db = new Database(this);
-        BriteDb.INSTANCE.init(getApplication());
 //        Suagia();
         this.viewData = Get_link() + "json_data.php";
         this.insertData = Get_link() + "json_insert.php";
@@ -228,37 +225,16 @@ public class MainActivity extends AppCompatActivity implements TelegramClient.Ca
         mDay = calendar.get(5);
         this.Text_date = customactionbar.findViewById(R.id.myTextDate);
         this.Text_Menu = customactionbar.findViewById(R.id.myTextMenu);
-        StringBuilder sb = new StringBuilder();
-        if (mDay < 10) {
-            sb.append("0");
-        }
-        sb.append(mDay);
-        sb.append("-");
-        if (mMonth + 1 < 10) {
-            sb.append("0");
-        }
-        sb.append(mMonth + 1);
-        sb.append("-");
-        sb.append(mYear);
-        this.Text_date.setText(sb.toString());
+
+        String dateString = (mDay < 10 ? "0" : "") + mDay + "-" + (mMonth + 1 < 10 ? "0" : "") + (mMonth + 1) + "-" + mYear;
+        this.Text_date.setText(dateString);
         onDateSetListener = (view, year, monthOfYear, dayOfMonth) -> {
             mYear = year;
             mMonth = monthOfYear;
             mDay = dayOfMonth;
             sms = true;
-            StringBuilder sb1 = new StringBuilder();
-            if (mDay < 10) {
-                sb1.append("0");
-            }
-            sb1.append(mDay);
-            sb1.append("-");
-            if (mMonth + 1 < 10) {
-                sb1.append("0");
-            }
-            sb1.append(mMonth + 1);
-            sb1.append("-");
-            sb1.append(mYear);
-            this.Text_date.setText(sb1.toString());
+            String dateStr1 = (mDay < 10 ? "0" : "") + mDay + "-" + (mMonth + 1 < 10 ? "0" : "") + (mMonth + 1) + "-" + mYear;
+            this.Text_date.setText(dateStr1);
         };
         actionBar.setBackgroundDrawable(new ColorDrawable(getColor(R.color.colorPrimaryDark)));
         this.drawerLayout = findViewById(R.id.drawer_layout);
@@ -428,9 +404,10 @@ public class MainActivity extends AppCompatActivity implements TelegramClient.Ca
     }
 
 
-    @Override // tamhoang.ldpro4.Telegram.TelegramClient.Callback, org.drinkless.td.libcore.telegram.Client.ResultHandler
+    @Override
+    // tamhoang.ldpro4.Telegram.TelegramClient.Callback, org.drinkless.td.libcore.telegram.Client.ResultHandler
     public void onResult(TdApi.Object object) {
-        Log.e("ContentValues", "onResult: TdApi.Object: " +object);
+        Log.e("ContentValues", "onResult: TdApi.Object: " + object);
 
         boolean tinHethong;
         String ten_kh;
@@ -549,7 +526,7 @@ public class MainActivity extends AppCompatActivity implements TelegramClient.Ca
             Cursor cursor111 = this.db.GetData(sb2);
             if (cursor111.getCount() == 0) {
                 cursor = this.db.GetData("Select * From tbl_kh_new Where sdt = '" + chatId + "'");
-                if (cursor.getCount() > 0 && text.length() > 5 && CheckIsToday(time)){
+                if (cursor.getCount() > 0 && text.length() > 5 && CheckIsToday(time)) {
                     cursor.moveToFirst();
                     if (cursor.getInt(3) == 1 && type_kh == 1) {
                         Xulytin(chatId, text, mNgayNhan, mGionhan, type_kh);
@@ -573,7 +550,7 @@ public class MainActivity extends AppCompatActivity implements TelegramClient.Ca
     private void onAuthStateUpdated(TdApi.AuthorizationState authorizationState) {
         int constructor = authorizationState.getConstructor();
 
-        Log.e("ContentValues", "onAuthStateUpdated: constructor" +constructor);
+        Log.e("ContentValues", "onAuthStateUpdated: constructor" + constructor);
 
         //TODO: fake constructor
         if (constructor == TdApi.AuthorizationStateWaitCode.CONSTRUCTOR) {
@@ -615,7 +592,7 @@ public class MainActivity extends AppCompatActivity implements TelegramClient.Ca
             try {
                 if (!Congthuc.CheckTime(caidat_tg.getString("tg_debc"))) {
                     try {
-                        int maxSoTn = BriteDb.INSTANCE.getMaxSoTinNhan(mNgayNhan, 1, "so_dienthoai = '"+ mSDT +"'");
+                        int maxSoTn = BriteDb.INSTANCE.getMaxSoTinNhan(mNgayNhan, 1, "so_dienthoai = '" + mSDT + "'");
 
                         String Ten_KH = getTenKH.getString(0);
                         int soTN = maxSoTn + 1;
@@ -624,13 +601,15 @@ public class MainActivity extends AppCompatActivity implements TelegramClient.Ca
                                 S = "Insert Into tbl_tinnhanS values (null, '" + mNgayNhan + "', '" + mGionhan + "'," + type_kh + ", '" + Ten_KH + "', '" + getTenKH.getString(1) + "','TL', " + soTN + ", '" + body + "',null,'" + body + "', 'ko',0,1,1, null)";
                                 this.db.QueryData(S);
                                 str = "Tra lai";
-                            } catch (SQLException e3) {}
+                            } catch (SQLException e3) {
+                            }
                         } else {
                             str = "Tra lai";
                             try {
                                 S = "Insert Into tbl_tinnhanS values (null, '" + mNgayNhan + "', '" + mGionhan + "'," + type_kh + ", '" + Ten_KH + "', '" + getTenKH.getString(1) + "','TL', " + soTN + ", '" + body + "',null,'" + body + "', 'ko',0,0,0, null)";
                                 this.db.QueryData(S);
-                            } catch (SQLException e5) {}
+                            } catch (SQLException e5) {
+                            }
                         }
 
                         if (Congthuc.CheckDate(hanSuDung)) {
@@ -661,7 +640,7 @@ public class MainActivity extends AppCompatActivity implements TelegramClient.Ca
                     }
                 }
 
-                int maxSoTn = BriteDb.INSTANCE.getMaxSoTinNhan(mNgayNhan, 1, "so_dienthoai = '"+ mSDT +"'");
+                int maxSoTn = BriteDb.INSTANCE.getMaxSoTinNhan(mNgayNhan, 1, "so_dienthoai = '" + mSDT + "'");
 
                 this.db.QueryData("Insert Into tbl_tinnhanS values (null, '" + mNgayNhan + "', '" + mGionhan + "',1, '" + getTenKH.getString(0) + "', '" + getTenKH.getString(1) + "','TL', " + (maxSoTn + 1) + ", '" + body + "',null,'" + body + "', 'Hết giờ nhận số!',0,1,1, null)");
 
@@ -678,7 +657,7 @@ public class MainActivity extends AppCompatActivity implements TelegramClient.Ca
 
     public static void sendMessage(long chatId, String message) {
 
-      TdApi.InlineKeyboardButton[] row = {new TdApi.InlineKeyboardButton("https://telegram.org?1", new TdApi.InlineKeyboardButtonTypeUrl()), new TdApi.InlineKeyboardButton("https://telegram.org?2", new TdApi.InlineKeyboardButtonTypeUrl()), new TdApi.InlineKeyboardButton("https://telegram.org?3", new TdApi.InlineKeyboardButtonTypeUrl())};
+        TdApi.InlineKeyboardButton[] row = {new TdApi.InlineKeyboardButton("https://telegram.org?1", new TdApi.InlineKeyboardButtonTypeUrl()), new TdApi.InlineKeyboardButton("https://telegram.org?2", new TdApi.InlineKeyboardButtonTypeUrl()), new TdApi.InlineKeyboardButton("https://telegram.org?3", new TdApi.InlineKeyboardButtonTypeUrl())};
         client.send(
                 new TdApi.SendMessage(chatId, 0L, 0L, null,
                         new TdApi.ReplyMarkupInlineKeyboard(new TdApi.InlineKeyboardButton[][]{row, row, row}),
@@ -827,7 +806,7 @@ public class MainActivity extends AppCompatActivity implements TelegramClient.Ca
 
     public void onMenu(View v) {
         String[] menus;
-        menus = new String[]{"Từ điển cá nhân", "Nhập dàn giữ số", "Cài đặt chuyển thẳng", (my_id != "")? "Logout Telegram" : "Login Telegram"};
+        menus = new String[]{"Từ điển cá nhân", "Nhập dàn giữ số", "Cài đặt chuyển thẳng", (my_id != "") ? "Logout Telegram" : "Login Telegram"};
 
         PopupMenu popupMenu = new PopupMenu(this, v);
         for (int i = 0; i < menus.length; i++) {
@@ -839,7 +818,7 @@ public class MainActivity extends AppCompatActivity implements TelegramClient.Ca
             notifivationNavigated = false;
             int order = item.getOrder();
             if (order == 0) {
-                startActivity(new Intent(this,  Activity_thaythe.class));
+                startActivity(new Intent(this, Activity_thaythe.class));
             } else if (order == 1) {
                 this.startActivity(new Intent(this, Activity_GiuSo.class));
             } else if (order == 2) {
@@ -984,17 +963,16 @@ public class MainActivity extends AppCompatActivity implements TelegramClient.Ca
         }
     }
 
-    @Override // android.support.v4.app.ActivityCompat.OnRequestPermissionsResultCallback, android.support.v4.app.FragmentActivity
-    public void onRequestPermissionsResult(int requestCode, String[] permissions, int[] grantResults) {
+    @Override
+    // android.support.v4.app.ActivityCompat.OnRequestPermissionsResultCallback, android.support.v4.app.FragmentActivity
+    public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
         if (requestCode != 1) {
-            if (requestCode != 2) {
-                return;
-            }
+            if (requestCode != 2) return;
         } else if (grantResults.length <= 0 || grantResults[0] != 0) {
             Toast.makeText(getApplicationContext(), "Can't access messages.", Toast.LENGTH_SHORT).show();
             return;
-        } else if (ContextCompat.checkSelfPermission(this, "android.permission.READ_CONTACTS") != 0 && !ActivityCompat.shouldShowRequestPermissionRationale(this, "android.permission.READ_CONTACTS")) {
-            ActivityCompat.requestPermissions(this, new String[]{"android.permission.READ_CONTACTS"}, 2);
+        } else if (ContextCompat.checkSelfPermission(this, Manifest.permission.READ_CONTACTS) != 0 && !ActivityCompat.shouldShowRequestPermissionRationale(this, Manifest.permission.READ_CONTACTS)) {
+            ActivityCompat.requestPermissions(this, new String[]{Manifest.permission.READ_CONTACTS}, 2);
         }
         if (grantResults.length <= 0 || grantResults[0] != 0) {
             Toast.makeText(getApplicationContext(), "Can't access messages.", Toast.LENGTH_SHORT).show();

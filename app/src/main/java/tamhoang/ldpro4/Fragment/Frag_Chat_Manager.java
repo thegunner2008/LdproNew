@@ -249,7 +249,7 @@ public class Frag_Chat_Manager extends Fragment {
         public View getView(final int position, View view, ViewGroup parent) {
             Chat chat = listChat.get(position);
             ViewHolder holder;
-            View view2 = ((LayoutInflater) getContext().getSystemService("layout_inflater")).inflate(R.layout.frag_chat_manager_lv, null);
+            View view2 = LayoutInflater.from(getContext()).inflate(R.layout.frag_chat_manager_lv, null);
             holder = new ViewHolder();
             holder.add_contacts = view2.findViewById(R.id.add_contacts);
             holder.tv_delete = view2.findViewById(R.id.tv_delete);

@@ -155,6 +155,7 @@ public class Frag_Database extends Fragment {
             check();
         }
         this.btn_tt.setOnClickListener(v -> {
+            btn_tt.setEnabled(false);
             String mDate = MainActivity.Get_date();
             String mNgay = MainActivity.Get_ngay();
             Cursor cursor = db.GetData("Select * From Ketqua WHERE ngay = '" + mDate + "'");
@@ -169,7 +170,7 @@ public class Frag_Database extends Fragment {
                         loadDone = true;
                 }
             } catch (Exception e) {
-                Toast.makeText(getActivity(), "Chưa có kết quả ngày: " + mNgay, Toast.LENGTH_LONG).show();
+                Toast.makeText(getActivity(), "Chưa có kết quả ngày: " + mNgay, Toast.LENGTH_SHORT).show();
             }
             if (loadDone) {
                 try {
@@ -177,13 +178,14 @@ public class Frag_Database extends Fragment {
                 } catch (JSONException e) {
                     e.printStackTrace();
                 }
-                Toast.makeText(getActivity(), "Đã tính tiền xong ngày " + mNgay, Toast.LENGTH_LONG).show();
+                Toast.makeText(getActivity(), "Đã tính tiền xong ngày " + mNgay, Toast.LENGTH_SHORT).show();
             } else {
-                Toast.makeText(getActivity(), "Chưa có kết quả ngày " + mNgay + " hãy cập nhật thủ công.", 1).show();
+                Toast.makeText(getActivity(), "Chưa có kết quả ngày " + mNgay + " hãy cập nhật thủ công.", Toast.LENGTH_SHORT).show();
             }
             if (!cursor.isClosed()) {
                 cursor.close();
             }
+            btn_tt.setEnabled(true);
         });
         this.btnDelete.setOnClickListener(view -> {
             String[] menus = {"Xóa vẫn lưu lại công nợ", "Xóa hết cơ sở dữ liệu", "Xóa hết dữ liệu hôm nay"};
@@ -293,7 +295,6 @@ public class Frag_Database extends Fragment {
 
     public void DisplayKQnetNew() {
         this.mWebView.setVisibility(View.GONE);
-        new MainActivity();
         String mDate = MainActivity.Get_ngay().replaceAll("/", "-");
         this.mWebView.loadUrl("https://xosothienphu.com/ma-nhung/xsmb-" + mDate + ".html");
         this.mWebView.setWebViewClient(new WebViewClient() {
@@ -313,7 +314,9 @@ public class Frag_Database extends Fragment {
             JsonReader reader = new JsonReader(new StringReader(s));
             reader.setLenient(true);
             try {
-                if (!(reader.peek() == JsonToken.NULL || reader.peek() != JsonToken.STRING || (msg = reader.nextString()) == null)) {
+                if (!(reader.peek() == JsonToken.NULL
+                        || reader.peek() != JsonToken.STRING
+                        || (msg = reader.nextString()) == null)) {
                     ArrayGiai = msg.trim().replaceAll("\t", "!").replaceAll("\n", "!").replaceAll("!!", "!").replaceAll("!!", "!").replaceAll("!!", "!").replaceAll("!!", "!").split("!");
                     if (ArrayGiai.length <= 0) {
                         Toast.makeText(getActivity(), "Kiểm tra lại kết nối Internet!", Toast.LENGTH_LONG).show();
@@ -432,7 +435,6 @@ public class Frag_Database extends Fragment {
 
     public void DisplayXSme() {
         this.mWebView.setVisibility(View.GONE);
-        new MainActivity();
         String mDate = MainActivity.Get_ngay().replaceAll("/", "-");
         this.mWebView.loadUrl("https://xosodaiphat.com/xsmb-" + mDate + ".html");
         this.mWebView.setWebViewClient(new WebViewClient() {
@@ -468,7 +470,6 @@ public class Frag_Database extends Fragment {
 
     public void DisplayXSMNNew() {
         this.mWebView.setVisibility(View.GONE);
-        new MainActivity();
         String mDate = MainActivity.Get_ngay().replaceAll("/", "-");
         this.mWebView.loadUrl("https://xsmn.me/embedded/kq-mienbac?ngay_quay=" + mDate);
         this.mWebView.setWebViewClient(new WebViewClient() {
@@ -482,7 +483,6 @@ public class Frag_Database extends Fragment {
 
     public void DisplayKQnet() {
         this.mWebView.setVisibility(View.GONE);
-        new MainActivity();
         String mDate = MainActivity.Get_ngay().replaceAll("/", "-");
         this.mWebView.loadUrl("https://xoso.com.vn/xsmb-" + mDate + ".html");
         this.mWebView.setWebViewClient(new WebViewClient() {
@@ -510,7 +510,7 @@ public class Frag_Database extends Fragment {
                 this.db.QueryData("Delete From ketqua WHERE ngay = '" + str_date + "'");
                 String sb = Str_sql.substring(0, Str_sql.length() - 1) + ")";
                 this.db.QueryData(sb);
-                Toast.makeText(getActivity(), "Đã tải xong kết quả ngày: " + MainActivity.Get_ngay(), Toast.LENGTH_LONG).show();
+                Toast.makeText(getActivity(), "Đã tải xong kết quả ngày 3: " + MainActivity.Get_ngay(), Toast.LENGTH_LONG).show();
                 return;
             }
             Toast.makeText(getActivity(), "Chưa có kết quả!", Toast.LENGTH_LONG).show();

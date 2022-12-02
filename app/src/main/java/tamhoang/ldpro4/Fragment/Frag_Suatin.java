@@ -239,7 +239,7 @@ public class Frag_Suatin extends Fragment {
         try {
             mKhachHang = BriteDb.INSTANCE.selectListKhachHang("Order by type_kh, ten_kh");
             mNameKhach = mKhachHang.stream().map(KhachHang::getTen_kh).collect(Collectors.toList());
-            this.sp_TenKH.setAdapter((SpinnerAdapter) new ArrayAdapter<>(getActivity(), (int) R.layout.spinner_item, mKhachHang.stream().map(KhachHang::getTen_kh).collect(Collectors.toList())));
+            this.sp_TenKH.setAdapter(new ArrayAdapter<>(getActivity(), (int) R.layout.spinner_item, mKhachHang.stream().map(KhachHang::getTen_kh).collect(Collectors.toList())));
             if (mKhachHang.size() > 0) {
                 this.sp_TenKH.setSelection(0);
             }
@@ -620,7 +620,7 @@ public class Frag_Suatin extends Fragment {
         if (!MainActivity.jSon_Setting.has("tin_trung")) {
             try {
                 MainActivity.jSon_Setting.put("tin_trung", 0);
-                this.db.QueryData("Update tbl_Setting set Setting = '" + MainActivity.jSon_Setting.toString() + "'");
+                this.db.QueryData("Update tbl_Setting set Setting = '" + MainActivity.jSon_Setting.toString() + "' WHERE ID = 1");
             } catch (JSONException e) {
                 e.printStackTrace();
             }
@@ -811,7 +811,7 @@ public class Frag_Suatin extends Fragment {
         public View getView(int position, View mView, ViewGroup parent) {
             ViewHolder holder;
             if (mView == null) {
-                mView = ((LayoutInflater) getContext().getSystemService("layout_inflater")).inflate(R.layout.frag_suatin_lv, null);
+                mView = LayoutInflater.from(getContext()).inflate(R.layout.frag_suatin_lv, null);
                 holder = new ViewHolder();
                 holder.tv_suatin_nd = mView.findViewById(R.id.tv_suatin_nd);
                 holder.tv_suatin_err = mView.findViewById(R.id.tv_suatin_err);

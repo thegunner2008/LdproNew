@@ -1,5 +1,6 @@
 package tamhoang.ldpro4.data
 
+import android.content.ContentValues
 import android.content.ContentValues.TAG
 import android.content.Context
 import android.database.Cursor
@@ -8,6 +9,8 @@ import android.util.Log
 import com.squareup.sqlbrite2.BriteDatabase
 import com.squareup.sqlbrite2.SqlBrite
 import io.reactivex.schedulers.Schedulers
+import org.json.JSONException
+import org.json.JSONObject
 import tamhoang.ldpro4.data.model.*
 
 object BriteDb {
@@ -218,11 +221,12 @@ object BriteDb {
             cursor.getInt(0) == 0 else true
     }
 
-    fun countSoctS(query: String) = db.query("Select count(*) From ${SoctS.TABLE_NAME} $query").use {
-        if (it.moveToFirst()) it.getInt(0) else 0
-    }
+    fun countSoctS(query: String) =
+        db.query("Select count(*) From ${SoctS.TABLE_NAME} $query").use {
+            if (it.moveToFirst()) it.getInt(0) else 0
+        }
 
-    fun selectSoctSQuery(query: String) : SoctS? {
+    fun selectSoctSQuery(query: String): SoctS? {
         val queryRaw = "Select * From ${SoctS.TABLE_NAME} $query"
 
         val cursor = db.query(queryRaw)
@@ -233,7 +237,11 @@ object BriteDb {
     fun insertSoctS(socS: SoctS) {
         val transaction = db.newTransaction()
         try {
-            db.insert(SoctS.TABLE_NAME, SoctS.toContentValues(socS), SQLiteDatabase.CONFLICT_REPLACE)
+            db.insert(
+                SoctS.TABLE_NAME,
+                SoctS.toContentValues(socS),
+                SQLiteDatabase.CONFLICT_REPLACE
+            )
             transaction.markSuccessful()
         } catch (e: Exception) {
             Log.e(TAG, "Error $e")
@@ -257,6 +265,36 @@ object BriteDb {
             Log.e(TAG, "Error $e")
         } finally {
             transaction.end()
+        }
+    }
+
+    fun savePassWord(passWord: String) {
+        val transaction = db.newTransaction()
+        try {
+            db.insert(
+                "tbl_Setting",
+                ContentValues().apply {
+                    put("id", 2);
+                    put("Setting", "{'PassWord' : '$passWord'}");
+                },
+                SQLiteDatabase.CONFLICT_REPLACE
+            )
+            transaction.markSuccessful()
+        } catch (e: Exception) {
+            Log.e(TAG, "Error $e")
+        } finally {
+            transaction.end()
+        }
+    }
+
+    fun getPassWord(): String {
+        return try {
+            val cursor = db.query("Select * FROM tbl_Setting WHERE id = 2");
+            val str = if (cursor != null && cursor.moveToFirst()) cursor.getString(1) else "{}"
+            val json = JSONObject(str)
+            json.getString("PassWord")
+        } catch (e: JSONException) {
+            ""
         }
     }
 

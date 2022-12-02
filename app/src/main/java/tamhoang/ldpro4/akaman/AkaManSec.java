@@ -1,6 +1,8 @@
 package tamhoang.ldpro4.akaman;
 
 import android.database.Cursor;
+import android.database.SQLException;
+import android.database.sqlite.SQLiteCantOpenDatabaseException;
 import android.os.Environment;
 import android.util.Base64;
 import android.util.Log;
@@ -132,8 +134,8 @@ public class AkaManSec {
     }
 
     public static void queryAkaManPwd(Database db) {
-        Cursor GetData = db.GetData("Select user_pwd, reset_pwd, truncate_pwd, pwd_mode, truncate_mode, encrypt_string, use_truncate From tbl_active LIMIT 1;");
         try {
+            Cursor GetData = db.GetData("Select user_pwd, reset_pwd, truncate_pwd, pwd_mode, truncate_mode, encrypt_string, use_truncate From tbl_active LIMIT 1;");
             try {
                 if (GetData.moveToNext()) {
                     userPwd = GetData.getString(0);
@@ -144,7 +146,7 @@ public class AkaManSec {
                     encryptString = GetData.getString(5);
                     useTruncate = GetData.getInt(6);
                 }
-                if (GetData == null || GetData.isClosed()) {
+                if (GetData.isClosed()) {
                     return;
                 }
             } catch (Exception e) {
@@ -155,11 +157,8 @@ public class AkaManSec {
                 }
             }
             GetData.close();
-        } catch (Throwable th) {
-            if (GetData != null && !GetData.isClosed()) {
-                GetData.close();
-            }
-            throw th;
+        } catch (SQLException e) {
+            userPwd = "";
         }
     }
 
